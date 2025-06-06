@@ -1,0 +1,162 @@
+import * as jwt from 'jsonwebtoken';
+
+import User from '@/models/user.model';
+import Admin from '@/models/admin.model';
+
+import { ErrorName } from '@/types/error.types';
+import { asyncHandler } from '@/handlers/async.handler';
+import { ErrorHandler } from '@/handlers/error.handler';
+
+import type { JwtPayload } from '@/types/auth.types';
+import type { Request, Response, NextFunction } from 'express';
+
+/* Middleware just to check if the user's email is verified */
+export const isVerified = asyncHandler(
+  async (req: Request, _: Response, next: NextFunction) => {
+    const token = req.cookies.token;
+
+    if (!token) {
+      throw new ErrorHandler(
+        401,
+        'Please login to access this resource',
+        ErrorName.UNAUTHORIZED,
+      );
+    }
+
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+
+      const user = await User.findById(decoded.id).lean();
+      if (!user) {
+        throw new ErrorHandler(401, 'Invalid token', ErrorName.UNAUTHORIZED);
+      }
+
+      if (!user.isEmailVerified) {
+        throw new ErrorHandler(
+          403,
+          'Please verify your email first',
+          ErrorName.UNAUTHORIZED,
+        );
+      }
+
+      req.user = {
+        ...user,
+        _id: user._id.toString(),
+      };
+      next();
+    } catch (error) {
+      throw new ErrorHandler(401, 'Invalid token', ErrorName.UNAUTHORIZED);
+    }
+  },
+);
+
+/* Middleware to check if the user is fully verified and approved by admin */
+export const isAuthenticated = asyncHandler(
+  async (req: Request, _: Response, next: NextFunction) => {
+    const token = req.cookies.token;
+
+    if (!token) {
+      throw new ErrorHandler(
+        401,
+        'Please login to access this resource',
+        ErrorName.UNAUTHORIZED,
+      );
+    }
+
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+
+      const user = await User.findById(decoded.id).lean();
+      if (!user) {
+        throw new ErrorHandler(401, 'Invalid token', ErrorName.UNAUTHORIZED);
+      }
+
+      if (!user.isEmailVerified) {
+        throw new ErrorHandler(
+          403,
+          'Please verify your email first',
+          ErrorName.UNAUTHORIZED,
+        );
+      }
+
+      if (!user.isApprovedByAdmin) {
+        throw new ErrorHandler(
+          403,
+          'Your account is pending admin approval',
+          ErrorName.UNAUTHORIZED,
+        );
+      }
+
+      req.user = {
+        ...user,
+        _id: user._id.toString(),
+      };
+      next();
+    } catch (error) {
+      if (error instanceof ErrorHandler) {
+        throw new ErrorHandler(401, error.message, ErrorName.UNAUTHORIZED);
+      }
+      throw new ErrorHandler(401, 'Invalid token', ErrorName.UNAUTHORIZED);
+    }
+  },
+);
+
+/* Middleware to check if the user is an admin */
+export const isAdmin = asyncHandler(
+  async (req: Request, _: Response, next: NextFunction) => {
+    const token = req.cookies.token;
+
+    if (!token) {
+      throw new ErrorHandler(
+        401,
+        'Please login to access this resource',
+        ErrorName.UNAUTHORIZED,
+      );
+    }
+
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+      const admin = await Admin.findById(decoded.id).lean();
+
+      if (!admin) {
+        throw new ErrorHandler(
+          403,
+          'Access denied. Admin privileges required',
+          ErrorName.UNAUTHORIZED,
+        );
+      }
+
+      req.admin = {
+        ...admin,
+        _id: admin._id.toString(),
+      };
+      next();
+    } catch (error) {
+      if (error instanceof ErrorHandler) {
+        throw new ErrorHandler(401, error.message, ErrorName.UNAUTHORIZED);
+      }
+      throw new ErrorHandler(401, 'Invalid token', ErrorName.UNAUTHORIZED);
+    }
+  },
+);
+
+/* Middleware to check if the user have Admin Access API key */
+export const isSuperAdmin = asyncHandler(
+  async (req: Request, _: Response, next: NextFunction) => {
+    const bearerToken = req.headers.authorization;
+    if (!bearerToken) {
+      throw new ErrorHandler(
+        401,
+        'Please login to access this resource',
+        ErrorName.UNAUTHORIZED,
+      );
+    }
+
+    const apiKey = bearerToken.split(' ')[1];
+    if (apiKey !== process.env.ADMIN_API_KEY) {
+      throw new ErrorHandler(401, 'Invalid API key', ErrorName.UNAUTHORIZED);
+    }
+
+    next();
+  },
+);
