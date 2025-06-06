@@ -5,7 +5,17 @@ export interface Category {
   image?: string;
   isActive?: boolean;
   visibleToStore: boolean;
-  parentID?: string | null;
+  parentId?: string | null;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface HierarchicalCategory {
+  _id: string;
+  name: string;
+  slug: string;
+  image?: string;
+  isActive?: boolean;
+  visibleToStore: boolean;
+  children?: HierarchicalCategory[];
 }

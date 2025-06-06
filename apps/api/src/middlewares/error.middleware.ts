@@ -1,4 +1,4 @@
-import { customError } from '@/utils/error.util';
+import { customError } from '@/utils/common/error.util';
 import { ErrorHandler } from '@/handlers/error.handler';
 
 import type { Request, Response, NextFunction } from 'express';

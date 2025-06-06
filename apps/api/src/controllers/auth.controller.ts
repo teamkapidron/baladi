@@ -5,13 +5,13 @@ import User from '@/models/user.model';
 import Admin from '@/models/admin.model';
 
 // Utils
-import { sendJwt } from '@/utils/jwt.util';
-import { sendMail } from '@/utils/mail.util';
-import { generateOTP } from '@/utils/otp.util';
-import { generateHash } from '@/utils/string.util';
-import { sendResponse } from '@/utils/response.util';
-import { generateRandomPassword } from '@/utils/password.util';
-import { comparePassword, encryptPassword } from '@/utils/password.util';
+import { sendJwt } from '@/utils/common/jwt.util';
+import { sendMail } from '@/utils/common/mail.util';
+import { generateOTP } from '@/utils/common/otp.util';
+import { generateHash } from '@/utils/common/string.util';
+import { sendResponse } from '@/utils/common/response.util';
+import { generateRandomPassword } from '@/utils/common/password.util';
+import { comparePassword, encryptPassword } from '@/utils/common/password.util';
 
 // Handlers
 import { asyncHandler } from '@/handlers/async.handler';

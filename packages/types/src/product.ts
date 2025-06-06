@@ -15,10 +15,10 @@ export interface Product {
   barcode?: string;
 
   vat: number;
+
   costPrice: number;
-  cartonPrice?: number;
-  unitPrice?: number;
   salePrice: number;
+  unitPrice: number;
 
   stock: number;
 
@@ -26,12 +26,11 @@ export interface Product {
     duration: number;
     unit: 'days' | 'months' | 'years';
   };
-  unitsPerCarton?: number;
 
   categories?: string[];
 
   images?: string[];
-  isActive?: boolean;
+  isActive: boolean;
   visibility: Visibility;
 
   dimensions?: {
@@ -39,7 +38,7 @@ export interface Product {
     width: number;
     height: number;
   };
-  weight?: string | number;
+  weight?: number;
 
   createdAt: Date;
   updatedAt: Date;

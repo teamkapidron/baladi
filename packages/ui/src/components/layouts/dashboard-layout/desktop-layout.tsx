@@ -61,14 +61,14 @@ function DesktopLayout(props: DesktopLayoutProps) {
           {!isCollapsed && (
             <div className="flex items-center justify-center gap-2">
               <Image
-                alt="Flavoury"
+                alt="Baladi"
                 height={0}
                 width={144}
                 className="w-12"
                 src="/images/brand/logo.png"
               />
               <div className="flex items-center justify-center">
-                <span className="text-2xl font-bold">Flavoury</span>
+                <span className="text-2xl font-bold">Baladi</span>
               </div>
             </div>
           )}

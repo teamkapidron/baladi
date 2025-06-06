@@ -6,8 +6,38 @@ import Admin from '@/models/admin.model';
 import { asyncHandler } from '@/handlers/async.handler';
 import { ErrorHandler } from '@/handlers/error.handler';
 
-import type { JwtPayload } from '@/types/auth.types';
+import type { JwtPayload } from '@/types/common/auth.types';
 import type { Request, Response, NextFunction } from 'express';
+
+// Middleware to just add user to request, this will not throw if user is not authenticated,
+export const addUserToRequest = asyncHandler(
+  async (req: Request, _: Response, next: NextFunction) => {
+    const token = req.cookies.token;
+
+    if (!token) {
+      next();
+      return;
+    }
+
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+
+      const user = await User.findById(decoded.id).lean();
+      if (!user) {
+        next();
+        return;
+      }
+
+      req.user = {
+        ...user,
+        _id: user._id.toString(),
+      };
+      next();
+    } catch (error) {
+      next();
+    }
+  },
+);
 
 /* Middleware just to check if the user's email is verified */
 export const isVerified = asyncHandler(

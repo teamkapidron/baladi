@@ -12,8 +12,14 @@ import connectToMongo from '@/database/mongo.db';
 import errorMiddleware from '@/middlewares/error.middleware';
 
 // Routes
+import userRoute from '@/routes/user.route';
 import authRoute from '@/routes/auth.route';
+import orderRoute from '@/routes/order.route';
 import healthRoute from '@/routes/health.route';
+import productRoute from '@/routes/product.route';
+import addressRoute from '@/routes/address.route';
+import favoriteRoute from '@/routes/favorite.route';
+import categoryRoute from '@/routes/category.route';
 
 const app = express();
 
@@ -31,7 +37,13 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use('/api/auth', authRoute);
+app.use('/api/user', userRoute);
+app.use('/api/order', orderRoute);
 app.use('/api/health', healthRoute);
+app.use('/api/product', productRoute);
+app.use('/api/address', addressRoute);
+app.use('/api/category', categoryRoute);
+app.use('/api/favorite', favoriteRoute);
 
 app.use(errorMiddleware);
 

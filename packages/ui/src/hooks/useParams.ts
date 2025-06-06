@@ -9,7 +9,7 @@ export function useUpdateParams() {
   const searchParams = useSearchParams();
 
   const updateQueryString = useCallback(
-    (paramsToUpdate: Record<string, string | null>) => {
+    (paramsToUpdate: Record<string, string | null | undefined>) => {
       const params = new URLSearchParams(searchParams.toString());
 
       Object.keys(paramsToUpdate).forEach((key) => {

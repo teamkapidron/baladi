@@ -1,7 +1,7 @@
 export interface Favorite {
-    _id: string;
-    userID: string;
-    productID: string;
-    createdAt: Date;
-    updatedAt: Date;
-  } 
+  _id: string;
+  userId: string;
+  productId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}

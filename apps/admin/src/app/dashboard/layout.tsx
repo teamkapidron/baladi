@@ -41,16 +41,6 @@ export default function AdminDashboardLayout(props: AdminDashboardLayoutProps) {
         href: '/dashboard/customers',
         icon: <Users />,
       },
-      {
-        title: 'Categories',
-        href: '/dashboard/categories',
-        icon: <Layers />,
-      },
-      {
-        title: 'Help',
-        href: '/dashboard/help',
-        icon: <HelpCircle />,
-      },
     ],
     [],
   );

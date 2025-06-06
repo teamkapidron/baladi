@@ -1,0 +1,331 @@
+// Node Modules
+import { PipelineStage, Types } from 'mongoose';
+
+// Schemas
+import Product from '@/models/product.model';
+
+// Utils
+import { generateSlug } from '@/utils/common/string.util';
+import { getProductFilterFromQuery } from '@/utils/product.utils';
+import { sendResponse } from '@/utils/common/response.util';
+
+// Handlers
+import { asyncHandler } from '@/handlers/async.handler';
+import { ErrorHandler } from '@/handlers/error.handler';
+
+// Types
+import { Visibility } from '@repo/types/product';
+import type { Request, Response } from 'express';
+import type {
+  GetProductsSchema,
+  GetProductByIdSchema,
+  GetProductBySlugSchema,
+  QuickSearchProductsSchema,
+  FullSearchProductsSchema,
+  GetAllProductsSchema,
+  CreateProductSchema,
+  DeleteProductSchema,
+  UpdateProductSchema,
+} from '@/validators/product.validator';
+import type {
+  QuickSearchProduct,
+  QuickSearchProductAggregateType,
+} from '@/types/product.types';
+
+export const getProducts = asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.user?._id;
+  const query = req.query as GetProductsSchema['query'];
+
+  const { queryObject, perPage, currentPage } =
+    getProductFilterFromQuery(query);
+
+  const pipeline: PipelineStage[] = [
+    {
+      $match: {
+        ...queryObject,
+        isActive: true,
+        visibility: Visibility.EXTERNAL,
+      },
+    },
+    {
+      $lookup: {
+        from: 'categories',
+        localField: 'categories',
+        foreignField: '_id',
+        as: 'categories',
+        pipeline: [
+          {
+            $project: {
+              _id: 1,
+              name: 1,
+              slug: 1,
+            },
+          },
+        ],
+      },
+    },
+  ];
+
+  if (userId) {
+    pipeline.push(
+      {
+        $lookup: {
+          from: 'favorites',
+          let: { productId: '$_id' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ['$product', '$$productId'] },
+                    { $eq: ['$user', new Types.ObjectId(userId)] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: 'favorite',
+        },
+      },
+      {
+        $addFields: {
+          isFavorite: { $gt: [{ $size: '$favorite' }, 0] },
+        },
+      },
+      {
+        $project: {
+          favorite: 0,
+        },
+      },
+    );
+  }
+
+  pipeline.push(
+    {
+      $skip: perPage * (currentPage - 1),
+    },
+    {
+      $limit: perPage,
+    },
+  );
+
+  const products = await Product.aggregate(pipeline);
+
+  const totalProducts = await Product.countDocuments(queryObject);
+
+  sendResponse(res, 200, 'Products fetched successfully', {
+    products,
+    totalProducts,
+    currentPage,
+    perPage,
+    totalPages: Math.ceil(totalProducts / perPage),
+  });
+});
+
+export const getProductById = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { productId } = req.params as GetProductByIdSchema['params'];
+
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      throw new ErrorHandler(404, 'Product not found', 'NOT_FOUND');
+    }
+
+    sendResponse(res, 200, 'Product fetched successfully', { product });
+  },
+);
+
+export const getProductBySlug = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { slug } = req.params as GetProductBySlugSchema['params'];
+
+    const product = await Product.findOne({ slug });
+
+    if (!product) {
+      throw new ErrorHandler(404, 'Product not found', 'NOT_FOUND');
+    }
+
+    sendResponse(res, 200, 'Product fetched successfully', { product });
+  },
+);
+
+export const quickSearchProducts = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { query, limit } = req.query as QuickSearchProductsSchema['query'];
+
+    const maxLimit = parseInt(limit ?? '10', 10);
+    const searchFilter = {
+      $or: [
+        { name: { $regex: query, $options: 'i' } },
+        { slug: { $regex: query, $options: 'i' } },
+        { shortDescription: { $regex: query, $options: 'i' } },
+        { sku: { $regex: query, $options: 'i' } },
+      ],
+    };
+
+    const products = await Product.aggregate<QuickSearchProductAggregateType>([
+      {
+        $match: searchFilter,
+      },
+      {
+        $lookup: {
+          from: 'categories',
+          localField: 'categories',
+          foreignField: '_id',
+          as: 'categories',
+        },
+      },
+      {
+        $project: {
+          name: 1,
+          images: 1,
+          slug: 1,
+          shortDescription: 1,
+          unitPrice: 1,
+          salePrice: 1,
+          categories: {
+            name: 1,
+            slug: 1,
+          },
+        },
+      },
+      {
+        $limit: maxLimit,
+      },
+    ]);
+
+    const formattedProducts: QuickSearchProduct[] = products.map((product) => ({
+      name: product.name,
+      image: product.images?.[0],
+      slug: product.slug,
+      unitPrice: product.unitPrice,
+      salePrice: product.salePrice,
+      shortDescription: product.shortDescription,
+      categories: product.categories[0]!,
+    }));
+
+    sendResponse(res, 200, 'Quick search completed successfully', {
+      products: formattedProducts,
+    });
+  },
+);
+
+export const fullSearchProducts = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { query, page, limit, category, minPrice, maxPrice } =
+      req.query as FullSearchProductsSchema['query'];
+
+    const perPage = parseInt(limit ?? '10', 10);
+    const currentPage = parseInt(page ?? '1', 10);
+
+    const searchFilter = {
+      $or: [
+        { name: { $regex: query, $options: 'i' } },
+        { slug: { $regex: query, $options: 'i' } },
+        { shortDescription: { $regex: query, $options: 'i' } },
+        { sku: { $regex: query, $options: 'i' } },
+      ],
+    };
+
+    const totalRecords = await Product.countDocuments(searchFilter);
+
+    const products = await Product.find(searchFilter)
+      .populate('categories', 'name slug')
+      .limit(perPage)
+      .skip((currentPage - 1) * perPage);
+
+    sendResponse(res, 200, 'Search completed successfully', {
+      products,
+      totalRecords,
+      totalPages: Math.ceil(totalRecords / perPage),
+      page: currentPage,
+      perPage,
+    });
+  },
+);
+
+export const getAllProducts = asyncHandler(
+  async (req: Request, res: Response) => {
+    const query = req.query as GetAllProductsSchema['query'];
+
+    const { queryObject, perPage, currentPage } =
+      getProductFilterFromQuery(query);
+
+    const products = await Product.find(queryObject)
+      .populate({
+        path: 'categories',
+        select: 'name slug',
+      })
+      .limit(perPage)
+      .skip(perPage * (currentPage - 1));
+
+    const totalProducts = await Product.countDocuments(queryObject);
+
+    sendResponse(res, 200, 'Products fetched successfully', {
+      products,
+      totalProducts,
+      currentPage,
+      perPage,
+      totalPages: Math.ceil(totalProducts / perPage),
+    });
+  },
+);
+
+export const createProduct = asyncHandler(
+  async (req: Request, res: Response) => {
+    const productData = req.body as CreateProductSchema['body'];
+
+    if (!productData.slug) {
+      productData.slug = generateSlug(productData.name);
+    }
+
+    const product = await Product.create(productData);
+
+    sendResponse(res, 201, 'Product created successfully', { product });
+  },
+);
+
+export const updateProduct = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { productId } = req.params as UpdateProductSchema['params'];
+    const updateData = req.body as UpdateProductSchema['body'];
+
+    const product = await Product.findById(productId);
+    if (!product) {
+      throw new ErrorHandler(404, 'Product not found', 'NOT_FOUND');
+    }
+
+    if (!updateData.slug) {
+      updateData.slug = generateSlug(updateData.name);
+    }
+
+    const updatedProduct = await Product.findByIdAndUpdate(
+      productId,
+      updateData,
+      { new: true, runValidators: true },
+    ).populate({
+      path: 'categories',
+      select: 'name slug',
+    });
+
+    sendResponse(res, 200, 'Product updated successfully', {
+      product: updatedProduct,
+    });
+  },
+);
+
+export const deleteProduct = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { productId } = req.params as DeleteProductSchema['params'];
+
+    const product = await Product.findById(productId);
+    if (!product) {
+      throw new ErrorHandler(404, 'Product not found', 'NOT_FOUND');
+    }
+
+    await Product.findByIdAndDelete(productId);
+
+    sendResponse(res, 200, 'Product deleted successfully');
+  },
+);

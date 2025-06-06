@@ -1,4 +1,4 @@
-import { ErrorName } from '@/types/error.types';
+import { ErrorName } from '@/types/common/error.types';
 
 export class ErrorHandler extends Error {
   statusCode: number;
