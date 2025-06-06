@@ -24,7 +24,7 @@ export default function validate(schema: AnyZodObject) {
                 `${err.path.join('.')}: ${err.message}`,
             )
             .join(', ');
-          return next(new ErrorHandler(400, errorMessage));
+          return next(new ErrorHandler(400, errorMessage, 'VALIDATION'));
         }
         return next(error);
       }

@@ -18,7 +18,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <body className="font-albert-sans">
         <ReactQueryProvider>
           <main>{children}</main>
-          <Toaster />
+          <Toaster richColors />
         </ReactQueryProvider>
       </body>
     </html>

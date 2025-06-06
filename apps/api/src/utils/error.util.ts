@@ -3,7 +3,7 @@ import { ErrorHandler } from '@/handlers/error.handler';
 
 export function customError(error: Error): Error | ErrorHandler {
   if (error.name === 'ValidationError') {
-    return new ErrorHandler(400, error.message, error.name);
+    return new ErrorHandler(400, error.message, 'VALIDATION');
   }
 
   if (
@@ -14,7 +14,7 @@ export function customError(error: Error): Error | ErrorHandler {
     return new ErrorHandler(
       409,
       `Duplicate value for field: ${duplicateField}`,
-      'DuplicateKeyError',
+      'CONFLICT',
     );
   }
 

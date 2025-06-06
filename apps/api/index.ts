@@ -1,12 +1,18 @@
+// Node Modules
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import serverlessExpress from '@codegenie/serverless-express';
 
+// Database
 import connectToMongo from '@/database/mongo.db';
+
+// Middlewares
 import errorMiddleware from '@/middlewares/error.middleware';
 
+// Routes
+import authRoute from '@/routes/auth.route';
 import healthRoute from '@/routes/health.route';
 
 const app = express();
@@ -24,6 +30,7 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
+app.use('/api/auth', authRoute);
 app.use('/api/health', healthRoute);
 
 app.use(errorMiddleware);

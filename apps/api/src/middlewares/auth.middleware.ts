@@ -3,7 +3,6 @@ import * as jwt from 'jsonwebtoken';
 import User from '@/models/user.model';
 import Admin from '@/models/admin.model';
 
-import { ErrorName } from '@/types/error.types';
 import { asyncHandler } from '@/handlers/async.handler';
 import { ErrorHandler } from '@/handlers/error.handler';
 
@@ -19,7 +18,7 @@ export const isVerified = asyncHandler(
       throw new ErrorHandler(
         401,
         'Please login to access this resource',
-        ErrorName.UNAUTHORIZED,
+        'UNAUTHORIZED',
       );
     }
 
@@ -28,14 +27,14 @@ export const isVerified = asyncHandler(
 
       const user = await User.findById(decoded.id).lean();
       if (!user) {
-        throw new ErrorHandler(401, 'Invalid token', ErrorName.UNAUTHORIZED);
+        throw new ErrorHandler(401, 'Invalid token', 'UNAUTHORIZED');
       }
 
       if (!user.isEmailVerified) {
         throw new ErrorHandler(
           403,
           'Please verify your email first',
-          ErrorName.UNAUTHORIZED,
+          'UNAUTHORIZED',
         );
       }
 
@@ -45,7 +44,7 @@ export const isVerified = asyncHandler(
       };
       next();
     } catch (error) {
-      throw new ErrorHandler(401, 'Invalid token', ErrorName.UNAUTHORIZED);
+      throw new ErrorHandler(401, 'Invalid token', 'UNAUTHORIZED');
     }
   },
 );
@@ -59,7 +58,7 @@ export const isAuthenticated = asyncHandler(
       throw new ErrorHandler(
         401,
         'Please login to access this resource',
-        ErrorName.UNAUTHORIZED,
+        'UNAUTHORIZED',
       );
     }
 
@@ -68,14 +67,14 @@ export const isAuthenticated = asyncHandler(
 
       const user = await User.findById(decoded.id).lean();
       if (!user) {
-        throw new ErrorHandler(401, 'Invalid token', ErrorName.UNAUTHORIZED);
+        throw new ErrorHandler(401, 'Invalid token', 'UNAUTHORIZED');
       }
 
       if (!user.isEmailVerified) {
         throw new ErrorHandler(
           403,
           'Please verify your email first',
-          ErrorName.UNAUTHORIZED,
+          'UNAUTHORIZED',
         );
       }
 
@@ -83,7 +82,7 @@ export const isAuthenticated = asyncHandler(
         throw new ErrorHandler(
           403,
           'Your account is pending admin approval',
-          ErrorName.UNAUTHORIZED,
+          'UNAUTHORIZED',
         );
       }
 
@@ -94,9 +93,9 @@ export const isAuthenticated = asyncHandler(
       next();
     } catch (error) {
       if (error instanceof ErrorHandler) {
-        throw new ErrorHandler(401, error.message, ErrorName.UNAUTHORIZED);
+        throw new ErrorHandler(401, error.message, 'UNAUTHORIZED');
       }
-      throw new ErrorHandler(401, 'Invalid token', ErrorName.UNAUTHORIZED);
+      throw new ErrorHandler(401, 'Invalid token', 'UNAUTHORIZED');
     }
   },
 );
@@ -110,7 +109,7 @@ export const isAdmin = asyncHandler(
       throw new ErrorHandler(
         401,
         'Please login to access this resource',
-        ErrorName.UNAUTHORIZED,
+        'UNAUTHORIZED',
       );
     }
 
@@ -122,7 +121,7 @@ export const isAdmin = asyncHandler(
         throw new ErrorHandler(
           403,
           'Access denied. Admin privileges required',
-          ErrorName.UNAUTHORIZED,
+          'UNAUTHORIZED',
         );
       }
 
@@ -133,9 +132,9 @@ export const isAdmin = asyncHandler(
       next();
     } catch (error) {
       if (error instanceof ErrorHandler) {
-        throw new ErrorHandler(401, error.message, ErrorName.UNAUTHORIZED);
+        throw new ErrorHandler(401, error.message, 'UNAUTHORIZED');
       }
-      throw new ErrorHandler(401, 'Invalid token', ErrorName.UNAUTHORIZED);
+      throw new ErrorHandler(401, 'Invalid token', 'UNAUTHORIZED');
     }
   },
 );
@@ -148,13 +147,13 @@ export const isSuperAdmin = asyncHandler(
       throw new ErrorHandler(
         401,
         'Please login to access this resource',
-        ErrorName.UNAUTHORIZED,
+        'UNAUTHORIZED',
       );
     }
 
     const apiKey = bearerToken.split(' ')[1];
     if (apiKey !== process.env.ADMIN_API_KEY) {
-      throw new ErrorHandler(401, 'Invalid API key', ErrorName.UNAUTHORIZED);
+      throw new ErrorHandler(401, 'Invalid API key', 'UNAUTHORIZED');
     }
 
     next();

@@ -55,10 +55,6 @@ function getTemplate(template: MailTemplate) {
         template.data.customerName,
       );
     }
-    default:
-      throw new Error(
-        `Unsupported template type: ${(template as MailTemplate).type}`,
-      );
   }
 }
 
