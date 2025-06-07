@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Minus, Plus } from 'lucide-react';
 import { cn } from '@repo/ui/lib/utils';
+import { Minus, Plus } from 'lucide-react';
 
 export interface QuantityInputProps {
   value: number;
@@ -39,7 +39,6 @@ const QuantityInput = React.forwardRef<HTMLDivElement, QuantityInputProps>(
       }
     };
 
-    // Size variants
     const sizeClasses = {
       sm: {
         container: 'h-8',
@@ -110,7 +109,5 @@ const QuantityInput = React.forwardRef<HTMLDivElement, QuantityInputProps>(
     );
   },
 );
-
-QuantityInput.displayName = 'QuantityInput';
 
 export { QuantityInput };
