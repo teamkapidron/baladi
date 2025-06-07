@@ -13,6 +13,8 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
+  lowStockProducts,
+  topProducts,
 } from '@/controllers/product.controller';
 
 import {
@@ -25,12 +27,18 @@ import {
   createProductSchema,
   updateProductSchema,
   deleteProductSchema,
+  lowStockProductsSchema,
+  topProductsSchema,
 } from '@/validators/product.validator';
 
 const router: Router = express.Router();
 
 router.get('/list', addUserToRequest, validate(getProductsSchema), getProducts);
-router.get('/:productId', validate(getProductByIdSchema), getProductById);
+router.get(
+  '/details/:productId',
+  validate(getProductByIdSchema),
+  getProductById,
+);
 router.get('/slug/:slug', validate(getProductBySlugSchema), getProductBySlug);
 router.get(
   '/search/quick',
@@ -53,5 +61,12 @@ router.delete(
   validate(deleteProductSchema),
   deleteProduct,
 );
+router.get(
+  '/low-stock',
+  isAdmin,
+  validate(lowStockProductsSchema),
+  lowStockProducts,
+);
+router.get('/top', isAdmin, validate(topProductsSchema), topProducts);
 
 export default router;

@@ -17,6 +17,7 @@ export enum ReactQueryKeys {
   GET_ORDER_STATS = 'GET::/order/stats',
   GET_ORDER_REVENUE_STATS = 'GET::/order/revenue-stats',
   GET_ORDER_STATUS_GRAPH_DATA = 'GET::/order/graph/status',
+  GET_ORDER_REVENUE_GRAPH_DATA = 'GET::/order/graph/revenue',
 
   // Categories
   GET_ALL_CATEGORIES = 'GET::/category/all',

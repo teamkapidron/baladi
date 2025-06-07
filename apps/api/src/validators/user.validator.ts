@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { isValidObjectId } from 'mongoose';
 import { UserType } from '@repo/types/user';
+import { UserStatusFilter } from '@/types/user.types';
 
 export const getAllUsersSchema = z.object({
   query: z.object({
@@ -12,6 +13,7 @@ export const getAllUsersSchema = z.object({
         message: 'Invalid email address',
       }),
     userType: z.nativeEnum(UserType).optional(),
+    status: z.nativeEnum(UserStatusFilter).optional(),
     page: z.string().optional(),
     limit: z.string().optional(),
     sort: z.enum(['asc', 'desc']).optional(),

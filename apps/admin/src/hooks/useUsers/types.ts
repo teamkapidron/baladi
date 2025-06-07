@@ -1,6 +1,18 @@
 import { ApiData } from '@/utils/types.util';
 import type { User, UserType } from '@repo/types/user';
 
+export enum UserStatusFilter {
+  ALL = 'all',
+  APPROVED = 'approved',
+  PENDING = 'pending',
+  UNVERIFIED = 'unverified',
+}
+
+export enum UserSort {
+  ASC = 'asc',
+  DESC = 'desc',
+}
+
 export type GetAllCustomersRequest = ApiData<
   {
     name?: string;
@@ -8,7 +20,8 @@ export type GetAllCustomersRequest = ApiData<
     userType?: UserType;
     page?: string;
     limit?: string;
-    sort?: 'asc' | 'desc';
+    sort?: UserSort;
+    status?: UserStatusFilter;
   },
   {
     users: User[];

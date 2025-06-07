@@ -13,7 +13,7 @@ function DashboardLayout(props: DashboardLayoutProps) {
   return (
     <React.Fragment>
       <div className="hidden md:block">
-        <DesktopLayout sidebarLinks={sidebarLinks} sidebarSlice={5}>
+        <DesktopLayout sidebarLinks={sidebarLinks} sidebarSlice={10}>
           {children}
         </DesktopLayout>
       </div>

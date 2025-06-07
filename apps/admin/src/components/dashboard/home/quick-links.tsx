@@ -1,7 +1,9 @@
+// Node Modules
 import Link from 'next/link';
-import { ShoppingBag, Users, Package, Folder } from '@repo/ui/lib/icons';
+import { memo } from 'react';
+import { ShoppingBag, Users, Package, Mail } from '@repo/ui/lib/icons';
 
-export function QuickLinks() {
+function QuickLinks() {
   return (
     <div className="bg-white p-6 shadow-sm">
       <h2 className="mb-4 text-lg font-medium text-slate-900">Quick Access</h2>
@@ -42,16 +44,20 @@ export function QuickLinks() {
         </Link>
 
         <Link
-          href="/dashboard/categories"
+          href="/dashboard/marketing"
           className="flex flex-col items-center justify-center border border-slate-100 bg-slate-50 p-4 text-center transition-colors hover:bg-slate-100"
         >
-          <div className="mb-2 flex h-10 w-10 items-center justify-center bg-emerald-100">
-            <Folder className="h-5 w-5 text-emerald-600" />
+          <div className="mb-2 flex h-10 w-10 items-center justify-center bg-rose-100">
+            <Mail className="h-5 w-5 text-rose-600" />
           </div>
-          <span className="text-sm font-medium text-slate-900">Categories</span>
-          <span className="mt-1 text-xs text-slate-500">Manage categories</span>
+          <span className="text-sm font-medium text-slate-900">Marketing</span>
+          <span className="mt-1 text-xs text-slate-500">
+            Newsletter & campaigns
+          </span>
         </Link>
       </div>
     </div>
   );
 }
+
+export default memo(QuickLinks);

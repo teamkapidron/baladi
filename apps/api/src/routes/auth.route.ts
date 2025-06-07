@@ -6,7 +6,6 @@ import {
   isVerified,
   isSuperAdmin,
   isAuthenticated,
-  addUserToRequest,
 } from '@/middlewares/auth.middleware';
 
 import {

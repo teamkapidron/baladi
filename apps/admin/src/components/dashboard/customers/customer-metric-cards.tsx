@@ -1,4 +1,7 @@
-import { useMemo } from 'react';
+'use client';
+
+// Node Modules
+import { memo, useMemo } from 'react';
 import {
   Users,
   UserCheck,
@@ -7,24 +10,32 @@ import {
   ArrowUpRight,
 } from '@repo/ui/lib/icons';
 
-export function CustomerMetricCards() {
+// Components
+import AnimatedCounter from '@repo/ui/components/base/animate-counter';
+
+// Hooks
+import { useUsers } from '@/hooks/useUsers';
+
+function CustomerMetricCards() {
+  const { getUserStatsQuery } = useUsers();
+
   const metrics = useMemo(() => {
-    const totalCustomers = 100;
-    const approvedCustomers = 80;
-    const pendingCustomers = 10;
-    const unverifiedCustomers = 10;
+    const totalCustomers = getUserStatsQuery.data?.totalUsers ?? 0;
+    const approvedCustomers = getUserStatsQuery.data?.approvedUsers ?? 0;
+    const pendingCustomers = getUserStatsQuery.data?.pendingUsers ?? 0;
+    const unverifiedCustomers = getUserStatsQuery.data?.unverifiedUsers ?? 0;
 
     return {
       totalCustomers,
       approvedCustomers,
       pendingCustomers,
       unverifiedCustomers,
-      approvalRate: Math.round((approvedCustomers / totalCustomers) * 100) || 0,
-      pendingRate: Math.round((pendingCustomers / totalCustomers) * 100) || 0,
+      approvalRate: Math.round((approvedCustomers / totalCustomers) * 100) ?? 0,
+      pendingRate: Math.round((pendingCustomers / totalCustomers) * 100) ?? 0,
       unverifiedRate:
-        Math.round((unverifiedCustomers / totalCustomers) * 100) || 0,
+        Math.round((unverifiedCustomers / totalCustomers) * 100) ?? 0,
     };
-  }, []);
+  }, [getUserStatsQuery.data]);
 
   return (
     <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
@@ -43,11 +54,7 @@ export function CustomerMetricCards() {
         <div className="p-6">
           <div className="flex items-baseline gap-2">
             <span className="text-foreground text-3xl font-bold">
-              {metrics.totalCustomers}
-            </span>
-            <span className="bg-[var(--color-success)]/10 flex items-center px-1.5 py-0.5 text-xs font-medium text-[var(--color-success)]">
-              <ArrowUpRight className="mr-0.5 h-3 w-3" />
-              8.5%
+              <AnimatedCounter value={metrics.totalCustomers} />
             </span>
           </div>
           <div className="mt-4 flex flex-col gap-2">
@@ -56,7 +63,9 @@ export function CustomerMetricCards() {
                 Approved Customers
               </span>
               <span className="text-foreground text-sm font-medium">
-                {metrics.approvedCustomers} ({metrics.approvalRate}%)
+                <AnimatedCounter value={metrics.approvedCustomers} /> (
+                <AnimatedCounter value={metrics.approvalRate} />
+                %)
               </span>
             </div>
           </div>
@@ -78,11 +87,7 @@ export function CustomerMetricCards() {
         <div className="p-6">
           <div className="flex items-baseline gap-2">
             <span className="text-foreground text-3xl font-bold">
-              {metrics.approvedCustomers}
-            </span>
-            <span className="bg-[var(--color-success)]/10 flex items-center px-1.5 py-0.5 text-xs font-medium text-[var(--color-success)]">
-              <ArrowUpRight className="mr-0.5 h-3 w-3" />
-              12.3%
+              <AnimatedCounter value={metrics.approvedCustomers} />
             </span>
           </div>
           <div className="mt-4 flex flex-col gap-2">
@@ -91,7 +96,7 @@ export function CustomerMetricCards() {
                 Approval Rate
               </span>
               <span className="text-foreground text-sm font-medium">
-                {metrics.approvalRate}%
+                <AnimatedCounter value={metrics.approvalRate} />%
               </span>
             </div>
           </div>
@@ -113,7 +118,7 @@ export function CustomerMetricCards() {
         <div className="p-6">
           <div className="flex items-baseline gap-2">
             <span className="text-foreground text-3xl font-bold">
-              {metrics.pendingCustomers}
+              <AnimatedCounter value={metrics.pendingCustomers} />
             </span>
             <span className="flex items-center bg-amber-500/10 px-1.5 py-0.5 text-xs font-medium text-amber-600">
               Needs attention
@@ -125,7 +130,7 @@ export function CustomerMetricCards() {
                 Pending Rate
               </span>
               <span className="text-sm font-medium text-amber-600">
-                {metrics.pendingRate}%
+                <AnimatedCounter value={metrics.pendingRate} />%
               </span>
             </div>
           </div>
@@ -147,7 +152,7 @@ export function CustomerMetricCards() {
         <div className="p-6">
           <div className="flex items-baseline gap-2">
             <span className="text-foreground text-3xl font-bold">
-              {metrics.unverifiedCustomers}
+              <AnimatedCounter value={metrics.unverifiedCustomers} />
             </span>
             <span className="text-destructive bg-destructive/10 flex items-center px-1.5 py-0.5 text-xs font-medium">
               <ArrowUpRight className="mr-0.5 h-3 w-3" />
@@ -160,7 +165,7 @@ export function CustomerMetricCards() {
                 Unverified Rate
               </span>
               <span className="text-destructive text-sm font-medium">
-                {metrics.unverifiedRate}%
+                <AnimatedCounter value={metrics.unverifiedRate} />%
               </span>
             </div>
           </div>
@@ -169,3 +174,5 @@ export function CustomerMetricCards() {
     </div>
   );
 }
+
+export default memo(CustomerMetricCards);

@@ -1,10 +1,16 @@
 'use client';
 
-import { memo } from 'react';
-import { CustomerTableHeader } from './customer-table/customer-table-header';
-import { CustomerStatusTabs } from './customer-table/customer-status-tabs';
-import { CustomerTableFilters } from './customer-table/customer-table-filters';
-import { CustomerTableContent } from './customer-table/customer-table-content';
+// Node Modules
+import { memo, useState } from 'react';
+
+// Components
+import CustomerTableHeader from './customer-table-header';
+import CustomerStatusTabs from './customer-status-tabs';
+import CustomerTableFilters from './customer-table-filters';
+import CustomerTableContent from './customer-table-content';
+
+// Hooks
+import { useUsers } from '@/hooks/useUsers';
 
 function CustomersTable() {
   const totalRecords = 0;

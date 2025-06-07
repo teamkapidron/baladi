@@ -1,17 +1,30 @@
-import { Button } from '@repo/ui/components/base/button';
+'use client';
+
+// Node Modules
+import { memo, useMemo } from 'react';
 import { Archive, Download } from '@repo/ui/lib/icons';
-import { useMemo } from 'react';
+import { Button } from '@repo/ui/components/base/button';
 
-export function CustomerHeader() {
+// Components
+import AnimatedCounter from '@repo/ui/components/base/animate-counter';
+
+// Hooks
+import { useUsers } from '@/hooks/useUsers';
+
+function CustomerHeader() {
+  const { getUserStatsQuery } = useUsers();
+
   const metrics = useMemo(() => {
-    const totalCustomers = 100;
-    const pendingCustomers = 10;
-
     return {
-      totalCustomers,
-      pendingCustomers,
+      totalCustomers: getUserStatsQuery.data?.totalUsers ?? 0,
+      pendingCustomers: getUserStatsQuery.data?.pendingUsers ?? 0,
+      approvedCustomers: getUserStatsQuery.data?.approvedUsers ?? 0,
     };
-  }, []);
+  }, [
+    getUserStatsQuery.data?.totalUsers,
+    getUserStatsQuery.data?.pendingUsers,
+    getUserStatsQuery.data?.approvedUsers,
+  ]);
 
   return (
     <div className="border-border border bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] p-6">
@@ -21,22 +34,25 @@ export function CustomerHeader() {
             Customers Dashboard
           </h1>
           <div className="mt-2 flex items-center">
-            <p className="text-sm text-white/90">
-              <span className="font-medium text-white">
-                {metrics.totalCustomers}
-              </span>{' '}
+            <div className="text-sm text-white/90">
+              <AnimatedCounter
+                value={metrics.totalCustomers}
+                className="font-medium text-white"
+              />{' '}
               total customers •
-              <span className="ml-1 font-medium text-white">
-                {metrics.pendingCustomers}
-              </span>{' '}
+              <AnimatedCounter
+                value={metrics.pendingCustomers}
+                className="ml-1 font-medium text-white"
+              />{' '}
               pending approval
-            </p>
+            </div>
             <div className="mx-2 h-4 w-px bg-white/20"></div>
             <div className="flex items-center text-sm text-white/90">
               <Archive className="mr-1 h-3.5 w-3.5 text-white/80" />
-              <span className="font-medium text-white">
-                {metrics.pendingCustomers}
-              </span>
+              <AnimatedCounter
+                value={metrics.pendingCustomers}
+                className="font-medium text-white"
+              />
               <span className="ml-1">pending</span>
             </div>
           </div>
@@ -52,3 +68,5 @@ export function CustomerHeader() {
     </div>
   );
 }
+
+export default memo(CustomerHeader);

@@ -68,9 +68,6 @@ export const createAdminSchema = z.object({
     name: z.string().min(1, 'Name is required'),
     email: z.string().email('Invalid email').min(1, 'Email is required'),
   }),
-  headers: z.object({
-    authorization: z.string().min(1, 'Authorization token is required'),
-  }),
 });
 
 export type SignupSchema = z.infer<typeof signupSchema>;

@@ -1,7 +1,26 @@
+// Node Modules
+import { memo, useMemo } from 'react';
 import { BarChart3, Trash } from '@repo/ui/lib/icons';
 
-export function CustomerTableHeader() {
-  const activeTab = 'all';
+// Hooks
+import { useUsers } from '@/hooks/useUsers';
+
+// Types
+import { UserStatusFilter } from '@/hooks/useUsers/types';
+
+function CustomerTableHeader() {
+  const { userStatusFilter } = useUsers();
+
+  const label = useMemo(() => {
+    if (userStatusFilter === UserStatusFilter.ALL) return 'All Customers';
+    if (userStatusFilter === UserStatusFilter.APPROVED)
+      return 'Approved Customers';
+    if (userStatusFilter === UserStatusFilter.PENDING)
+      return 'Pending Approval';
+    if (userStatusFilter === UserStatusFilter.UNVERIFIED)
+      return 'Unverified Email';
+  }, [userStatusFilter]);
+
   const selectedCustomers = [];
   const handleBulkDelete = () => {};
 
@@ -11,13 +30,7 @@ export function CustomerTableHeader() {
         <h2 className="text-foreground mr-3 text-lg font-medium">Customers</h2>
         <div className="flex items-center bg-[var(--color-primary)] px-3 py-1.5 text-xs font-medium text-white">
           <BarChart3 className="mr-1.5 h-3 w-3 text-white" />
-          {activeTab === 'all'
-            ? 'All Customers'
-            : activeTab === 'approved'
-              ? 'Approved Customers'
-              : activeTab === 'pending'
-                ? 'Pending Approval'
-                : 'Unverified Email'}
+          {label}
         </div>
       </div>
       {selectedCustomers.length > 0 && (
@@ -37,3 +50,5 @@ export function CustomerTableHeader() {
     </div>
   );
 }
+
+export default memo(CustomerTableHeader);

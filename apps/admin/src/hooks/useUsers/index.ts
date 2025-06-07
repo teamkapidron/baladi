@@ -7,23 +7,36 @@ import { useRequest } from '@/hooks/useRequest';
 import { useGetParams, useUpdateParams } from '@repo/ui/hooks/useParams';
 
 // Types
-import type {
+import {
   GetAllCustomersRequest,
   GetCustomerDetailsRequest,
   ApproveCustomerRequest,
   GetUserRegistrationGraphDataRequest,
   GetUserStatsRequest,
+  UserStatusFilter,
+  UserSort,
 } from './types';
+import { UserType } from '@repo/types/user';
 import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
 
-export function useUser(userId?: string) {
+export function useUsers(userId?: string) {
   const api = useRequest();
-  const { getAllParams } = useGetParams();
+  const { getParam } = useGetParams();
   const updateParams = useUpdateParams();
 
   const params = useMemo(() => {
-    return getAllParams();
-  }, [getAllParams]);
+    return {
+      name: getParam('name') ?? undefined,
+      email: getParam('email') ?? undefined,
+      userType: getParam('userType') as UserType | undefined,
+      status: getParam('status') as UserStatusFilter | undefined,
+      page: getParam('page') ?? undefined,
+      limit: getParam('limit') ?? undefined,
+      sort: getParam('sort') as UserSort | undefined,
+      from: getParam('from') ?? undefined,
+      to: getParam('to') ?? undefined,
+    };
+  }, [getParam]);
 
   const getAllUsers = useCallback(
     async (payload: GetAllCustomersRequest['payload']) => {
@@ -38,7 +51,16 @@ export function useUser(userId?: string) {
 
   const { data: users, isLoading } = useQuery({
     queryKey: [ReactQueryKeys.GET_ALL_USERS, JSON.stringify(params)],
-    queryFn: () => getAllUsers(params),
+    queryFn: () =>
+      getAllUsers({
+        email: params.email,
+        name: params.name,
+        userType: params.userType,
+        page: params.page,
+        limit: params.limit,
+        sort: params.sort,
+        status: params.status,
+      }),
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
   });
@@ -48,7 +70,7 @@ export function useUser(userId?: string) {
       if (!payload.userId) return;
 
       const response = await api.get<GetCustomerDetailsRequest['response']>(
-        `/user/${payload.userId}`,
+        `/user/details/${payload.userId}`,
       );
       return response.data.data;
     },
@@ -90,7 +112,8 @@ export function useUser(userId?: string) {
 
   const getUserRegistrationGraphDataQuery = useQuery({
     queryKey: [ReactQueryKeys.GET_USER_REGISTRATION_GRAPH_DATA],
-    queryFn: () => getUserRegistrationGraphData(params),
+    queryFn: () =>
+      getUserRegistrationGraphData({ from: params.from, to: params.to }),
   });
 
   const getUserStats = useCallback(
@@ -106,7 +129,9 @@ export function useUser(userId?: string) {
 
   const getUserStatsQuery = useQuery({
     queryKey: [ReactQueryKeys.GET_USER_STATS],
-    queryFn: () => getUserStats(params),
+    queryFn: () => getUserStats({ from: params.from, to: params.to }),
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
   const applyUserSearchFilters = useCallback(
@@ -119,11 +144,23 @@ export function useUser(userId?: string) {
     [updateParams],
   );
 
+  const userStatusFilter = useMemo(() => {
+    return (params.status as UserStatusFilter) ?? UserStatusFilter.ALL;
+  }, [params]);
+
+  const setUserStatusFilter = useCallback(
+    (filter: UserStatusFilter) => {
+      updateParams({ status: filter });
+    },
+    [updateParams],
+  );
+
   return {
     // Queries
     users,
     isLoading,
     userDetailsQuery,
+    getUserStatsQuery,
     getUserRegistrationGraphDataQuery,
 
     // Mutations
@@ -131,5 +168,7 @@ export function useUser(userId?: string) {
 
     // Actions
     applyUserSearchFilters,
+    userStatusFilter,
+    setUserStatusFilter,
   };
 }

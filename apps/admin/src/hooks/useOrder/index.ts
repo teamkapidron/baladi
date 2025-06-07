@@ -13,6 +13,7 @@ import type {
   GetOrderStatsRequest,
   GetOrderRevenueStatsRequest,
   GetOrderStatusGraphDataRequest,
+  GetOrderRevenueGraphDataRequest,
 } from './types';
 import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
 
@@ -50,7 +51,7 @@ export function useOrder(orderId?: string) {
   const getOrderDetailsAdmin = useCallback(
     async (payload: GetOrderDetailsAdminRequest['payload']) => {
       const response = await api.get<GetOrderDetailsAdminRequest['response']>(
-        `/order/${payload.orderId}`,
+        `/order/details/${payload.orderId}`,
       );
       return response.data.data;
     },
@@ -86,7 +87,7 @@ export function useOrder(orderId?: string) {
   const getOrderRevenueStats = useCallback(
     async (payload: GetOrderRevenueStatsRequest['payload']) => {
       const response = await api.get<GetOrderRevenueStatsRequest['response']>(
-        '/order/revenue-stats',
+        '/order/stats/revenue',
         { params: payload },
       );
       return response.data.data;
@@ -117,6 +118,26 @@ export function useOrder(orderId?: string) {
       JSON.stringify(params),
     ],
     queryFn: () => getOrderStatusGraphData(params),
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: true,
+  });
+
+  const getOrderRevenueGraphData = useCallback(
+    async (payload: GetOrderRevenueGraphDataRequest['payload']) => {
+      const response = await api.get<
+        GetOrderRevenueGraphDataRequest['response']
+      >('/order/graph/revenue', { params: payload });
+      return response.data.data;
+    },
+    [api],
+  );
+
+  const orderRevenueGraphDataQuery = useQuery({
+    queryKey: [
+      ReactQueryKeys.GET_ORDER_REVENUE_GRAPH_DATA,
+      JSON.stringify(params),
+    ],
+    queryFn: () => getOrderRevenueGraphData(params),
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
   });
@@ -156,6 +177,8 @@ export function useOrder(orderId?: string) {
     orderStatsQuery,
     orderRevenueStatsQuery,
     orderStatusGraphDataQuery,
+    orderRevenueGraphDataQuery,
+
     // Mutations
 
     // Actions

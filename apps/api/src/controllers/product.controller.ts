@@ -2,12 +2,14 @@
 import { PipelineStage, Types } from 'mongoose';
 
 // Schemas
+import Order from '@/models/order.model';
 import Product from '@/models/product.model';
 
 // Utils
 import { generateSlug } from '@/utils/common/string.util';
-import { getProductFilterFromQuery } from '@/utils/product.utils';
 import { sendResponse } from '@/utils/common/response.util';
+import { getDateMatchStage } from '@/utils/common/date.util';
+import { getProductFilterFromQuery } from '@/utils/product.utils';
 
 // Handlers
 import { asyncHandler } from '@/handlers/async.handler';
@@ -26,6 +28,8 @@ import type {
   CreateProductSchema,
   DeleteProductSchema,
   UpdateProductSchema,
+  LowStockProductsSchema,
+  TopProductsSchema,
 } from '@/validators/product.validator';
 import type {
   QuickSearchProduct,
@@ -329,3 +333,110 @@ export const deleteProduct = asyncHandler(
     sendResponse(res, 200, 'Product deleted successfully');
   },
 );
+
+export const lowStockProducts = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { lowStockThreshold, page, limit } =
+      req.query as LowStockProductsSchema['query'];
+
+    const perPage = parseInt(limit ?? '10', 10);
+    const currentPage = parseInt(page ?? '1', 10);
+    const stockThreshold = Number(lowStockThreshold) || 5;
+
+    const lowStockProducts = await Product.find({
+      stock: { $gt: 0, $lte: stockThreshold },
+    })
+      .select('name stock costPrice sellingPrice')
+      .sort({ stock: -1 })
+      .limit(perPage)
+      .skip(perPage * (currentPage - 1));
+
+    const outOfStockProducts = await Product.find({
+      stock: 0,
+    })
+      .select('name stock costPrice sellingPrice')
+      .sort({ stock: -1 })
+      .limit(perPage)
+      .skip(perPage * (currentPage - 1));
+
+    const lowStockCount = await Product.countDocuments({
+      stock: { $gt: 0, $lte: stockThreshold },
+    });
+    const outOfStockCount = await Product.countDocuments({ stock: 0 });
+
+    sendResponse(res, 200, 'Low stock products fetched successfully', {
+      lowStock: {
+        lowStockProducts,
+        totalRecords: lowStockCount,
+        totalPages: Math.ceil(lowStockCount / perPage),
+        currentPage,
+        perPage,
+      },
+      outOfStock: {
+        outOfStockProducts,
+        totalRecords: outOfStockCount,
+        totalPages: Math.ceil(outOfStockCount / perPage),
+        currentPage,
+        perPage,
+      },
+    });
+  },
+);
+
+export const topProducts = asyncHandler(async (req: Request, res: Response) => {
+  const { limit, from, to } = req.query as TopProductsSchema['query'];
+
+  const limitNumber = parseInt(limit ?? '10', 10);
+  const matchStage = getDateMatchStage('createdAt', from, to);
+
+  const topProductsResult = await Order.aggregate([
+    {
+      $match: matchStage,
+    },
+    {
+      $unwind: '$items',
+    },
+    {
+      $group: {
+        _id: '$items.product',
+        totalQuantity: { $sum: '$items.quantity' },
+        totalOrders: { $sum: 1 },
+      },
+    },
+    {
+      $sort: { totalQuantity: -1 },
+    },
+    {
+      $limit: limitNumber,
+    },
+    {
+      $lookup: {
+        from: 'products',
+        localField: '_id',
+        foreignField: '_id',
+        as: 'productDetails',
+      },
+    },
+    {
+      $unwind: '$productDetails',
+    },
+    {
+      $project: {
+        _id: 0,
+        product: {
+          _id: '$productDetails._id',
+          name: '$productDetails.name',
+          image: '$productDetails.images',
+          slug: '$productDetails.slug',
+          unitPrice: '$productDetails.unitPrice',
+        },
+        totalQuantity: 1,
+        totalOrders: 1,
+      },
+    },
+  ]);
+
+  sendResponse(res, 200, 'Top products fetched successfully', {
+    products: topProductsResult,
+  });
+});

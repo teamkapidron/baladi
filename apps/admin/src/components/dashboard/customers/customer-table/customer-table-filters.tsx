@@ -1,22 +1,13 @@
-import { useState } from 'react';
-import { Input } from '@repo/ui/components/base/input';
+'use client';
+
+// Node Modules
+import { memo, useState } from 'react';
 import { ChevronDown, Search } from '@repo/ui/lib/icons';
 
-interface CustomerTableFiltersProps {
-  searchQuery: string;
-  setSearchQuery: (query: string) => void;
-  searchFilter: string;
-  setSearchFilter: (filter: string) => void;
-  pageSize: number;
-  handlePageSizeChange: (size: number) => void;
-  currentPage: number;
-  totalPages: number;
-  goToPage: (page: number) => void;
-  goToNextPage: () => void;
-  goToPreviousPage: () => void;
-}
+// Components
+import { Input } from '@repo/ui/components/base/input';
 
-export function CustomerTableFilters() {
+function CustomerTableFilters() {
   const searchQuery = '';
   const setSearchQuery = (query: string) => {};
   const searchFilter = '';
@@ -205,3 +196,5 @@ export function CustomerTableFilters() {
     </div>
   );
 }
+
+export default memo(CustomerTableFilters);

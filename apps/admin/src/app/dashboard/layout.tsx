@@ -4,10 +4,11 @@ import DashboardLayout from '@repo/ui/components/layouts/dashboard-layout/dashbo
 import {
   Home,
   Users,
-  Layers,
   Package,
-  HelpCircle,
   ShoppingCart,
+  Boxes,
+  Mail,
+  Tag,
 } from '@repo/ui/lib/icons';
 
 import type { LinkItem } from '@repo/ui/components/layouts/dashboard-layout/types';
@@ -32,6 +33,11 @@ export default function AdminDashboardLayout(props: AdminDashboardLayoutProps) {
         icon: <Package />,
       },
       {
+        title: 'Inventory',
+        href: '/dashboard/inventory',
+        icon: <Boxes />,
+      },
+      {
         title: 'Orders',
         href: '/dashboard/orders',
         icon: <ShoppingCart />,
@@ -40,6 +46,17 @@ export default function AdminDashboardLayout(props: AdminDashboardLayoutProps) {
         title: 'Customers',
         href: '/dashboard/customers',
         icon: <Users />,
+      },
+
+      {
+        title: 'Newsletter',
+        href: '/dashboard/newsletter',
+        icon: <Mail />,
+      },
+      {
+        title: 'Promotions',
+        href: '/dashboard/promotions',
+        icon: <Tag />,
       },
     ],
     [],

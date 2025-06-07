@@ -1,3 +1,5 @@
+// Node Modules
+import { memo } from 'react';
 import {
   ArrowUpDown,
   Eye,
@@ -7,7 +9,8 @@ import {
   CircleX,
   User,
 } from '@repo/ui/lib/icons';
-import { User as CustomerType } from '@repo/types/user';
+
+// Components
 import {
   Table,
   TableBody,
@@ -17,7 +20,9 @@ import {
   TableRow,
 } from '@repo/ui/components/base/table';
 
-// Format date consistently to avoid hydration errors
+// Types
+import { User as CustomerType } from '@repo/types/user';
+
 function formatDate(dateString: string): string {
   const date = new Date(dateString);
   const options: Intl.DateTimeFormatOptions = {
@@ -28,7 +33,7 @@ function formatDate(dateString: string): string {
   return date.toLocaleDateString('en-US', options);
 }
 
-export function CustomerTableContent() {
+function CustomerTableContent() {
   const currentPageData: CustomerType[] = [];
   const sortedCustomers: CustomerType[] = [];
   const selectedCustomers: string[] = [];
@@ -319,3 +324,5 @@ export function CustomerTableContent() {
     </div>
   );
 }
+
+export default memo(CustomerTableContent);

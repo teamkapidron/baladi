@@ -22,7 +22,12 @@ import {
 const router: Router = express.Router();
 
 router.get('/all', isAdmin, validate(getAllUsersSchema), getAllUsers);
-router.get('/:userId', isAdmin, validate(getUserDetailsSchema), getUserDetails);
+router.get(
+  '/details/:userId',
+  isAdmin,
+  validate(getUserDetailsSchema),
+  getUserDetails,
+);
 router.put('/approve', isAdmin, validate(approveUserSchema), approveUser);
 router.get(
   '/graph/registration',

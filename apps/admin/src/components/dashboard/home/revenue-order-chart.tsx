@@ -1,9 +1,12 @@
 'use client';
 
-import { format, parseISO } from '@repo/ui/lib/date';
+// Node Modules
+import { memo } from 'react';
+
+// Components
 import {
-  Bar,
-  BarChart,
+  Area,
+  AreaChart,
   CartesianGrid,
   ResponsiveContainer,
   Tooltip,
@@ -12,37 +15,45 @@ import {
 } from '@repo/ui/lib/recharts';
 import { ChartContainer } from '@repo/ui/components/base/chart-container';
 
-export function RevenueOrdersChart() {
-  const revenueData = [
-    { date: '2024-01-01', revenue: 100, orders: 10 },
-    { date: '2024-01-02', revenue: 200, orders: 20 },
-    { date: '2024-01-03', revenue: 300, orders: 30 },
-  ];
+// Hooks
+import { useOrder } from '@/hooks/useOrder';
+
+function RevenueOrdersChart() {
+  const { orderRevenueGraphDataQuery } = useOrder();
+
+  const revenueData = orderRevenueGraphDataQuery.data?.data ?? [];
 
   const chartConfig = {
-    sales: {
-      label: 'Sales',
-    },
-    revenue: {
-      label: 'Revenue',
+    orderCount: {
+      label: 'Order Count',
       color: '#007bff',
     },
-    orders: {
-      label: 'Orders',
+    totalRevenue: {
+      label: 'Revenue',
       color: '#28a745',
+    },
+    totalCost: {
+      label: 'Cost',
+      color: '#ffc107',
+    },
+    totalProfit: {
+      label: 'Profit',
+      color: '#dc3545',
     },
   };
 
   const totalMetrics = {
-    revenue: 1000,
-    orders: 100,
+    orderCount: 0,
+    totalRevenue: 0,
+    totalCost: 0,
+    totalProfit: 0,
   };
 
   return (
     <ChartContainer title="Daily Revenue & Orders">
       <div className="h-[300px]">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart
+          <AreaChart
             data={revenueData}
             margin={{ top: 20, right: 10, left: 10, bottom: 0 }}
           >
@@ -55,12 +66,12 @@ export function RevenueOrdersChart() {
               dataKey="date"
               tickLine={false}
               axisLine={false}
-              tickFormatter={(value) => format(parseISO(value), 'MMM d')}
               tick={{ fontSize: 12, fill: 'var(--color-muted-foreground)' }}
             />
             <YAxis
               yAxisId="left"
               orientation="left"
+              dataKey="totalRevenue"
               tickLine={false}
               axisLine={false}
               tick={{ fontSize: 12, fill: 'var(--color-muted-foreground)' }}
@@ -68,32 +79,70 @@ export function RevenueOrdersChart() {
             <YAxis
               yAxisId="right"
               orientation="right"
+              dataKey="orderCount"
               tickLine={false}
               axisLine={false}
               tick={{ fontSize: 12, fill: 'var(--color-muted-foreground)' }}
             />
+            <YAxis
+              yAxisId="left"
+              orientation="left"
+              dataKey="totalCost"
+              tickLine={false}
+              axisLine={false}
+              tick={{ fontSize: 12, fill: 'var(--color-muted-foreground)' }}
+            />
+            <YAxis
+              yAxisId="right"
+              orientation="right"
+              dataKey="totalProfit"
+              tickLine={false}
+              axisLine={false}
+              tick={{ fontSize: 12, fill: 'var(--color-muted-foreground)' }}
+            />
+
             <Tooltip
               content={({ active, payload }) => {
                 if (active && payload && payload.length) {
                   const data = payload[0]?.payload;
                   return (
                     <div className="border border-slate-100 bg-white p-3 shadow-md">
-                      <p className="text-sm font-medium">
-                        {format(parseISO(data.date), 'MMM d, yyyy')}
-                      </p>
+                      <p className="text-sm font-medium">{data.date}</p>
                       <p className="mt-1 text-xs text-slate-500">
                         <span
                           className="mr-1 inline-block h-3 w-3"
-                          style={{ backgroundColor: chartConfig.revenue.color }}
+                          style={{
+                            backgroundColor: chartConfig.totalRevenue.color,
+                          }}
                         ></span>
-                        Revenue: ${data.revenue}
+                        Revenue: ${data.totalRevenue}
                       </p>
                       <p className="text-xs text-slate-500">
                         <span
                           className="mr-1 inline-block h-3 w-3"
-                          style={{ backgroundColor: chartConfig.orders.color }}
+                          style={{
+                            backgroundColor: chartConfig.orderCount.color,
+                          }}
                         ></span>
-                        Orders: {data.orders}
+                        Orders: {data.orderCount}
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        <span
+                          className="mr-1 inline-block h-3 w-3"
+                          style={{
+                            backgroundColor: chartConfig.totalCost.color,
+                          }}
+                        ></span>
+                        Cost: ${data.totalCost}
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        <span
+                          className="mr-1 inline-block h-3 w-3"
+                          style={{
+                            backgroundColor: chartConfig.totalProfit.color,
+                          }}
+                        ></span>
+                        Profit: ${data.totalProfit}
                       </p>
                     </div>
                   );
@@ -101,25 +150,55 @@ export function RevenueOrdersChart() {
                 return null;
               }}
             />
-            <Bar
+            <Area
               yAxisId="left"
-              dataKey="revenue"
-              fill={chartConfig.revenue.color}
-              radius={[4, 4, 0, 0]}
+              type="monotone"
+              dataKey="totalRevenue"
+              stroke={chartConfig.totalRevenue.color}
+              fill={chartConfig.totalRevenue.color}
+              fillOpacity={0.6}
+              activeDot={{ r: 6 }}
               animationBegin={0}
               animationDuration={1500}
               animationEasing="ease-out"
             />
-            <Bar
+            <Area
               yAxisId="right"
-              dataKey="orders"
-              fill={chartConfig.orders.color}
-              radius={[4, 4, 0, 0]}
+              type="monotone"
+              dataKey="orderCount"
+              stroke={chartConfig.orderCount.color}
+              fill={chartConfig.orderCount.color}
+              fillOpacity={0.6}
+              activeDot={{ r: 6 }}
               animationBegin={300}
               animationDuration={1500}
               animationEasing="ease-out"
             />
-          </BarChart>
+            <Area
+              yAxisId="left"
+              type="monotone"
+              dataKey="totalCost"
+              stroke={chartConfig.totalCost.color}
+              fill={chartConfig.totalCost.color}
+              fillOpacity={0.6}
+              activeDot={{ r: 6 }}
+              animationBegin={600}
+              animationDuration={1500}
+              animationEasing="ease-out"
+            />
+            <Area
+              yAxisId="right"
+              type="monotone"
+              dataKey="totalProfit"
+              stroke={chartConfig.totalProfit.color}
+              fill={chartConfig.totalProfit.color}
+              fillOpacity={0.6}
+              activeDot={{ r: 6 }}
+              animationBegin={900}
+              animationDuration={1500}
+              animationEasing="ease-out"
+            />
+          </AreaChart>
         </ResponsiveContainer>
       </div>
 
@@ -128,14 +207,14 @@ export function RevenueOrdersChart() {
         <div className="flex flex-col">
           <p className="text-sm font-medium">Total Revenue</p>
           <p className="text-lg font-semibold">
-            ${totalMetrics.revenue.toLocaleString()}
+            ${totalMetrics.totalRevenue.toLocaleString()}
           </p>
           <p className="text-xs text-slate-500">30-day period</p>
         </div>
         <div className="flex flex-col">
           <p className="text-sm font-medium">Total Orders</p>
           <p className="text-lg font-semibold">
-            {totalMetrics.orders.toLocaleString()}
+            {totalMetrics.orderCount.toLocaleString()}
           </p>
           <p className="text-xs text-slate-500">30-day period</p>
         </div>
@@ -143,3 +222,5 @@ export function RevenueOrdersChart() {
     </ChartContainer>
   );
 }
+
+export default memo(RevenueOrdersChart);

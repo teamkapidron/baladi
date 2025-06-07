@@ -10,7 +10,7 @@ import Address from '@/models/address.model';
 import { formatDate } from '@/utils/common/date.util';
 import { getOrderFiltersFromQuery } from '@/utils/order.utils';
 import { sendResponse } from '@/utils/common/response.util';
-import { getDateMatchStage } from '@/utils/common/date.util';
+import { getDateMatchStage, fillMissingDates } from '@/utils/common/date.util';
 import { getPagination } from '@/utils/common/pagination.utils';
 
 // Handlers
@@ -31,10 +31,10 @@ import type {
   GetOrderStatsSchema,
   GetOrderRevenueStatsSchema,
   GetOrderStatusGraphDataSchema,
+  GetOrderRevenueGraphDataSchema,
 } from '@/validators/order.validator';
 import { OrderItem, OrderStatus } from '@repo/types/order';
 import { OrderRevenueStats } from '@/types/order.types';
-import { ErrorName } from '@/types/common/error.types';
 
 /****************** START: User Controllers ********************/
 export const placeOrder = asyncHandler(async (req: Request, res: Response) => {
@@ -474,4 +474,93 @@ export const getOrderStatusGraphData = asyncHandler(
     });
   },
 );
+
+export const getOrderRevenueGraphData = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { from, to } = req.query as GetOrderRevenueGraphDataSchema['query'];
+
+    const matchStage = getDateMatchStage('createdAt', from, to);
+
+    const revenueData = await Order.aggregate([
+      {
+        $match: matchStage,
+      },
+      {
+        $unwind: '$items',
+      },
+      {
+        $lookup: {
+          from: 'products',
+          localField: 'items.productId',
+          foreignField: '_id',
+          as: 'productInfo',
+        },
+      },
+      {
+        $unwind: '$productInfo',
+      },
+      {
+        $addFields: {
+          revenue: {
+            $multiply: ['$items.price', '$items.quantity'],
+          },
+          cost: {
+            $multiply: ['$productInfo.costPrice', '$items.quantity'],
+          },
+          profit: {
+            $subtract: [
+              { $multiply: ['$items.price', '$items.quantity'] },
+              { $multiply: ['$productInfo.costPrice', '$items.quantity'] },
+            ],
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            date: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+            orderId: '$_id',
+          },
+          revenue: { $sum: '$revenue' },
+          cost: { $sum: '$cost' },
+          profit: { $sum: '$profit' },
+        },
+      },
+      {
+        $group: {
+          _id: '$_id.date',
+          orderCount: { $sum: 1 },
+          totalRevenue: { $sum: '$revenue' },
+          totalCost: { $sum: '$cost' },
+          totalProfit: { $sum: '$profit' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          date: '$_id',
+          orderCount: 1,
+          totalRevenue: 1,
+          totalCost: 1,
+          totalProfit: 1,
+        },
+      },
+      {
+        $sort: { date: 1 },
+      },
+    ]);
+
+    const completeData = fillMissingDates(revenueData, from, to, 30, 'date', [
+      'orderCount',
+      'totalRevenue',
+      'totalCost',
+      'totalProfit',
+    ]);
+
+    sendResponse(res, 200, 'Order revenue graph data fetched successfully', {
+      data: completeData,
+    });
+  },
+);
+
 /****************** END: Admin Controllers ********************/

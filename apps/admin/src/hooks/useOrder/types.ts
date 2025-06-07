@@ -73,3 +73,19 @@ export type GetOrderStatusGraphDataRequest = ApiData<
     }[];
   }
 >;
+
+export type GetOrderRevenueGraphDataRequest = ApiData<
+  {
+    from?: string;
+    to?: string;
+  },
+  {
+    data: {
+      date: string;
+      orderCount: number;
+      totalRevenue: number;
+      totalCost: number;
+      totalProfit: number;
+    }[];
+  }
+>;

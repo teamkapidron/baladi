@@ -161,6 +161,10 @@ export const getOrderStatusGraphDataSchema = z.object({
   query: dateRangeSchema,
 });
 
+export const getOrderRevenueGraphDataSchema = z.object({
+  query: dateRangeSchema,
+});
+
 export type GetAllOrdersSchema = z.infer<typeof getAllOrdersSchema>;
 export type GetOrderDetailsAdminSchema = z.infer<
   typeof getOrderDetailsAdminSchema
@@ -173,5 +177,8 @@ export type GetOrderRevenueStatsSchema = z.infer<
 >;
 export type GetOrderStatusGraphDataSchema = z.infer<
   typeof getOrderStatusGraphDataSchema
+>;
+export type GetOrderRevenueGraphDataSchema = z.infer<
+  typeof getOrderRevenueGraphDataSchema
 >;
 /****************** END: Admin Validators ********************/

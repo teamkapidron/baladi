@@ -1,10 +1,10 @@
 import User from '@/models/user.model';
 
-import type { FilterUserQuery } from '@/types/user.types';
+import { UserStatusFilter, type FilterUserQuery } from '@/types/user.types';
 import type { GetAllUsersSchema } from '@/validators/user.validator';
 
 export function getUserFiltersFromQuery(query: GetAllUsersSchema['query']) {
-  const { name, email, userType, page, limit, sort } = query;
+  const { name, email, userType, status, page, limit, sort } = query;
 
   let sortObject = {};
   let queryObject: FilterUserQuery = {};
@@ -22,6 +22,15 @@ export function getUserFiltersFromQuery(query: GetAllUsersSchema['query']) {
   }
   if (userType) {
     queryObject['userType'] = userType;
+  }
+  if (status && status !== UserStatusFilter.ALL) {
+    if (status === UserStatusFilter.APPROVED) {
+      queryObject['isApprovedByAdmin'] = true;
+    } else if (status === UserStatusFilter.PENDING) {
+      queryObject['isApprovedByAdmin'] = false;
+    } else if (status === UserStatusFilter.UNVERIFIED) {
+      queryObject['isEmailVerified'] = false;
+    }
   }
   if (sort) {
     sortObject = { createdAt: sort === 'asc' ? 1 : -1 };

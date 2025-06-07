@@ -7,3 +7,10 @@ export interface FilterUserQuery {
   isApprovedByAdmin?: boolean;
   isEmailVerified?: boolean;
 }
+
+export enum UserStatusFilter {
+  ALL = 'all',
+  APPROVED = 'approved',
+  PENDING = 'pending',
+  UNVERIFIED = 'unverified',
+}
