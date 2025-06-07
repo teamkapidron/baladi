@@ -1,3 +1,5 @@
+import AuthSidebar from '@/components/auth/sidebar';
+
 interface AuthLayoutProps {
   children: React.ReactNode;
 }
@@ -5,5 +7,10 @@ interface AuthLayoutProps {
 export default function AuthLayout(props: AuthLayoutProps) {
   const { children } = props;
 
-  return <div>{children}</div>;
+  return (
+    <div className="flex min-h-screen">
+      <AuthSidebar />
+      {children}
+    </div>
+  );
 }

@@ -6,9 +6,12 @@ import {
   isVerified,
   isSuperAdmin,
   isAuthenticated,
+  addUserToRequest,
 } from '@/middlewares/auth.middleware';
 
 import {
+  getUserData,
+  getUserStatus,
   signup,
   verifyOTP,
   resendOTP,
@@ -19,7 +22,6 @@ import {
   logout,
   createAdmin,
   adminLogin,
-  getUserData,
   getAdminData,
 } from '@/controllers/auth.controller';
 import {
@@ -37,10 +39,12 @@ import {
 const router: Router = express.Router();
 
 router.get('/me', isAuthenticated, getUserData);
+router.get('/me/status', isVerified, getUserStatus);
 
 router.post('/signup', validate(signupSchema), signup);
 router.post('/verify-otp', validate(verifyOTPSchema), verifyOTP);
 router.post('/resend-otp', validate(resendOTPSchema), resendOTP);
+
 router.post('/onboarding', isVerified, validate(onboardingSchema), onboarding);
 
 router.post('/login', validate(loginSchema), login);

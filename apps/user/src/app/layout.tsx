@@ -1,7 +1,8 @@
 import '@/styles/globals.css';
-import { Toaster } from '@repo/ui/components/sonner';
-import type { Metadata } from 'next';
+import { Toaster } from '@repo/ui/components/base/sonner';
 import ReactQueryProvider from '@/providers/react-query-provider';
+
+import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Baladi',
@@ -17,7 +18,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <body>
         <ReactQueryProvider>
           <main>{children}</main>
-          <Toaster />
+          <Toaster richColors />
         </ReactQueryProvider>
       </body>
     </html>

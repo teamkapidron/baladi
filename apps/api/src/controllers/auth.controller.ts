@@ -37,6 +37,23 @@ export const getUserData = asyncHandler(async (req: Request, res: Response) => {
   sendResponse(res, 200, 'User data fetched successfully', { user });
 });
 
+export const getUserStatus = asyncHandler(
+  async (req: Request, res: Response) => {
+    const user = req.user;
+
+    if (!user) {
+      sendResponse(res, 200, 'User not found', { user: null });
+      return;
+    }
+
+    sendResponse(res, 200, 'User status fetched successfully', {
+      user: {
+        isApprovedByAdmin: user.isApprovedByAdmin,
+      },
+    });
+  },
+);
+
 export const signup = asyncHandler(async (req: Request, res: Response) => {
   const { name, email, password } = req.body as SignupSchema['body'];
 

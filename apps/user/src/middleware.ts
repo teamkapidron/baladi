@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-import { getUser } from './functions/auth.functions';
+import { getUser, getUserStatus } from './functions/auth.functions';
 
-const nonProtectedRoutes = [
+const noAuthRoutes = [
   '/login',
   '/signup',
   '/forgot-password',
@@ -15,7 +15,7 @@ const protectedRoutes = ['/cart', '/profile'];
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value;
 
-  if (nonProtectedRoutes.includes(request.nextUrl.pathname)) {
+  if (noAuthRoutes.includes(request.nextUrl.pathname)) {
     if (token) {
       try {
         const user = await getUser(token);
@@ -25,6 +25,26 @@ export async function middleware(request: NextRequest) {
       } catch {
         return NextResponse.next();
       }
+    }
+  }
+
+  if (request.nextUrl.pathname === '/onboarding') {
+    if (!token) {
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
+    try {
+      const user = await getUserStatus(token);
+      if (!user) {
+        return NextResponse.redirect(new URL('/login', request.url));
+      }
+
+      if (user.isApprovedByAdmin) {
+        return NextResponse.redirect(new URL('/', request.url));
+      }
+
+      return NextResponse.next();
+    } catch {
+      return NextResponse.redirect(new URL('/login', request.url));
     }
   }
 

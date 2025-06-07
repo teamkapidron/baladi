@@ -51,6 +51,27 @@
   --color-success: #4caf50;
   --font-lato: 'Lato', sans-serif;
   --font-albert-sans: 'Albert Sans', sans-serif;
+
+  --baladi-primary: #183C6C;
+  --baladi-secondary: #4B7BBE;
+  --baladi-light: #F4F6FA;
+  --baladi-dark: #2E3A59;
+  --baladi-gray: #6A7A8C;
+  --baladi-border: #CBD3DD;
+  --baladi-accent: #FF9F45;
+  
+  /* Status Colors */
+  --baladi-success: #4CAF50;
+  --baladi-info: #2196F3;
+  --baladi-warning: #FF9F45;
+  --baladi-error: #F44336;
+  
+  /* Tints and Shades */
+  --baladi-primary-light: #2A5692;
+  --baladi-primary-dark: #102C54;
+  --baladi-secondary-light: #6D93CC;
+  --baladi-secondary-dark: #3A639A;
+  --baladi-light-dark: #E6EDF5;
 }
 
 :root {

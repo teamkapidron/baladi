@@ -8,6 +8,15 @@ export type GetUserDataRequest = ApiData<
   }
 >;
 
+export type GetUserStatusRequest = ApiData<
+  undefined,
+  {
+    user: {
+      isApprovedByAdmin: boolean;
+    } | null;
+  }
+>;
+
 export type SignUpRequest = ApiData<
   {
     name: string;
