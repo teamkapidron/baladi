@@ -41,7 +41,7 @@ const orderSchema = new Schema<IOrder>(
     status: {
       type: String,
       enum: Object.values(OrderStatus),
-      default: OrderStatus.CONFIRMED,
+      default: OrderStatus.PENDING,
     },
     shippingAddress: {
       ref: 'Address',

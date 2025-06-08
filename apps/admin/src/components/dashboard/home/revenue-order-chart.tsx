@@ -1,7 +1,7 @@
 'use client';
 
 // Node Modules
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 
 // Components
 import {
@@ -13,7 +13,6 @@ import {
   XAxis,
   YAxis,
 } from '@repo/ui/lib/recharts';
-import { ChartContainer } from '@repo/ui/components/base/chart-container';
 
 // Hooks
 import { useOrder } from '@/hooks/useOrder';
@@ -21,205 +20,275 @@ import { useOrder } from '@/hooks/useOrder';
 function RevenueOrdersChart() {
   const { orderRevenueGraphDataQuery } = useOrder();
 
-  const revenueData = orderRevenueGraphDataQuery.data?.data ?? [];
+  const revenueData = useMemo(() => {
+    return orderRevenueGraphDataQuery.data?.data ?? [];
+  }, [orderRevenueGraphDataQuery.data]);
 
   const chartConfig = {
     orderCount: {
       label: 'Order Count',
-      color: '#007bff',
+      color: 'var(--baladi-info)',
     },
     totalRevenue: {
       label: 'Revenue',
-      color: '#28a745',
+      color: 'var(--baladi-success)',
     },
     totalCost: {
       label: 'Cost',
-      color: '#ffc107',
+      color: 'var(--baladi-warning)',
     },
     totalProfit: {
       label: 'Profit',
-      color: '#dc3545',
+      color: 'var(--baladi-primary)',
     },
   };
 
-  const totalMetrics = {
-    orderCount: 0,
-    totalRevenue: 0,
-    totalCost: 0,
-    totalProfit: 0,
-  };
+  const totalMetrics = useMemo(() => {
+    return revenueData.reduce(
+      (acc, item) => ({
+        orderCount: acc.orderCount + (item.orderCount || 0),
+        totalRevenue: acc.totalRevenue + (item.totalRevenue || 0),
+        totalCost: acc.totalCost + (item.totalCost || 0),
+        totalProfit: acc.totalProfit + (item.totalProfit || 0),
+      }),
+      {
+        orderCount: 0,
+        totalRevenue: 0,
+        totalCost: 0,
+        totalProfit: 0,
+      },
+    );
+  }, [revenueData]);
 
   return (
-    <ChartContainer title="Daily Revenue & Orders">
-      <div className="h-[300px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <AreaChart
-            data={revenueData}
-            margin={{ top: 20, right: 10, left: 10, bottom: 0 }}
-          >
-            <CartesianGrid
-              vertical={false}
-              strokeDasharray="3 3"
-              stroke="var(--color-border)"
-            />
-            <XAxis
-              dataKey="date"
-              tickLine={false}
-              axisLine={false}
-              tick={{ fontSize: 12, fill: 'var(--color-muted-foreground)' }}
-            />
-            <YAxis
-              yAxisId="left"
-              orientation="left"
-              dataKey="totalRevenue"
-              tickLine={false}
-              axisLine={false}
-              tick={{ fontSize: 12, fill: 'var(--color-muted-foreground)' }}
-            />
-            <YAxis
-              yAxisId="right"
-              orientation="right"
-              dataKey="orderCount"
-              tickLine={false}
-              axisLine={false}
-              tick={{ fontSize: 12, fill: 'var(--color-muted-foreground)' }}
-            />
-            <YAxis
-              yAxisId="left"
-              orientation="left"
-              dataKey="totalCost"
-              tickLine={false}
-              axisLine={false}
-              tick={{ fontSize: 12, fill: 'var(--color-muted-foreground)' }}
-            />
-            <YAxis
-              yAxisId="right"
-              orientation="right"
-              dataKey="totalProfit"
-              tickLine={false}
-              axisLine={false}
-              tick={{ fontSize: 12, fill: 'var(--color-muted-foreground)' }}
-            />
-
-            <Tooltip
-              content={({ active, payload }) => {
-                if (active && payload && payload.length) {
-                  const data = payload[0]?.payload;
-                  return (
-                    <div className="border border-slate-100 bg-white p-3 shadow-md">
-                      <p className="text-sm font-medium">{data.date}</p>
-                      <p className="mt-1 text-xs text-slate-500">
-                        <span
-                          className="mr-1 inline-block h-3 w-3"
-                          style={{
-                            backgroundColor: chartConfig.totalRevenue.color,
-                          }}
-                        ></span>
-                        Revenue: ${data.totalRevenue}
-                      </p>
-                      <p className="text-xs text-slate-500">
-                        <span
-                          className="mr-1 inline-block h-3 w-3"
-                          style={{
-                            backgroundColor: chartConfig.orderCount.color,
-                          }}
-                        ></span>
-                        Orders: {data.orderCount}
-                      </p>
-                      <p className="text-xs text-slate-500">
-                        <span
-                          className="mr-1 inline-block h-3 w-3"
-                          style={{
-                            backgroundColor: chartConfig.totalCost.color,
-                          }}
-                        ></span>
-                        Cost: ${data.totalCost}
-                      </p>
-                      <p className="text-xs text-slate-500">
-                        <span
-                          className="mr-1 inline-block h-3 w-3"
-                          style={{
-                            backgroundColor: chartConfig.totalProfit.color,
-                          }}
-                        ></span>
-                        Profit: ${data.totalProfit}
-                      </p>
-                    </div>
-                  );
-                }
-                return null;
-              }}
-            />
-            <Area
-              yAxisId="left"
-              type="monotone"
-              dataKey="totalRevenue"
-              stroke={chartConfig.totalRevenue.color}
-              fill={chartConfig.totalRevenue.color}
-              fillOpacity={0.6}
-              activeDot={{ r: 6 }}
-              animationBegin={0}
-              animationDuration={1500}
-              animationEasing="ease-out"
-            />
-            <Area
-              yAxisId="right"
-              type="monotone"
-              dataKey="orderCount"
-              stroke={chartConfig.orderCount.color}
-              fill={chartConfig.orderCount.color}
-              fillOpacity={0.6}
-              activeDot={{ r: 6 }}
-              animationBegin={300}
-              animationDuration={1500}
-              animationEasing="ease-out"
-            />
-            <Area
-              yAxisId="left"
-              type="monotone"
-              dataKey="totalCost"
-              stroke={chartConfig.totalCost.color}
-              fill={chartConfig.totalCost.color}
-              fillOpacity={0.6}
-              activeDot={{ r: 6 }}
-              animationBegin={600}
-              animationDuration={1500}
-              animationEasing="ease-out"
-            />
-            <Area
-              yAxisId="right"
-              type="monotone"
-              dataKey="totalProfit"
-              stroke={chartConfig.totalProfit.color}
-              fill={chartConfig.totalProfit.color}
-              fillOpacity={0.6}
-              activeDot={{ r: 6 }}
-              animationBegin={900}
-              animationDuration={1500}
-              animationEasing="ease-out"
-            />
-          </AreaChart>
-        </ResponsiveContainer>
+    <div className="h-full rounded-xl bg-white p-6 shadow-lg ring-1 ring-[var(--baladi-border)]">
+      <div className="mb-4">
+        <h3 className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
+          Daily Revenue & Orders
+        </h3>
+        <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
+          Track revenue, costs, profits and order volumes over time
+        </p>
       </div>
 
-      {/* Chart footer with summary metrics */}
-      <div className="mt-2 grid grid-cols-2 gap-4 px-4 pb-4">
-        <div className="flex flex-col">
-          <p className="text-sm font-medium">Total Revenue</p>
-          <p className="text-lg font-semibold">
-            ${totalMetrics.totalRevenue.toLocaleString()}
+      {revenueData.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--baladi-muted)]">
+            <svg
+              className="h-8 w-8 text-[var(--baladi-gray)]"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+              />
+            </svg>
+          </div>
+          <h4 className="mb-2 font-[family-name:var(--font-sora)] text-lg font-semibold text-[var(--baladi-dark)]">
+            No revenue data yet
+          </h4>
+          <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
+            Revenue and order analytics will appear here once you start
+            receiving orders.
           </p>
-          <p className="text-xs text-slate-500">30-day period</p>
         </div>
-        <div className="flex flex-col">
-          <p className="text-sm font-medium">Total Orders</p>
-          <p className="text-lg font-semibold">
-            {totalMetrics.orderCount.toLocaleString()}
-          </p>
-          <p className="text-xs text-slate-500">30-day period</p>
-        </div>
-      </div>
-    </ChartContainer>
+      ) : (
+        <>
+          <div className="mb-4 flex flex-wrap gap-4">
+            {Object.entries(chartConfig).map(([key, config]) => (
+              <div key={key} className="flex items-center gap-2">
+                <div
+                  className="h-3 w-3 rounded-full"
+                  style={{ backgroundColor: config.color }}
+                />
+                <span className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-dark)]">
+                  {config.label}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <div className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart
+                data={revenueData}
+                margin={{ top: 20, right: 10, left: 10, bottom: 0 }}
+              >
+                <CartesianGrid
+                  vertical={false}
+                  strokeDasharray="3 3"
+                  stroke="var(--baladi-border)"
+                />
+                <XAxis
+                  dataKey="date"
+                  tickLine={false}
+                  axisLine={false}
+                  tick={{
+                    fontSize: 12,
+                    fill: 'var(--baladi-gray)',
+                    fontFamily: 'var(--font-dm-sans)',
+                  }}
+                />
+                <YAxis
+                  yAxisId="left"
+                  orientation="left"
+                  tickLine={false}
+                  axisLine={false}
+                  tick={{
+                    fontSize: 12,
+                    fill: 'var(--baladi-gray)',
+                    fontFamily: 'var(--font-dm-sans)',
+                  }}
+                />
+                <YAxis
+                  yAxisId="right"
+                  orientation="right"
+                  tickLine={false}
+                  axisLine={false}
+                  tick={{
+                    fontSize: 12,
+                    fill: 'var(--baladi-gray)',
+                    fontFamily: 'var(--font-dm-sans)',
+                  }}
+                />
+
+                <Tooltip
+                  content={({ active, payload }) => {
+                    if (active && payload && payload.length) {
+                      const data = payload[0]?.payload;
+                      return (
+                        <div className="rounded-lg border border-[var(--baladi-border)] bg-white p-3 shadow-lg">
+                          <p className="font-[family-name:var(--font-dm-sans)] text-sm font-semibold text-[var(--baladi-dark)]">
+                            {data.date}
+                          </p>
+                          <div className="mt-2 space-y-1">
+                            <p className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
+                              <span
+                                className="mr-2 inline-block h-2 w-2 rounded-full"
+                                style={{
+                                  backgroundColor:
+                                    chartConfig.totalRevenue.color,
+                                }}
+                              />
+                              Revenue: $
+                              {data.totalRevenue?.toLocaleString() || 0}
+                            </p>
+                            <p className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
+                              <span
+                                className="mr-2 inline-block h-2 w-2 rounded-full"
+                                style={{
+                                  backgroundColor: chartConfig.orderCount.color,
+                                }}
+                              />
+                              Orders: {data.orderCount || 0}
+                            </p>
+                            <p className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
+                              <span
+                                className="mr-2 inline-block h-2 w-2 rounded-full"
+                                style={{
+                                  backgroundColor: chartConfig.totalCost.color,
+                                }}
+                              />
+                              Cost: ${data.totalCost?.toLocaleString() || 0}
+                            </p>
+                            <p className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
+                              <span
+                                className="mr-2 inline-block h-2 w-2 rounded-full"
+                                style={{
+                                  backgroundColor:
+                                    chartConfig.totalProfit.color,
+                                }}
+                              />
+                              Profit: ${data.totalProfit?.toLocaleString() || 0}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
+                />
+                <Area
+                  yAxisId="left"
+                  type="monotone"
+                  dataKey="totalRevenue"
+                  stroke={chartConfig.totalRevenue.color}
+                  fill={chartConfig.totalRevenue.color}
+                  fillOpacity={0.1}
+                  strokeWidth={2}
+                  activeDot={{ r: 4, fill: chartConfig.totalRevenue.color }}
+                  animationBegin={0}
+                  animationDuration={1500}
+                  animationEasing="ease-out"
+                />
+                <Area
+                  yAxisId="right"
+                  type="monotone"
+                  dataKey="orderCount"
+                  stroke={chartConfig.orderCount.color}
+                  fill={chartConfig.orderCount.color}
+                  fillOpacity={0.1}
+                  strokeWidth={2}
+                  activeDot={{ r: 4, fill: chartConfig.orderCount.color }}
+                  animationBegin={300}
+                  animationDuration={1500}
+                  animationEasing="ease-out"
+                />
+                <Area
+                  yAxisId="left"
+                  type="monotone"
+                  dataKey="totalCost"
+                  stroke={chartConfig.totalCost.color}
+                  fill={chartConfig.totalCost.color}
+                  fillOpacity={0.1}
+                  strokeWidth={2}
+                  activeDot={{ r: 4, fill: chartConfig.totalCost.color }}
+                  animationBegin={600}
+                  animationDuration={1500}
+                  animationEasing="ease-out"
+                />
+                <Area
+                  yAxisId="right"
+                  type="monotone"
+                  dataKey="totalProfit"
+                  stroke={chartConfig.totalProfit.color}
+                  fill={chartConfig.totalProfit.color}
+                  fillOpacity={0.1}
+                  strokeWidth={2}
+                  activeDot={{ r: 4, fill: chartConfig.totalProfit.color }}
+                  animationBegin={900}
+                  animationDuration={1500}
+                  animationEasing="ease-out"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div className="mt-6 grid grid-cols-2 gap-4 border-t border-[var(--baladi-border)] pt-4">
+            <div className="bg-[var(--baladi-success)]/5 rounded-lg p-3">
+              <p className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-success)]">
+                Total Revenue
+              </p>
+              <p className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
+                ${totalMetrics.totalRevenue.toLocaleString()}
+              </p>
+            </div>
+            <div className="bg-[var(--baladi-info)]/5 rounded-lg p-3">
+              <p className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-info)]">
+                Total Orders
+              </p>
+              <p className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
+                {totalMetrics.orderCount.toLocaleString()}
+              </p>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
   );
 }
 

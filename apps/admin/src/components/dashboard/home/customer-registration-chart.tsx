@@ -1,5 +1,7 @@
 'use client';
 
+// Node Modules
+import { memo, useMemo } from 'react';
 import {
   Area,
   AreaChart,
@@ -8,211 +10,285 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-  Dot,
 } from '@repo/ui/lib/recharts';
-import { format, parseISO } from '@repo/ui/lib/date';
-import { ChartContainer } from '@repo/ui/components/base/chart-container';
-import { ArrowUpRight } from '@repo/ui/lib/icons';
+import { TrendingUp, TrendingDown, Users } from '@repo/ui/lib/icons';
 
-interface CustomerData {
-  date: string;
-  newRegistrations: number;
-  totalUsers: number;
-}
+// Hooks
+import { useUsers } from '@/hooks/useUsers';
 
-interface ChartConfig {
-  newRegistrations: {
-    label: string;
-    color: string;
-  };
-  totalUsers: {
-    label: string;
-    color: string;
-  };
-}
+function CustomerRegistrationChart() {
+  const { getUserRegistrationGraphDataQuery } = useUsers();
 
-interface CustomerRegistrationChartProps {
-  customerData: CustomerData[];
-  chartConfig: ChartConfig;
-}
+  const customerData = useMemo(() => {
+    return getUserRegistrationGraphDataQuery.data?.data ?? [];
+  }, [getUserRegistrationGraphDataQuery.data]);
 
-// Custom dot component with animation
-interface CustomDotProps {
-  cx: number;
-  cy: number;
-  stroke: string;
-}
-
-const CustomDot = ({ cx, cy, stroke }: CustomDotProps) => {
-  return (
-    <Dot
-      cx={cx}
-      cy={cy}
-      r={4}
-      fill="var(--color-background)"
-      stroke={stroke}
-      strokeWidth={2}
-    />
-  );
-};
-
-export function CustomerRegistrationChart() {
-  const customerData = [
-    { date: '2024-01-01', newRegistrations: 100, totalUsers: 100 },
-    { date: '2024-01-02', newRegistrations: 200, totalUsers: 300 },
-    { date: '2024-01-03', newRegistrations: 300, totalUsers: 600 },
-  ];
-  const chartConfig: ChartConfig = {
+  const chartConfig = {
     newRegistrations: {
       label: 'New Registrations',
-      color: '#007bff',
+      color: 'var(--baladi-primary)',
     },
     totalUsers: {
       label: 'Total Users',
-      color: '#28a745',
+      color: 'var(--baladi-secondary)',
     },
   };
 
-  const growthPercent = 10;
+  const { growthPercent, totalNewRegistrations, totalUsers } = useMemo(() => {
+    if (customerData.length < 2) {
+      return { growthPercent: 0, totalNewRegistrations: 0, totalUsers: 0 };
+    }
+
+    const firstPeriod = customerData[0];
+    const lastPeriod = customerData[customerData.length - 1];
+
+    if (!firstPeriod || !lastPeriod) {
+      return { growthPercent: 0, totalNewRegistrations: 0, totalUsers: 0 };
+    }
+
+    const growth =
+      firstPeriod.totalUsers > 0
+        ? ((lastPeriod.totalUsers - firstPeriod.totalUsers) /
+            firstPeriod.totalUsers) *
+          100
+        : 0;
+
+    const totalNew = customerData.reduce(
+      (sum, item) => sum + item.newRegistrations,
+      0,
+    );
+    const latestTotalUsers = lastPeriod.totalUsers || 0;
+
+    return {
+      growthPercent: Math.round(growth),
+      totalNewRegistrations: totalNew,
+      totalUsers: latestTotalUsers,
+    };
+  }, [customerData]);
 
   return (
-    <ChartContainer title="Customer Registration">
-      <div className="h-[300px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <AreaChart
-            data={customerData}
-            margin={{ top: 20, right: 10, left: 10, bottom: 0 }}
-          >
-            <defs>
-              <linearGradient id="colorNewReg" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor={chartConfig.newRegistrations.color}
-                  stopOpacity={0.4}
-                />
-                <stop
-                  offset="95%"
-                  stopColor={chartConfig.newRegistrations.color}
-                  stopOpacity={0.05}
-                />
-              </linearGradient>
-              <linearGradient id="colorTotalUsers" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor={chartConfig.totalUsers.color}
-                  stopOpacity={0.3}
-                />
-                <stop
-                  offset="95%"
-                  stopColor={chartConfig.totalUsers.color}
-                  stopOpacity={0.02}
-                />
-              </linearGradient>
-            </defs>
-            <CartesianGrid
-              vertical={false}
-              strokeDasharray="3 3"
-              stroke="var(--color-border)"
-            />
-            <XAxis
-              dataKey="date"
-              tickLine={false}
-              axisLine={false}
-              tickFormatter={(value) => format(parseISO(value), 'MMM d')}
-              tick={{ fontSize: 12, fill: 'var(--color-muted-foreground)' }}
-            />
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-              tick={{ fontSize: 12, fill: 'var(--color-muted-foreground)' }}
-            />
-            <Tooltip
-              content={({ active, payload }) => {
-                if (active && payload && payload.length) {
-                  const data = payload[0]?.payload as CustomerData;
-                  return (
-                    <div className="border border-slate-100 bg-white p-3 shadow-md">
-                      <p className="text-sm font-medium">
-                        {format(parseISO(data.date), 'MMM d, yyyy')}
-                      </p>
-                      <p className="mt-1 text-xs text-slate-500">
-                        <span
-                          className="mr-1 inline-block h-3 w-3 rounded-full"
-                          style={{
-                            backgroundColor: chartConfig.newRegistrations.color,
-                          }}
-                        ></span>
-                        New Users: {data.newRegistrations}
-                      </p>
-                      <p className="text-xs text-slate-500">
-                        <span
-                          className="mr-1 inline-block h-3 w-3 rounded-full"
-                          style={{
-                            backgroundColor: chartConfig.totalUsers.color,
-                          }}
-                        ></span>
-                        Total Users: {data.totalUsers}
-                      </p>
-                    </div>
-                  );
-                }
-                return null;
-              }}
-            />
-            <Area
-              type="natural"
-              dataKey="newRegistrations"
-              stroke={chartConfig.newRegistrations.color}
-              strokeWidth={2}
-              fill="url(#colorNewReg)"
-              dot={false}
-              activeDot={(props) => (
-                <CustomDot
-                  {...props}
-                  stroke={chartConfig.newRegistrations.color}
-                />
-              )}
-              animationBegin={0}
-              animationDuration={1500}
-              animationEasing="ease-out"
-            />
-            <Area
-              type="natural"
-              dataKey="totalUsers"
-              stroke={chartConfig.totalUsers.color}
-              strokeWidth={2}
-              fill="url(#colorTotalUsers)"
-              dot={false}
-              activeDot={(props) => (
-                <CustomDot {...props} stroke={chartConfig.totalUsers.color} />
-              )}
-              animationBegin={300}
-              animationDuration={1500}
-              animationEasing="ease-out"
-            />
-          </AreaChart>
-        </ResponsiveContainer>
+    <div className="h-full rounded-xl bg-white p-6 shadow-lg ring-1 ring-[var(--baladi-border)]">
+      <div className="mb-4">
+        <h3 className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
+          Customer Registration
+        </h3>
+        <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
+          Track new user registrations and total user growth over time
+        </p>
       </div>
 
-      {/* Chart footer with trend information */}
-      <div className="mt-2 flex items-center justify-between px-4 pb-4">
-        <div>
-          <p className="text-sm font-medium">User Growth</p>
-          <p className="text-xs text-slate-500">30-day trend analysis</p>
+      {customerData.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--baladi-muted)]">
+            <Users className="h-8 w-8 text-[var(--baladi-gray)]" />
+          </div>
+          <h4 className="mb-2 font-[family-name:var(--font-sora)] text-lg font-semibold text-[var(--baladi-dark)]">
+            No registration data yet
+          </h4>
+          <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
+            Customer registration analytics will appear here once users start
+            signing up.
+          </p>
         </div>
-        <div className="flex items-center">
-          <span
-            className={`inline-flex items-center px-1.5 py-0.5 text-xs font-medium ${growthPercent >= 0 ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}
-          >
-            {growthPercent >= 0 ? (
-              <ArrowUpRight className="mr-1 h-3 w-3" />
-            ) : (
-              <ArrowUpRight className="mr-1 h-3 w-3 rotate-90 transform" />
-            )}
-            {Math.abs(growthPercent)}%
-          </span>
-        </div>
-      </div>
-    </ChartContainer>
+      ) : (
+        <>
+          {/* Growth Summary */}
+          <div className="mb-4 flex items-center justify-between rounded-lg bg-[var(--baladi-light)] p-3">
+            <div className="flex items-center gap-3">
+              <div className="bg-[var(--baladi-primary)]/10 flex h-10 w-10 items-center justify-center rounded-lg">
+                {growthPercent >= 0 ? (
+                  <TrendingUp className="h-5 w-5 text-[var(--baladi-success)]" />
+                ) : (
+                  <TrendingDown className="h-5 w-5 text-[var(--baladi-error)]" />
+                )}
+              </div>
+              <div>
+                <p className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-dark)]">
+                  User Growth
+                </p>
+                <p className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
+                  Overall period growth
+                </p>
+              </div>
+            </div>
+            <div className="text-right">
+              <span
+                className={`font-[family-name:var(--font-sora)] text-lg font-bold ${
+                  growthPercent >= 0
+                    ? 'text-[var(--baladi-success)]'
+                    : 'text-[var(--baladi-error)]'
+                }`}
+              >
+                {growthPercent >= 0 ? '+' : ''}
+                {growthPercent}%
+              </span>
+            </div>
+          </div>
+
+          <div className="mb-4 flex flex-wrap gap-4">
+            {Object.entries(chartConfig).map(([key, config]) => (
+              <div key={key} className="flex items-center gap-2">
+                <div
+                  className="h-3 w-3 rounded-full"
+                  style={{ backgroundColor: config.color }}
+                />
+                <span className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-dark)]">
+                  {config.label}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <div className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart
+                data={customerData}
+                margin={{ top: 20, right: 10, left: 10, bottom: 0 }}
+              >
+                <defs>
+                  <linearGradient id="colorNewReg" x1="0" y1="0" x2="0" y2="1">
+                    <stop
+                      offset="5%"
+                      stopColor={chartConfig.newRegistrations.color}
+                      stopOpacity={0.1}
+                    />
+                    <stop
+                      offset="95%"
+                      stopColor={chartConfig.newRegistrations.color}
+                      stopOpacity={0.02}
+                    />
+                  </linearGradient>
+                  <linearGradient
+                    id="colorTotalUsers"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop
+                      offset="5%"
+                      stopColor={chartConfig.totalUsers.color}
+                      stopOpacity={0.1}
+                    />
+                    <stop
+                      offset="95%"
+                      stopColor={chartConfig.totalUsers.color}
+                      stopOpacity={0.02}
+                    />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid
+                  vertical={false}
+                  strokeDasharray="3 3"
+                  stroke="var(--baladi-border)"
+                />
+                <XAxis
+                  dataKey="date"
+                  tickLine={false}
+                  axisLine={false}
+                  tick={{
+                    fontSize: 12,
+                    fill: 'var(--baladi-gray)',
+                    fontFamily: 'var(--font-dm-sans)',
+                  }}
+                />
+                <YAxis
+                  tickLine={false}
+                  axisLine={false}
+                  tick={{
+                    fontSize: 12,
+                    fill: 'var(--baladi-gray)',
+                    fontFamily: 'var(--font-dm-sans)',
+                  }}
+                />
+                <Tooltip
+                  content={({ active, payload }) => {
+                    if (active && payload && payload.length) {
+                      const data = payload[0]?.payload;
+                      return (
+                        <div className="rounded-lg border border-[var(--baladi-border)] bg-white p-3 shadow-lg">
+                          <p className="font-[family-name:var(--font-dm-sans)] text-sm font-semibold text-[var(--baladi-dark)]">
+                            {data.date}
+                          </p>
+                          <div className="mt-2 space-y-1">
+                            <p className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
+                              <span
+                                className="mr-2 inline-block h-2 w-2 rounded-full"
+                                style={{
+                                  backgroundColor:
+                                    chartConfig.newRegistrations.color,
+                                }}
+                              />
+                              New Users: {data.newRegistrations}
+                            </p>
+                            <p className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
+                              <span
+                                className="mr-2 inline-block h-2 w-2 rounded-full"
+                                style={{
+                                  backgroundColor: chartConfig.totalUsers.color,
+                                }}
+                              />
+                              Total Users:{' '}
+                              {data.totalUsers?.toLocaleString() || 0}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="newRegistrations"
+                  stroke={chartConfig.newRegistrations.color}
+                  strokeWidth={2}
+                  fill="url(#colorNewReg)"
+                  dot={false}
+                  activeDot={{ r: 4, fill: chartConfig.newRegistrations.color }}
+                  animationBegin={0}
+                  animationDuration={1500}
+                  animationEasing="ease-out"
+                />
+                <Area
+                  type="monotone"
+                  dataKey="totalUsers"
+                  stroke={chartConfig.totalUsers.color}
+                  strokeWidth={2}
+                  fill="url(#colorTotalUsers)"
+                  dot={false}
+                  activeDot={{ r: 4, fill: chartConfig.totalUsers.color }}
+                  animationBegin={300}
+                  animationDuration={1500}
+                  animationEasing="ease-out"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Chart footer with summary metrics */}
+          <div className="mt-6 grid grid-cols-2 gap-4 border-t border-[var(--baladi-border)] pt-4">
+            <div className="bg-[var(--baladi-primary)]/5 rounded-lg p-3">
+              <p className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-primary)]">
+                New Registrations
+              </p>
+              <p className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
+                {totalNewRegistrations.toLocaleString()}
+              </p>
+            </div>
+            <div className="bg-[var(--baladi-secondary)]/5 rounded-lg p-3">
+              <p className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-secondary)]">
+                Total Users
+              </p>
+              <p className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
+                {totalUsers.toLocaleString()}
+              </p>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
   );
 }
+
+export default memo(CustomerRegistrationChart);

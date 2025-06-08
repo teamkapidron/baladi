@@ -13,10 +13,10 @@ import {
   ApproveCustomerRequest,
   GetUserRegistrationGraphDataRequest,
   GetUserStatsRequest,
-  UserStatusFilter,
-  UserSort,
+  TopUsersRequest,
 } from './types';
 import { UserType } from '@repo/types/user';
+import { UserStatusFilter, UserSort } from './types';
 import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
 
 export function useUsers(userId?: string) {
@@ -134,6 +134,23 @@ export function useUsers(userId?: string) {
     refetchOnWindowFocus: false,
   });
 
+  const getTopUsers = useCallback(
+    async (payload: TopUsersRequest['payload']) => {
+      const response = await api.get<TopUsersRequest['response']>('/user/top', {
+        params: payload,
+      });
+      return response.data.data;
+    },
+    [api],
+  );
+
+  const getTopUsersQuery = useQuery({
+    queryKey: [ReactQueryKeys.GET_TOP_USERS],
+    queryFn: () => getTopUsers({ from: params.from, to: params.to }),
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
+
   const applyUserSearchFilters = useCallback(
     (filters: Partial<GetAllCustomersRequest['payload']>) => {
       updateParams({
@@ -162,6 +179,7 @@ export function useUsers(userId?: string) {
     userDetailsQuery,
     getUserStatsQuery,
     getUserRegistrationGraphDataQuery,
+    getTopUsersQuery,
 
     // Mutations
     approveUserMutation,

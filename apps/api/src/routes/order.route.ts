@@ -14,6 +14,7 @@ import {
   getOrderRevenueStats,
   getOrderStatusGraphData,
   getOrderRevenueGraphData,
+  getRecentOrders,
 } from '@/controllers/order.controller';
 
 import {
@@ -27,6 +28,7 @@ import {
   getOrderRevenueStatsSchema,
   getOrderStatusGraphDataSchema,
   getOrderRevenueGraphDataSchema,
+  getRecentOrdersSchema,
 } from '@/validators/order.validator';
 
 const router: Router = express.Router();
@@ -39,7 +41,7 @@ router.get(
   getUserOrders,
 );
 router.get(
-  '/:orderId',
+  '/details/:orderId',
   isAuthenticated,
   validate(getUserOrderDetailsSchema),
   getOrderDetails,
@@ -53,7 +55,7 @@ router.post(
 
 router.get('/all', isAdmin, validate(getAllOrdersSchema), getAllOrders);
 router.get(
-  '/details/:orderId',
+  '/details/admin/:orderId',
   isAdmin,
   validate(getOrderDetailsAdminSchema),
   getOrderDetailsAdmin,
@@ -76,6 +78,12 @@ router.get(
   isAdmin,
   validate(getOrderRevenueGraphDataSchema),
   getOrderRevenueGraphData,
+);
+router.get(
+  '/recent',
+  isAdmin,
+  validate(getRecentOrdersSchema),
+  getRecentOrders,
 );
 
 export default router;

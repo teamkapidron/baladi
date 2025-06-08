@@ -15,15 +15,15 @@ function Header() {
   }, []);
 
   return (
-    <nav className="bg-background text-foreground flex items-center space-x-4">
+    <nav className="flex items-center space-x-4">
       <div className="md:hidden">
-        <span className="text-primary text-xl font-semibold">
+        <span className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-primary)]">
           {toTitleCase(tab || 'Home')}
         </span>
       </div>
 
-      <div className="hidden items-center space-x-4 md:flex">
-        <span className="text-primary text-xl font-semibold">
+      <div className="hidden h-16 items-center space-x-4 md:flex">
+        <span className="font-[family-name:var(--font-sora)] text-xl font-bold text-[var(--baladi-primary)]">
           {toTitleCase(tab || 'Home')}
         </span>
       </div>

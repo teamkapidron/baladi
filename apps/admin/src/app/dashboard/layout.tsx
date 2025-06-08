@@ -1,17 +1,7 @@
 import { useMemo } from 'react';
+import DashboardLayout from '@/components/layouts/dashboard-layout/dashboard-layout';
 
-import DashboardLayout from '@repo/ui/components/layouts/dashboard-layout/dashboard-layout';
-import {
-  Home,
-  Users,
-  Package,
-  ShoppingCart,
-  Boxes,
-  Mail,
-  Tag,
-} from '@repo/ui/lib/icons';
-
-import type { LinkItem } from '@repo/ui/components/layouts/dashboard-layout/types';
+import type { LinkItem } from '@/components/layouts/dashboard-layout/types';
 
 interface AdminDashboardLayoutProps {
   children: React.ReactNode;
@@ -25,38 +15,38 @@ export default function AdminDashboardLayout(props: AdminDashboardLayoutProps) {
       {
         title: 'Home',
         href: '/dashboard',
-        icon: <Home />,
+        icon: 'home',
       },
       {
         title: 'Products',
         href: '/dashboard/products',
-        icon: <Package />,
+        icon: 'package',
       },
       {
         title: 'Inventory',
         href: '/dashboard/inventory',
-        icon: <Boxes />,
+        icon: 'boxes',
       },
       {
         title: 'Orders',
         href: '/dashboard/orders',
-        icon: <ShoppingCart />,
+        icon: 'shopping-cart',
       },
       {
         title: 'Customers',
         href: '/dashboard/customers',
-        icon: <Users />,
+        icon: 'users',
       },
 
       {
         title: 'Newsletter',
         href: '/dashboard/newsletter',
-        icon: <Mail />,
+        icon: 'mail',
       },
       {
         title: 'Promotions',
-        href: '/dashboard/promotions',
-        icon: <Tag />,
+        href: '/dashboard/promotion',
+        icon: 'tag',
       },
     ],
     [],
@@ -67,22 +57,22 @@ export default function AdminDashboardLayout(props: AdminDashboardLayoutProps) {
       {
         title: 'Home',
         href: '/dashboard',
-        icon: <Home />,
+        icon: 'home',
       },
       {
         title: 'Products',
         href: '/dashboard/products',
-        icon: <Package />,
+        icon: 'package',
       },
       {
         title: 'Orders',
         href: '/dashboard/orders',
-        icon: <ShoppingCart />,
+        icon: 'shopping-cart',
       },
       {
         title: 'Customers',
         href: '/dashboard/customers',
-        icon: <Users />,
+        icon: 'users',
       },
     ],
     [],
@@ -92,6 +82,7 @@ export default function AdminDashboardLayout(props: AdminDashboardLayoutProps) {
     <DashboardLayout
       sidebarLinks={sidebarLinks}
       bottomBarLinks={bottomBarLinks}
+      sidebarSlice={5}
     >
       {children}
     </DashboardLayout>

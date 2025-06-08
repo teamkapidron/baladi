@@ -1,3 +1,12 @@
+import {
+  endOfDay,
+  startOfDay,
+  parse,
+  subDays,
+  addDays,
+  format,
+} from 'date-fns';
+
 import { DateMatchStage } from './interfaces/date';
 
 function getOrdinalSuffix(day: number) {
@@ -33,12 +42,8 @@ export function getDateMatchStage(
   const matchStage: DateMatchStage = {};
 
   if (!from && !to && defaultDays) {
-    const toDate = new Date();
-    toDate.setHours(23, 59, 59, 999);
-
-    const fromDate = new Date();
-    fromDate.setDate(fromDate.getDate() - defaultDays);
-    fromDate.setHours(0, 0, 0, 0);
+    const toDate = endOfDay(new Date());
+    const fromDate = startOfDay(subDays(toDate, defaultDays));
 
     matchStage[key] = {
       $gte: fromDate,
@@ -52,14 +57,12 @@ export function getDateMatchStage(
     const dateCondition: DateMatchStage[keyof DateMatchStage] = {};
 
     if (from) {
-      const fromDate = new Date(from);
-      fromDate.setHours(0, 0, 0, 0);
+      const fromDate = parse(from, 'yyyy-MM-dd', new Date());
       dateCondition.$gte = fromDate;
     }
 
     if (to) {
-      const toDate = new Date(to);
-      toDate.setHours(23, 59, 59, 999);
+      const toDate = parse(to, 'yyyy-MM-dd', new Date());
       dateCondition.$lte = toDate;
     }
 
@@ -80,18 +83,11 @@ export function fillMissingDates<T extends Record<string, any>>(
   let startDate: Date, endDate: Date;
 
   if (from && to) {
-    startDate = new Date(from);
-    startDate.setHours(0, 0, 0, 0);
-
-    endDate = new Date(to);
-    endDate.setHours(23, 59, 59, 999);
+    startDate = parse(from, 'yyyy-MM-dd', new Date());
+    endDate = parse(to, 'yyyy-MM-dd', new Date());
   } else {
-    endDate = new Date();
-    endDate.setHours(23, 59, 59, 999);
-
-    startDate = new Date();
-    startDate.setDate(endDate.getDate() - defaultDays);
-    startDate.setHours(0, 0, 0, 0);
+    endDate = endOfDay(new Date());
+    startDate = startOfDay(subDays(endDate, defaultDays));
   }
 
   const dataMap: Record<string, T> = {};
@@ -103,10 +99,9 @@ export function fillMissingDates<T extends Record<string, any>>(
   });
 
   const result: T[] = [];
-  const currentDate = new Date(startDate);
 
-  while (currentDate <= endDate) {
-    const dateStr = currentDate.toISOString().split('T')[0];
+  while (startDate <= endDate) {
+    const dateStr = format(startDate, 'yyyy-MM-dd');
     const formattedDate = formatDate(dateStr);
 
     let existingData: T | undefined = undefined;
@@ -132,7 +127,7 @@ export function fillMissingDates<T extends Record<string, any>>(
       result.push(newEntry as T);
     }
 
-    currentDate.setDate(currentDate.getDate() + 1);
+    startDate = addDays(startDate, 1);
   }
 
   return result;

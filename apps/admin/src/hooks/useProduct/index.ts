@@ -12,6 +12,8 @@ import type {
   CreateProductRequest,
   UpdateProductRequest,
   DeleteProductRequest,
+  LowStockProductsRequest,
+  TopProductsRequest,
 } from './types';
 import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
 
@@ -86,6 +88,42 @@ export function useProduct() {
     mutationFn: deleteProduct,
   });
 
+  const lowStockProducts = useCallback(
+    async (payload: LowStockProductsRequest['payload']) => {
+      const response = await api.get<LowStockProductsRequest['response']>(
+        '/product/low-stock',
+        { params: payload },
+      );
+      return response.data.data;
+    },
+    [api],
+  );
+
+  const lowStockProductsQuery = useQuery({
+    queryKey: [ReactQueryKeys.GET_LOW_STOCK_PRODUCTS, JSON.stringify(params)],
+    queryFn: () => lowStockProducts(params),
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: true,
+  });
+
+  const topProducts = useCallback(
+    async (payload: TopProductsRequest['payload']) => {
+      const response = await api.get<TopProductsRequest['response']>(
+        '/product/top',
+        { params: payload },
+      );
+      return response.data.data;
+    },
+    [api],
+  );
+
+  const topProductsQuery = useQuery({
+    queryKey: [ReactQueryKeys.GET_TOP_PRODUCTS, JSON.stringify(params)],
+    queryFn: () => topProducts(params),
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: true,
+  });
+
   const applyProductSearchFilters = useCallback(
     (filters: Partial<GetAllProductsRequest['payload']>) => {
       updateParams({
@@ -100,6 +138,8 @@ export function useProduct() {
     // Queries
     products,
     isLoading,
+    lowStockProductsQuery,
+    topProductsQuery,
 
     // Mutations
     createProductMutation,

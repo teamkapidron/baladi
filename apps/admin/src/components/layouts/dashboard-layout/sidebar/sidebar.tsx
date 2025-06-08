@@ -21,15 +21,15 @@ function Sidebar(props: SidebarProps) {
   }, [links, isCollapsed]);
 
   return (
-    <aside
+    <nav
       className={cn(
-        'flex h-screen w-full flex-col',
-        isCollapsed && 'items-center gap-y-3',
+        'flex w-full flex-col',
+        isCollapsed ? 'items-center space-y-3 px-3' : 'space-y-1',
         className,
       )}
     >
       {sidebarItems}
-    </aside>
+    </nav>
   );
 }
 

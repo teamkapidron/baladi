@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { isValidObjectId } from 'mongoose';
 import { UserType } from '@repo/types/user';
 import { UserStatusFilter } from '@/types/user.types';
+import { dateSchema } from '@/validators/schemas/date.schema';
 
 export const getAllUsersSchema = z.object({
   query: z.object({
@@ -83,6 +84,13 @@ export const getUserStatsSchema = z.object({
   }),
 });
 
+export const topUsersSchema = z.object({
+  query: z.object({
+    from: dateSchema,
+    to: dateSchema,
+  }),
+});
+
 export type GetAllUsersSchema = z.infer<typeof getAllUsersSchema>;
 export type GetUserDetailsSchema = z.infer<typeof getUserDetailsSchema>;
 export type ApproveUserSchema = z.infer<typeof approveUserSchema>;
@@ -90,3 +98,4 @@ export type GetUserRegistrationGraphDataSchema = z.infer<
   typeof getUserRegistrationGraphDataSchema
 >;
 export type GetUserStatsSchema = z.infer<typeof getUserStatsSchema>;
+export type TopUsersSchema = z.infer<typeof topUsersSchema>;

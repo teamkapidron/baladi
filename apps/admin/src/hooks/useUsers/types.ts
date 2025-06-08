@@ -75,3 +75,21 @@ export type GetUserStatsRequest = ApiData<
     unverifiedUsers: number;
   }
 >;
+
+export type TopUsersRequest = ApiData<
+  {
+    from?: string;
+    to?: string;
+  },
+  {
+    topUsers: {
+      user: {
+        _id: string;
+        userName: string;
+        userEmail: string;
+      };
+      totalAmount: number;
+      totalOrders: number;
+    }[];
+  }
+>;

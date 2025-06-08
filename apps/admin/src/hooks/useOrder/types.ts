@@ -39,6 +39,7 @@ export type GetOrderStatsRequest = ApiData<
   },
   {
     totalOrders: number;
+    pendingOrders: number;
     confirmedOrders: number;
     shippedOrders: number;
     deliveredOrders: number;
@@ -86,6 +87,25 @@ export type GetOrderRevenueGraphDataRequest = ApiData<
       totalRevenue: number;
       totalCost: number;
       totalProfit: number;
+    }[];
+  }
+>;
+
+export type GetRecentOrdersRequest = ApiData<
+  {
+    from?: string;
+    to?: string;
+    limit?: string;
+  },
+  {
+    orders: {
+      _id: string;
+      totalAmount: number;
+      createdAt: Date;
+      itemsCount: number;
+      user: {
+        name: string;
+      };
     }[];
   }
 >;

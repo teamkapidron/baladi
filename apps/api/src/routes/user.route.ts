@@ -9,6 +9,7 @@ import {
   approveUser,
   getUserRegistrationGraphData,
   getUserStats,
+  getTopUsers,
 } from '@/controllers/user.controller';
 
 import {
@@ -17,6 +18,7 @@ import {
   approveUserSchema,
   getUserRegistrationGraphDataSchema,
   getUserStatsSchema,
+  topUsersSchema,
 } from '@/validators/user.validator';
 
 const router: Router = express.Router();
@@ -36,5 +38,6 @@ router.get(
   getUserRegistrationGraphData,
 );
 router.get('/stats', isAdmin, validate(getUserStatsSchema), getUserStats);
+router.get('/top', isAdmin, validate(topUsersSchema), getTopUsers);
 
 export default router;

@@ -2,13 +2,18 @@
 
 // Schemas
 import User from '@/models/user.model';
+import Order from '@/models/order.model';
 
 // Utils
 import {
   getUserFiltersFromQuery,
   getUsersCountBeforeFromDate,
 } from '@/utils/user.utils';
-import { formatDate, getDateMatchStage } from '@/utils/common/date.util';
+import {
+  fillMissingDates,
+  formatDate,
+  getDateMatchStage,
+} from '@/utils/common/date.util';
 import { sendResponse } from '@/utils/common/response.util';
 
 // Handlers
@@ -23,6 +28,7 @@ import type {
   ApproveUserSchema,
   GetUserRegistrationGraphDataSchema,
   GetUserStatsSchema,
+  TopUsersSchema,
 } from '@/validators/user.validator';
 
 export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
@@ -126,12 +132,30 @@ export const getUserRegistrationGraphData = asyncHandler(
       };
     });
 
+    const preFilledData = fillMissingDates(
+      formattedData,
+      from,
+      to,
+      30,
+      'date',
+      ['newRegistrations'],
+    );
+
+    let cumulativeTotal = initialTotal;
+    const finalData = preFilledData.map((item) => {
+      cumulativeTotal += item.newRegistrations;
+      return {
+        ...item,
+        totalUsers: cumulativeTotal,
+      };
+    });
+
     sendResponse(
       res,
       200,
       'User registration graph data fetched successfully',
       {
-        data: formattedData,
+        data: finalData,
       },
     );
   },
@@ -168,3 +192,57 @@ export const getUserStats = asyncHandler(
     });
   },
 );
+
+export const getTopUsers = asyncHandler(async (req: Request, res: Response) => {
+  const { from, to } = req.query as TopUsersSchema['query'];
+
+  const matchStage = getDateMatchStage('createdAt', from, to);
+
+  const topUsers = await Order.aggregate([
+    {
+      $match: {
+        ...matchStage,
+      },
+    },
+    {
+      $group: {
+        _id: '$userId',
+        totalAmount: { $sum: '$totalAmount' },
+        totalOrders: { $sum: 1 },
+      },
+    },
+    {
+      $sort: { totalAmount: -1 },
+    },
+    {
+      $limit: 10,
+    },
+    {
+      $lookup: {
+        from: 'users',
+        localField: '_id',
+        foreignField: '_id',
+        as: 'user',
+      },
+    },
+    {
+      $unwind: '$user',
+    },
+    {
+      $project: {
+        _id: 0,
+        user: {
+          _id: '$user._id',
+          userName: '$user.userName',
+          userEmail: '$user.userEmail',
+        },
+        totalAmount: 1,
+        totalOrders: 1,
+      },
+    },
+  ]);
+
+  sendResponse(res, 200, 'Top users fetched successfully', {
+    topUsers,
+  });
+});

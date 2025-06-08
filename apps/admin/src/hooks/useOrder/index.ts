@@ -14,6 +14,7 @@ import type {
   GetOrderRevenueStatsRequest,
   GetOrderStatusGraphDataRequest,
   GetOrderRevenueGraphDataRequest,
+  GetRecentOrdersRequest,
 } from './types';
 import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
 
@@ -51,7 +52,7 @@ export function useOrder(orderId?: string) {
   const getOrderDetailsAdmin = useCallback(
     async (payload: GetOrderDetailsAdminRequest['payload']) => {
       const response = await api.get<GetOrderDetailsAdminRequest['response']>(
-        `/order/details/${payload.orderId}`,
+        `/order/details/admin/${payload.orderId}`,
       );
       return response.data.data;
     },
@@ -142,6 +143,24 @@ export function useOrder(orderId?: string) {
     refetchOnWindowFocus: true,
   });
 
+  const getRecentOrders = useCallback(
+    async (payload: GetRecentOrdersRequest['payload']) => {
+      const response = await api.get<GetRecentOrdersRequest['response']>(
+        '/order/recent',
+        { params: payload },
+      );
+      return response.data.data;
+    },
+    [api],
+  );
+
+  const recentOrdersQuery = useQuery({
+    queryKey: [ReactQueryKeys.GET_RECENT_ORDERS, JSON.stringify(params)],
+    queryFn: () => getRecentOrders(params),
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: true,
+  });
+
   const applyOrderSearchFilters = useCallback(
     (filters: Partial<GetAllOrdersRequest['payload']>) => {
       updateParams({
@@ -178,6 +197,7 @@ export function useOrder(orderId?: string) {
     orderRevenueStatsQuery,
     orderStatusGraphDataQuery,
     orderRevenueGraphDataQuery,
+    recentOrdersQuery,
 
     // Mutations
 

@@ -6,6 +6,6 @@
       "@repo/ui/*": ["./src/*"]
     }
   },
-  "include": ["src"],
+  "include": ["src", "../../apps/admin/src/components/layouts"],
   "exclude": ["node_modules"]
 }

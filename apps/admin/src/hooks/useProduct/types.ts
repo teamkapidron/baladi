@@ -80,3 +80,48 @@ export type DeleteProductRequest = ApiData<
   },
   undefined
 >;
+
+export type LowStockProductsRequest = ApiData<
+  {
+    page?: string;
+    limit?: string;
+    lowStockThreshold?: string;
+  },
+  {
+    lowStock: {
+      lowStockProducts: Product[];
+      totalRecords: number;
+      totalPages: number;
+      currentPage: number;
+      perPage: number;
+    };
+    outOfStock: {
+      outOfStockProducts: Product[];
+      totalRecords: number;
+      totalPages: number;
+      currentPage: number;
+      perPage: number;
+    };
+  }
+>;
+
+export type TopProductsRequest = ApiData<
+  {
+    limit?: string;
+    from?: string;
+    to?: string;
+  },
+  {
+    products: {
+      product: {
+        _id: string;
+        name: string;
+        image: string;
+        slug: string;
+        unitPrice: number;
+      };
+      totalQuantity: number;
+      totalOrders: number;
+    }[];
+  }
+>;

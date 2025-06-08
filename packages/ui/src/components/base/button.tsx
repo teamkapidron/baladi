@@ -115,7 +115,8 @@ function Button({
         buttonVariants({ variant, size }),
         fullWidth && 'w-full',
         isIconOnly && !iconLeft && !iconRight && 'p-0',
-        className, // Ensure className is applied last so custom styles can override defaults
+        'cursor-pointer',
+        className,
       )}
       disabled={disabled || isLoading}
       {...props}

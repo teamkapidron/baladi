@@ -32,6 +32,7 @@ import type {
   GetOrderRevenueStatsSchema,
   GetOrderStatusGraphDataSchema,
   GetOrderRevenueGraphDataSchema,
+  GetRecentOrdersSchema,
 } from '@/validators/order.validator';
 import { OrderItem, OrderStatus } from '@repo/types/order';
 import { OrderRevenueStats } from '@/types/order.types';
@@ -320,6 +321,10 @@ export const getOrderStats = asyncHandler(
     const matchStage = getDateMatchStage('createdAt', from, to);
 
     const totalOrders = await Order.countDocuments(matchStage);
+    const pendingOrders = await Order.countDocuments({
+      ...matchStage,
+      status: OrderStatus.PENDING,
+    });
     const confirmedOrders = await Order.countDocuments({
       ...matchStage,
       status: OrderStatus.CONFIRMED,
@@ -339,6 +344,7 @@ export const getOrderStats = asyncHandler(
 
     sendResponse(res, 200, 'Order stats fetched successfully', {
       totalOrders,
+      pendingOrders,
       confirmedOrders,
       shippedOrders,
       deliveredOrders,
@@ -563,4 +569,40 @@ export const getOrderRevenueGraphData = asyncHandler(
   },
 );
 
+export const getRecentOrders = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { from, to, limit } = req.query as GetRecentOrdersSchema['query'];
+
+    const limitNumber = parseInt(limit ?? '10', 10);
+    const matchStage = getDateMatchStage('createdAt', from, to);
+
+    const orders = await Order.aggregate([
+      { $match: matchStage },
+      { $sort: { createdAt: -1 } },
+      { $limit: limitNumber },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          totalAmount: 1,
+          createdAt: 1,
+          itemsCount: { $size: '$items' },
+          'user.name': 1,
+        },
+      },
+      {
+        $unwind: '$user',
+      },
+    ]);
+
+    sendResponse(res, 200, 'Recent orders fetched successfully', { orders });
+  },
+);
 /****************** END: Admin Controllers ********************/
