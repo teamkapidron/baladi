@@ -15,16 +15,8 @@ export const productSchema = z.object({
 
   costPrice: z.number().min(0, 'Cost price must be positive'),
   salePrice: z.number().min(0, 'Sale price must be positive'),
-  unitPrice: z.number().min(0, 'Unit price must be positive'),
 
-  stock: z.number().min(0, 'Stock must be positive').default(0),
-
-  shelfLife: z
-    .object({
-      duration: z.number().min(1, 'Shelf life duration must be positive'),
-      unit: z.enum(['days', 'months', 'years']),
-    })
-    .optional(),
+  noOfUnits: z.number().min(0, 'Number of units must be positive'),
 
   categories: z.array(
     z.string().refine((value) => Types.ObjectId.isValid(value), {
@@ -44,4 +36,14 @@ export const productSchema = z.object({
     })
     .optional(),
   weight: z.number().min(0, 'Weight must be positive').optional(),
+
+  supplier: z
+    .object({
+      number: z.string().optional(),
+      name: z.string().optional(),
+      location: z.string().optional(),
+      countryOfOrigin: z.string().optional(),
+      hsCode: z.string().optional(),
+    })
+    .optional(),
 });

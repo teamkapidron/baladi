@@ -18,14 +18,8 @@ export interface Product {
 
   costPrice: number;
   salePrice: number;
-  unitPrice: number;
 
-  stock: number;
-
-  shelfLife?: {
-    duration: number;
-    unit: 'days' | 'months' | 'years';
-  };
+  noOfUnits: number;
 
   categories?: string[];
 
@@ -39,6 +33,14 @@ export interface Product {
     height: number;
   };
   weight?: number;
+
+  supplier?: {
+    number: string;
+    name: string;
+    location: string;
+    countryOfOrigin: string;
+    hsCode: string;
+  };
 
   createdAt: Date;
   updatedAt: Date;

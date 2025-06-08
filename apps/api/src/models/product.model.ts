@@ -48,26 +48,10 @@ const productSchema = new Schema<IProduct>(
       type: Number,
       required: true,
     },
-    unitPrice: {
-      type: Number,
-      required: true,
-    },
 
-    stock: {
+    noOfUnits: {
       type: Number,
       required: true,
-      default: 0,
-    },
-    shelfLife: {
-      duration: {
-        type: Number,
-        required: false,
-      },
-      unit: {
-        type: String,
-        enum: ['days', 'months', 'years'],
-        required: false,
-      },
     },
 
     categories: [
@@ -77,6 +61,7 @@ const productSchema = new Schema<IProduct>(
         required: false,
       },
     ],
+
     images: {
       type: [String],
       required: false,
@@ -87,13 +72,13 @@ const productSchema = new Schema<IProduct>(
       required: true,
       default: true,
     },
-
     visibility: {
       type: String,
       required: true,
       enum: Object.values(Visibility),
       default: Visibility.BOTH,
     },
+
     dimensions: {
       length: {
         type: Number,
@@ -111,6 +96,29 @@ const productSchema = new Schema<IProduct>(
     weight: {
       type: Number,
       required: false,
+    },
+
+    supplier: {
+      number: {
+        type: String,
+        required: false,
+      },
+      name: {
+        type: String,
+        required: false,
+      },
+      location: {
+        type: String,
+        required: false,
+      },
+      countryOfOrigin: {
+        type: String,
+        required: false,
+      },
+      hsCode: {
+        type: String,
+        required: false,
+      },
     },
   },
   {

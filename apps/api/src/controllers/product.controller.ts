@@ -4,12 +4,17 @@ import { PipelineStage, Types } from 'mongoose';
 // Schemas
 import Order from '@/models/order.model';
 import Product from '@/models/product.model';
+import Inventory from '@/models/inventory.model';
 
 // Utils
 import { generateSlug } from '@/utils/common/string.util';
 import { sendResponse } from '@/utils/common/response.util';
 import { getDateMatchStage } from '@/utils/common/date.util';
-import { getProductFilterFromQuery } from '@/utils/product.utils';
+import {
+  buildStockPipeline,
+  buildStockCountPipeline,
+  getProductFilterFromQuery,
+} from '@/utils/product.utils';
 
 // Handlers
 import { asyncHandler } from '@/handlers/async.handler';
@@ -48,7 +53,7 @@ export const getProducts = asyncHandler(async (req: Request, res: Response) => {
       $match: {
         ...queryObject,
         isActive: true,
-        visibility: Visibility.EXTERNAL,
+        visibility: { $in: [Visibility.EXTERNAL, Visibility.BOTH] },
       },
     },
     {
@@ -66,6 +71,25 @@ export const getProducts = asyncHandler(async (req: Request, res: Response) => {
             },
           },
         ],
+      },
+    },
+    {
+      $lookup: {
+        from: 'inventories',
+        localField: '_id',
+        foreignField: 'productId',
+        as: 'inventory',
+      },
+    },
+    {
+      $addFields: {
+        stock: { $sum: '$inventory.quantity' },
+        bestBeforeDate: { $min: '$inventory.expirationDate' },
+      },
+    },
+    {
+      $project: {
+        inventory: 0,
       },
     },
   ];
@@ -115,7 +139,11 @@ export const getProducts = asyncHandler(async (req: Request, res: Response) => {
 
   const products = await Product.aggregate(pipeline);
 
-  const totalProducts = await Product.countDocuments(queryObject);
+  const totalProducts = await Product.countDocuments({
+    ...queryObject,
+    isActive: true,
+    visibility: { $in: [Visibility.EXTERNAL, Visibility.BOTH] },
+  });
 
   sendResponse(res, 200, 'Products fetched successfully', {
     products,
@@ -130,13 +158,41 @@ export const getProductById = asyncHandler(
   async (req: Request, res: Response) => {
     const { productId } = req.params as GetProductByIdSchema['params'];
 
-    const product = await Product.findById(productId);
+    const product = await Product.aggregate([
+      {
+        $match: { _id: new Types.ObjectId(productId) },
+      },
+      {
+        $lookup: {
+          from: 'inventories',
+          localField: '_id',
+          foreignField: 'productId',
+          as: 'inventory',
+        },
+      },
+      {
+        $unwind: '$inventory',
+      },
+      {
+        $addFields: {
+          stock: '$inventory.quantity',
+          bestBeforeDate: { $min: '$inventory.expirationDate' },
+        },
+      },
+      {
+        $project: {
+          inventory: 0,
+        },
+      },
+    ]);
 
     if (!product) {
       throw new ErrorHandler(404, 'Product not found', 'NOT_FOUND');
     }
 
-    sendResponse(res, 200, 'Product fetched successfully', { product });
+    sendResponse(res, 200, 'Product fetched successfully', {
+      product: product[0],
+    });
   },
 );
 
@@ -144,13 +200,41 @@ export const getProductBySlug = asyncHandler(
   async (req: Request, res: Response) => {
     const { slug } = req.params as GetProductBySlugSchema['params'];
 
-    const product = await Product.findOne({ slug });
+    const product = await Product.aggregate([
+      {
+        $match: { slug },
+      },
+      {
+        $lookup: {
+          from: 'inventories',
+          localField: '_id',
+          foreignField: 'productId',
+          as: 'inventory',
+        },
+      },
+      {
+        $unwind: '$inventory',
+      },
+      {
+        $addFields: {
+          stock: '$inventory.quantity',
+          bestBeforeDate: { $min: '$inventory.expirationDate' },
+        },
+      },
+      {
+        $project: {
+          inventory: 0,
+        },
+      },
+    ]);
 
     if (!product) {
       throw new ErrorHandler(404, 'Product not found', 'NOT_FOUND');
     }
 
-    sendResponse(res, 200, 'Product fetched successfully', { product });
+    sendResponse(res, 200, 'Product fetched successfully', {
+      product: product[0],
+    });
   },
 );
 
@@ -256,13 +340,54 @@ export const getAllProducts = asyncHandler(
     const { queryObject, perPage, currentPage } =
       getProductFilterFromQuery(query);
 
-    const products = await Product.find(queryObject)
-      .populate({
-        path: 'categories',
-        select: 'name slug',
-      })
-      .limit(perPage)
-      .skip(perPage * (currentPage - 1));
+    const products = await Product.aggregate([
+      {
+        $match: queryObject,
+      },
+      {
+        $lookup: {
+          from: 'categories',
+          localField: 'categories',
+          foreignField: '_id',
+          as: 'categories',
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                name: 1,
+                slug: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $lookup: {
+          from: 'inventories',
+          localField: '_id',
+          foreignField: 'productId',
+          as: 'inventory',
+        },
+      },
+      {
+        $addFields: {
+          stock: {
+            $sum: '$inventory.quantity',
+          },
+        },
+      },
+      {
+        $project: {
+          inventory: 0,
+        },
+      },
+      {
+        $skip: perPage * (currentPage - 1),
+      },
+      {
+        $limit: perPage,
+      },
+    ]);
 
     const totalProducts = await Product.countDocuments(queryObject);
 
@@ -308,10 +433,7 @@ export const updateProduct = asyncHandler(
       productId,
       updateData,
       { new: true, runValidators: true },
-    ).populate({
-      path: 'categories',
-      select: 'name slug',
-    });
+    );
 
     sendResponse(res, 200, 'Product updated successfully', {
       product: updatedProduct,
@@ -336,49 +458,27 @@ export const deleteProduct = asyncHandler(
 
 export const lowStockProducts = asyncHandler(
   async (req: Request, res: Response) => {
-    const { lowStockThreshold, page, limit } =
-      req.query as LowStockProductsSchema['query'];
+    const { lowStockThreshold } = req.query as LowStockProductsSchema['query'];
 
-    const perPage = parseInt(limit ?? '10', 10);
-    const currentPage = parseInt(page ?? '1', 10);
-    const stockThreshold = Number(lowStockThreshold) || 5;
+    const stockThreshold = parseInt(lowStockThreshold ?? '5', 10);
 
-    const lowStockProducts = await Product.find({
-      stock: { $gt: 0, $lte: stockThreshold },
-    })
-      .select('name stock costPrice sellingPrice')
-      .sort({ stock: -1 })
-      .limit(perPage)
-      .skip(perPage * (currentPage - 1));
-
-    const outOfStockProducts = await Product.find({
-      stock: 0,
-    })
-      .select('name stock costPrice sellingPrice')
-      .sort({ stock: -1 })
-      .limit(perPage)
-      .skip(perPage * (currentPage - 1));
-
-    const lowStockCount = await Product.countDocuments({
-      stock: { $gt: 0, $lte: stockThreshold },
-    });
-    const outOfStockCount = await Product.countDocuments({ stock: 0 });
+    const [
+      outOfStockProducts,
+      lowStockProducts,
+      outOfStockCount,
+      lowStockCount,
+    ] = await Promise.all([
+      Product.aggregate(buildStockPipeline(0)),
+      Product.aggregate(buildStockPipeline(stockThreshold)),
+      Product.aggregate(buildStockCountPipeline(0)),
+      Product.aggregate(buildStockCountPipeline(stockThreshold)),
+    ]);
 
     sendResponse(res, 200, 'Low stock products fetched successfully', {
-      lowStock: {
-        lowStockProducts,
-        totalRecords: lowStockCount,
-        totalPages: Math.ceil(lowStockCount / perPage),
-        currentPage,
-        perPage,
-      },
-      outOfStock: {
-        outOfStockProducts,
-        totalRecords: outOfStockCount,
-        totalPages: Math.ceil(outOfStockCount / perPage),
-        currentPage,
-        perPage,
-      },
+      outOfStockProducts,
+      lowStockProducts,
+      outOfStockCount: outOfStockCount[0]?.count ?? 0,
+      lowStockCount: lowStockCount[0]?.count ?? 0,
     });
   },
 );

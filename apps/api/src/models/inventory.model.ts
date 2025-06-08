@@ -12,6 +12,7 @@ const inventorySchema = new Schema<IInventory>(
       type: Number,
       required: true,
     },
+
     shelfLife: {
       duration: {
         type: Number,

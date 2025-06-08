@@ -10,8 +10,6 @@ export const getProductsSchema = z.object({
     page: z.string().optional(),
     limit: z.string().optional(),
     category: z.string().optional(),
-    minPrice: z.string().optional(),
-    maxPrice: z.string().optional(),
   }),
 });
 
@@ -61,8 +59,6 @@ export const getAllProductsSchema = z.object({
     page: z.string().optional(),
     limit: z.string().optional(),
     category: z.string().optional(),
-    minPrice: z.string().optional(),
-    maxPrice: z.string().optional(),
     isActive: z.enum(['true', 'false']).optional(),
     visibility: z.string().optional(),
   }),
@@ -97,8 +93,6 @@ export const deleteProductSchema = z.object({
 
 export const lowStockProductsSchema = z.object({
   query: z.object({
-    page: z.string().optional(),
-    limit: z.string().optional(),
     lowStockThreshold: z.string().optional(),
   }),
 });

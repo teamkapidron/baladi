@@ -20,6 +20,9 @@ import productRoute from '@/routes/product.route';
 import addressRoute from '@/routes/address.route';
 import favoriteRoute from '@/routes/favorite.route';
 import categoryRoute from '@/routes/category.route';
+import discountRoute from '@/routes/discount.route';
+import inventoryRoute from '@/routes/inventory.route';
+import marketingRoute from '@/routes/marketing.route';
 
 const app = express();
 
@@ -44,6 +47,9 @@ app.use('/api/product', productRoute);
 app.use('/api/address', addressRoute);
 app.use('/api/category', categoryRoute);
 app.use('/api/favorite', favoriteRoute);
+app.use('/api/discount', discountRoute);
+app.use('/api/inventory', inventoryRoute);
+app.use('/api/marketing', marketingRoute);
 
 app.use(errorMiddleware);
 

@@ -1,41 +1,19 @@
 import { ApiData } from '@/utils/types.util';
 import type { Product, Visibility } from '@repo/types/product';
 
-export interface ProductRequestBody {
-  name: string;
-  slug: string;
-  description: string;
-  shortDescription: string;
+export type ProductRequestBody = Omit<
+  Product,
+  '_id' | 'createdAt' | 'updatedAt'
+>;
 
-  sku: string;
-  barcode: string;
-
-  vat: number;
-
-  costPrice: number;
-  salePrice: number;
-  unitPrice: number;
-
+export type ProductResponse = Omit<Product, 'categories'> & {
+  categories?: {
+    _id: string;
+    name: string;
+    slug: string;
+  }[];
   stock: number;
-
-  shelfLife: {
-    duration: number;
-    unit: 'days' | 'months' | 'years';
-  };
-
-  categories: string[];
-  images: string[];
-  tags: string[];
-  isActive: boolean;
-  visibility: Visibility;
-
-  dimensions: {
-    length: number;
-    width: number;
-    height: number;
-  };
-  weight: number;
-}
+};
 
 export type GetAllProductsRequest = ApiData<
   {
@@ -43,13 +21,11 @@ export type GetAllProductsRequest = ApiData<
     page?: string;
     limit?: string;
     category?: string;
-    minPrice?: string;
-    maxPrice?: string;
     isActive?: 'true' | 'false';
     visibility?: Visibility;
   },
   {
-    products: Product[];
+    products: ProductResponse[];
     totalProducts: number;
     currentPage: number;
     perPage: number;
@@ -83,25 +59,26 @@ export type DeleteProductRequest = ApiData<
 
 export type LowStockProductsRequest = ApiData<
   {
-    page?: string;
-    limit?: string;
     lowStockThreshold?: string;
   },
   {
-    lowStock: {
-      lowStockProducts: Product[];
-      totalRecords: number;
-      totalPages: number;
-      currentPage: number;
-      perPage: number;
-    };
-    outOfStock: {
-      outOfStockProducts: Product[];
-      totalRecords: number;
-      totalPages: number;
-      currentPage: number;
-      perPage: number;
-    };
+    outOfStockProducts: {
+      _id: string;
+      name: string;
+      categories: {
+        _id: string;
+        name: string;
+      }[];
+    }[];
+    lowStockProducts: {
+      _id: string;
+      name: string;
+      categories: {
+        _id: string;
+      }[];
+    }[];
+    outOfStockCount: number;
+    lowStockCount: number;
   }
 >;
 

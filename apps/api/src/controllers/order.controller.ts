@@ -1,10 +1,11 @@
 // Node Modules
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 
 // Schemas
 import Order from '@/models/order.model';
 import Product from '@/models/product.model';
 import Address from '@/models/address.model';
+import Inventory from '@/models/inventory.model';
 
 // Utils
 import { formatDate } from '@/utils/common/date.util';
@@ -34,10 +35,15 @@ import type {
   GetOrderRevenueGraphDataSchema,
   GetRecentOrdersSchema,
 } from '@/validators/order.validator';
-import { OrderItem, OrderStatus } from '@repo/types/order';
+import {
+  OrderCancellationReason,
+  OrderItem,
+  OrderStatus,
+} from '@repo/types/order';
 import { OrderRevenueStats } from '@/types/order.types';
+import { IInventory } from '@/models/interfaces/inventory.model';
 
-/****************** START: User Controllers ********************/
+/*********************** START: User Controllers ***********************/
 export const placeOrder = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user!._id;
   const { items, shippingAddressId } = req.body as PlaceOrderSchema['body'];
@@ -59,9 +65,16 @@ export const placeOrder = asyncHandler(async (req: Request, res: Response) => {
     const products = await Product.find({ _id: { $in: productIds } })
       .lean()
       .session(session);
+    const inventoryRecords = await Inventory.find({
+      productId: { $in: productIds },
+      quantity: { $gt: 0 },
+    })
+      .sort({ expirationDate: 1 }) // FIFO - use items expiring first
+      .session(session);
 
     let totalAmount = 0;
     const orderItems: OrderItem[] = [];
+    const inventoryUpdates: Array<{ _id: string; newQuantity: number }> = [];
 
     for (const item of items) {
       const product = products.find((p) => p._id.toString() === item.productId);
@@ -81,10 +94,19 @@ export const placeOrder = asyncHandler(async (req: Request, res: Response) => {
         );
       }
 
-      if (product.stock < item.quantity) {
+      const productInventory = inventoryRecords.filter(
+        (inv) => inv.productId.toString() === item.productId,
+      );
+
+      const totalStock = productInventory.reduce(
+        (sum, inv) => sum + inv.quantity,
+        0,
+      );
+
+      if (totalStock < item.quantity) {
         throw new ErrorHandler(
           409,
-          `Not enough stock for: ${product.name}`,
+          `Not enough stock for: ${product.name}. Available: ${totalStock}, Requested: ${item.quantity}`,
           'CONFLICT',
         );
       }
@@ -99,10 +121,33 @@ export const placeOrder = asyncHandler(async (req: Request, res: Response) => {
       });
 
       totalAmount += itemTotal;
-      product.stock -= item.quantity;
+
+      // Deduct quantity from inventory using FIFO
+      let remainingToDeduct = item.quantity;
+      for (const inv of productInventory) {
+        if (remainingToDeduct <= 0) break;
+
+        const deductFromThis = Math.min(inv.quantity, remainingToDeduct);
+        const newQuantity = inv.quantity - deductFromThis;
+
+        inventoryUpdates.push({
+          _id: (inv._id as Types.ObjectId).toString(),
+          newQuantity,
+        });
+
+        remainingToDeduct -= deductFromThis;
+      }
     }
 
-    await Promise.all(products.map((p) => p.save({ session })));
+    await Promise.all(
+      inventoryUpdates.map((update) =>
+        Inventory.findByIdAndUpdate(
+          update._id,
+          { quantity: update.newQuantity },
+          { session },
+        ),
+      ),
+    );
 
     const order = await Order.create(
       [
@@ -120,7 +165,7 @@ export const placeOrder = asyncHandler(async (req: Request, res: Response) => {
     session.endSession();
 
     const populatedOrder = await Order.findById(order[0]?._id).populate([
-      { path: 'items.productId', select: 'name salePrice stock' },
+      { path: 'items.productId', select: 'name images' },
       { path: 'userId', select: 'name email' },
       { path: 'shippingAddress' },
     ]);
@@ -145,7 +190,7 @@ export const getUserOrders = asyncHandler(
     const orders = await Order.find({ userId })
       .populate({
         path: 'items.productId',
-        select: 'name salePrice stock images',
+        select: 'name images',
       })
       .populate('shippingAddress')
       .sort({ createdAt: -1 })
@@ -183,7 +228,7 @@ export const getOrderDetails = asyncHandler(
     }
 
     await order.populate([
-      { path: 'items.productId', select: 'name salePrice stock images' },
+      { path: 'items.productId', select: 'name images' },
       { path: 'userId', select: 'name email' },
       { path: 'shippingAddress' },
     ]);
@@ -226,28 +271,63 @@ export const cancelOrder = asyncHandler(async (req: Request, res: Response) => {
     }
 
     const productIds = order.items.map((i) => i.productId);
-    const products = await Product.find({ _id: { $in: productIds } })
-      .session(session)
-      .lean();
+
+    const [inventoryRecords] = await Promise.all([
+      Inventory.find({
+        productId: { $in: productIds },
+        quantity: { $gt: 0 },
+      })
+        .sort({ expirationDate: 1 }) // FIFO
+        .session(session),
+    ]);
+
+    const inventoryMap = new Map<string, IInventory>();
+    for (const inventory of inventoryRecords) {
+      inventoryMap.set(inventory.productId.toString(), inventory);
+    }
+
+    const inventoryOperations: Array<{
+      _id: Types.ObjectId;
+      quantity: number;
+    }> = [];
 
     for (const item of order.items) {
-      const product = products.find(
-        (p) => p._id.toString() === item.productId.toString(),
-      );
-      if (product) {
-        product.stock += item.quantity;
-        await product.save({ session });
+      let quantityToRestore = item.quantity;
+      const productInventory =
+        inventoryMap.get(item.productId.toString()) || [];
+
+      for (const record of productInventory as IInventory[]) {
+        if (quantityToRestore <= 0) break;
+
+        const restoreAmount = Math.min(quantityToRestore, record.quantity); // Prevent over-increment
+        inventoryOperations.push({
+          _id: record._id as Types.ObjectId,
+          quantity: restoreAmount,
+        });
+
+        quantityToRestore -= restoreAmount;
       }
     }
 
+    await Promise.all(
+      inventoryOperations.map((operation) =>
+        Inventory.findByIdAndUpdate(
+          operation._id,
+          { quantity: operation.quantity },
+          { session },
+        ),
+      ),
+    );
+
     order.status = OrderStatus.CANCELLED;
+    order.cancellationReason = OrderCancellationReason.CUSTOMER_CANCELLED;
     await order.save({ session });
 
     await session.commitTransaction();
     session.endSession();
 
     const populatedOrder = await Order.findById(orderId).populate([
-      { path: 'items.productId', select: 'name salePrice stock' },
+      { path: 'items.productId', select: 'name' },
       { path: 'userId', select: 'name email' },
       { path: 'shippingAddress' },
     ]);
@@ -272,10 +352,10 @@ export const getAllOrders = asyncHandler(
       await getOrderFiltersFromQuery(query);
 
     const orders = await Order.find(queryObject)
-      .populate('userID', 'name email phone userType')
+      .populate('userId', 'name email phone userType')
       .populate({
-        path: 'items.productID',
-        select: 'name salePrice stock category images',
+        path: 'items.productId',
+        select: 'name category images',
       })
       .populate('shippingAddress')
       .sort(sortObject)
@@ -301,8 +381,8 @@ export const getOrderDetailsAdmin = asyncHandler(
     const order = await Order.findById(orderId)
       .populate('userId', 'name email phone userType')
       .populate({
-        path: 'items.productID',
-        select: 'name salePrice stock category images description',
+        path: 'items.productId',
+        select: 'name category images description',
       })
       .populate('shippingAddress');
 

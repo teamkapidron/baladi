@@ -9,7 +9,22 @@ import {
 
 import { DateMatchStage } from './interfaces/date';
 
-function getOrdinalSuffix(day: number) {
+export function getDurationInMs(unit: 'days' | 'weeks' | 'months' | 'years') {
+  switch (unit) {
+    case 'days':
+      return 24 * 60 * 60 * 1000;
+    case 'weeks':
+      return 7 * 24 * 60 * 60 * 1000;
+    case 'months':
+      return 30 * 24 * 60 * 60 * 1000;
+    case 'years':
+      return 365 * 24 * 60 * 60 * 1000;
+    default:
+      return 0;
+  }
+}
+
+export function getOrdinalSuffix(day: number) {
   if (day > 3 && day < 21) return 'th';
   switch (day % 10) {
     case 1:
