@@ -7,6 +7,11 @@ import Subscriber from '@/models/subscriber.model';
 
 // Utils
 import { sendResponse } from '@/utils/common/response.util';
+import {
+  newArrivalTemplate,
+  productPromotionTemplate,
+  promotionPosterTemplate,
+} from '@/templates/mail.template';
 
 // Handlers
 import { asyncHandler } from '@/handlers/async.handler';
@@ -16,8 +21,10 @@ import { ErrorHandler } from '@/handlers/error.handler';
 import type {
   CreateCampaignSchema,
   NewsLetterPreviewSchema,
+  PreviewPromotionPosterSchema,
 } from '@/validators/marketing.validator';
 import type { Request, Response } from 'express';
+import { CampaignType } from '@repo/types/campaign';
 import { SubscriberStatus } from '@repo/types/subscribers';
 
 export const newsletterStats = asyncHandler(
@@ -68,6 +75,46 @@ export const newsLetterPreview = asyncHandler(
       throw new ErrorHandler(400, 'Some products are not found', 'BAD_REQUEST');
     }
 
-    sendResponse(res, 200, 'Newsletter preview fetched successfully');
+    let html = '';
+
+    const productsData = products.map((product) => ({
+      name: product.name,
+      price: product.salePrice,
+      image: product.images?.[0] ?? '',
+    }));
+
+    if (type === CampaignType.NEW_ARRIVAL) {
+      html = newArrivalTemplate(productsData);
+    } else if (type === CampaignType.PROMOTION) {
+      html = productPromotionTemplate(productsData);
+    }
+
+    sendResponse(res, 200, 'Newsletter preview fetched successfully', { html });
+  },
+);
+
+export const previewPromotionPoster = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { posterType, productsIds } =
+      req.body as PreviewPromotionPosterSchema['body'];
+
+    const products = await Product.find({ _id: { $in: productsIds } }).lean();
+
+    if (products.length !== productsIds.length) {
+      throw new ErrorHandler(400, 'Some products are not found', 'BAD_REQUEST');
+    }
+
+    const productsData = products.map((product) => ({
+      name: product.name,
+      price: product.salePrice,
+      originalPrice: product.salePrice,
+      image: product.images?.[0] ?? '',
+    }));
+
+    const html = promotionPosterTemplate(productsData, posterType);
+
+    sendResponse(res, 200, 'Promotion poster preview fetched successfully', {
+      html,
+    });
   },
 );

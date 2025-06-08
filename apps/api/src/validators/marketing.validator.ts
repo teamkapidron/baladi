@@ -19,6 +19,16 @@ export const newsLetterPreviewSchema = z.object({
   }),
 });
 
+export const previewPromotionPosterSchema = z.object({
+  body: z.object({
+    posterType: z.enum(['new-arrival', 'discounted']),
+    productsIds: z.array(z.string()).min(1, 'Products IDs are required'),
+  }),
+});
+
 export type NewsletterStatsSchema = z.infer<typeof newsletterStatsSchema>;
 export type CreateCampaignSchema = z.infer<typeof createCampaignSchema>;
 export type NewsLetterPreviewSchema = z.infer<typeof newsLetterPreviewSchema>;
+export type PreviewPromotionPosterSchema = z.infer<
+  typeof previewPromotionPosterSchema
+>;

@@ -4,7 +4,7 @@ import InventoryTable from '@/components/dashboard/inventory/inventory-table';
 
 export default function InventoryPage() {
   return (
-    <div className="space-y-6 p-5">
+    <div className="space-y-6">
       <InventoryHeader />
       <InventoryMetrics />
       <InventoryTable />

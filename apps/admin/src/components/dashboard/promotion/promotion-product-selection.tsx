@@ -1,128 +1,191 @@
 'use client';
 
-import { memo, useState } from 'react';
+// Node Modules
+import React, { memo, useCallback, useMemo } from 'react';
+import { Package, CheckCircle, Tag, ShoppingBag } from '@repo/ui/lib/icons';
 
-type Product = {
-  id: string;
-  name: string;
-  category: string;
-  featured: boolean;
-  price: number;
-  discount?: number;
-};
+// Components
+import { Button } from '@repo/ui/components/base/button';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@repo/ui/components/base/card';
+import { Checkbox } from '@repo/ui/components/base/checkbox';
+import { Badge } from '@repo/ui/components/base/badge';
 
-function PromotionProductSelection() {
-  const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
+// Hooks
+import { useProduct } from '@/hooks/useProduct';
 
-  const products: Product[] = [
-    {
-      id: '1',
-      name: 'Premium Coffee Beans (1kg)',
-      category: 'Beverages',
-      featured: true,
-      price: 29.99,
-      discount: 15,
-    },
-    {
-      id: '2',
-      name: 'Organic Honey (500g)',
-      category: 'Sweeteners',
-      featured: true,
-      price: 18.99,
-    },
-    {
-      id: '3',
-      name: 'Artisan Chocolate Box',
-      category: 'Confectionery',
-      featured: false,
-      price: 34.99,
-      discount: 20,
-    },
-    {
-      id: '4',
-      name: 'Italian Olive Oil (750ml)',
-      category: 'Oils',
-      featured: true,
-      price: 24.99,
-    },
-    {
-      id: '5',
-      name: 'Gourmet Cheese Selection',
-      category: 'Dairy',
-      featured: false,
-      price: 42.99,
-      discount: 10,
-    },
-  ];
+interface PromotionProductSelectionProps {
+  selectedProducts: string[];
+  setSelectedProducts: React.Dispatch<React.SetStateAction<string[]>>;
+}
 
-  const toggleProductSelection = (productId: string) => {
-    setSelectedProducts((prev) =>
-      prev.includes(productId)
-        ? prev.filter((id) => id !== productId)
-        : [...prev, productId],
-    );
-  };
+function PromotionProductSelection(props: PromotionProductSelectionProps) {
+  const { selectedProducts, setSelectedProducts } = props;
+
+  const { products: productsData } = useProduct();
+
+  const products = useMemo(() => {
+    return productsData?.products ?? [];
+  }, [productsData]);
+
+  const selectedCount = selectedProducts.length;
+
+  const toggleProductSelection = useCallback(
+    (productId: string) => {
+      setSelectedProducts((prev) =>
+        prev.includes(productId)
+          ? prev.filter((id: string) => id !== productId)
+          : [...prev, productId],
+      );
+    },
+    [setSelectedProducts],
+  );
 
   return (
-    <div className="border border-gray-200 bg-white">
-      <div className="border-b border-gray-200 p-6">
-        <h2 className="text-lg font-medium text-gray-800">
-          Select Products for Promotion
-        </h2>
-      </div>
+    <Card className="rounded-xl shadow-lg">
+      <CardHeader className="pb-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
+              Select Products for Product Promotion Poster
+            </CardTitle>
+            <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
+              Choose products to feature in your next promotion poster
+            </p>
+          </div>
+          <div className="bg-[var(--baladi-primary)]/10 flex h-10 w-10 items-center justify-center rounded-lg">
+            <ShoppingBag className="h-5 w-5 text-[var(--baladi-primary)]" />
+          </div>
+        </div>
+      </CardHeader>
 
-      <div className="p-6">
-        <div className="space-y-4">
-          {products.map((product) => (
-            <div key={product.id} className="border border-gray-200 p-4">
-              <div className="flex items-start gap-3">
-                <input
-                  type="checkbox"
-                  id={`product-${product.id}`}
-                  className="mt-1 h-4 w-4 cursor-pointer"
-                  checked={selectedProducts.includes(product.id)}
-                  onChange={() => toggleProductSelection(product.id)}
-                />
-                <div className="flex-1">
-                  <label
-                    htmlFor={`product-${product.id}`}
-                    className="cursor-pointer font-medium text-gray-800"
-                  >
-                    {product.name}
-                  </label>
-                  <div className="mt-1 flex items-center gap-2">
-                    <span className="text-sm text-gray-500">
-                      Category: {product.category}
-                    </span>
-                    {product.featured && (
-                      <span className="bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
-                        Featured
-                      </span>
-                    )}
-                  </div>
-                  <div className="mt-2 flex items-center gap-2">
-                    <span className="font-medium text-gray-800">
-                      ${product.price}
-                    </span>
-                    {product.discount && (
-                      <span className="bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">
-                        {product.discount}% OFF
-                      </span>
-                    )}
-                  </div>
-                </div>
+      <CardContent className="space-y-4">
+        {selectedCount > 0 && (
+          <Card className="border-[var(--baladi-success)]/20 bg-[var(--baladi-success)]/5">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-5 w-5 text-[var(--baladi-success)]" />
+                <span className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-success)]">
+                  {selectedCount} product{selectedCount > 1 ? 's' : ''} selected
+                  for promotion poster
+                </span>
               </div>
-            </div>
-          ))}
+            </CardContent>
+          </Card>
+        )}
+
+        <div className="space-y-3">
+          {products.map((product) => {
+            const isSelected = selectedProducts.includes(product._id);
+            return (
+              <Card
+                key={product._id}
+                className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
+                  isSelected
+                    ? 'bg-[var(--baladi-primary)]/5 border-[var(--baladi-primary)]'
+                    : 'hover:border-[var(--baladi-primary)]/30'
+                }`}
+                onClick={() => toggleProductSelection(product._id)}
+              >
+                <CardContent>
+                  <div className="flex items-start gap-4">
+                    <div className="mt-1">
+                      <Checkbox
+                        id={`product-${product._id}`}
+                        checked={isSelected}
+                        onCheckedChange={() =>
+                          toggleProductSelection(product._id)
+                        }
+                        className="h-5 w-5"
+                      />
+                    </div>
+
+                    <div className="bg-[var(--baladi-secondary)]/10 flex h-12 w-12 items-center justify-center rounded-lg">
+                      <Package className="h-6 w-6 text-[var(--baladi-secondary)]" />
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-start justify-between">
+                        <div className="min-w-0 flex-1">
+                          <label
+                            htmlFor={`product-${product._id}`}
+                            className="line-clamp-2 cursor-pointer font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-dark)]"
+                          >
+                            {product.name}
+                          </label>
+
+                          <div className="mt-2 flex flex-wrap items-center gap-2">
+                            <Badge variant="secondary" className="text-xs">
+                              <Tag className="mr-1 h-3 w-3" />
+                              {product.categories?.[0]?.name ?? 'Uncategorized'}
+                            </Badge>
+                          </div>
+                        </div>
+
+                        {isSelected && (
+                          <Badge className="ml-2 bg-[var(--baladi-primary)] text-white">
+                            Selected
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
 
           {products.length === 0 && (
-            <div className="py-8 text-center text-gray-500">
-              No products available
-            </div>
+            <Card>
+              <CardContent className="p-12">
+                <div className="flex flex-col items-center justify-center text-center">
+                  <div className="bg-[var(--baladi-gray)]/10 mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+                    <Package className="h-8 w-8 text-[var(--baladi-gray)]" />
+                  </div>
+                  <h4 className="mb-2 font-[family-name:var(--font-sora)] text-lg font-semibold text-[var(--baladi-dark)]">
+                    No products available
+                  </h4>
+                  <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
+                    Add some products to your inventory to feature them in
+                    newsletters
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
           )}
         </div>
-      </div>
-    </div>
+
+        {selectedCount > 0 && (
+          <Card className="bg-[var(--baladi-light)]">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-dark)]">
+                    Ready to feature in promotion poster
+                  </p>
+                  <p className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
+                    {selectedCount} product{selectedCount > 1 ? 's' : ''} will
+                    be included
+                  </p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedProducts([])}
+                  className="hover:text-[var(--baladi-primary)]/80 text-[var(--baladi-primary)]"
+                >
+                  Clear Selection
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 

@@ -5,7 +5,7 @@ import { StockAlert } from '@/components/dashboard/products/stock-alert';
 
 export default function ProductsPage() {
   return (
-    <div className="space-y-6 p-5">
+    <div className="space-y-6">
       <StockAlert />
       <ProductsHeader />
       <MetricCards />

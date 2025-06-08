@@ -1,94 +1,183 @@
 'use client';
 
+// Node Modules
 import { memo, useMemo } from 'react';
-import { Users, UserX, SendHorizonal } from '@repo/ui/lib/icons';
+import { Users, UserX, SendHorizonal, TrendingUp } from '@repo/ui/lib/icons';
+
+// Components
 import AnimatedCounter from '@repo/ui/components/base/animate-counter';
 
+// Hooks
+import { useNewsletter } from '@/hooks/useNewsletter';
+
 function NewsletterMetrics() {
+  const { newsLetterStatsQuery } = useNewsletter();
+
   const metrics = useMemo(() => {
+    const data = newsLetterStatsQuery.data;
     return {
-      subscribers: 2845,
-      unsubscribed: 156,
-      campaignsSent: 24,
+      subscribers: data?.subscriberCount ?? 0,
+      unsubscribed: data?.unsubscribedSubscribers ?? 0,
+      campaignsSent: data?.campaignCount ?? 0,
     };
-  }, []);
+  }, [newsLetterStatsQuery.data]);
+
+  const { engagementRate, totalReach } = useMemo(() => {
+    const totalUsers = metrics.subscribers + metrics.unsubscribed;
+    const engagement =
+      totalUsers > 0 ? Math.round((metrics.subscribers / totalUsers) * 100) : 0;
+
+    return {
+      engagementRate: engagement,
+      totalReach: totalUsers,
+    };
+  }, [metrics]);
 
   return (
-    <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
-      <div className="bg-background border-border border-b border-l-4 border-r border-t border-l-[var(--color-primary)] shadow-md">
-        <div className="border-border border-b px-5 py-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-foreground text-sm font-medium">Subscribers</h3>
-            <div className="bg-[var(--color-primary)]/10 flex h-7 w-7 items-center justify-center">
-              <Users className="h-4 w-4 text-[var(--color-primary)]" />
-            </div>
+    <div className="rounded-xl bg-white p-6 shadow-lg ring-1 ring-[var(--baladi-border)]">
+      <div className="mb-6">
+        <h3 className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
+          Newsletter Performance
+        </h3>
+        <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
+          Track subscriber engagement and campaign effectiveness
+        </p>
+      </div>
+
+      {/* Key Performance Indicators */}
+      <div className="mb-6 grid grid-cols-2 gap-4">
+        <div className="bg-[var(--baladi-success)]/5 rounded-lg p-3">
+          <div className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-success)]">
+            Engagement Rate
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
+              {engagementRate}%
+            </span>
+            <TrendingUp className="h-4 w-4 text-[var(--baladi-success)]" />
           </div>
         </div>
-        <div className="p-6">
-          <div className="flex items-baseline gap-2">
-            <span className="text-foreground text-3xl font-bold">
+        <div className="bg-[var(--baladi-info)]/5 rounded-lg p-3">
+          <div className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-info)]">
+            Total Reach
+          </div>
+          <div className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
+            {totalReach.toLocaleString()}
+          </div>
+        </div>
+      </div>
+
+      {/* Main Metrics Grid */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        {/* Subscribers Card */}
+        <div className="group rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-white to-[var(--baladi-light)] p-4 transition-all duration-200 hover:shadow-md">
+          <div className="mb-3 flex items-center justify-between">
+            <div className="bg-[var(--baladi-success)]/10 flex h-10 w-10 items-center justify-center rounded-lg">
+              <Users className="h-5 w-5 text-[var(--baladi-success)]" />
+            </div>
+            <div className="bg-[var(--baladi-success)]/10 rounded-full px-2 py-1">
+              <span className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-success)]">
+                Active
+              </span>
+            </div>
+          </div>
+
+          <div className="mb-2">
+            <span className="font-[family-name:var(--font-sora)] text-2xl font-bold text-[var(--baladi-dark)]">
               <AnimatedCounter value={metrics.subscribers} />
             </span>
           </div>
-          <div className="mt-4 flex flex-col gap-2">
-            <div className="flex items-center text-sm text-green-600">
-              <span className="text-muted-foreground text-xs">
-                Active subscribers
+
+          <div>
+            <p className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-dark)]">
+              Subscribers
+            </p>
+            <p className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
+              Active newsletter subscribers
+            </p>
+          </div>
+        </div>
+
+        {/* Unsubscribed Card */}
+        <div className="group rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-white to-[var(--baladi-light)] p-4 transition-all duration-200 hover:shadow-md">
+          <div className="mb-3 flex items-center justify-between">
+            <div className="bg-[var(--baladi-error)]/10 flex h-10 w-10 items-center justify-center rounded-lg">
+              <UserX className="h-5 w-5 text-[var(--baladi-error)]" />
+            </div>
+            <div className="bg-[var(--baladi-error)]/10 rounded-full px-2 py-1">
+              <span className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-error)]">
+                Inactive
               </span>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Unsubscribed Card */}
-      <div className="bg-background border-border border-b border-l-4 border-r border-t border-l-[var(--color-destructive)] shadow-md">
-        <div className="border-border border-b px-5 py-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-foreground text-sm font-medium">
-              Unsubscribed
-            </h3>
-            <div className="bg-[var(--color-destructive)]/10 flex h-7 w-7 items-center justify-center">
-              <UserX className="h-4 w-4 text-[var(--color-destructive)]" />
-            </div>
-          </div>
-        </div>
-        <div className="p-6">
-          <div className="flex items-baseline gap-2">
-            <span className="text-foreground text-3xl font-bold">
+          <div className="mb-2">
+            <span className="font-[family-name:var(--font-sora)] text-2xl font-bold text-[var(--baladi-dark)]">
               <AnimatedCounter value={metrics.unsubscribed} />
             </span>
           </div>
-          <div className="mt-4 flex flex-col gap-2">
-            <div className="flex items-center">
-              <span className="text-muted-foreground text-xs">
-                Total unsubscribes
+
+          <div>
+            <p className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-dark)]">
+              Unsubscribed
+            </p>
+            <p className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
+              Users who opted out
+            </p>
+          </div>
+        </div>
+
+        {/* Campaigns Sent Card */}
+        <div className="group rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-white to-[var(--baladi-light)] p-4 transition-all duration-200 hover:shadow-md">
+          <div className="mb-3 flex items-center justify-between">
+            <div className="bg-[var(--baladi-primary)]/10 flex h-10 w-10 items-center justify-center rounded-lg">
+              <SendHorizonal className="h-5 w-5 text-[var(--baladi-primary)]" />
+            </div>
+            <div className="bg-[var(--baladi-primary)]/10 rounded-full px-2 py-1">
+              <span className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-primary)]">
+                Sent
               </span>
             </div>
+          </div>
+
+          <div className="mb-2">
+            <span className="font-[family-name:var(--font-sora)] text-2xl font-bold text-[var(--baladi-dark)]">
+              <AnimatedCounter value={metrics.campaignsSent} />
+            </span>
+          </div>
+
+          <div>
+            <p className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-dark)]">
+              Campaigns
+            </p>
+            <p className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
+              Total campaigns sent
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Campaigns Sent Card */}
-      <div className="bg-background border-border border-b border-l-4 border-r border-t border-l-amber-500 shadow-md">
-        <div className="border-border border-b px-5 py-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-foreground text-sm font-medium">
-              Campaigns Sent
-            </h3>
-            <div className="flex h-7 w-7 items-center justify-center bg-amber-500/10">
-              <SendHorizonal className="h-4 w-4 text-amber-500" />
-            </div>
+      {/* Summary Footer */}
+      <div className="mt-6 rounded-lg bg-[var(--baladi-light)] p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-dark)]">
+              Newsletter Health Score
+            </p>
+            <p className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
+              Based on engagement and growth metrics
+            </p>
           </div>
-        </div>
-        <div className="p-6">
-          <div className="flex items-baseline gap-2">
-            <span className="text-foreground text-3xl font-bold">
-              <AnimatedCounter value={metrics.campaignsSent} />
-            </span>
-          </div>
-          <div className="mt-4 flex flex-col gap-2">
-            <div className="flex items-center">
-              <span className="text-muted-foreground text-xs">This year</span>
+          <div className="text-right">
+            <div className="flex items-center gap-2">
+              <div className="rounded-full bg-[var(--baladi-success)] px-3 py-1">
+                <span className="font-[family-name:var(--font-dm-sans)] text-sm font-bold text-white">
+                  Excellent
+                </span>
+              </div>
+              <span className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-success)]">
+                {engagementRate}%
+              </span>
             </div>
           </div>
         </div>

@@ -5,7 +5,7 @@ import { OrderMetricCards } from '@/components/dashboard/orders/order-metric-car
 
 export default function OrdersPage() {
   return (
-    <div className="space-y-6 p-5">
+    <div className="space-y-6">
       <OrderAlert />
       <OrderHeader />
       <OrderMetricCards />

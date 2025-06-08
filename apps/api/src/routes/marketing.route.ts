@@ -7,12 +7,14 @@ import {
   createCampaign,
   newsletterStats,
   newsLetterPreview,
+  previewPromotionPoster,
 } from '@/controllers/marketing.controller';
 
 import {
   newsletterStatsSchema,
   createCampaignSchema,
   newsLetterPreviewSchema,
+  previewPromotionPosterSchema,
 } from '@/validators/marketing.validator';
 
 const router: Router = express.Router();
@@ -34,6 +36,12 @@ router.post(
   isAdmin,
   validate(newsLetterPreviewSchema),
   newsLetterPreview,
+);
+router.post(
+  '/promotion/poster/preview',
+  isAdmin,
+  validate(previewPromotionPosterSchema),
+  previewPromotionPoster,
 );
 
 export default router;

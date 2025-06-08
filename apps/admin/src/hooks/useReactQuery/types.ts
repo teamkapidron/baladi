@@ -28,4 +28,11 @@ export enum ReactQueryKeys {
   GET_ALL_CATEGORIES_FLATTENED = 'GET::/category/all/flattened',
   GET_CATEGORY_DETAILS = 'GET::/category/:categoryId',
   GET_CATEGORY_STATS = 'GET::/category/stats',
+
+  // Newsletter
+  GET_NEWSLETTER_STATS = 'GET::/newsletter/stats',
+  GET_NEWSLETTER_PREVIEW = 'POST::/newsletter/preview',
+
+  // Promotion
+  PREVIEW_PROMOTION_POSTER = 'POST::/promotion/preview-poster',
 }

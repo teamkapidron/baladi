@@ -4,7 +4,7 @@ import CustomersTable from '@/components/dashboard/customers/customer-table/cust
 
 export default function CustomersPage() {
   return (
-    <div className="space-y-6 p-5">
+    <div className="space-y-6">
       <CustomerHeader />
       <CustomerMetricCards />
       <CustomersTable />

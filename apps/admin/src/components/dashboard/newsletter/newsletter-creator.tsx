@@ -1,114 +1,289 @@
 'use client';
 
-import { memo, useState } from 'react';
-import { Button } from '@repo/ui/components/base/button';
+// Node Modules
+import { memo, useCallback, useMemo } from 'react';
+import { useForm, z, zodResolver } from '@repo/ui/lib/form';
+import { Send, Eye, Mail, Sparkles } from '@repo/ui/lib/icons';
+
+// Components
 import { Input } from '@repo/ui/components/base/input';
-import { Send } from '@repo/ui/lib/icons';
+import { Button } from '@repo/ui/components/base/button';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@repo/ui/components/base/card';
+import { Badge } from '@repo/ui/components/base/badge';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@repo/ui/components/base/form';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@repo/ui/components/base/select';
 
-function NewsletterCreator() {
-  const [formData, setFormData] = useState({
-    campaignType: '',
-    subject: '',
+// Hooks
+import { useNewsletter } from '@/hooks/useNewsletter';
+
+// Types
+import { CampaignType } from '@repo/types/campaign';
+
+interface NewsletterCreatorProps {
+  selectedProducts: string[];
+}
+
+const formSchema = z.object({
+  subject: z.string().min(1, 'Subject is required'),
+  products: z.array(z.string()),
+  campaignType: z.nativeEnum(CampaignType),
+});
+
+function NewsletterCreator(props: NewsletterCreatorProps) {
+  const { selectedProducts } = props;
+
+  const { createCampaignMutation, newsLetterPreviewMutation } = useNewsletter();
+
+  const form = useForm({
+    defaultValues: {
+      subject: '',
+      products: selectedProducts,
+      campaignType: CampaignType.NEW_ARRIVAL,
+    },
+    resolver: zodResolver(formSchema),
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    createCampaignMutation.mutate({
+      title: values.subject,
+      type: values.campaignType,
+      productsIds: selectedProducts,
+    });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+    form.reset();
 
-    // Simulate API call
-    setTimeout(() => {
-      console.log('Newsletter data:', formData);
-      setIsSubmitting(false);
-      // Reset form or show success message in a real application
-    }, 1500);
-  };
+    newsLetterPreviewMutation.reset();
+  }
+
+  const preview = useMemo(() => {
+    return newsLetterPreviewMutation.data?.html;
+  }, [newsLetterPreviewMutation.data]);
+
+  const showPreview = useCallback(() => {
+    newsLetterPreviewMutation.mutate({
+      type: form.watch('campaignType'),
+      productsIds: selectedProducts,
+    });
+  }, [form.watch('campaignType'), selectedProducts]);
 
   return (
-    <div className="border border-gray-200 bg-white">
-      <div className="border-b border-gray-200 p-6">
-        <h2 className="text-lg font-medium text-gray-800">Create Newsletter</h2>
-      </div>
+    <Card className="h-fit rounded-xl shadow-lg">
+      <CardHeader className="pb-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
+              Create Newsletter Campaign
+            </CardTitle>
+            <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
+              Design and send engaging newsletters to your subscribers
+            </p>
+          </div>
+          <div className="bg-[var(--baladi-primary)]/10 flex h-10 w-10 items-center justify-center rounded-lg">
+            <Mail className="h-5 w-5 text-[var(--baladi-primary)]" />
+          </div>
+        </div>
+      </CardHeader>
 
-      <div className="p-6">
-        <form onSubmit={handleSubmit}>
-          <div className="space-y-6">
-            <div>
-              <label className="mb-1 block text-sm font-medium text-gray-500">
-                Campaign Type
-              </label>
-              <select
-                name="campaignType"
-                className="focus:ring-[var(--color-primary)]/50 w-full border border-gray-300 p-3 focus:outline-none focus:ring-2"
-                value={formData.campaignType}
-                onChange={handleInputChange}
-                disabled={isSubmitting}
-              >
-                <option value="">Select campaign type</option>
-                <option value="new-arrival">New Arrival</option>
-                <option value="product-promotion">Product Promotion</option>
-              </select>
-            </div>
+      <CardContent className="space-y-6">
+        <div className="grid grid-cols-2 gap-4">
+          <Card className="bg-[var(--baladi-primary)]/5">
+            <CardContent>
+              <div className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-primary)]">
+                Selected Products
+              </div>
+              <div className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
+                {selectedProducts.length}
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="bg-[var(--baladi-success)]/5">
+            <CardContent>
+              <div className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-success)]">
+                Ready to Send
+              </div>
+              <div className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
+                {form.formState.isValid ? 'Yes' : 'No'}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
-            <div>
-              <label className="mb-1 block text-sm font-medium text-gray-500">
-                Email Subject
-              </label>
-              <Input
-                name="subject"
-                className="w-full"
-                placeholder="Enter a compelling subject line"
-                value={formData.subject}
-                onChange={handleInputChange}
-                disabled={isSubmitting}
-              />
-            </div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <FormField
+              control={form.control}
+              name="campaignType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-[family-name:var(--font-dm-sans)] font-medium text-[var(--baladi-dark)]">
+                    Campaign Type
+                  </FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="h-11">
+                        <SelectValue placeholder="Select campaign type" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value={CampaignType.NEW_ARRIVAL}>
+                        <div className="flex items-center gap-2">
+                          <Sparkles className="h-4 w-4 text-[var(--baladi-info)]" />
+                          New Arrival
+                        </div>
+                      </SelectItem>
+                      <SelectItem value={CampaignType.PROMOTION}>
+                        <div className="flex items-center gap-2">
+                          <Badge className="h-4 w-4 bg-[var(--baladi-accent)]" />
+                          Product Promotion
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            {/* Preview Section */}
-            <div className="mt-8 border border-gray-200 p-4">
-              <h3 className="mb-4 text-sm font-medium text-gray-700">
-                Preview
-              </h3>
+            <FormField
+              control={form.control}
+              name="subject"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-[family-name:var(--font-dm-sans)] font-medium text-[var(--baladi-dark)]">
+                    Email Subject Line
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter a compelling subject line that grabs attention..."
+                      className="h-11"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-              <div className="border border-gray-200 p-4">
-                <div className="mb-2 text-sm text-gray-500">
-                  Campaign Type: {formData.campaignType || 'Not selected'}
+            <Card className="border-[var(--baladi-border)]">
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="font-[family-name:var(--font-sora)] text-base font-semibold text-[var(--baladi-dark)]">
+                    Newsletter Preview
+                  </CardTitle>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={showPreview}
+                    className="gap-2"
+                    disabled={
+                      newsLetterPreviewMutation.isPending ||
+                      selectedProducts.length === 0
+                    }
+                  >
+                    <Eye className="h-4 w-4" />
+                    Show Preview
+                  </Button>
                 </div>
-                <div className="mb-4 font-medium text-gray-800">
-                  {formData.subject || 'Your Subject'}
-                </div>
+              </CardHeader>
+
+              <CardContent>
+                {preview !== undefined ? (
+                  <div className="space-y-4">
+                    <iframe
+                      srcDoc={preview}
+                      className="h-[600px] w-full border-0"
+                      title="Newsletter Preview"
+                    />
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-8 text-center">
+                    <div className="bg-[var(--baladi-primary)]/10 mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+                      <Eye className="h-8 w-8 text-[var(--baladi-primary)]" />
+                    </div>
+                    <h4 className="mb-2 font-[family-name:var(--font-sora)] text-lg font-semibold text-[var(--baladi-dark)]">
+                      Preview Your Newsletter
+                    </h4>
+                    <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
+                      Click the "Show Preview" button above to see how your
+                      newsletter will look
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            <div className="flex items-center justify-between">
+              <div className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
+                {!form.formState.isValid && (
+                  <span className="text-[var(--baladi-error)]">
+                    Please fill all required fields to send newsletter
+                  </span>
+                )}
+              </div>
+              <div className="flex gap-3">
+                <Button
+                  type="submit"
+                  className="hover:bg-[var(--baladi-primary)]/90 gap-2 bg-[var(--baladi-primary)] text-white"
+                  disabled={
+                    !form.formState.isValid || form.formState.isSubmitting
+                  }
+                >
+                  <Send className="h-4 w-4" />
+                  {form.formState.isSubmitting
+                    ? 'Sending...'
+                    : 'Send Newsletter'}
+                </Button>
               </div>
             </div>
-
-            <div className="flex justify-end">
-              <Button
-                type="submit"
-                className="hover:bg-[var(--color-primary)]/90 bg-[var(--color-primary)] text-white"
-                disabled={
-                  isSubmitting || !formData.subject || !formData.campaignType
-                }
-              >
-                <Send className="mr-2 h-4 w-4" />
-                {isSubmitting ? 'Sending...' : 'Send Newsletter'}
-              </Button>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
   );
 }
 
 export default memo(NewsletterCreator);
+
+function getCampaignTypeLabel(type: CampaignType) {
+  switch (type) {
+    case CampaignType.NEW_ARRIVAL:
+      return 'New Arrival';
+    case CampaignType.PROMOTION:
+      return 'Product Promotion';
+    default:
+      return 'Not selected';
+  }
+}
+
+function getCampaignTypeColor(type: CampaignType) {
+  switch (type) {
+    case CampaignType.NEW_ARRIVAL:
+      return 'bg-[var(--baladi-info)]/10 text-[var(--baladi-info)]';
+    case CampaignType.PROMOTION:
+      return 'bg-[var(--baladi-accent)]/10 text-[var(--baladi-accent)]';
+    default:
+      return 'bg-[var(--baladi-gray)]/10 text-[var(--baladi-gray)]';
+  }
+}
