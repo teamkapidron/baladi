@@ -23,7 +23,7 @@ export function sendJwt(
   }
 
   const token = jwt.sign(payload, process.env.JWT_SECRET!, {
-    expiresIn: process.env.JWT_EXPIRY as SignOptions['expiresIn'],
+    expiresIn: parseInt(process.env.JWT_EXPIRY),
   });
 
   const cookieOptions: CookieOptions = {
