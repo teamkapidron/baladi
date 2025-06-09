@@ -34,7 +34,11 @@ router.get(
   validate(getCategoriesFlattenedSchema),
   getCategoriesFlattened,
 );
-router.get('/details/:categoryId', validate(getCategoryByIdSchema), getCategoryById);
+router.get(
+  '/details/:categoryId',
+  validate(getCategoryByIdSchema),
+  getCategoryById,
+);
 
 router.get('/all', isAdmin, validate(getAllCategoriesSchema), getAllCategories);
 router.get(

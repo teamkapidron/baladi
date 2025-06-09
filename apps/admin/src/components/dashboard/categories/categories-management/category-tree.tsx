@@ -183,9 +183,11 @@ function CategoryTree({
   };
 
   // Filter categories based on search (flatten for search)
-  const flattenCategories = (cats: HierarchicalCategory[]): HierarchicalCategory[] => {
+  const flattenCategories = (
+    cats: HierarchicalCategory[],
+  ): HierarchicalCategory[] => {
     const result: HierarchicalCategory[] = [];
-    cats.forEach(cat => {
+    cats.forEach((cat) => {
       result.push(cat);
       if (cat.children) {
         result.push(...flattenCategories(cat.children));
@@ -195,8 +197,8 @@ function CategoryTree({
   };
 
   const filteredCategories = searchQuery
-    ? flattenCategories(categories).filter(category =>
-        category.name.toLowerCase().includes(searchQuery.toLowerCase())
+    ? flattenCategories(categories).filter((category) =>
+        category.name.toLowerCase().includes(searchQuery.toLowerCase()),
       )
     : categories;
 
@@ -265,4 +267,4 @@ function CategoryTree({
   );
 }
 
-export default memo(CategoryTree); 
+export default memo(CategoryTree);
