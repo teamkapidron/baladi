@@ -1,23 +1,36 @@
 'use client';
 
 import { useCallback, useMemo } from 'react';
-import { subDays, format, parse } from 'date-fns';
-import { useGetParams, useUpdateParams } from '../useParams';
+import { subDays, format, parse } from '@repo/ui/lib/date';
+import { useGetParams, useUpdateParams } from '@repo/ui/hooks/useParams';
 
 export function useDateRangeInParams(timeRange: number = 30) {
   const { getParam } = useGetParams();
   const updateParam = useUpdateParams();
 
+  const fromString = useMemo(() => {
+    return (
+      getParam('from') ?? format(subDays(new Date(), timeRange), 'yyyy-MM-dd')
+    );
+  }, [timeRange]);
+
+  const toString = useMemo(
+    () => getParam('to') ?? format(new Date(), 'yyyy-MM-dd'),
+    [],
+  );
+
   const dateRange = useMemo(() => {
-    const from =
-      getParam('from') ?? format(subDays(new Date(), timeRange), 'yyyy-MM-dd');
-    const to = getParam('to') ?? format(new Date(), 'yyyy-MM-dd');
-
-    const fromDate = parse(from, 'yyyy-MM-dd', new Date());
-    const toDate = parse(to, 'yyyy-MM-dd', new Date());
-
+    const fromDate = parse(fromString, 'yyyy-MM-dd', new Date());
+    const toDate = parse(toString, 'yyyy-MM-dd', new Date());
     return { from: fromDate, to: toDate };
-  }, [getParam]);
+  }, [fromString, toString]);
+
+  const dateRangeInString = useMemo(() => {
+    return {
+      from: fromString,
+      to: toString,
+    };
+  }, [fromString, toString]);
 
   const setDateRange = useCallback(
     (from: Date, to: Date) => {
@@ -29,5 +42,5 @@ export function useDateRangeInParams(timeRange: number = 30) {
     [updateParam],
   );
 
-  return { dateRange, setDateRange };
+  return { dateRange, dateRangeInString, setDateRange };
 }

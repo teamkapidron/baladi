@@ -6,7 +6,7 @@ import { toast } from '@repo/ui/lib/sonner';
 
 // Hooks
 import { useRequest } from '@/hooks/useRequest';
-import { useGetParams, useUpdateParams } from '@repo/ui/hooks/useParams';
+import { useGetParams, useUpdateParams } from '@/hooks/useParams';
 
 // Types
 import { ReactQueryKeys } from '@/hooks/useReactQuery/types';

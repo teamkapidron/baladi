@@ -15,8 +15,8 @@ import {
 } from '@repo/ui/components/base/select';
 
 // Hooks
-import { useDatePresets } from '@repo/ui/hooks/useDate/useDatePresets';
-import { useDateRangeInParams } from '@repo/ui/hooks/useDate/useDateRangeInParams';
+import { useDatePresets } from '@/hooks/useDate/useDatePresets';
+import { useDateRangeInParams } from '@/hooks/useDate/useDateRangeInParams';
 
 function DashboardTimeHeader() {
   const { dateRange, setDateRange } = useDateRangeInParams(30);

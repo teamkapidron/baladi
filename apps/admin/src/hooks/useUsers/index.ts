@@ -4,7 +4,10 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 
 // Hooks
 import { useRequest } from '@/hooks/useRequest';
-import { useGetParams, useUpdateParams } from '@repo/ui/hooks/useParams';
+import { useUserFilter } from './useUserFilter';
+import { useGetParams } from '@repo/ui/hooks/useParams';
+import { usePagination } from '@repo/ui/hooks/usePagination';
+import { useDateRangeInParams } from '@repo/ui/hooks/useDate/useDateRangeInParams';
 
 // Types
 import {
@@ -19,24 +22,68 @@ import { UserType } from '@repo/types/user';
 import { UserStatusFilter, UserSort } from './types';
 import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
 
+export function useUserStats() {
+  const api = useRequest();
+  const { dateRangeInString } = useDateRangeInParams();
+
+  console.log('🔥 useUserStats: dateRangeInString changed', dateRangeInString);
+
+  const getUserStats = useCallback(
+    async (payload: GetUserStatsRequest['payload']) => {
+      const response = await api.get<GetUserStatsRequest['response']>(
+        '/user/stats',
+        { params: payload },
+      );
+
+      return response.data.data;
+    },
+    [api],
+  );
+
+  const getUserStatsQuery = useQuery({
+    queryKey: [
+      ReactQueryKeys.GET_USER_STATS,
+      dateRangeInString.from,
+      dateRangeInString.to,
+    ],
+    queryFn: () => getUserStats(dateRangeInString),
+  });
+
+  return getUserStatsQuery;
+}
+
 export function useUsers(userId?: string) {
   const api = useRequest();
   const { getParam } = useGetParams();
-  const updateParams = useUpdateParams();
+  const { paginationInfo, handlePageSizeChange, handlePageChange } =
+    usePagination();
+  const { dateRangeInString, setDateRange } = useDateRangeInParams();
+  const {
+    userFilter,
+    handleUserStatusFilterChange,
+    handleUserTypeFilterChange,
+    handleUserEmailFilterChange,
+    handleUserNameFilterChange,
+  } = useUserFilter();
 
   const params = useMemo(() => {
     return {
-      name: getParam('name') ?? undefined,
-      email: getParam('email') ?? undefined,
-      userType: getParam('userType') as UserType | undefined,
-      status: getParam('status') as UserStatusFilter | undefined,
-      page: getParam('page') ?? undefined,
-      limit: getParam('limit') ?? undefined,
+      name: userFilter.name,
+      email: userFilter.email,
+      userType: userFilter.userType,
+      status: userFilter.status,
+      page: paginationInfo.page,
+      limit: paginationInfo.limit,
       sort: getParam('sort') as UserSort | undefined,
-      from: getParam('from') ?? undefined,
-      to: getParam('to') ?? undefined,
     };
-  }, [getParam]);
+  }, [getParam, paginationInfo, userFilter]);
+
+  const dateParams = useMemo(() => {
+    return {
+      from: dateRangeInString.from,
+      to: dateRangeInString.to,
+    };
+  }, [dateRangeInString]);
 
   const getAllUsers = useCallback(
     async (payload: GetAllCustomersRequest['payload']) => {
@@ -111,27 +158,11 @@ export function useUsers(userId?: string) {
   );
 
   const getUserRegistrationGraphDataQuery = useQuery({
-    queryKey: [ReactQueryKeys.GET_USER_REGISTRATION_GRAPH_DATA],
-    queryFn: () =>
-      getUserRegistrationGraphData({ from: params.from, to: params.to }),
-  });
-
-  const getUserStats = useCallback(
-    async (payload: GetUserStatsRequest['payload']) => {
-      const response = await api.get<GetUserStatsRequest['response']>(
-        '/user/stats',
-        { params: payload },
-      );
-      return response.data.data;
-    },
-    [api],
-  );
-
-  const getUserStatsQuery = useQuery({
-    queryKey: [ReactQueryKeys.GET_USER_STATS],
-    queryFn: () => getUserStats({ from: params.from, to: params.to }),
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
+    queryKey: [
+      ReactQueryKeys.GET_USER_REGISTRATION_GRAPH_DATA,
+      JSON.stringify(dateParams),
+    ],
+    queryFn: () => getUserRegistrationGraphData(dateParams),
   });
 
   const getTopUsers = useCallback(
@@ -145,39 +176,17 @@ export function useUsers(userId?: string) {
   );
 
   const getTopUsersQuery = useQuery({
-    queryKey: [ReactQueryKeys.GET_TOP_USERS],
-    queryFn: () => getTopUsers({ from: params.from, to: params.to }),
+    queryKey: [ReactQueryKeys.GET_TOP_USERS, JSON.stringify(dateParams)],
+    queryFn: () => getTopUsers(dateParams),
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
   });
-
-  const applyUserSearchFilters = useCallback(
-    (filters: Partial<GetAllCustomersRequest['payload']>) => {
-      updateParams({
-        ...params,
-        ...filters,
-      });
-    },
-    [updateParams],
-  );
-
-  const userStatusFilter = useMemo(() => {
-    return (params.status as UserStatusFilter) ?? UserStatusFilter.ALL;
-  }, [params]);
-
-  const setUserStatusFilter = useCallback(
-    (filter: UserStatusFilter) => {
-      updateParams({ status: filter });
-    },
-    [updateParams],
-  );
 
   return {
     // Queries
     users,
     isLoading,
     userDetailsQuery,
-    getUserStatsQuery,
     getUserRegistrationGraphDataQuery,
     getTopUsersQuery,
 
@@ -185,8 +194,17 @@ export function useUsers(userId?: string) {
     approveUserMutation,
 
     // Actions
-    applyUserSearchFilters,
-    userStatusFilter,
-    setUserStatusFilter,
+    paginationInfo,
+    handlePageSizeChange,
+    handlePageChange,
+
+    dateRangeInString,
+    setDateRange,
+
+    userFilter,
+    handleUserStatusFilterChange,
+    handleUserTypeFilterChange,
+    handleUserEmailFilterChange,
+    handleUserNameFilterChange,
   };
 }

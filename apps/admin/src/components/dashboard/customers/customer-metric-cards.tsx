@@ -14,10 +14,10 @@ import {
 import AnimatedCounter from '@repo/ui/components/base/animate-counter';
 
 // Hooks
-import { useUsers } from '@/hooks/useUsers';
+import { useUserStats } from '@/hooks/useUsers';
 
 function CustomerMetricCards() {
-  const { getUserStatsQuery } = useUsers();
+  const getUserStatsQuery = useUserStats();
 
   const metrics = useMemo(() => {
     const totalCustomers = getUserStatsQuery.data?.totalUsers ?? 0;
@@ -35,67 +35,97 @@ function CustomerMetricCards() {
       unverifiedRate:
         Math.round((unverifiedCustomers / totalCustomers) * 100) ?? 0,
     };
-  }, [getUserStatsQuery.data]);
+  }, [
+    getUserStatsQuery.data?.totalUsers,
+    getUserStatsQuery.data?.approvedUsers,
+    getUserStatsQuery.data?.pendingUsers,
+    getUserStatsQuery.data?.unverifiedUsers,
+  ]);
 
   return (
-    <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
-      {/* Total Customers Card */}
-      <div className="bg-background border-border border-b border-l-4 border-r border-t border-l-[var(--color-primary)] shadow-md">
-        <div className="border-border border-b px-5 py-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-foreground text-sm font-medium">
-              Total Customers
-            </h3>
-            <div className="bg-[var(--color-primary)]/10 flex h-7 w-7 items-center justify-center">
-              <Users className="h-4 w-4 text-[var(--color-primary)]" />
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="from-[var(--baladi-primary)]/5 to-[var(--baladi-primary)]/10 group relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-xl">
+        <div className="to-[var(--baladi-primary)]/70 absolute left-0 top-0 h-1 w-full bg-gradient-to-r from-[var(--baladi-primary)]"></div>
+        <div className="p-6">
+          <div className="mb-4 flex items-center justify-between">
+            <div className="bg-[var(--baladi-primary)]/10 border-[var(--baladi-primary)]/20 flex h-12 w-12 items-center justify-center rounded-xl border backdrop-blur-sm">
+              <Users className="h-6 w-6 text-[var(--baladi-primary)]" />
+            </div>
+            <div className="text-right">
+              <p className="mb-1 font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-gray)]">
+                Growth Rate
+              </p>
+              <div className="flex items-center gap-1">
+                <ArrowUpRight className="h-3 w-3 text-[var(--baladi-success)]" />
+                <span className="font-[family-name:var(--font-sora)] text-xs font-semibold text-[var(--baladi-success)]">
+                  +12.5%
+                </span>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="p-6">
-          <div className="flex items-baseline gap-2">
-            <span className="text-foreground text-3xl font-bold">
-              <AnimatedCounter value={metrics.totalCustomers} />
-            </span>
+
+          <div className="space-y-2">
+            <h3 className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-gray)]">
+              Total Customers
+            </h3>
+            <div className="flex items-baseline gap-2">
+              <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-dark)]">
+                <AnimatedCounter value={metrics.totalCustomers} />
+              </span>
+            </div>
           </div>
-          <div className="mt-4 flex flex-col gap-2">
+
+          <div className="mt-4 border-t border-[var(--baladi-border)] pt-4">
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground text-xs">
-                Approved Customers
+              <span className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
+                Approved
               </span>
-              <span className="text-foreground text-sm font-medium">
-                <AnimatedCounter value={metrics.approvedCustomers} /> (
-                <AnimatedCounter value={metrics.approvalRate} />
-                %)
-              </span>
+              <div className="flex items-center gap-1">
+                <span className="font-[family-name:var(--font-sora)] text-sm font-semibold text-[var(--baladi-dark)]">
+                  <AnimatedCounter value={metrics.approvedCustomers} />
+                </span>
+                <span className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-success)]">
+                  (<AnimatedCounter value={metrics.approvalRate} />
+                  %)
+                </span>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Approved Customers Card */}
-      <div className="bg-background border-border border-b border-l-4 border-r border-t border-l-[var(--color-success)] shadow-md">
-        <div className="border-border border-b px-5 py-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-foreground text-sm font-medium">
-              Approved Customers
-            </h3>
-            <div className="bg-[var(--color-success)]/10 flex h-7 w-7 items-center justify-center">
-              <UserCheck className="h-4 w-4 text-[var(--color-success)]" />
+      <div className="from-[var(--baladi-success)]/5 to-[var(--baladi-success)]/10 group relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-xl">
+        <div className="to-[var(--baladi-success)]/70 absolute left-0 top-0 h-1 w-full bg-gradient-to-r from-[var(--baladi-success)]"></div>
+        <div className="p-6">
+          <div className="mb-4 flex items-center justify-between">
+            <div className="bg-[var(--baladi-success)]/10 border-[var(--baladi-success)]/20 flex h-12 w-12 items-center justify-center rounded-xl border backdrop-blur-sm">
+              <UserCheck className="h-6 w-6 text-[var(--baladi-success)]" />
+            </div>
+            <div className="bg-[var(--baladi-success)]/10 rounded-full px-3 py-1.5">
+              <span className="font-[family-name:var(--font-dm-sans)] text-xs font-semibold text-[var(--baladi-success)]">
+                Active
+              </span>
             </div>
           </div>
-        </div>
-        <div className="p-6">
-          <div className="flex items-baseline gap-2">
-            <span className="text-foreground text-3xl font-bold">
-              <AnimatedCounter value={metrics.approvedCustomers} />
-            </span>
+
+          <div className="space-y-2">
+            <h3 className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-gray)]">
+              Approved Customers
+            </h3>
+            <div className="flex items-baseline gap-2">
+              <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-dark)]">
+                <AnimatedCounter value={metrics.approvedCustomers} />
+              </span>
+            </div>
           </div>
-          <div className="mt-4 flex flex-col gap-2">
+
+          <div className="mt-4 border-t border-[var(--baladi-border)] pt-4">
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground text-xs">
+              <span className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
                 Approval Rate
               </span>
-              <span className="text-foreground text-sm font-medium">
+              <span className="font-[family-name:var(--font-sora)] text-sm font-semibold text-[var(--baladi-success)]">
                 <AnimatedCounter value={metrics.approvalRate} />%
               </span>
             </div>
@@ -104,32 +134,40 @@ function CustomerMetricCards() {
       </div>
 
       {/* Pending Customers Card */}
-      <div className="bg-background border-border border-b border-l-4 border-r border-t border-l-amber-500 shadow-md">
-        <div className="border-border border-b px-5 py-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-foreground text-sm font-medium">
-              Pending Customers
-            </h3>
-            <div className="flex h-7 w-7 items-center justify-center bg-amber-500/10">
-              <Clock className="h-4 w-4 text-amber-500" />
+      <div className="from-[var(--baladi-warning)]/5 to-[var(--baladi-warning)]/10 group relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-xl">
+        <div className="to-[var(--baladi-warning)]/70 absolute left-0 top-0 h-1 w-full bg-gradient-to-r from-[var(--baladi-warning)]"></div>
+        <div className="p-6">
+          <div className="mb-4 flex items-center justify-between">
+            <div className="bg-[var(--baladi-warning)]/10 border-[var(--baladi-warning)]/20 flex h-12 w-12 items-center justify-center rounded-xl border backdrop-blur-sm">
+              <Clock className="h-6 w-6 text-[var(--baladi-warning)]" />
+            </div>
+            <div className="bg-[var(--baladi-warning)]/10 rounded-full px-3 py-1.5">
+              <span className="font-[family-name:var(--font-dm-sans)] text-xs font-semibold text-[var(--baladi-warning)]">
+                Attention
+              </span>
             </div>
           </div>
-        </div>
-        <div className="p-6">
-          <div className="flex items-baseline gap-2">
-            <span className="text-foreground text-3xl font-bold">
-              <AnimatedCounter value={metrics.pendingCustomers} />
-            </span>
-            <span className="flex items-center bg-amber-500/10 px-1.5 py-0.5 text-xs font-medium text-amber-600">
-              Needs attention
-            </span>
+
+          <div className="space-y-2">
+            <h3 className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-gray)]">
+              Pending Customers
+            </h3>
+            <div className="flex items-baseline gap-2">
+              <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-dark)]">
+                <AnimatedCounter value={metrics.pendingCustomers} />
+              </span>
+              <span className="bg-[var(--baladi-warning)]/10 rounded-full px-2 py-1 font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-warning)]">
+                Review
+              </span>
+            </div>
           </div>
-          <div className="mt-4 flex flex-col gap-2">
+
+          <div className="mt-4 border-t border-[var(--baladi-border)] pt-4">
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground text-xs">
+              <span className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
                 Pending Rate
               </span>
-              <span className="text-sm font-medium text-amber-600">
+              <span className="font-[family-name:var(--font-sora)] text-sm font-semibold text-[var(--baladi-warning)]">
                 <AnimatedCounter value={metrics.pendingRate} />%
               </span>
             </div>
@@ -138,33 +176,41 @@ function CustomerMetricCards() {
       </div>
 
       {/* Unverified Customers Card */}
-      <div className="bg-background border-l-destructive border-border border-b border-l-4 border-r border-t shadow-md">
-        <div className="border-border border-b px-5 py-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-foreground text-sm font-medium">
-              Unverified Customers
-            </h3>
-            <div className="bg-destructive/10 flex h-7 w-7 items-center justify-center">
-              <UserX className="text-destructive h-4 w-4" />
+      <div className="from-[var(--baladi-error)]/5 to-[var(--baladi-error)]/10 group relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-xl">
+        <div className="to-[var(--baladi-error)]/70 absolute left-0 top-0 h-1 w-full bg-gradient-to-r from-[var(--baladi-error)]"></div>
+        <div className="p-6">
+          <div className="mb-4 flex items-center justify-between">
+            <div className="bg-[var(--baladi-error)]/10 border-[var(--baladi-error)]/20 flex h-12 w-12 items-center justify-center rounded-xl border backdrop-blur-sm">
+              <UserX className="h-6 w-6 text-[var(--baladi-error)]" />
+            </div>
+            <div className="bg-[var(--baladi-error)]/10 flex items-center gap-1 rounded-full px-3 py-1.5">
+              <ArrowUpRight className="h-3 w-3 text-[var(--baladi-error)]" />
+              <span className="font-[family-name:var(--font-dm-sans)] text-xs font-semibold text-[var(--baladi-error)]">
+                +7.2%
+              </span>
             </div>
           </div>
-        </div>
-        <div className="p-6">
-          <div className="flex items-baseline gap-2">
-            <span className="text-foreground text-3xl font-bold">
-              <AnimatedCounter value={metrics.unverifiedCustomers} />
-            </span>
-            <span className="text-destructive bg-destructive/10 flex items-center px-1.5 py-0.5 text-xs font-medium">
-              <ArrowUpRight className="mr-0.5 h-3 w-3" />
-              7.2%
-            </span>
+
+          <div className="space-y-2">
+            <h3 className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-gray)]">
+              Unverified Customers
+            </h3>
+            <div className="flex items-baseline gap-2">
+              <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-dark)]">
+                <AnimatedCounter value={metrics.unverifiedCustomers} />
+              </span>
+              <span className="bg-[var(--baladi-error)]/10 rounded-full px-2 py-1 font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-error)]">
+                Action
+              </span>
+            </div>
           </div>
-          <div className="mt-4 flex flex-col gap-2">
+
+          <div className="mt-4 border-t border-[var(--baladi-border)] pt-4">
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground text-xs">
+              <span className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
                 Unverified Rate
               </span>
-              <span className="text-destructive text-sm font-medium">
+              <span className="font-[family-name:var(--font-sora)] text-sm font-semibold text-[var(--baladi-error)]">
                 <AnimatedCounter value={metrics.unverifiedRate} />%
               </span>
             </div>

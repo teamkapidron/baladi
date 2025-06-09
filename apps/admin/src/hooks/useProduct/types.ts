@@ -75,6 +75,7 @@ export type LowStockProductsRequest = ApiData<
       name: string;
       categories: {
         _id: string;
+        name: string;
       }[];
     }[];
     outOfStockCount: number;

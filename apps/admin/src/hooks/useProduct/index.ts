@@ -4,7 +4,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 
 // Hooks
 import { useRequest } from '@/hooks/useRequest';
-import { useGetParams, useUpdateParams } from '@repo/ui/hooks/useParams';
+import { useGetParams, useUpdateParams } from '@/hooks/useParams';
 
 // Types
 import type {

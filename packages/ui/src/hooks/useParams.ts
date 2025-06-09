@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 
 export function useUpdateParams() {
@@ -22,7 +22,7 @@ export function useUpdateParams() {
       });
 
       const queryString = params.toString();
-      router.push(`${pathname}?${queryString}`, { scroll: false });
+      router.push(`${pathname}?${queryString}`);
     },
     [router, pathname, searchParams],
   );
@@ -33,21 +33,24 @@ export function useUpdateParams() {
 export function useGetParams() {
   const searchParams = useSearchParams();
 
-  const getParam = useCallback(
-    (name: string) => {
-      return searchParams.get(name);
-    },
-    [searchParams],
-  );
-
-  const getAllParams = useCallback(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    const result: Record<string, string> = {};
-    params.forEach((value, key) => {
+  const params = useMemo(() => {
+    const result: Record<string, string | null> = {};
+    searchParams.forEach((value, key) => {
       result[key] = value;
     });
     return result;
   }, [searchParams]);
+
+  const getParam = useCallback(
+    (name: string) => {
+      return params[name] || null;
+    },
+    [params],
+  );
+
+  const getAllParams = useCallback(() => {
+    return { ...params };
+  }, [params]);
 
   return {
     getParam,

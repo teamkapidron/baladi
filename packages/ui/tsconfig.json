@@ -6,6 +6,11 @@
       "@repo/ui/*": ["./src/*"]
     }
   },
-  "include": ["src", "../../apps/admin/src/components/layouts"],
+  "include": [
+    "src",
+    "../../apps/admin/src/components/layouts",
+    "src/hooks/useDate",
+    "src/hooks/usePagination"
+  ],
   "exclude": ["node_modules"]
 }
