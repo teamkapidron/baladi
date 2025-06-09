@@ -3,13 +3,23 @@ import { Inventory } from '@repo/types/inventory';
 
 export type InventoryBodyRequest = Pick<Inventory, 'quantity' | 'shelfLife'>;
 
+export type InventoryResponse = Omit<Inventory, 'productId'> & {
+  productId: {
+    _id: string;
+    name: string;
+    sku: string;
+    category: string;
+    price: number;
+  };
+};
+
 export type GetAllInventoryRequest = ApiData<
   {
     page: string;
     limit: string;
   },
   {
-    inventory: Inventory[];
+    inventory: InventoryResponse[];
     totalInventory: number;
     currentPage: number;
     perPage: number;
@@ -24,7 +34,7 @@ export type GetProductInventoryRequest = ApiData<
     limit: string;
   },
   {
-    inventory: Inventory[];
+    inventory: InventoryResponse[];
     totalInventory: number;
     currentPage: number;
     perPage: number;

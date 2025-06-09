@@ -1,4 +1,6 @@
 export interface Inventory {
+  _id: string;
+
   productId: string;
   quantity: number;
 

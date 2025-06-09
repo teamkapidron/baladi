@@ -31,7 +31,10 @@ export const getAllInventory = asyncHandler(
 
     const { page, limit, skip } = getPagination(query.page, query.limit);
 
-    const inventory = await Inventory.find().skip(skip).limit(limit);
+    const inventory = await Inventory.find()
+      .populate('productId', 'name sku category price')
+      .skip(skip)
+      .limit(limit);
 
     const totalInventory = await Inventory.countDocuments();
 
@@ -53,6 +56,7 @@ export const getProductInventory = asyncHandler(
     const { page, limit, skip } = getPagination(query.page, query.limit);
 
     const inventory = await Inventory.find({ productId })
+      .populate('productId', 'name sku category price')
       .skip(skip)
       .limit(limit)
       .sort({
