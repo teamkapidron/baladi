@@ -1,14 +1,7 @@
 'use client';
 
 import { memo } from 'react';
-import {
-  User,
-  Settings,
-  Package,
-  MapPin,
-  Heart,
-  LogOut,
-} from '@repo/ui/lib/icons';
+import { User, Settings, LogOut } from '@repo/ui/lib/icons';
 import Link from 'next/link';
 
 function ProfileSidebar() {

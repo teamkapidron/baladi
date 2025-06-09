@@ -18,8 +18,7 @@ import {
   GetUserStatsRequest,
   TopUsersRequest,
 } from './types';
-import { UserType } from '@repo/types/user';
-import { UserStatusFilter, UserSort } from './types';
+import { UserSort } from './types';
 import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
 
 export function useUserStats() {

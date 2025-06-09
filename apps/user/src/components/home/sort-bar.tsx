@@ -24,11 +24,10 @@ const sortOptions = [
 ];
 
 function ProductsSortBar() {
-  const [sortBy, setSortBy] = useState('popularity');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(24);
-  const [isLoading, setIsLoading] = useState(false);
-  const [totalProducts, setTotalProducts] = useState(0);
+  const [currentPage] = useState(1);
+  const [itemsPerPage] = useState(24);
+  const [isLoading] = useState(false);
+  const [totalProducts] = useState(0);
 
   // Memoize the status text
   const statusText = useMemo(() => {
@@ -39,27 +38,6 @@ function ProductsSortBar() {
 
     return `Viser ${startItem}-${endItem} av ${totalProducts} produkter`;
   }, [isLoading, totalProducts, currentPage, itemsPerPage]);
-
-  // Memoize the sort dropdown props
-  const sortDropdownProps = useMemo(
-    () => ({
-      options: sortOptions,
-      selectedOption: sortBy,
-      onSelect: (value: unknown) => {
-        if (typeof value === 'string') {
-          setSortBy(value);
-        }
-      },
-      buttonText: 'Sorter Etter',
-      variant: 'outline' as const,
-      size: 'sm' as const,
-      position: 'right' as const,
-      showSelectedInButton: true,
-      buttonClassName:
-        'text-sm border-gray-200 hover:border-[var(--baladi-primary)] w-40 transition-all duration-300 ease-in-out',
-    }),
-    [sortBy],
-  );
 
   return (
     <div className="mb-6 flex items-center justify-between rounded-lg border border-[var(--baladi-border)] bg-white p-3 shadow-sm transition-shadow duration-300 ease-in-out hover:shadow-md">

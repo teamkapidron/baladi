@@ -10,7 +10,7 @@ import { useLocalStorage } from '@repo/ui/hooks/useLocalStorage';
 import { calculateItemTotal, createCartItem, updateCartItem } from './utils';
 
 // Types
-import { Product } from '@repo/types/product';
+import { type Product } from '@repo/types/product';
 import { CartItem, CART_STORAGE_KEY, TOAST_MESSAGES } from './type';
 
 export function useCart() {
@@ -143,7 +143,7 @@ export function useCart() {
       );
       toast.success(TOAST_MESSAGES.ITEM_UPDATED);
     },
-    [setCart, user, requireAuth],
+    [requireAuth, setCart, removeFromCart, user],
   );
 
   const userCartItems = useMemo(() => {

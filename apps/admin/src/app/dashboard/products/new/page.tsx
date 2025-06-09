@@ -1,9 +1,13 @@
+import { Suspense } from 'react';
+
 import ProductForm from '@/components/dashboard/products/product-form/product-form';
 
 export default function NewProductPage() {
   return (
-    <div className="bg-background p-5 shadow-md rounded-xl ">
-      <ProductForm />
-    </div>
+    <Suspense>
+      <div className="bg-background rounded-xl p-5 shadow-md">
+        <ProductForm />
+      </div>
+    </Suspense>
   );
 }

@@ -12,11 +12,11 @@ export function useDateRangeInParams(timeRange: number = 30) {
     return (
       getParam('from') ?? format(subDays(new Date(), timeRange), 'yyyy-MM-dd')
     );
-  }, [timeRange]);
+  }, [getParam, timeRange]);
 
   const toString = useMemo(
     () => getParam('to') ?? format(new Date(), 'yyyy-MM-dd'),
-    [],
+    [getParam],
   );
 
   const dateRange = useMemo(() => {

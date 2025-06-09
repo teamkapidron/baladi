@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Heart, PercentIcon, ShoppingCart } from '@repo/ui/lib/icons';
 import { QuantityInput } from '@repo/ui/components/base/quantity-input';
+import { memo } from 'react';
 
 interface ProductCardProps {
   className?: string;
@@ -225,3 +226,5 @@ function ProductCard(props: ProductCardProps) {
     </div>
   );
 }
+
+export default memo(ProductCard);

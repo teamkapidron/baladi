@@ -28,7 +28,7 @@ function SidebarItem(props: SidebarItemProps) {
 
   const Icon = useMemo(() => {
     return <DynamicIcon name={link.icon} className={cn('size-5')} />;
-  }, [link.icon, isCollapsed]);
+  }, [link.icon]);
 
   if (isCollapsed) {
     return (

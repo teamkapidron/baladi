@@ -11,10 +11,10 @@ import {
   ChevronRight,
   MoreHorizontal,
 } from '@repo/ui/lib/icons';
-import { Order, OrderStatus } from '@repo/types/order';
+import { OrderStatus } from '@repo/types/order';
 import { Badge } from '@repo/ui/components/base/badge';
 import { Button } from '@repo/ui/components/base/button';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 const formatDate = (date: Date) => {
   return `${date.toLocaleString('default', { month: 'short' })} ${date.getDate()}, ${date.getFullYear()} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
@@ -61,11 +61,6 @@ const getStatusBadge = (status: OrderStatus) => {
       return null;
   }
 };
-
-interface OrderDetailHeaderProps {
-  order: Order;
-  onBackClick: () => void;
-}
 
 function OrderDetailHeader() {
   const router = useRouter();

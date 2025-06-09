@@ -5,34 +5,15 @@ import {
   TruckIcon,
   PackageIcon,
   XCircle,
-  ArrowRight,
 } from '@repo/ui/lib/icons';
-import { Order, OrderStatus } from '@repo/types/order';
+import { OrderStatus } from '@repo/types/order';
 import { Card } from '@repo/ui/components/base/card';
 import { CardHeader } from '@repo/ui/components/base/card';
 import { CardContent } from '@repo/ui/components/base/card';
-import { Button } from '@repo/ui/components/base/button';
 
 // Format date function
 const formatDate = (date: Date) => {
   return `${date.toLocaleString('default', { month: 'short' })} ${date.getDate()}, ${date.getFullYear()} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
-};
-
-// Get next status in the order flow
-const getNextStatus = (currentStatus: OrderStatus): OrderStatus | null => {
-  switch (currentStatus) {
-    case OrderStatus.PENDING:
-      return OrderStatus.CONFIRMED;
-    case OrderStatus.CONFIRMED:
-      return OrderStatus.SHIPPED;
-    case OrderStatus.SHIPPED:
-      return OrderStatus.DELIVERED;
-    case OrderStatus.DELIVERED:
-    case OrderStatus.CANCELLED:
-      return null;
-    default:
-      return null;
-  }
 };
 
 // Get status icon
@@ -74,7 +55,6 @@ export default function OrderTrackingTimeline() {
   const currentStatusIndex = orderStatuses.findIndex(
     (s) => s.status === order.status,
   );
-  const nextStatus = getNextStatus(order.status);
 
   return (
     <Card>

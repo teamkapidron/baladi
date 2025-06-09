@@ -5,12 +5,12 @@ import { memo, useCallback, useRef, useState } from 'react';
 import { Menu } from '@repo/ui/lib/icons';
 
 function MobileMenuButton() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [, setMobileMenuOpen] = useState(false);
   const mobileMenuButtonRef = useRef<HTMLButtonElement>(null);
 
   const handleClick = useCallback(() => {
     setMobileMenuOpen((prev) => !prev);
-  }, [mobileMenuOpen]);
+  }, []);
 
   return (
     <button

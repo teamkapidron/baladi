@@ -59,7 +59,6 @@ function Carousel(props: CarouselProps) {
         className="relative overflow-hidden bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)]"
         style={{
           height: `var(--carousel-height, ${height.mobile})`,
-          ['--carousel-height' as any]: height.mobile,
         }}
       >
         {slides.map((slide, index) => (

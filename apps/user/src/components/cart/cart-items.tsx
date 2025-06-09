@@ -29,8 +29,6 @@ function CartItems() {
   const navigateToProduct = (slug: string) => {
     console.log(slug);
   };
-  const updateQuantity = () => {};
-  const removeItem = () => {};
 
   return (
     <div className="h-full overflow-hidden rounded-md bg-white shadow-sm">
@@ -93,7 +91,7 @@ function CartItems() {
               <div className="flex flex-wrap items-center gap-4">
                 <QuantityInput
                   value={item.quantity}
-                  onChange={(value) => {}}
+                  onChange={() => {}}
                   disabled={isLoading}
                 />
                 <Button

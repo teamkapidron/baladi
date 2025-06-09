@@ -8,7 +8,6 @@ import {
   Phone,
   AlertCircle,
 } from '@repo/ui/lib/icons';
-import { Order } from '@repo/types/order';
 import { Card, CardHeader, CardContent } from '@repo/ui/components/base/card';
 import DataItem from './atoms/data-item';
 
@@ -38,10 +37,6 @@ const formatAddress = (address: Address) => {
   ].filter(Boolean);
   return parts.join(', ');
 };
-
-interface OrderSummaryCardProps {
-  order: Order;
-}
 
 export default function OrderSummaryCard() {
   const order = {

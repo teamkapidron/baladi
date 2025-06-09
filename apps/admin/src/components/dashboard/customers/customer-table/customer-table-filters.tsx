@@ -2,14 +2,7 @@
 
 // Node Modules
 import { memo, useState, useCallback } from 'react';
-import {
-  ChevronDown,
-  Search,
-  Filter,
-  Users,
-  Mail,
-  User,
-} from '@repo/ui/lib/icons';
+import { ChevronDown, Search, Filter, Users } from '@repo/ui/lib/icons';
 
 // Components
 import { Input } from '@repo/ui/components/base/input';
@@ -42,7 +35,7 @@ function CustomerTableFilters() {
   } = useUsers();
 
   const [filter, setFilter] = useState<UserFilter>(UserFilter.NAME);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const currentPage = Number(page);
   const pageSize = Number(limit);
@@ -62,6 +55,14 @@ function CustomerTableFilters() {
     [filter, handleUserNameFilterChange, handleUserEmailFilterChange],
   );
 
+  const handleSearch = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      handleSearchQueryChange(e.target.value);
+      setSearchQuery(e.target.value);
+    },
+    [handleSearchQueryChange, setSearchQuery],
+  );
+
   const handleFilterChange = useCallback(
     (newFilter: UserFilter) => {
       setFilter(newFilter);
@@ -78,7 +79,7 @@ function CustomerTableFilters() {
   const handleUserTypeChange = useCallback(
     (userType: string) => {
       if (userType === 'all') {
-        handleUserTypeFilterChange(undefined as any);
+        handleUserTypeFilterChange(undefined as unknown as UserType);
       } else {
         handleUserTypeFilterChange(userType as UserType);
       }
@@ -86,21 +87,27 @@ function CustomerTableFilters() {
     [handleUserTypeFilterChange],
   );
 
-  const handlePageInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPageInput(e.target.value);
-  };
+  const handlePageInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setPageInput(e.target.value);
+    },
+    [],
+  );
 
-  const handlePageInputSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const page = parseInt(pageInput, 10);
-    if (!isNaN(page) && page >= 1 && page <= totalPages) {
-      handlePageChange(page);
-    } else {
-      setPageInput(currentPage.toString());
-    }
-  };
+  const handlePageInputSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      const page = parseInt(pageInput, 10);
+      if (!isNaN(page) && page >= 1 && page <= totalPages) {
+        handlePageChange(page);
+      } else {
+        setPageInput(currentPage.toString());
+      }
+    },
+    [currentPage, handlePageChange, pageInput, totalPages],
+  );
 
-  const getFilterLabel = (filterType: UserFilter) => {
+  const getFilterLabel = useCallback((filterType: UserFilter) => {
     switch (filterType) {
       case UserFilter.NAME:
         return 'Name';
@@ -111,9 +118,9 @@ function CustomerTableFilters() {
       default:
         return 'Name';
     }
-  };
+  }, []);
 
-  const getCurrentFilterValue = () => {
+  const getCurrentFilterValue = useCallback(() => {
     switch (filter) {
       case UserFilter.NAME:
         return userFilter.name || '';
@@ -124,7 +131,7 @@ function CustomerTableFilters() {
       default:
         return '';
     }
-  };
+  }, [filter, userFilter]);
 
   return (
     <div className="mb-6 space-y-4">
@@ -173,8 +180,8 @@ function CustomerTableFilters() {
                   type="text"
                   placeholder={`Search by ${getFilterLabel(filter).toLowerCase()}...`}
                   className="w-48 pl-9 pr-4 font-[family-name:var(--font-dm-sans)] text-sm"
-                  value={getCurrentFilterValue()}
-                  onChange={(e) => handleSearchQueryChange(e.target.value)}
+                  value={searchQuery}
+                  onChange={handleSearch}
                 />
               </div>
             )}

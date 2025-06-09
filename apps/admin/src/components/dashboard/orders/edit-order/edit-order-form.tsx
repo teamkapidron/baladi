@@ -77,10 +77,6 @@ function EditOrderForm() {
     CANCELLED: 'cancelled',
   };
 
-  const handleCancel = () => {
-    console.log('cancel');
-  };
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -327,18 +323,13 @@ function EditOrderForm() {
 
         {/* Form Actions */}
         <div className="flex justify-end gap-3">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => {}}
-            disabled={false}
-          >
+          <Button type="button" variant="outline" onClick={() => {}}>
             <X className="mr-2 h-4 w-4" />
             Cancel
           </Button>
 
-          <Button type="submit" disabled={false || !form.formState.isDirty}>
-            {false ? (
+          <Button type="submit" disabled={!form.formState.isDirty}>
+            {form.formState.isSubmitting ? (
               <>
                 <svg
                   className="-ml-1 mr-2 h-4 w-4 animate-spin text-white"

@@ -1,19 +1,15 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback, memo } from 'react';
-import { type Product } from '@repo/types/src/product';
+import React, { useState, useMemo, useCallback, memo } from 'react';
 import {
   ShoppingCart,
   Heart,
   Info,
   Package2,
   Check,
-  BatteryLow,
-  BatteryMedium,
   BatteryFull,
   Bell,
   Percent,
-  AlertTriangle,
   Calendar,
 } from '@repo/ui/lib/icons';
 import { Button } from '@repo/ui/components/base/button';
@@ -23,11 +19,11 @@ import Image from 'next/image';
 
 function ProductDetail() {
   const [quantity, setQuantity] = useState(1);
-  const [isAdding, setIsAdding] = useState(false);
-  const [isClient, setIsClient] = useState(false);
-  const [isInCartState, setIsInCartState] = useState(false);
-  const [isFavLoading, setIsFavLoading] = useState(false);
-  const [isFavoriteState, setIsFavoriteState] = useState(false);
+  const [isAdding] = useState(false);
+  const [isClient] = useState(false);
+  const [isInCartState] = useState(false);
+  const [isFavLoading] = useState(false);
+  const [isFavoriteState] = useState(false);
 
   const product = {
     name: 'Product Name',

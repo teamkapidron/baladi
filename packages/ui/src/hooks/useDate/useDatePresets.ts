@@ -85,6 +85,8 @@ export function useDatePresets({
       let fromDate: Date;
       let toDate: Date;
 
+      const lastYear = now.getFullYear() - 1;
+
       switch (presetValue) {
         case '7d':
           fromDate = startOfDay(subDays(now, 6));
@@ -103,7 +105,6 @@ export function useDatePresets({
           toDate = endOfDay(now);
           break;
         case 'prev_year':
-          const lastYear = now.getFullYear() - 1;
           fromDate = startOfYear(new Date(lastYear, 0, 1));
           toDate = endOfYear(new Date(lastYear, 11, 31));
           break;

@@ -131,6 +131,7 @@ function ProductsSidebar() {
       type: 'minPrice' | 'maxPrice',
     ) => {
       const value = parseInt(e.target.value, 10);
+      console.log('Price change:', value, type);
       if (!isNaN(value)) {
         // updateFilter(type, value);
       }

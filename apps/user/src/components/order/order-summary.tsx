@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { ShoppingBag, CreditCard, MapPin, Truck } from '@repo/ui/lib/icons';
-import { OrderItem } from '@repo/types/order';
 
 function OrderSummary() {
   const order = {

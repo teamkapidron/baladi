@@ -61,7 +61,7 @@ export function useOrder(orderId?: string) {
       `/order/${orderId}`,
     );
     return response.data.data;
-  }, [api]);
+  }, [api, orderId]);
 
   const orderDetailsQuery = useQuery({
     queryKey: [ReactQueryKeys.GET_USER_ORDER_DETAILS, orderId],

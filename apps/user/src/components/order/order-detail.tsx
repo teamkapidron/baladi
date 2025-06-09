@@ -4,7 +4,6 @@ import React from 'react';
 import { Separator } from '@repo/ui/components/base/separator';
 import { Button } from '@repo/ui/components/base/button';
 import { MapPin, CreditCard, Package } from '@repo/ui/lib/icons';
-import { OrderItem } from '@repo/types/order';
 
 function OrderDetails() {
   const order = {

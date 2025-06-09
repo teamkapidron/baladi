@@ -2,18 +2,10 @@
 
 // Node Modules
 import Link from 'next/link';
-import { User, LogIn } from '@repo/ui/lib/icons';
+import { LogIn } from '@repo/ui/lib/icons';
 import { memo } from 'react';
 
 function ProfileSection() {
-  const capitalizeUserName = (name?: string) => {
-    if (!name) return '';
-    return name
-      .split(' ')
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(' ');
-  };
-
   // const displayName = user?.name ? capitalizeUserName(user.name) : 'Min Profil';
 
   // if (isAuthenticated) {

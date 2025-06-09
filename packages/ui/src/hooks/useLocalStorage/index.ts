@@ -28,8 +28,10 @@ export function useLocalStorage<T>(
       if (JSON.stringify(storedValue) !== JSON.stringify(value)) {
         setStoredValue(value);
       }
-    } catch {}
-  }, [key, initialValue]);
+    } catch {
+      console.error(`Error setting localStorage item ${key}`);
+    }
+  }, [key, initialValue, storedValue]);
 
   const setValue = useCallback(
     (value: SetValue<T>) => {
@@ -41,7 +43,9 @@ export function useLocalStorage<T>(
         if (isBrowser) {
           localStorage.setItem(key, JSON.stringify(valueToStore));
         }
-      } catch {}
+      } catch {
+        console.error(`Error setting localStorage item ${key}`);
+      }
     },
     [key, storedValue],
   );

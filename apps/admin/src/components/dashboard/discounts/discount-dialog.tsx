@@ -35,7 +35,7 @@ import {
 import { Switch } from '@repo/ui/components/base/switch';
 
 // Hooks
-import { useProduct } from '@/hooks/useProduct';
+// import { useProduct } from '@/hooks/useProduct';
 
 // Types
 import type { Discount } from '@repo/types/discount';
@@ -82,7 +82,7 @@ function DiscountDialog({
   onSubmit,
   isLoading = false,
 }: DiscountDialogProps) {
-  const { products } = useProduct();
+  // const { products } = useProduct();
 
   const form = useForm<DiscountFormValues>({
     resolver: zodResolver(discountFormSchema),
@@ -286,7 +286,8 @@ function DiscountDialog({
                               const validFrom = form.getValues('validFrom');
                               return (
                                 date < new Date() ||
-                                (validFrom && date <= validFrom)
+                                (validFrom && date <= validFrom) ||
+                                false
                               );
                             }}
                             initialFocus

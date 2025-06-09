@@ -38,9 +38,12 @@ export function useUserFilter(debounceDelay = 400) {
   );
 
   useEffect(() => {
+    const nameUpdateRef = debouncedNameUpdateRef.current;
+    const emailUpdateRef = debouncedEmailUpdateRef.current;
+
     return () => {
-      debouncedNameUpdateRef.current.cancel();
-      debouncedEmailUpdateRef.current.cancel();
+      nameUpdateRef.cancel();
+      emailUpdateRef.cancel();
     };
   }, []);
 
