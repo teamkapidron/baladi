@@ -13,7 +13,7 @@ export function useOrderFilters(debounceDelay = 400) {
   }, [getParam]);
 
   const search = useMemo(() => {
-    return getParam('search') as string;
+    return getParam('search') ?? undefined;
   }, [getParam]);
 
   const debouncedSearchUpdateRef = useRef(

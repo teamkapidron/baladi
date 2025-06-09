@@ -23,14 +23,14 @@ function OrderTableFilters() {
   const { page, limit, handlePageSizeChange, handlePageChange } =
     usePagination();
 
-  const { search, handleSearchFilterChange } = useOrderFilters();
   const { orders } = useOrder();
+  const { search, handleSearchFilterChange } = useOrderFilters();
 
   const currentPage = Number(page);
   const pageSize = Number(limit);
   const totalPages = orders?.totalPages || 1;
 
-  const [searchQuery, setSearchQuery] = useState<string>(search);
+  const [searchQuery, setSearchQuery] = useState<string>(search ?? '');
   const [pageInput, setPageInput] = useState<string>(currentPage.toString());
 
   const handleSearch = useCallback(
@@ -41,19 +41,25 @@ function OrderTableFilters() {
     [handleSearchFilterChange],
   );
 
-  const handlePageInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPageInput(e.target.value);
-  };
+  const handlePageInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setPageInput(e.target.value);
+    },
+    [],
+  );
 
-  const handlePageInputSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const page = parseInt(pageInput, 10);
-    if (!isNaN(page) && page >= 1 && page <= totalPages) {
-      handlePageChange(page);
-    } else {
-      setPageInput(currentPage.toString());
-    }
-  };
+  const handlePageInputSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      const page = parseInt(pageInput, 10);
+      if (!isNaN(page) && page >= 1 && page <= totalPages) {
+        handlePageChange(page);
+      } else {
+        setPageInput(currentPage.toString());
+      }
+    },
+    [currentPage, handlePageChange, pageInput, totalPages],
+  );
 
   return (
     <div className="mb-6 space-y-4">

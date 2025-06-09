@@ -1,13 +1,13 @@
-import { IOrder } from '@/models/interfaces/order.model';
+import { OrderResponse } from '@/types/order.types';
 
-export function pickingListTemplate(order: IOrder) {
+export function pickingListTemplate(order: OrderResponse) {
   return `
     <!DOCTYPE html>
     <html lang="en">
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Picking List - Order #${order._id}</title>
+      <title>Picking List - Order #${order._id.toString()}</title>
       <style>
         * {
           margin: 0;
@@ -15,313 +15,279 @@ export function pickingListTemplate(order: IOrder) {
           box-sizing: border-box;
         }
         
+        @page {
+          margin: 15mm;
+        }
+        
         body {
-          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-          line-height: 1.6;
-          color: #333;
-          background-color: #fff;
-          padding: 20px;
+          font-family: Arial, sans-serif;
+          font-size: 12px;
+          line-height: 1.3;
+          color: #000;
+          background: #fff;
         }
         
         .container {
-          max-width: 800px;
-          margin: 0 auto;
-          background: white;
+          width: 100%;
+          max-width: 100%;
         }
         
         .header {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 30px;
-          border-bottom: 3px solid #2563eb;
-          padding-bottom: 20px;
-        }
-        
-        .logo-section {
-          flex: 1;
+          margin-bottom: 20px;
+          border-bottom: 2px solid #2563eb;
+          padding-bottom: 15px;
         }
         
         .logo {
-          max-height: 80px;
+          height: 60px;
           width: auto;
         }
         
-        .company-info {
+        .header-info {
           text-align: right;
-          flex: 1;
         }
         
         .company-name {
-          font-size: 28px;
+          font-size: 20px;
           font-weight: bold;
           color: #2563eb;
           margin-bottom: 5px;
         }
         
         .document-title {
-          font-size: 24px;
-          color: #1f2937;
-          font-weight: 600;
+          font-size: 16px;
+          font-weight: bold;
+          color: #333;
         }
         
-        .order-info {
-          background: #f8fafc;
-          padding: 20px;
-          border-radius: 8px;
-          margin-bottom: 30px;
+        .order-section {
+          background: #f8f9fa;
+          padding: 15px;
+          margin-bottom: 20px;
           border-left: 4px solid #2563eb;
         }
         
-        .order-info h2 {
-          color: #2563eb;
-          margin-bottom: 15px;
-          font-size: 20px;
-        }
-        
-        .order-details {
+        .order-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          grid-template-columns: repeat(3, 1fr);
           gap: 15px;
         }
         
-        .detail-item {
-          display: flex;
-          flex-direction: column;
+        .order-item {
+          margin-bottom: 8px;
         }
         
-        .detail-label {
-          font-weight: 600;
-          color: #4b5563;
-          font-size: 14px;
+        .label {
+          font-weight: bold;
+          font-size: 10px;
+          color: #666;
           text-transform: uppercase;
-          letter-spacing: 0.5px;
+          margin-bottom: 2px;
         }
         
-        .detail-value {
-          font-size: 16px;
-          color: #1f2937;
+        .value {
+          font-size: 12px;
+          color: #000;
           font-weight: 500;
         }
         
-        .items-section {
-          margin-bottom: 30px;
-        }
-        
         .items-title {
-          font-size: 22px;
+          font-size: 16px;
+          font-weight: bold;
           color: #2563eb;
-          margin-bottom: 20px;
-          border-bottom: 2px solid #e5e7eb;
-          padding-bottom: 10px;
+          margin-bottom: 15px;
+          border-bottom: 1px solid #ddd;
+          padding-bottom: 5px;
         }
         
         .items-table {
           width: 100%;
           border-collapse: collapse;
-          margin-bottom: 20px;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+          margin-bottom: 15px;
         }
         
         .items-table th {
           background: #2563eb;
           color: white;
-          padding: 15px 12px;
+          padding: 8px;
           text-align: left;
-          font-weight: 600;
-          font-size: 14px;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
+          font-weight: bold;
+          font-size: 11px;
         }
         
         .items-table td {
-          padding: 15px 12px;
-          border-bottom: 1px solid #e5e7eb;
-          font-size: 15px;
+          padding: 8px;
+          border-bottom: 1px solid #ddd;
+          font-size: 11px;
         }
         
         .items-table tr:nth-child(even) {
-          background: #f9fafb;
+          background: #f9f9f9;
         }
         
-        .items-table tr:hover {
-          background: #f3f4f6;
-        }
-        
-        .quantity-cell {
+        .quantity-highlight {
           font-weight: bold;
           color: #2563eb;
-          font-size: 18px;
+          font-size: 14px;
           text-align: center;
         }
         
-        .product-id {
-          font-family: 'Courier New', monospace;
-          background: #f3f4f6;
-          padding: 4px 8px;
+        .total-summary {
+          background: #e8f5e8;
+          padding: 10px;
           border-radius: 4px;
-          font-size: 13px;
+          margin-bottom: 20px;
         }
         
-        .total-items {
-          background: #ecfdf5;
-          padding: 15px;
-          border-radius: 8px;
-          border-left: 4px solid #10b981;
-          margin-top: 20px;
-        }
-        
-        .total-items h3 {
-          color: #10b981;
+        .total-summary h3 {
+          color: #059669;
+          font-size: 14px;
           margin-bottom: 5px;
         }
         
-        .footer {
-          margin-top: 40px;
-          padding-top: 20px;
-          border-top: 2px solid #e5e7eb;
-          text-align: center;
-          color: #6b7280;
-        }
-        
-        .signature-section {
-          margin-top: 40px;
+        .signature-row {
           display: flex;
           justify-content: space-between;
+          margin-top: 30px;
         }
         
         .signature-box {
-          width: 200px;
+          width: 180px;
           text-align: center;
         }
         
         .signature-line {
-          border-top: 2px solid #374151;
-          margin-bottom: 8px;
-          height: 50px;
+          border-top: 1px solid #333;
+          margin-bottom: 5px;
+          height: 30px;
         }
         
         .signature-label {
-          font-weight: 600;
-          color: #4b5563;
+          font-size: 10px;
+          font-weight: bold;
+          color: #666;
         }
         
-        @media print {
-          body {
-            padding: 0;
-          }
-          
-          .container {
-            box-shadow: none;
-          }
+        .footer {
+          margin-top: 20px;
+          padding-top: 10px;
+          border-top: 1px solid #ddd;
+          text-align: center;
+          font-size: 10px;
+          color: #666;
+        }
+        
+        .notes-section {
+          background: #fff3cd;
+          border: 1px solid #ffc107;
+          padding: 10px;
+          margin-bottom: 20px;
+          border-radius: 4px;
+        }
+        
+        .notes-title {
+          font-weight: bold;
+          color: #856404;
+          margin-bottom: 5px;
+        }
+        
+        .notes-text {
+          color: #856404;
+          font-style: italic;
         }
       </style>
     </head>
     <body>
       <div class="container">
-        <!-- Header Section -->
+        <!-- Header -->
         <div class="header">
-          <div class="logo-section">
-            <img src="https://res.cloudinary.com/dv7ar9aca/image/upload/v1748515719/w700h700_1-removebg-preview_ykrmdu.png" alt="Baladi Engross Logo" class="logo">
-          </div>
-          <div class="company-info">
+          <img src="https://res.cloudinary.com/dv7ar9aca/image/upload/v1748515719/w700h700_1-removebg-preview_ykrmdu.png" alt="Baladi Engross" class="logo">
+          <div class="header-info">
             <div class="company-name">Baladi Engross</div>
             <div class="document-title">PICKING LIST</div>
           </div>
         </div>
         
         <!-- Order Information -->
-        <div class="order-info">
-          <h2>Order Information</h2>
-          <div class="order-details">
-            <div class="detail-item">
-              <span class="detail-label">Order ID</span>
-              <span class="detail-value">#${order._id}</span>
+        <div class="order-section">
+          <div class="order-grid">
+            <div class="order-item">
+              <div class="label">Order ID</div>
+              <div class="value">#${order._id.toString()}</div>
             </div>
-            <div class="detail-item">
-              <span class="detail-label">Customer ID</span>
-              <span class="detail-value">${order.userId}</span>
+            <div class="order-item">
+              <div class="label">Customer</div>
+              <div class="value">${order.userId.name}</div>
             </div>
-            <div class="detail-item">
-              <span class="detail-label">Status</span>
-              <span class="detail-value">${order.status.toUpperCase()}</span>
+            <div class="order-item">
+              <div class="label">Status</div>
+              <div class="value">${order.status.toUpperCase()}</div>
             </div>
-            <div class="detail-item">
-              <span class="detail-label">Created Date</span>
-              <span class="detail-value">${new Date(
-                order.createdAt,
-              ).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })}</span>
+            <div class="order-item">
+              <div class="label">Date</div>
+              <div class="value">${new Date(order.createdAt).toLocaleDateString()}</div>
             </div>
-            <div class="detail-item">
-              <span class="detail-label">Total Amount</span>
-              <span class="detail-value">$${order.totalAmount.toFixed(2)}</span>
+            <div class="order-item">
+              <div class="label">Total Amount</div>
+              <div class="value">$${order.totalAmount.toFixed(2)}</div>
             </div>
-            ${
-              order.shippingAddress
-                ? `
-            <div class="detail-item">
-              <span class="detail-label">Shipping Address</span>
-              <span class="detail-value">${order.shippingAddress}</span>
+            <div class="order-item">
+              <div class="label">Customer Email</div>
+              <div class="value">${order.userId.email}</div>
             </div>
-            `
-                : ''
-            }
           </div>
         </div>
         
-        <!-- Items Section -->
-        <div class="items-section">
-          <h2 class="items-title">Items to Pick</h2>
-          <table class="items-table">
-            <thead>
+        <!-- Items to Pick -->
+        <div class="items-title">Items to Pick</div>
+        <table class="items-table">
+          <thead>
+            <tr>
+              <th style="width: 8%">#</th>
+              <th style="width: 50%">Product Name</th>
+              <th style="width: 15%">Quantity</th>
+              <th style="width: 15%">Unit Price</th>
+              <th style="width: 12%">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${order.items
+              .map(
+                (item, index) => `
               <tr>
-                <th style="width: 10%">#</th>
-                <th style="width: 40%">Product ID</th>
-                <th style="width: 20%">Quantity</th>
-                <th style="width: 15%">Unit Price</th>
-                <th style="width: 15%">Total Price</th>
+                <td>${index + 1}</td>
+                <td><strong>${(item.productId as any)?.name || 'Product'}</strong><br><small>ID: ${typeof item.productId === 'object' ? (item.productId as any)._id : item.productId}</small></td>
+                <td class="quantity-highlight">${item.quantity}</td>
+                <td>$${item.price.toFixed(2)}</td>
+                <td><strong>$${(item.quantity * item.price).toFixed(2)}</strong></td>
               </tr>
-            </thead>
-            <tbody>
-              ${order.items
-                .map(
-                  (item, index) => `
-                <tr>
-                  <td style="font-weight: bold; color: #6b7280;">${index + 1}</td>
-                  <td><span class="product-id">${item.productId}</span></td>
-                  <td class="quantity-cell">${item.quantity}</td>
-                  <td>$${item.price.toFixed(2)}</td>
-                  <td style="font-weight: 600;">$${item.totalPrice.toFixed(2)}</td>
-                </tr>
-              `,
-                )
-                .join('')}
-            </tbody>
-          </table>
-          
-          <div class="total-items">
-            <h3>Total Items to Pick: ${order.items.reduce((total, item) => total + item.quantity, 0)} items</h3>
-            <p>Total Products: ${order.items.length} different products</p>
-          </div>
+            `,
+              )
+              .join('')}
+          </tbody>
+        </table>
+        
+        <div class="total-summary">
+          <h3>Total Items to Pick: ${order.items.reduce((total, item) => total + item.quantity, 0)} items</h3>
+          <p>Total Products: ${order.items.length} different products</p>
         </div>
         
         ${
           order.notes
             ? `
-        <div class="order-info">
-          <h2>Special Notes</h2>
-          <p style="font-style: italic; color: #4b5563; font-size: 15px;">${order.notes}</p>
+        <div class="notes-section">
+          <div class="notes-title">Special Notes</div>
+          <div class="notes-text">${order.notes}</div>
         </div>
         `
             : ''
         }
         
-        <!-- Signature Section -->
-        <div class="signature-section">
+        <!-- Signatures -->
+        <div class="signature-row">
           <div class="signature-box">
             <div class="signature-line"></div>
             <div class="signature-label">Picker Signature</div>
@@ -332,14 +298,14 @@ export function pickingListTemplate(order: IOrder) {
           </div>
           <div class="signature-box">
             <div class="signature-line"></div>
-            <div class="signature-label">Supervisor Signature</div>
+            <div class="signature-label">Supervisor</div>
           </div>
         </div>
         
         <!-- Footer -->
         <div class="footer">
-          <p>Generated on ${new Date().toLocaleString()}</p>
-          <p>Baladi Engross - Picking List Document</p>
+          <p>Generated: ${new Date().toLocaleString()}</p>
+          <p>Baladi Engross - Picking List</p>
         </div>
       </div>
     </body>
@@ -347,14 +313,19 @@ export function pickingListTemplate(order: IOrder) {
   `;
 }
 
-export function freightLabelTemplate(order: IOrder) {
+export function freightLabelTemplate(order: OrderResponse) {
+  const formatAddress = (addr: OrderResponse['shippingAddress']) => {
+    if (!addr) return 'Address not provided';
+    return `${addr.addressLine1}${addr.addressLine2 ? ', ' + addr.addressLine2 : ''}, ${addr.city}, ${addr.state} ${addr.postalCode}, ${addr.country}`;
+  };
+
   return `
     <!DOCTYPE html>
     <html lang="en">
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Freight Label - Order #${order._id}</title>
+      <title>Freight Label - ${order._id.toString()}</title>
       <style>
         * {
           margin: 0;
@@ -362,324 +333,262 @@ export function freightLabelTemplate(order: IOrder) {
           box-sizing: border-box;
         }
         
-        body {
-          font-family: 'Arial', 'Helvetica', sans-serif;
-          line-height: 1.4;
-          color: #000;
-          background-color: #fff;
-          padding: 10px;
+        @page {
+          margin: 5mm;
+          size: 4in 6in;
         }
         
-        .label-container {
+        body {
+          font-family: Arial, sans-serif;
+          font-size: 10px;
+          line-height: 1.2;
+          color: #000;
+          background: #fff;
+        }
+        
+        .label {
           width: 4in;
           height: 6in;
-          border: 3px solid #000;
-          background: white;
+          border: 2px solid #000;
           position: relative;
-          padding: 15px;
-          page-break-after: always;
+          padding: 8px;
         }
         
         .header {
           text-align: center;
-          border-bottom: 2px solid #2563eb;
-          padding-bottom: 10px;
-          margin-bottom: 15px;
+          border-bottom: 1px solid #2563eb;
+          padding-bottom: 8px;
+          margin-bottom: 10px;
         }
         
         .logo {
-          max-height: 50px;
+          height: 35px;
           width: auto;
-          margin-bottom: 5px;
+          margin-bottom: 3px;
         }
         
         .company-name {
-          font-size: 18px;
+          font-size: 14px;
           font-weight: bold;
           color: #2563eb;
-          margin-bottom: 3px;
         }
         
         .label-title {
-          font-size: 14px;
+          font-size: 11px;
           font-weight: bold;
-          color: #000;
           text-transform: uppercase;
-          letter-spacing: 1px;
         }
         
-        .shipping-info {
-          margin-bottom: 15px;
-        }
-        
-        .address-section {
-          margin-bottom: 12px;
+        .address-block {
           border: 1px solid #ccc;
-          padding: 8px;
-          border-radius: 4px;
+          padding: 6px;
+          margin-bottom: 8px;
+          background: #f9f9f9;
         }
         
         .address-label {
-          font-size: 10px;
+          font-size: 8px;
           font-weight: bold;
-          text-transform: uppercase;
           color: #666;
-          margin-bottom: 3px;
-          letter-spacing: 0.5px;
+          text-transform: uppercase;
+          margin-bottom: 2px;
         }
         
-        .address-content {
-          font-size: 12px;
-          font-weight: 600;
-          line-height: 1.3;
-          color: #000;
+        .address-text {
+          font-size: 10px;
+          font-weight: 500;
+          line-height: 1.2;
         }
         
-        .order-details {
-          background: #f8f9fa;
-          padding: 8px;
-          border-radius: 4px;
-          margin-bottom: 12px;
-          border-left: 3px solid #2563eb;
+        .order-info {
+          background: #f0f0f0;
+          padding: 6px;
+          margin-bottom: 8px;
+          font-size: 9px;
         }
         
-        .detail-row {
+        .info-row {
           display: flex;
           justify-content: space-between;
-          margin-bottom: 3px;
-          font-size: 11px;
+          margin-bottom: 2px;
         }
         
-        .detail-label {
+        .info-label {
           font-weight: bold;
-          color: #333;
-        }
-        
-        .detail-value {
-          font-weight: normal;
-          color: #000;
         }
         
         .barcode-section {
           text-align: center;
-          margin-bottom: 10px;
-          padding: 8px;
-          background: #f8f9fa;
-          border-radius: 4px;
+          margin: 8px 0;
+          background: #f9f9f9;
+          padding: 6px;
         }
         
-        .barcode-placeholder {
-          height: 40px;
+        .barcode {
+          height: 25px;
           background: #000;
           background-image: repeating-linear-gradient(
             90deg,
             #000 0px,
-            #000 2px,
-            #fff 2px,
-            #fff 4px
+            #000 1px,
+            #fff 1px,
+            #fff 2px
           );
           margin-bottom: 3px;
-          border-radius: 2px;
         }
         
-        .tracking-number {
-          font-size: 12px;
-          font-weight: bold;
+        .tracking-code {
           font-family: 'Courier New', monospace;
-          letter-spacing: 2px;
+          font-weight: bold;
+          font-size: 9px;
+          letter-spacing: 1px;
         }
         
         .service-info {
           display: flex;
           justify-content: space-between;
-          align-items: center;
           background: #e3f2fd;
-          padding: 6px 8px;
-          border-radius: 4px;
-          margin-bottom: 10px;
+          padding: 4px 6px;
+          margin-bottom: 6px;
+          font-size: 9px;
         }
         
         .service-type {
-          font-size: 11px;
           font-weight: bold;
           color: #1976d2;
         }
         
-        .priority-badge {
+        .priority {
           background: #ff5722;
           color: white;
-          padding: 2px 6px;
-          border-radius: 3px;
-          font-size: 9px;
+          padding: 1px 4px;
+          border-radius: 2px;
+          font-size: 8px;
           font-weight: bold;
-          text-transform: uppercase;
         }
         
-        .package-info {
+        .package-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 8px;
-          margin-bottom: 10px;
-        }
-        
-        .package-detail {
-          background: #fff;
-          border: 1px solid #ddd;
-          padding: 5px;
-          border-radius: 3px;
-          text-align: center;
-        }
-        
-        .package-label {
-          font-size: 9px;
-          color: #666;
-          text-transform: uppercase;
-          font-weight: bold;
-        }
-        
-        .package-value {
-          font-size: 11px;
-          font-weight: bold;
-          color: #000;
-        }
-        
-        .special-instructions {
-          background: #fff3cd;
-          border: 1px solid #ffc107;
-          padding: 6px;
-          border-radius: 3px;
+          gap: 6px;
           margin-bottom: 8px;
         }
         
-        .instructions-title {
+        .package-item {
+          border: 1px solid #ddd;
+          padding: 4px;
+          text-align: center;
+          font-size: 8px;
+        }
+        
+        .package-label {
+          font-weight: bold;
+          color: #666;
+          text-transform: uppercase;
+        }
+        
+        .package-value {
+          font-weight: bold;
           font-size: 9px;
+        }
+        
+        .notes {
+          background: #fff3cd;
+          border: 1px solid #ffc107;
+          padding: 4px;
+          margin-bottom: 6px;
+          font-size: 8px;
+        }
+        
+        .notes-title {
           font-weight: bold;
           color: #856404;
-          text-transform: uppercase;
           margin-bottom: 2px;
         }
         
-        .instructions-text {
-          font-size: 10px;
+        .notes-text {
           color: #856404;
-          line-height: 1.2;
         }
         
         .footer {
           position: absolute;
-          bottom: 10px;
-          left: 15px;
-          right: 15px;
+          bottom: 8px;
+          left: 8px;
+          right: 8px;
           text-align: center;
-          font-size: 8px;
+          font-size: 7px;
           color: #666;
           border-top: 1px solid #ccc;
-          padding-top: 5px;
+          padding-top: 3px;
         }
         
-        .urgent-overlay {
-          position: absolute;
-          top: 10px;
-          right: 10px;
-          background: #dc3545;
-          color: white;
-          padding: 3px 6px;
-          border-radius: 3px;
-          font-size: 8px;
-          font-weight: bold;
-          text-transform: uppercase;
-          transform: rotate(15deg);
-        }
-        
-        @media print {
-          body {
-            padding: 0;
-          }
-          
-          .label-container {
-            border: 2px solid #000;
-          }
-        }
       </style>
     </head>
     <body>
-      <div class="label-container">
-        ${order.status === 'pending' ? '<div class="urgent-overlay">Urgent</div>' : ''}
-        
-        <!-- Header Section -->
+      <div class="label">
+        <!-- Header -->
         <div class="header">
-          <img src="https://res.cloudinary.com/dv7ar9aca/image/upload/v1748515719/w700h700_1-removebg-preview_ykrmdu.png" alt="Baladi Engross Logo" class="logo">
+          <img src="https://res.cloudinary.com/dv7ar9aca/image/upload/v1748515719/w700h700_1-removebg-preview_ykrmdu.png" alt="Baladi Engross" class="logo">
           <div class="company-name">Baladi Engross</div>
           <div class="label-title">Freight Label</div>
         </div>
         
-        <!-- Shipping Information -->
-        <div class="shipping-info">
-          <!-- From Address -->
-          <div class="address-section">
-            <div class="address-label">Ship From</div>
-            <div class="address-content">
-              <strong>Baladi Engross</strong><br>
-              Distribution Center<br>
-              123 Commerce Street<br>
-              Industrial District<br>
-              Dubai, UAE 12345
-            </div>
+        <!-- Shipping Addresses -->
+        <div class="address-block">
+          <div class="address-label">Ship From</div>
+          <div class="address-text">
+            <strong>Baladi Engross</strong><br>
+            Distribution Center<br>
+            Dubai, UAE
           </div>
-          
-          <!-- To Address -->
-          <div class="address-section">
-            <div class="address-label">Ship To</div>
-            <div class="address-content">
-              <strong>Customer ID: ${order.userId}</strong><br>
-              ${order.shippingAddress || 'Address to be confirmed'}
-            </div>
+        </div>
+        
+        <div class="address-block">
+          <div class="address-label">Ship To</div>
+          <div class="address-text">
+            <strong>${order.userId.name}</strong><br>
+            ${formatAddress(order.shippingAddress)}
           </div>
         </div>
         
         <!-- Order Details -->
-        <div class="order-details">
-          <div class="detail-row">
-            <span class="detail-label">Order #:</span>
-            <span class="detail-value">${order._id}</span>
+        <div class="order-info">
+          <div class="info-row">
+            <span class="info-label">Order:</span>
+            <span>#${order._id.toString()}</span>
           </div>
-          <div class="detail-row">
-            <span class="detail-label">Date:</span>
-            <span class="detail-value">${new Date(order.createdAt).toLocaleDateString()}</span>
+          <div class="info-row">
+            <span class="info-label">Date:</span>
+            <span>${new Date(order.createdAt).toLocaleDateString()}</span>
           </div>
-          <div class="detail-row">
-            <span class="detail-label">Items:</span>
-            <span class="detail-value">${order.items.length} products</span>
+          <div class="info-row">
+            <span class="info-label">Items:</span>
+            <span>${order.items.length} products</span>
           </div>
-          <div class="detail-row">
-            <span class="detail-label">Total Qty:</span>
-            <span class="detail-value">${order.items.reduce((total, item) => total + item.quantity, 0)} units</span>
+          <div class="info-row">
+            <span class="info-label">Qty:</span>
+            <span>${order.items.reduce((total, item) => total + item.quantity, 0)} units</span>
           </div>
-          <div class="detail-row">
-            <span class="detail-label">Value:</span>
-            <span class="detail-value">$${order.totalAmount.toFixed(2)}</span>
+          <div class="info-row">
+            <span class="info-label">Value:</span>
+            <span>$${order.totalAmount.toFixed(2)}</span>
           </div>
         </div>
+
         
-        <!-- Service Information -->
-        <div class="service-info">
-          <div class="service-type">Standard Delivery</div>
-          ${order.status === 'pending' ? '<div class="priority-badge">Express</div>' : ''}
-        </div>
-        
-        <!-- Barcode Section -->
+        <!-- Barcode -->
         <div class="barcode-section">
-          <div class="barcode-placeholder"></div>
-          <div class="tracking-number">${order._id}</div>
+          <div class="barcode"></div>
+          <div class="tracking-code">${order._id.toString().toUpperCase()}</div>
         </div>
         
-        <!-- Package Information -->
-        <div class="package-info">
-          <div class="package-detail">
+        <!-- Package Info -->
+        <div class="package-grid">
+          <div class="package-item">
             <div class="package-label">Weight</div>
             <div class="package-value">${(order.items.reduce((total, item) => total + item.quantity, 0) * 0.5).toFixed(1)} kg</div>
           </div>
-          <div class="package-detail">
+          <div class="package-item">
             <div class="package-label">Pieces</div>
             <div class="package-value">1 of 1</div>
           </div>
@@ -688,9 +597,9 @@ export function freightLabelTemplate(order: IOrder) {
         ${
           order.notes
             ? `
-        <div class="special-instructions">
-          <div class="instructions-title">Special Instructions</div>
-          <div class="instructions-text">${order.notes}</div>
+        <div class="notes">
+          <div class="notes-title">Special Instructions</div>
+          <div class="notes-text">${order.notes}</div>
         </div>
         `
             : ''
@@ -699,7 +608,7 @@ export function freightLabelTemplate(order: IOrder) {
         <!-- Footer -->
         <div class="footer">
           <div>Generated: ${new Date().toLocaleString()}</div>
-          <div>Handle with Care | Fragile Items</div>
+          <div>Handle with Care</div>
         </div>
       </div>
     </body>

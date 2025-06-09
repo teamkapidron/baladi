@@ -46,7 +46,7 @@ import {
   OrderItem,
   OrderStatus,
 } from '@repo/types/order';
-import { OrderRevenueStats } from '@/types/order.types';
+import { OrderRevenueStats, OrderResponse } from '@/types/order.types';
 import { IInventory } from '@/models/interfaces/inventory.model';
 
 /*********************** START: User Controllers ***********************/
@@ -358,12 +358,15 @@ export const getAllOrders = asyncHandler(
       await getOrderFiltersFromQuery(query);
 
     const orders = await Order.find(queryObject)
-      .populate('userId', 'name email phone userType')
+      .populate('userId', 'name email userType')
       .populate({
         path: 'items.productId',
         select: 'name category images',
       })
-      .populate('shippingAddress')
+      .populate({
+        path: 'shippingAddress',
+        select: 'addressLine1 addressLine2 city state postalCode country',
+      })
       .sort(sortObject)
       .skip(skip)
       .limit(perPage);
@@ -696,7 +699,16 @@ export const previewPickingList = asyncHandler(
   async (req: Request, res: Response) => {
     const { orderId } = req.params as PreviewPickingListSchema['params'];
 
-    const order = await Order.findById(orderId).lean();
+    const order = await Order.findById(orderId)
+      .populate([
+        { path: 'items.productId', select: 'name' },
+        { path: 'userId', select: 'name email' },
+        {
+          path: 'shippingAddress',
+          select: 'addressLine1 addressLine2 city state postalCode country',
+        },
+      ])
+      .lean<OrderResponse>();
     if (!order) {
       throw new ErrorHandler(404, 'Order not found', 'NOT_FOUND');
     }
@@ -712,7 +724,16 @@ export const previewFreightLabel = asyncHandler(
   async (req: Request, res: Response) => {
     const { orderId } = req.params as PreviewFreightLabelSchema['params'];
 
-    const order = await Order.findById(orderId).lean();
+    const order = await Order.findById(orderId)
+      .populate([
+        { path: 'items.productId', select: 'name' },
+        { path: 'userId', select: 'name email' },
+        {
+          path: 'shippingAddress',
+          select: 'addressLine1 addressLine2 city state postalCode country',
+        },
+      ])
+      .lean<OrderResponse>();
     if (!order) {
       throw new ErrorHandler(404, 'Order not found', 'NOT_FOUND');
     }

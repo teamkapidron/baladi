@@ -10,6 +10,35 @@ export enum OrderStatusFilter {
   CANCELLED = 'cancelled',
 }
 
+export type OrderResponse = Order &
+  Omit<Order, 'userId' | 'shippingAddress' | 'items'> & {
+    userId: {
+      _id: string;
+      name: string;
+      email: string;
+      userType: string;
+    };
+    shippingAddress: {
+      _id: string;
+      addressLine1: string;
+      addressLine2: string;
+      city: string;
+      state: string;
+      postalCode: string;
+      country: string;
+    };
+    items: {
+      _id: string;
+      productId: {
+        _id: string;
+        name: string;
+        images: string[];
+      };
+      quantity: number;
+      price: number;
+    }[];
+  };
+
 export type GetAllOrdersRequest = ApiData<
   {
     page?: string;
