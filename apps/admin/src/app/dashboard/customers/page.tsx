@@ -1,8 +1,13 @@
+import { Metadata } from 'next';
 import { Suspense } from 'react';
 
 import CustomersHeader from '@/components/dashboard/customers/customer-header';
 import CustomerMetricCards from '@/components/dashboard/customers/customer-metric-cards';
 import CustomersTable from '@/components/dashboard/customers/customer-table/customers-table';
+
+export const metadata: Metadata = {
+  title: 'Customers',
+};
 
 export default function CustomersPage() {
   return (

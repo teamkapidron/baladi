@@ -5,7 +5,7 @@ import NewsletterMetrics from '@/components/dashboard/newsletter/newsletter-metr
 import NewsletterBody from '@/components/dashboard/newsletter/newsletter-body';
 
 export const metadata: Metadata = {
-  title: 'Newsletter | Baladi',
+  title: 'Newsletter',
 };
 
 export default function NewsletterPage() {

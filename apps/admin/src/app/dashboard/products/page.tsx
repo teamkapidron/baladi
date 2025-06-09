@@ -1,8 +1,13 @@
+import { Metadata } from 'next';
 import { Suspense } from 'react';
 
 import ProductsHeader from '@/components/dashboard/products/products-header';
 import MetricCards from '@/components/dashboard/products/metric-cards';
 import ProductTable from '@/components/dashboard/products/product-table/product-table';
+
+export const metadata: Metadata = {
+  title: 'Products',
+};
 
 export default function ProductsPage() {
   return (

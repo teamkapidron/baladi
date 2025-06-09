@@ -6,7 +6,10 @@ import ReactQueryProvider from '@/providers/react-query-provider';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Baladi Admin',
+  title: {
+    template: '%s | Baladi Admin',
+    default: 'Baladi Admin',
+  },
 };
 
 const sora = Sora({
