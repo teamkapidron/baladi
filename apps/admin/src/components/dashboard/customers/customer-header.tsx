@@ -1,11 +1,10 @@
 'use client';
 
 // Node Modules
-import Link from 'next/link';
 import React, { memo } from 'react';
-import { Download, ShoppingBag, Plus } from '@repo/ui/lib/icons';
+import { Download, Users } from '@repo/ui/lib/icons';
 
-function ProductsHeader() {
+function CustomersHeader() {
   return (
     <div className="relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-[var(--baladi-primary)] via-[var(--baladi-primary)] to-[var(--baladi-secondary)] p-6 shadow-lg">
       <div className="absolute inset-0 opacity-10">
@@ -18,30 +17,23 @@ function ProductsHeader() {
         <div className="space-y-4">
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
-              <ShoppingBag className="h-6 w-6 text-white" />
+              <Users className="h-6 w-6 text-white" />
             </div>
             <div>
               <h1 className="font-[family-name:var(--font-sora)] text-xl font-bold tracking-tight text-white lg:text-2xl">
-                Products Dashboard
+                Customers Dashboard
               </h1>
               <p className="font-[family-name:var(--font-dm-sans)] text-sm text-white/80">
-                Monitor and manage all products activities
+                Monitor and manage all customers activities
               </p>
             </div>
           </div>
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <Link
-            href="/dashboard/products/new"
-            className="group flex h-11 items-center gap-2 rounded-lg bg-white px-4 py-2 font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-primary)] shadow-lg transition-all duration-200 hover:scale-105 hover:bg-white/95 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-white/40"
-          >
-            <Plus className="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
-            <span>Add Product</span>
-          </Link>
           <button className="group flex h-11 items-center gap-2 rounded-lg bg-white px-4 py-2 font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-primary)] shadow-lg transition-all duration-200 hover:scale-105 hover:bg-white/95 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-white/40">
             <Download className="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
-            <span>Export Products</span>
+            <span>Export Customers</span>
           </button>
         </div>
       </div>
@@ -51,4 +43,4 @@ function ProductsHeader() {
   );
 }
 
-export default memo(ProductsHeader);
+export default memo(CustomersHeader);

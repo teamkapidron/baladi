@@ -2,29 +2,17 @@
 
 // Node Modules
 import { cn } from '@repo/ui/lib/utils';
-import { memo, useCallback, useMemo } from 'react';
+import { memo, useCallback } from 'react';
 import { Users, UserCheck, Clock, UserX } from '@repo/ui/lib/icons';
 
 // Hooks
-import { useUserStats } from '@/hooks/useUsers';
+import { useUserFilter } from '@/hooks/useUsers/useUserFilter';
 
 // Types
 import { UserStatusFilter } from '@/hooks/useUsers/types';
-import { useUserFilter } from '@/hooks/useUsers/useUserFilter';
 
 function CustomerStatusTabs() {
-  const getUserStatsQuery = useUserStats();
   const { userFilter, handleUserStatusFilterChange } = useUserFilter();
-
-  const stats = useMemo(() => {
-    const data = getUserStatsQuery.data;
-    return {
-      pendingCount: data?.pendingUsers ?? 0,
-      approvedCount: data?.approvedUsers ?? 0,
-      unverifiedCount: data?.unverifiedUsers ?? 0,
-      totalCount: data?.totalUsers ?? 0,
-    };
-  }, [getUserStatsQuery.data]);
 
   const handleTabClick = useCallback(
     (tab: UserStatusFilter) => {
@@ -63,18 +51,6 @@ function CustomerStatusTabs() {
             />
           </div>
           <span>All Customers</span>
-          {stats.totalCount > 0 && (
-            <span
-              className={cn(
-                'ml-1 rounded-full px-2 py-0.5 font-[family-name:var(--font-sora)] text-xs font-bold',
-                userFilter.status === UserStatusFilter.ALL
-                  ? 'bg-white/20 text-white'
-                  : 'bg-[var(--baladi-primary)]/10 text-[var(--baladi-primary)]',
-              )}
-            >
-              {stats.totalCount}
-            </span>
-          )}
         </button>
 
         <button
@@ -104,18 +80,6 @@ function CustomerStatusTabs() {
             />
           </div>
           <span>Approved</span>
-          {stats.approvedCount > 0 && (
-            <span
-              className={cn(
-                'ml-1 rounded-full px-2 py-0.5 font-[family-name:var(--font-sora)] text-xs font-bold',
-                userFilter.status === UserStatusFilter.APPROVED
-                  ? 'bg-white/20 text-white'
-                  : 'bg-[var(--baladi-success)]/10 text-[var(--baladi-success)]',
-              )}
-            >
-              {stats.approvedCount}
-            </span>
-          )}
         </button>
 
         <button
@@ -145,18 +109,6 @@ function CustomerStatusTabs() {
             />
           </div>
           <span>Pending</span>
-          {stats.pendingCount > 0 && (
-            <span
-              className={cn(
-                'ml-1 rounded-full px-2 py-0.5 font-[family-name:var(--font-sora)] text-xs font-bold',
-                userFilter.status === UserStatusFilter.PENDING
-                  ? 'bg-white/20 text-white'
-                  : 'bg-[var(--baladi-warning)]/10 text-[var(--baladi-warning)]',
-              )}
-            >
-              {stats.pendingCount}
-            </span>
-          )}
         </button>
 
         <button
@@ -186,18 +138,6 @@ function CustomerStatusTabs() {
             />
           </div>
           <span>Unverified</span>
-          {stats.unverifiedCount > 0 && (
-            <span
-              className={cn(
-                'ml-1 rounded-full px-2 py-0.5 font-[family-name:var(--font-sora)] text-xs font-bold',
-                userFilter.status === UserStatusFilter.UNVERIFIED
-                  ? 'bg-white/20 text-white'
-                  : 'bg-[var(--baladi-error)]/10 text-[var(--baladi-error)]',
-              )}
-            >
-              {stats.unverifiedCount}
-            </span>
-          )}
         </button>
       </div>
     </div>

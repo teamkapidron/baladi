@@ -1,3 +1,7 @@
+'use client';
+
+// Node Modules
+import { memo, useMemo } from 'react';
 import {
   ShoppingBag,
   ArrowUpRight,
@@ -7,313 +11,387 @@ import {
   XCircle,
   DollarSign,
   TrendingUp,
-  CreditCard,
+  PieChart,
 } from '@repo/ui/lib/icons';
 
-export function OrderMetricCards() {
-  const ordersByStatus: any[] = [];
+// Components
+import AnimatedCounter from '@repo/ui/components/base/animate-counter';
 
-  const pendingOrders = ordersByStatus.find((s) => s._id === 'pending') || {
-    count: 0,
-    revenue: 0,
-  };
-  const confirmedOrders = ordersByStatus.find((s) => s._id === 'confirmed') || {
-    count: 0,
-    revenue: 0,
-  };
-  const shippedOrders = ordersByStatus.find((s) => s._id === 'shipped') || {
-    count: 0,
-    revenue: 0,
-  };
-  const cancelledOrders = ordersByStatus.find((s) => s._id === 'cancelled') || {
-    count: 0,
-    revenue: 0,
-  };
+// Hooks
+import { useOrderStats } from '@/hooks/useOrder';
 
-  const totalOrders = 100;
-  const pendingPercent = Math.round((pendingOrders.count / totalOrders) * 100);
-  const confirmedPercent = Math.round(
-    (confirmedOrders.count / totalOrders) * 100,
-  );
-  const shippedPercent = Math.round((shippedOrders.count / totalOrders) * 100);
-  const cancelledPercent = Math.round(
-    (cancelledOrders.count / totalOrders) * 100,
-  );
+function OrderMetricCards() {
+  const { orderStatsQuery, orderRevenueStatsQuery } = useOrderStats();
+
+  const statusStats = useMemo(() => {
+    const totalOrders = orderStatsQuery.data?.totalOrders ?? 0;
+    const pendingOrders = orderStatsQuery.data?.pendingOrders ?? 0;
+    const confirmedOrders = orderStatsQuery.data?.confirmedOrders ?? 0;
+    const shippedOrders = orderStatsQuery.data?.shippedOrders ?? 0;
+    const cancelledOrders = orderStatsQuery.data?.cancelledOrders ?? 0;
+
+    const pendingPercent =
+      totalOrders > 0 ? Math.round((pendingOrders / totalOrders) * 100) : 0;
+    const confirmedPercent =
+      totalOrders > 0 ? Math.round((confirmedOrders / totalOrders) * 100) : 0;
+    const shippedPercent =
+      totalOrders > 0 ? Math.round((shippedOrders / totalOrders) * 100) : 0;
+    const cancelledPercent =
+      totalOrders > 0 ? Math.round((cancelledOrders / totalOrders) * 100) : 0;
+
+    return {
+      totalOrders,
+      pendingOrders,
+      confirmedOrders,
+      shippedOrders,
+      cancelledOrders,
+      pendingPercent,
+      confirmedPercent,
+      shippedPercent,
+      cancelledPercent,
+    };
+  }, [orderStatsQuery.data]);
+
+  const revenueStats = useMemo(() => {
+    const totalRevenue = orderRevenueStatsQuery.data?.totalRevenue ?? 0;
+    const totalCost = orderRevenueStatsQuery.data?.totalCost ?? 0;
+    const totalProfit = orderRevenueStatsQuery.data?.totalProfit ?? 0;
+    const avgOrderValue =
+      statusStats.totalOrders > 0 ? totalRevenue / statusStats.totalOrders : 0;
+    const profitMargin =
+      totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0;
+
+    return {
+      totalRevenue,
+      totalCost,
+      totalProfit,
+      avgOrderValue,
+      profitMargin,
+    };
+  }, [orderRevenueStatsQuery.data, statusStats.totalOrders]);
 
   return (
-    <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
-      {/* Total Orders Card */}
-      <div className="bg-background border-border border-b border-l-4 border-r border-t border-l-[var(--color-primary)] shadow-md">
-        <div className="border-border border-b px-5 py-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-foreground text-sm font-medium">
-              Total Orders
-            </h3>
-            <div className="bg-[var(--color-primary)]/10 flex h-7 w-7 items-center justify-center">
-              <ShoppingBag className="h-4 w-4 text-[var(--color-primary)]" />
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="to-[var(--baladi-primary)]/5 hover:shadow-[var(--baladi-primary)]/20 group relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-white p-6 shadow-md transition-all duration-300 hover:shadow-lg">
+        <div className="bg-[var(--baladi-primary)]/10 absolute -right-8 -top-8 h-24 w-24 rounded-full transition-transform duration-300 group-hover:scale-110"></div>
+
+        <div className="relative flex items-start justify-between">
+          <div className="space-y-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--baladi-primary)] shadow-lg">
+              <ShoppingBag className="h-6 w-6 text-white" />
+            </div>
+
+            <div>
+              <h3 className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-text-muted)]">
+                Total Orders
+              </h3>
+              <div className="mt-2 flex items-baseline gap-2">
+                <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-text)]">
+                  <AnimatedCounter value={statusStats.totalOrders} />
+                </span>
+                {statusStats.totalOrders > 0 && (
+                  <div className="bg-[var(--baladi-success)]/10 flex items-center gap-1 rounded-full px-2 py-1">
+                    <TrendingUp className="h-3 w-3 text-[var(--baladi-success)]" />
+                    <span className="text-xs font-medium text-[var(--baladi-success)]">
+                      Active
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
-        <div className="p-6">
-          <div className="flex items-baseline gap-2">
-            <span className="text-foreground text-3xl font-bold">100</span>
+
+        <div className="relative mt-4 border-t border-[var(--baladi-border)] pt-4">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-[var(--baladi-text-muted)]">
+              Revenue Generated
+            </span>
+            <span className="font-medium text-[var(--baladi-text)]">
+              $
+              <AnimatedCounter value={revenueStats.totalRevenue} />
+            </span>
           </div>
-          <div className="mt-4 flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground text-xs">
+        </div>
+      </div>
+
+      <div className="to-[var(--baladi-warning)]/5 hover:shadow-[var(--baladi-warning)]/20 group relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-white p-6 shadow-md transition-all duration-300 hover:shadow-lg">
+        <div className="bg-[var(--baladi-warning)]/10 absolute -right-8 -top-8 h-24 w-24 rounded-full transition-transform duration-300 group-hover:scale-110"></div>
+
+        <div className="relative flex items-start justify-between">
+          <div className="space-y-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--baladi-warning)] shadow-lg">
+              <Clock className="h-6 w-6 text-white" />
+            </div>
+
+            <div>
+              <h3 className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-text-muted)]">
+                Pending Orders
+              </h3>
+              <div className="mt-2 flex items-baseline gap-2">
+                <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-text)]">
+                  <AnimatedCounter value={statusStats.pendingOrders} />
+                </span>
+                <div className="bg-[var(--baladi-warning)]/10 flex items-center gap-1 rounded-full px-2 py-1">
+                  <span className="text-xs font-medium text-[var(--baladi-warning)]">
+                    {statusStats.pendingPercent}%
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="relative mt-4 border-t border-[var(--baladi-border)] pt-4">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-[var(--baladi-text-muted)]">
+              Awaiting Processing
+            </span>
+            <span className="font-medium text-[var(--baladi-warning)]">
+              {statusStats.pendingOrders} orders
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="to-[var(--baladi-secondary)]/5 hover:shadow-[var(--baladi-secondary)]/20 group relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-white p-6 shadow-md transition-all duration-300 hover:shadow-lg">
+        <div className="bg-[var(--baladi-secondary)]/10 absolute -right-8 -top-8 h-24 w-24 rounded-full transition-transform duration-300 group-hover:scale-110"></div>
+
+        <div className="relative flex items-start justify-between">
+          <div className="space-y-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--baladi-secondary)] shadow-lg">
+              <CheckCircle className="h-6 w-6 text-white" />
+            </div>
+
+            <div>
+              <h3 className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-text-muted)]">
+                Confirmed Orders
+              </h3>
+              <div className="mt-2 flex items-baseline gap-2">
+                <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-text)]">
+                  <AnimatedCounter value={statusStats.confirmedOrders} />
+                </span>
+                <div className="bg-[var(--baladi-secondary)]/10 flex items-center gap-1 rounded-full px-2 py-1">
+                  <span className="text-xs font-medium text-[var(--baladi-secondary)]">
+                    {statusStats.confirmedPercent}%
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="relative mt-4 border-t border-[var(--baladi-border)] pt-4">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-[var(--baladi-text-muted)]">
+              Ready to Ship
+            </span>
+            <span className="font-medium text-[var(--baladi-secondary)]">
+              {statusStats.confirmedOrders} orders
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="to-[var(--baladi-success)]/5 hover:shadow-[var(--baladi-success)]/20 group relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-white p-6 shadow-md transition-all duration-300 hover:shadow-lg">
+        <div className="bg-[var(--baladi-success)]/10 absolute -right-8 -top-8 h-24 w-24 rounded-full transition-transform duration-300 group-hover:scale-110"></div>
+
+        <div className="relative flex items-start justify-between">
+          <div className="space-y-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--baladi-success)] shadow-lg">
+              <TruckIcon className="h-6 w-6 text-white" />
+            </div>
+
+            <div>
+              <h3 className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-text-muted)]">
+                Shipped Orders
+              </h3>
+              <div className="mt-2 flex items-baseline gap-2">
+                <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-text)]">
+                  <AnimatedCounter value={statusStats.shippedOrders} />
+                </span>
+                <div className="bg-[var(--baladi-success)]/10 flex items-center gap-1 rounded-full px-2 py-1">
+                  <span className="text-xs font-medium text-[var(--baladi-success)]">
+                    {statusStats.shippedPercent}%
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="relative mt-4 border-t border-[var(--baladi-border)] pt-4">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-[var(--baladi-text-muted)]">In Transit</span>
+            <span className="font-medium text-[var(--baladi-success)]">
+              {statusStats.shippedOrders} orders
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="to-[var(--baladi-error)]/5 hover:shadow-[var(--baladi-error)]/20 group relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-white p-6 shadow-md transition-all duration-300 hover:shadow-lg">
+        <div className="bg-[var(--baladi-error)]/10 absolute -right-8 -top-8 h-24 w-24 rounded-full transition-transform duration-300 group-hover:scale-110"></div>
+
+        <div className="relative flex items-start justify-between">
+          <div className="space-y-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--baladi-error)] shadow-lg">
+              <XCircle className="h-6 w-6 text-white" />
+            </div>
+
+            <div>
+              <h3 className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-text-muted)]">
+                Cancelled Orders
+              </h3>
+              <div className="mt-2 flex items-baseline gap-2">
+                <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-text)]">
+                  <AnimatedCounter value={statusStats.cancelledOrders} />
+                </span>
+                <div className="bg-[var(--baladi-error)]/10 flex items-center gap-1 rounded-full px-2 py-1">
+                  <span className="text-xs font-medium text-[var(--baladi-error)]">
+                    {statusStats.cancelledPercent}%
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="relative mt-4 border-t border-[var(--baladi-border)] pt-4">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-[var(--baladi-text-muted)]">
+              Refund Pending
+            </span>
+            <span className="font-medium text-[var(--baladi-error)]">
+              {statusStats.cancelledOrders} orders
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="to-[var(--baladi-success)]/5 hover:shadow-[var(--baladi-success)]/20 group relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-white p-6 shadow-md transition-all duration-300 hover:shadow-lg">
+        <div className="bg-[var(--baladi-success)]/10 absolute -right-8 -top-8 h-24 w-24 rounded-full transition-transform duration-300 group-hover:scale-110"></div>
+
+        <div className="relative flex items-start justify-between">
+          <div className="space-y-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--baladi-success)] shadow-lg">
+              <DollarSign className="h-6 w-6 text-white" />
+            </div>
+
+            <div>
+              <h3 className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-text-muted)]">
                 Total Revenue
-              </span>
-              <span className="text-foreground text-sm font-medium">$1000</span>
+              </h3>
+              <div className="mt-2 flex items-baseline gap-2">
+                <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-text)]">
+                  $<AnimatedCounter value={revenueStats.totalRevenue} />
+                </span>
+                {revenueStats.totalRevenue > 0 && (
+                  <div className="bg-[var(--baladi-success)]/10 flex items-center gap-1 rounded-full px-2 py-1">
+                    <ArrowUpRight className="h-3 w-3 text-[var(--baladi-success)]" />
+                    <span className="text-xs font-medium text-[var(--baladi-success)]">
+                      Revenue
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground text-xs">
+          </div>
+        </div>
+
+        <div className="relative mt-4 border-t border-[var(--baladi-border)] pt-4">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-[var(--baladi-text-muted)]">Total Cost</span>
+            <span className="font-medium text-[var(--baladi-text)]">
+              $<AnimatedCounter value={revenueStats.totalCost} />
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="to-[var(--baladi-accent)]/5 hover:shadow-[var(--baladi-accent)]/20 group relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-white p-6 shadow-md transition-all duration-300 hover:shadow-lg">
+        <div className="bg-[var(--baladi-accent)]/10 absolute -right-8 -top-8 h-24 w-24 rounded-full transition-transform duration-300 group-hover:scale-110"></div>
+
+        <div className="relative flex items-start justify-between">
+          <div className="space-y-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--baladi-accent)] shadow-lg">
+              <TrendingUp className="h-6 w-6 text-white" />
+            </div>
+
+            <div>
+              <h3 className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-text-muted)]">
+                Total Profit
+              </h3>
+              <div className="mt-2 flex items-baseline gap-2">
+                <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-text)]">
+                  $<AnimatedCounter value={revenueStats.totalProfit} />
+                </span>
+                {revenueStats.profitMargin > 0 && (
+                  <div className="bg-[var(--baladi-accent)]/10 flex items-center gap-1 rounded-full px-2 py-1">
+                    <span className="text-xs font-medium text-[var(--baladi-accent)]">
+                      {revenueStats.profitMargin.toFixed(1)}%
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="relative mt-4 border-t border-[var(--baladi-border)] pt-4">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-[var(--baladi-text-muted)]">
+              Profit Margin
+            </span>
+            <span className="font-medium text-[var(--baladi-accent)]">
+              {revenueStats.profitMargin.toFixed(1)}%
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="to-[var(--baladi-secondary)]/5 hover:shadow-[var(--baladi-secondary)]/20 group relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-white p-6 shadow-md transition-all duration-300 hover:shadow-lg">
+        <div className="bg-[var(--baladi-secondary)]/10 absolute -right-8 -top-8 h-24 w-24 rounded-full transition-transform duration-300 group-hover:scale-110"></div>
+
+        <div className="relative flex items-start justify-between">
+          <div className="space-y-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--baladi-secondary)] shadow-lg">
+              <PieChart className="h-6 w-6 text-white" />
+            </div>
+
+            <div>
+              <h3 className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-text-muted)]">
                 Avg. Order Value
-              </span>
-              <span className="text-foreground text-sm font-medium">$10</span>
+              </h3>
+              <div className="mt-2 flex items-baseline gap-2">
+                <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-text)]">
+                  $<AnimatedCounter value={revenueStats.avgOrderValue} />
+                </span>
+                {revenueStats.avgOrderValue > 0 && (
+                  <div className="bg-[var(--baladi-secondary)]/10 flex items-center gap-1 rounded-full px-2 py-1">
+                    <span className="text-xs font-medium text-[var(--baladi-secondary)]">
+                      AOV
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Pending Orders Card */}
-      <div className="bg-background border-border border-b border-l-4 border-r border-t border-l-amber-500 shadow-md">
-        <div className="border-border border-b px-5 py-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-foreground text-sm font-medium">
-              Pending Orders
-            </h3>
-            <div className="flex h-7 w-7 items-center justify-center bg-amber-500/10">
-              <Clock className="h-4 w-4 text-amber-500" />
-            </div>
-          </div>
-        </div>
-        <div className="p-6">
-          <div className="flex items-baseline gap-2">
-            <span className="text-foreground text-3xl font-bold">
-              {pendingOrders.count}
+        <div className="relative mt-4 border-t border-[var(--baladi-border)] pt-4">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-[var(--baladi-text-muted)]">
+              Per Customer
             </span>
-            <span className="flex items-center bg-amber-500/10 px-1.5 py-0.5 text-xs font-medium text-amber-600">
-              {pendingPercent}%
+            <span className="font-medium text-[var(--baladi-secondary)]">
+              ${revenueStats.avgOrderValue.toFixed(2)}
             </span>
-          </div>
-          <div className="mt-4 flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground text-xs">Revenue</span>
-              <span className="text-sm font-medium text-amber-600">
-                ${pendingOrders.revenue.toFixed(2)}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Confirmed Orders Card */}
-      <div className="bg-background border-border border-b border-l-4 border-r border-t border-l-blue-500 shadow-md">
-        <div className="border-border border-b px-5 py-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-foreground text-sm font-medium">
-              Confirmed Orders
-            </h3>
-            <div className="flex h-7 w-7 items-center justify-center bg-blue-500/10">
-              <CheckCircle className="h-4 w-4 text-blue-500" />
-            </div>
-          </div>
-        </div>
-        <div className="p-6">
-          <div className="flex items-baseline gap-2">
-            <span className="text-foreground text-3xl font-bold">
-              {confirmedOrders.count}
-            </span>
-            <span className="flex items-center bg-blue-500/10 px-1.5 py-0.5 text-xs font-medium text-blue-600">
-              {confirmedPercent}%
-            </span>
-          </div>
-          <div className="mt-4 flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground text-xs">Revenue</span>
-              <span className="text-sm font-medium text-blue-600">
-                ${confirmedOrders.revenue.toFixed(2)}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Shipped Orders Card */}
-      <div className="bg-background border-border border-b border-l-4 border-r border-t border-l-purple-500 shadow-md">
-        <div className="border-border border-b px-5 py-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-foreground text-sm font-medium">
-              Shipped Orders
-            </h3>
-            <div className="flex h-7 w-7 items-center justify-center bg-purple-500/10">
-              <TruckIcon className="h-4 w-4 text-purple-500" />
-            </div>
-          </div>
-        </div>
-        <div className="p-6">
-          <div className="flex items-baseline gap-2">
-            <span className="text-foreground text-3xl font-bold">
-              {shippedOrders.count}
-            </span>
-            <span className="flex items-center bg-purple-500/10 px-1.5 py-0.5 text-xs font-medium text-purple-600">
-              {shippedPercent}%
-            </span>
-          </div>
-          <div className="mt-4 flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground text-xs">Revenue</span>
-              <span className="text-sm font-medium text-purple-600">
-                ${shippedOrders.revenue.toFixed(2)}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Cancelled Orders Card */}
-      <div className="bg-background border-l-destructive border-border border-b border-l-4 border-r border-t shadow-md">
-        <div className="border-border border-b px-5 py-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-foreground text-sm font-medium">
-              Cancelled Orders
-            </h3>
-            <div className="bg-destructive/10 flex h-7 w-7 items-center justify-center">
-              <XCircle className="text-destructive h-4 w-4" />
-            </div>
-          </div>
-        </div>
-        <div className="p-6">
-          <div className="flex items-baseline gap-2">
-            <span className="text-foreground text-3xl font-bold">
-              {cancelledOrders.count}
-            </span>
-            <span className="text-destructive bg-destructive/10 flex items-center px-1.5 py-0.5 text-xs font-medium">
-              {cancelledPercent}%
-            </span>
-          </div>
-          <div className="mt-4 flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground text-xs">
-                Revenue Lost
-              </span>
-              <span className="text-destructive text-sm font-medium">
-                ${cancelledOrders.revenue.toFixed(2)}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Revenue Card */}
-      <div className="bg-background border-border border-b border-l-4 border-r border-t border-l-green-500 shadow-md">
-        <div className="border-border border-b px-5 py-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-foreground text-sm font-medium">
-              Total Revenue
-            </h3>
-            <div className="flex h-7 w-7 items-center justify-center bg-green-500/10">
-              <DollarSign className="h-4 w-4 text-green-500" />
-            </div>
-          </div>
-        </div>
-        <div className="p-6">
-          <div className="flex items-baseline gap-2">
-            <span className="text-foreground text-3xl font-bold">$1000</span>
-            <span className="flex items-center bg-green-500/10 px-1.5 py-0.5 text-xs font-medium text-green-600">
-              <ArrowUpRight className="mr-0.5 h-3 w-3" />
-              12.4%
-            </span>
-          </div>
-          <div className="mt-4 flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground text-xs">
-                Confirmed Revenue
-              </span>
-              <span className="text-sm font-medium text-green-600">
-                ${confirmedOrders.revenue.toFixed(2)}
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground text-xs">
-                Pending Revenue
-              </span>
-              <span className="text-sm font-medium text-amber-600">
-                ${pendingOrders.revenue.toFixed(2)}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Average Order Value Card */}
-      <div className="bg-background border-border border-b border-l-4 border-r border-t border-l-cyan-500 shadow-md">
-        <div className="border-border border-b px-5 py-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-foreground text-sm font-medium">
-              Avg. Order Value
-            </h3>
-            <div className="flex h-7 w-7 items-center justify-center bg-cyan-500/10">
-              <CreditCard className="h-4 w-4 text-cyan-500" />
-            </div>
-          </div>
-        </div>
-        <div className="p-6">
-          <div className="flex items-baseline gap-2">
-            <span className="text-foreground text-3xl font-bold">$10</span>
-            <span className="flex items-center bg-cyan-500/10 px-1.5 py-0.5 text-xs font-medium text-cyan-600">
-              <ArrowUpRight className="mr-0.5 h-3 w-3" />
-              5.2%
-            </span>
-          </div>
-          <div className="mt-4 flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground text-xs">
-                Highest Order
-              </span>
-              <span className="text-sm font-medium text-cyan-600">$1000</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground text-xs">
-                Lowest Order
-              </span>
-              <span className="text-sm font-medium text-cyan-600">$10</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Daily Trend Card */}
-      <div className="bg-background border-border border-b border-l-4 border-r border-t border-l-indigo-500 shadow-md">
-        <div className="border-border border-b px-5 py-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-foreground text-sm font-medium">Daily Trend</h3>
-            <div className="flex h-7 w-7 items-center justify-center bg-indigo-500/10">
-              <TrendingUp className="h-4 w-4 text-indigo-500" />
-            </div>
-          </div>
-        </div>
-        <div className="p-6">
-          <div className="flex items-baseline gap-2">
-            <span className="text-foreground text-3xl font-bold">17</span>
-            <span className="flex items-center bg-indigo-500/10 px-1.5 py-0.5 text-xs font-medium text-indigo-600">
-              Last 5 days
-            </span>
-          </div>
-          <div className="mt-4 flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground text-xs">Best Day</span>
-              <span className="text-sm font-medium text-indigo-600">
-                May 28 (10 orders)
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground text-xs">Revenue</span>
-              <span className="text-sm font-medium text-indigo-600">$1000</span>
-            </div>
           </div>
         </div>
       </div>
     </div>
   );
 }
+
+export default memo(OrderMetricCards);

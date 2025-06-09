@@ -82,7 +82,7 @@ function NewsletterCreator(props: NewsletterCreatorProps) {
       type: form.watch('campaignType'),
       productsIds: selectedProducts,
     });
-  }, [form.watch('campaignType'), selectedProducts]);
+  }, [form, newsLetterPreviewMutation, selectedProducts]);
 
   return (
     <Card className="h-fit rounded-xl shadow-lg">
@@ -226,8 +226,8 @@ function NewsletterCreator(props: NewsletterCreatorProps) {
                       Preview Your Newsletter
                     </h4>
                     <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-                      Click the "Show Preview" button above to see how your
-                      newsletter will look
+                      Click the &quot;Show Preview&quot; button above to see how
+                      your newsletter will look
                     </p>
                   </div>
                 )}
@@ -265,25 +265,3 @@ function NewsletterCreator(props: NewsletterCreatorProps) {
 }
 
 export default memo(NewsletterCreator);
-
-function getCampaignTypeLabel(type: CampaignType) {
-  switch (type) {
-    case CampaignType.NEW_ARRIVAL:
-      return 'New Arrival';
-    case CampaignType.PROMOTION:
-      return 'Product Promotion';
-    default:
-      return 'Not selected';
-  }
-}
-
-function getCampaignTypeColor(type: CampaignType) {
-  switch (type) {
-    case CampaignType.NEW_ARRIVAL:
-      return 'bg-[var(--baladi-info)]/10 text-[var(--baladi-info)]';
-    case CampaignType.PROMOTION:
-      return 'bg-[var(--baladi-accent)]/10 text-[var(--baladi-accent)]';
-    default:
-      return 'bg-[var(--baladi-gray)]/10 text-[var(--baladi-gray)]';
-  }
-}

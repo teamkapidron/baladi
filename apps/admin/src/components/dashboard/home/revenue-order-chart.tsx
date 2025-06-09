@@ -15,10 +15,10 @@ import {
 } from '@repo/ui/lib/recharts';
 
 // Hooks
-import { useOrder } from '@/hooks/useOrder';
+import { useOrderDashboard } from '@/hooks/useOrder';
 
 function RevenueOrdersChart() {
-  const { orderRevenueGraphDataQuery } = useOrder();
+  const { orderRevenueGraphDataQuery } = useOrderDashboard();
 
   const revenueData = useMemo(() => {
     return orderRevenueGraphDataQuery.data?.data ?? [];

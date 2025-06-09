@@ -5,11 +5,12 @@ export function usePagination() {
   const { getParam } = useGetParams();
   const updateParams = useUpdateParams();
 
-  const paginationInfo = useMemo(() => {
-    return {
-      page: getParam('page') ?? '1',
-      limit: getParam('limit') ?? '10',
-    };
+  const page = useMemo(() => {
+    return getParam('page') ?? '1';
+  }, [getParam]);
+
+  const limit = useMemo(() => {
+    return getParam('limit') ?? '10';
   }, [getParam]);
 
   const handlePageSizeChange = useCallback(
@@ -26,9 +27,20 @@ export function usePagination() {
     [updateParams],
   );
 
+  const goToNextPage = useCallback(() => {
+    updateParams({ page: (Number(page) + 1).toString() });
+  }, [updateParams, page]);
+
+  const goToPreviousPage = useCallback(() => {
+    updateParams({ page: (Number(page) - 1).toString() });
+  }, [updateParams, page]);
+
   return {
-    paginationInfo,
+    page,
+    limit,
     handlePageSizeChange,
     handlePageChange,
+    goToNextPage,
+    goToPreviousPage,
   };
 }

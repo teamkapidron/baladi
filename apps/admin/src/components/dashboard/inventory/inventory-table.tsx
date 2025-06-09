@@ -299,7 +299,7 @@ function InventoryTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {products.map((product, index) => (
+            {products.map((product) => (
               <TableRow
                 key={product.id}
                 className={`group border-b border-gray-50 transition-all duration-200 hover:bg-gray-50/50 ${

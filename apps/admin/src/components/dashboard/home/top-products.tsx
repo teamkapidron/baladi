@@ -6,10 +6,10 @@ import { memo, useMemo } from 'react';
 import { Package, ArrowRight, TrendingUp } from '@repo/ui/lib/icons';
 
 // Hooks
-import { useProduct } from '@/hooks/useProduct';
+import { useProductDashboard } from '@/hooks/useProduct';
 
 function TopProducts() {
-  const { topProductsQuery } = useProduct();
+  const { topProductsQuery } = useProductDashboard();
 
   const products = useMemo(() => {
     return topProductsQuery.data?.products ?? [];

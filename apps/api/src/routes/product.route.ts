@@ -15,6 +15,7 @@ import {
   deleteProduct,
   lowStockProducts,
   topProducts,
+  productStats,
 } from '@/controllers/product.controller';
 
 import {
@@ -29,6 +30,7 @@ import {
   deleteProductSchema,
   lowStockProductsSchema,
   topProductsSchema,
+  productStatsSchema,
 } from '@/validators/product.validator';
 
 const router: Router = express.Router();
@@ -68,5 +70,6 @@ router.get(
   lowStockProducts,
 );
 router.get('/top', isAdmin, validate(topProductsSchema), topProducts);
+router.get('/stats', isAdmin, validate(productStatsSchema), productStats);
 
 export default router;

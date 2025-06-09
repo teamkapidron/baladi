@@ -22,7 +22,9 @@ export function useUpdateParams() {
       });
 
       const queryString = params.toString();
-      router.push(`${pathname}?${queryString}`);
+      router.push(`${pathname}?${queryString}`, {
+        scroll: false,
+      });
     },
     [router, pathname, searchParams],
   );

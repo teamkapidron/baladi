@@ -6,10 +6,10 @@ import { memo, useMemo } from 'react';
 import { User, ArrowRight, ShoppingBag } from '@repo/ui/lib/icons';
 
 // Hooks
-import { useOrder } from '@/hooks/useOrder';
+import { useOrderDashboard } from '@/hooks/useOrder';
 
 function RecentOrdersOverview() {
-  const { recentOrdersQuery } = useOrder();
+  const { recentOrdersQuery } = useOrderDashboard();
 
   const recentOrders = useMemo(() => {
     return recentOrdersQuery.data?.orders ?? [];

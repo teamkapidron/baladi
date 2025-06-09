@@ -13,10 +13,10 @@ import {
 } from '@repo/ui/lib/recharts';
 
 // Hooks
-import { useOrder } from '@/hooks/useOrder';
+import { useOrderStats } from '@/hooks/useOrder';
 
 function OrderStatusPieChart() {
-  const { orderStatsQuery } = useOrder();
+  const { orderStatsQuery } = useOrderStats();
 
   const data = useMemo(() => {
     return {
@@ -70,14 +70,7 @@ function OrderStatusPieChart() {
         color: 'var(--baladi-error)',
       },
     ];
-  }, [
-    data,
-    orderStatsQuery.data?.pendingOrders,
-    orderStatsQuery.data?.confirmedOrders,
-    orderStatsQuery.data?.shippedOrders,
-    orderStatsQuery.data?.deliveredOrders,
-    orderStatsQuery.data?.cancelledOrders,
-  ]);
+  }, [data]);
 
   return (
     <div className="h-full rounded-xl bg-white p-4 shadow-lg ring-1 ring-[var(--baladi-border)]">

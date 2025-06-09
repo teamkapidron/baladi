@@ -6,7 +6,7 @@ import { memo, useMemo } from 'react';
 import { Package, ArrowRight, TrendingDown, Ban } from '@repo/ui/lib/icons';
 
 // Hooks
-import { useProduct } from '@/hooks/useProduct';
+import { useProductDashboard } from '@/hooks/useProduct';
 
 type StockAlert = {
   id: string;
@@ -16,7 +16,7 @@ type StockAlert = {
 };
 
 function StockAlertsList() {
-  const { lowStockProductsQuery } = useProduct();
+  const { lowStockProductsQuery } = useProductDashboard();
 
   const { stockAlerts, outOfStockCount, lowStockCount } = useMemo(() => {
     const lowStockData = lowStockProductsQuery.data;

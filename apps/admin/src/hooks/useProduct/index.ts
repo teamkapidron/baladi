@@ -4,23 +4,110 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 
 // Hooks
 import { useRequest } from '@/hooks/useRequest';
-import { useGetParams, useUpdateParams } from '@/hooks/useParams';
+import { useGetParams } from '@repo/ui/hooks/useParams';
+import { useDateRangeInParams } from '@repo/ui/hooks/useDate/useDateRangeInParams';
 
 // Types
 import type {
   GetAllProductsRequest,
+  GetProductByIdRequest,
   CreateProductRequest,
   UpdateProductRequest,
   DeleteProductRequest,
   LowStockProductsRequest,
   TopProductsRequest,
+  ProductStatsRequest,
 } from './types';
 import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
+
+export function useProductStats() {
+  const api = useRequest();
+
+  const getProductStats = useCallback(async () => {
+    const response =
+      await api.get<ProductStatsRequest['response']>('/product/stats');
+    return response.data.data;
+  }, [api]);
+
+  const productStatsQuery = useQuery({
+    queryKey: [ReactQueryKeys.GET_PRODUCT_STATS],
+    queryFn: getProductStats,
+  });
+
+  return { productStatsQuery };
+}
+
+export function useProductDetails(productId: string) {
+  const api = useRequest();
+
+  const getProductDetails = useCallback(
+    async (payload: GetProductByIdRequest['payload']) => {
+      const response = await api.get<GetProductByIdRequest['response']>(
+        `/product/${payload.productId}`,
+      );
+      return response.data.data;
+    },
+    [api],
+  );
+
+  const productDetailsQuery = useQuery({
+    queryKey: [ReactQueryKeys.GET_PRODUCT_DETAILS, productId],
+    queryFn: () => getProductDetails({ productId }),
+  });
+
+  return productDetailsQuery;
+}
+
+export function useProductDashboard() {
+  const api = useRequest();
+  const { dateRangeInString } = useDateRangeInParams();
+
+  const topProducts = useCallback(
+    async (payload: TopProductsRequest['payload']) => {
+      const response = await api.get<TopProductsRequest['response']>(
+        '/product/top',
+        { params: payload },
+      );
+      return response.data.data;
+    },
+    [api],
+  );
+
+  const topProductsQuery = useQuery({
+    queryKey: [
+      ReactQueryKeys.GET_TOP_PRODUCTS,
+      dateRangeInString.from,
+      dateRangeInString.to,
+    ],
+    queryFn: () => topProducts(dateRangeInString),
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: true,
+  });
+
+  const lowStockProducts = useCallback(
+    async (payload: LowStockProductsRequest['payload']) => {
+      const response = await api.get<LowStockProductsRequest['response']>(
+        '/product/low-stock',
+        { params: payload },
+      );
+      return response.data.data;
+    },
+    [api],
+  );
+
+  const lowStockProductsQuery = useQuery({
+    queryKey: [ReactQueryKeys.GET_LOW_STOCK_PRODUCTS],
+    queryFn: () => lowStockProducts({ lowStockThreshold: '5' }),
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: true,
+  });
+
+  return { topProductsQuery, lowStockProductsQuery };
+}
 
 export function useProduct() {
   const api = useRequest();
   const { getAllParams } = useGetParams();
-  const updateParams = useUpdateParams();
 
   const params = useMemo(() => {
     return getAllParams();
@@ -88,65 +175,14 @@ export function useProduct() {
     mutationFn: deleteProduct,
   });
 
-  const lowStockProducts = useCallback(
-    async (payload: LowStockProductsRequest['payload']) => {
-      const response = await api.get<LowStockProductsRequest['response']>(
-        '/product/low-stock',
-        { params: payload },
-      );
-      return response.data.data;
-    },
-    [api],
-  );
-
-  const lowStockProductsQuery = useQuery({
-    queryKey: [ReactQueryKeys.GET_LOW_STOCK_PRODUCTS, JSON.stringify(params)],
-    queryFn: () => lowStockProducts(params),
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: true,
-  });
-
-  const topProducts = useCallback(
-    async (payload: TopProductsRequest['payload']) => {
-      const response = await api.get<TopProductsRequest['response']>(
-        '/product/top',
-        { params: payload },
-      );
-      return response.data.data;
-    },
-    [api],
-  );
-
-  const topProductsQuery = useQuery({
-    queryKey: [ReactQueryKeys.GET_TOP_PRODUCTS, JSON.stringify(params)],
-    queryFn: () => topProducts(params),
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: true,
-  });
-
-  const applyProductSearchFilters = useCallback(
-    (filters: Partial<GetAllProductsRequest['payload']>) => {
-      updateParams({
-        ...params,
-        ...filters,
-      });
-    },
-    [updateParams],
-  );
-
   return {
     // Queries
     products,
     isLoading,
-    lowStockProductsQuery,
-    topProductsQuery,
 
     // Mutations
     createProductMutation,
     updateProductMutation,
     deleteProductMutation,
-
-    // Actions
-    applyProductSearchFilters,
   };
 }

@@ -4,7 +4,7 @@ import { PipelineStage, Types } from 'mongoose';
 // Schemas
 import Order from '@/models/order.model';
 import Product from '@/models/product.model';
-import Inventory from '@/models/inventory.model';
+import Category from '@/models/category.model';
 
 // Utils
 import { generateSlug } from '@/utils/common/string.util';
@@ -538,5 +538,22 @@ export const topProducts = asyncHandler(async (req: Request, res: Response) => {
 
   sendResponse(res, 200, 'Top products fetched successfully', {
     products: topProductsResult,
+  });
+});
+
+export const productStats = asyncHandler(async (_: Request, res: Response) => {
+  const [totalProducts, totalCategories, activeProducts, activeCategories] =
+    await Promise.all([
+      Product.countDocuments(),
+      Category.countDocuments(),
+      Product.countDocuments({ isActive: true }),
+      Category.countDocuments({ isActive: true }),
+    ]);
+
+  sendResponse(res, 200, 'Product stats fetched successfully', {
+    totalProducts,
+    totalCategories,
+    activeProducts,
+    activeCategories,
   });
 });

@@ -1,4 +1,5 @@
 // Node Modules
+import { PipelineStage } from 'mongoose';
 
 // Schemas
 import Product from '@/models/product.model';
@@ -7,7 +8,9 @@ import Inventory from '@/models/inventory.model';
 // Utils
 import { getDurationInMs } from '@/utils/common/date.util';
 import { sendResponse } from '@/utils/common/response.util';
+import { getDateMatchStage } from '@/utils/common/date.util';
 import { getPagination } from '@/utils/common/pagination.utils';
+import { buildStockCountPipeline } from '@/utils/inventory.utils';
 
 // Handlers
 import { asyncHandler } from '@/handlers/async.handler';
@@ -18,6 +21,7 @@ import type {
   GetAllInventorySchema,
   GetProductInventorySchema,
   CreateInventorySchema,
+  InventoryStatsSchema,
 } from '@/validators/inventory.validator';
 import type { Request, Response } from 'express';
 
@@ -92,6 +96,39 @@ export const createInventory = asyncHandler(
 
     sendResponse(res, 201, 'Inventory created successfully', {
       inventory,
+    });
+  },
+);
+
+export const getInventoryStats = asyncHandler(
+  async (req: Request, res: Response) => {
+    const query = req.query as InventoryStatsSchema['query'];
+
+    const matchStage = getDateMatchStage('createdAt', query.from, query.to);
+
+    const totalInventoryValuePipeline: PipelineStage[] = [
+      {
+        $match: matchStage,
+      },
+      {
+        $group: {
+          _id: null,
+          totalValue: { $sum: { $multiply: ['$quantity', '$price'] } },
+        },
+      },
+    ];
+
+    const [[outOfStockCount], [lowStockCount], [totalValue]] =
+      await Promise.all([
+        Product.aggregate(buildStockCountPipeline(0)),
+        Product.aggregate(buildStockCountPipeline(5)),
+        Inventory.aggregate(totalInventoryValuePipeline),
+      ]);
+
+    sendResponse(res, 200, 'Inventory stats fetched successfully', {
+      outOfStockCount: outOfStockCount?.count ?? 0,
+      lowStockCount: lowStockCount?.count ?? 0,
+      totalInventoryValue: totalValue?.totalValue ?? 0,
     });
   },
 );

@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { ChevronDown, Search } from '@repo/ui/lib/icons';
 import { Input } from '@repo/ui/components/base/input';
 
-export function ProductTableFilters() {
+function ProductTableFilters() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [pageSize, setPageSize] = useState<number>(10);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -111,3 +111,5 @@ export function ProductTableFilters() {
     </div>
   );
 }
+
+export default memo(ProductTableFilters);

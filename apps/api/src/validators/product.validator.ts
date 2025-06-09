@@ -119,10 +119,13 @@ export const topProductsSchema = z.object({
     }),
 });
 
+export const productStatsSchema = z.object({});
+
 export type GetAllProductsSchema = z.infer<typeof getAllProductsSchema>;
 export type CreateProductSchema = z.infer<typeof createProductSchema>;
 export type UpdateProductSchema = z.infer<typeof updateProductSchema>;
 export type DeleteProductSchema = z.infer<typeof deleteProductSchema>;
 export type LowStockProductsSchema = z.infer<typeof lowStockProductsSchema>;
 export type TopProductsSchema = z.infer<typeof topProductsSchema>;
+export type ProductStatsSchema = z.infer<typeof productStatsSchema>;
 /******************* END: Admin Validators *******************/

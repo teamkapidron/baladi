@@ -55,7 +55,7 @@ export function useUserStats() {
 export function useUsers(userId?: string) {
   const api = useRequest();
   const { getParam } = useGetParams();
-  const { paginationInfo, handlePageSizeChange, handlePageChange } =
+  const { page, limit, handlePageSizeChange, handlePageChange } =
     usePagination();
   const { dateRangeInString, setDateRange } = useDateRangeInParams();
   const {
@@ -72,11 +72,11 @@ export function useUsers(userId?: string) {
       email: userFilter.email,
       userType: userFilter.userType,
       status: userFilter.status,
-      page: paginationInfo.page,
-      limit: paginationInfo.limit,
+      page,
+      limit,
       sort: getParam('sort') as UserSort | undefined,
     };
-  }, [getParam, paginationInfo, userFilter]);
+  }, [getParam, page, limit, userFilter]);
 
   const dateParams = useMemo(() => {
     return {
@@ -194,7 +194,8 @@ export function useUsers(userId?: string) {
     approveUserMutation,
 
     // Actions
-    paginationInfo,
+    page,
+    limit,
     handlePageSizeChange,
     handlePageChange,
 

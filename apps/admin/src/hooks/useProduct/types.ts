@@ -33,6 +33,15 @@ export type GetAllProductsRequest = ApiData<
   }
 >;
 
+export type GetProductByIdRequest = ApiData<
+  {
+    productId: string;
+  },
+  {
+    product: ProductResponse;
+  }
+>;
+
 export type CreateProductRequest = ApiData<
   ProductRequestBody,
   {
@@ -101,5 +110,15 @@ export type TopProductsRequest = ApiData<
       totalQuantity: number;
       totalOrders: number;
     }[];
+  }
+>;
+
+export type ProductStatsRequest = ApiData<
+  {},
+  {
+    totalProducts: number;
+    totalCategories: number;
+    activeProducts: number;
+    activeCategories: number;
   }
 >;

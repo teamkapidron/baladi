@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+'use client';
+
+// Node Modules
+import { useState } from 'react';
 import { Trash, AlertTriangle } from '@repo/ui/lib/icons';
 import { OrderStatus } from '@repo/types/order';
 import { Card, CardHeader, CardContent } from '@repo/ui/components/base/card';

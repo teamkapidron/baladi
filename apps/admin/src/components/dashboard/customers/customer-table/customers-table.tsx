@@ -11,7 +11,7 @@ import CustomerTableContent from './customer-table-content';
 
 function CustomersTable() {
   return (
-    <div className="space-y-6">
+    <div className="bg-background rounded-xl p-4 shadow-md">
       <CustomerTableHeader />
       <CustomerStatusTabs />
       <CustomerTableFilters />

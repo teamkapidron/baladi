@@ -14,7 +14,7 @@ export function createCartItem(
     userId,
     product,
     quantity,
-    totalPrice: calculateItemTotal(quantity, product.unitPrice),
+    totalPrice: calculateItemTotal(quantity, product.salePrice),
     addedAt: new Date(),
     updatedAt: new Date(),
   };
@@ -26,7 +26,7 @@ export function updateCartItem(item: CartItem, additionalQuantity: number) {
   return {
     ...item,
     quantity: newQuantity,
-    totalPrice: calculateItemTotal(newQuantity, item.product.unitPrice),
+    totalPrice: calculateItemTotal(newQuantity, item.product.salePrice),
     updatedAt: new Date(),
   };
 }

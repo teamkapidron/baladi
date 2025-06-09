@@ -1,29 +1,130 @@
-import { format } from '@repo/ui/lib/date';
-import { Clock } from '@repo/ui/lib/icons';
+'use client';
 
-export function DashboardHeader() {
+// Node Modules
+import { memo } from 'react';
+import { format } from '@repo/ui/lib/date';
+import { Calendar, Clock, Filter } from '@repo/ui/lib/icons';
+
+// Components
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@repo/ui/components/base/select';
+
+// Hooks
+import { useDatePresets } from '@repo/ui/hooks/useDate/useDatePresets';
+import { useDateRangeInParams } from '@repo/ui/hooks/useDate/useDateRangeInParams';
+
+function DashboardHeader() {
+  const { dateRange, setDateRange } = useDateRangeInParams(30);
+  const {
+    presetOptions,
+    currentPreset,
+    handlePresetChange,
+    getDisplayText,
+    totalDays,
+  } = useDatePresets({ dateRange, setDateRange });
+
   return (
-    <div className="flex flex-col gap-4 bg-gradient-to-r from-slate-800 to-slate-900 p-6 text-white shadow-md md:flex-row md:items-center md:justify-between">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">
-          Business Dashboard
-        </h1>
-        <div className="mt-2 flex items-center">
-          <div className="flex items-center text-sm text-slate-300">
-            <Clock className="mr-1 h-3.5 w-3.5 text-slate-400" />
-            <span>
-              Last updated:{' '}
-              {format(new Date('2025-06-30'), 'MMM d, yyyy h:mm a')}
+    <div className="mb-6 rounded-xl bg-white p-6 shadow-lg ring-1 ring-[var(--baladi-border)]">
+      <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="font-[family-name:var(--font-sora)] text-2xl font-bold text-[var(--baladi-dark)]">
+            Dashboard Overview
+          </h1>
+          <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
+            Monitor your business performance and key metrics
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2 rounded-lg bg-[var(--baladi-light)] px-3 py-2">
+          <Clock className="h-4 w-4 text-[var(--baladi-gray)]" />
+          <span className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
+            Updated: {format(new Date(), 'MMM d, h:mm a')}
+          </span>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <Filter className="h-5 w-5 text-[var(--baladi-primary)]" />
+            <span className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-dark)]">
+              Time Period:
+            </span>
+          </div>
+
+          <div className="bg-[var(--baladi-primary)]/5 rounded-lg px-3 py-1.5">
+            <span className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-primary)]">
+              {getDisplayText()}
             </span>
           </div>
         </div>
+
+        <div className="flex items-center gap-3">
+          <Select value={currentPreset} onValueChange={handlePresetChange}>
+            <SelectTrigger className="w-[160px] border-[var(--baladi-border)] bg-white font-[family-name:var(--font-dm-sans)] text-sm hover:border-[var(--baladi-primary)]">
+              <SelectValue placeholder="Select period" />
+            </SelectTrigger>
+            <SelectContent>
+              {presetOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
-      <div className="flex items-center">
-        <div className="text-right">
-          <p className="text-lg font-medium">Welcome Back!</p>
-          <p className="text-sm text-slate-300">Admin Dashboard</p>
+
+      <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <div className="flex items-center gap-3 rounded-lg bg-[var(--baladi-light)] p-3">
+          <div className="bg-[var(--baladi-primary)]/10 flex h-10 w-10 items-center justify-center rounded-lg">
+            <Calendar className="h-5 w-5 text-[var(--baladi-primary)]" />
+          </div>
+          <div>
+            <p className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-gray)]">
+              Date Range
+            </p>
+            <p className="font-[family-name:var(--font-dm-sans)] text-sm font-semibold text-[var(--baladi-dark)]">
+              {totalDays} days
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 rounded-lg bg-[var(--baladi-light)] p-3">
+          <div className="bg-[var(--baladi-success)]/10 flex h-10 w-10 items-center justify-center rounded-lg">
+            <Calendar className="h-5 w-5 text-[var(--baladi-success)]" />
+          </div>
+          <div>
+            <p className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-gray)]">
+              From Date
+            </p>
+            <p className="font-[family-name:var(--font-dm-sans)] text-sm font-semibold text-[var(--baladi-dark)]">
+              {format(dateRange.from, 'MMM d, yyyy')}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 rounded-lg bg-[var(--baladi-light)] p-3">
+          <div className="bg-[var(--baladi-info)]/10 flex h-10 w-10 items-center justify-center rounded-lg">
+            <Calendar className="h-5 w-5 text-[var(--baladi-info)]" />
+          </div>
+          <div>
+            <p className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-gray)]">
+              To Date
+            </p>
+            <p className="font-[family-name:var(--font-dm-sans)] text-sm font-semibold text-[var(--baladi-dark)]">
+              {format(dateRange.to, 'MMM d, yyyy')}
+            </p>
+          </div>
         </div>
       </div>
     </div>
   );
 }
+
+export default memo(DashboardHeader);

@@ -134,7 +134,7 @@ export function useCart() {
                 quantity: newQuantity,
                 totalPrice: calculateItemTotal(
                   newQuantity,
-                  item.product.unitPrice,
+                  item.product.salePrice,
                 ),
                 updatedAt: new Date(),
               }

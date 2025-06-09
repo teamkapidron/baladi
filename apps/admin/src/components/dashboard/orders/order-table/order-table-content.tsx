@@ -1,7 +1,11 @@
+'use client';
+
+// Node Modules
 import React, { memo, useState } from 'react';
-import { ArrowUpDown, Eye, Trash, MapPin } from '@repo/ui/lib/icons';
-import { Order, OrderStatus } from '@repo/types/order';
+import { Eye, Trash, MapPin } from '@repo/ui/lib/icons';
 import { EditIcon } from '@repo/ui/lib/icons';
+
+// Components
 import {
   Table,
   TableBody,
@@ -11,22 +15,9 @@ import {
   TableRow,
 } from '@repo/ui/components/base/table';
 
-interface OrderTableContentProps {
-  currentPageData: Order[];
-  selectedOrders: string[];
-  sortConfig: {
-    key: keyof Order | null;
-    direction: 'ascending' | 'descending' | null;
-  };
-  handleSort: (key: keyof Order) => void;
-  toggleSelectAll: () => void;
-  toggleOrderSelection: (id: string) => void;
-  handleViewOrder: (id: string) => void;
-  handleEditOrder: (id: string) => void;
-  handleDeleteOrder: (id: string) => void;
-}
+// Types
+import { Order, OrderStatus } from '@repo/types/order';
 
-// Address interface for typing
 interface Address {
   city?: string;
   state?: string;
@@ -40,10 +31,6 @@ function OrderTableContent() {
   }>({ startIndex: 0, endIndex: 0 });
   const [sortedOrders, setSortedOrders] = useState<Order[]>([]);
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
-  const [sortConfig, setSortConfig] = useState<{
-    key: keyof Order | null;
-    direction: 'ascending' | 'descending' | null;
-  }>({ key: null, direction: null });
 
   const toggleSelectAll = () => {
     setSelectedOrders(
@@ -57,16 +44,6 @@ function OrderTableContent() {
     setSelectedOrders((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
     );
-  };
-
-  const handleSort = (key: keyof Order) => {
-    setSortConfig((prev) => ({
-      key,
-      direction:
-        prev.key === key && prev.direction === 'ascending'
-          ? 'descending'
-          : 'ascending',
-    }));
   };
 
   const handleViewOrder = (id: string) => {
@@ -162,84 +139,19 @@ function OrderTableContent() {
                 />
               </TableHead>
               <TableHead className="text-muted-foreground bg-background sticky top-0 z-50 border-none p-3 text-left text-sm font-medium">
-                <button
-                  onClick={() => handleSort('_id')}
-                  className="hover:text-foreground flex items-center gap-1"
-                  title="Sort by order ID"
-                >
-                  Order ID
-                  <ArrowUpDown
-                    className={`h-3.5 w-3.5 ${
-                      sortConfig.key === '_id'
-                        ? 'text-primary'
-                        : 'text-muted-foreground'
-                    }`}
-                  />
-                </button>
+                Order ID
               </TableHead>
               <TableHead className="text-muted-foreground bg-background sticky top-0 z-50 border-none p-3 text-left text-sm font-medium">
-                <button
-                  onClick={() => handleSort('userID')}
-                  className="hover:text-foreground flex items-center gap-1"
-                  title="Sort by customer"
-                >
-                  Customer
-                  <ArrowUpDown
-                    className={`h-3.5 w-3.5 ${
-                      sortConfig.key === 'userID'
-                        ? 'text-primary'
-                        : 'text-muted-foreground'
-                    }`}
-                  />
-                </button>
+                Customer
               </TableHead>
               <TableHead className="text-muted-foreground bg-background sticky top-0 z-50 border-none p-3 text-left text-sm font-medium">
-                <button
-                  onClick={() => handleSort('totalAmount')}
-                  className="hover:text-foreground flex items-center gap-1"
-                  title="Sort by total amount"
-                >
-                  Total Amount
-                  <ArrowUpDown
-                    className={`h-3.5 w-3.5 ${
-                      sortConfig.key === 'totalAmount'
-                        ? 'text-primary'
-                        : 'text-muted-foreground'
-                    }`}
-                  />
-                </button>
+                Total Amount
               </TableHead>
               <TableHead className="text-muted-foreground bg-background sticky top-0 z-50 border-none p-3 text-left text-sm font-medium">
-                <button
-                  onClick={() => handleSort('status')}
-                  className="hover:text-foreground flex items-center gap-1"
-                  title="Sort by status"
-                >
-                  Status
-                  <ArrowUpDown
-                    className={`h-3.5 w-3.5 ${
-                      sortConfig.key === 'status'
-                        ? 'text-primary'
-                        : 'text-muted-foreground'
-                    }`}
-                  />
-                </button>
+                Status
               </TableHead>
               <TableHead className="text-muted-foreground bg-background sticky top-0 z-50 border-none p-3 text-left text-sm font-medium">
-                <button
-                  onClick={() => handleSort('createdAt')}
-                  className="hover:text-foreground flex items-center gap-1"
-                  title="Sort by date"
-                >
-                  Date
-                  <ArrowUpDown
-                    className={`h-3.5 w-3.5 ${
-                      sortConfig.key === 'createdAt'
-                        ? 'text-primary'
-                        : 'text-muted-foreground'
-                    }`}
-                  />
-                </button>
+                Date
               </TableHead>
               <TableHead className="text-muted-foreground bg-background sticky top-0 z-50 border-none p-3 text-left text-sm font-medium">
                 Actions
@@ -274,7 +186,7 @@ function OrderTableContent() {
                   </TableCell>
                   <TableCell className="border-none p-3">
                     <div className="flex flex-col">
-                      <span className="font-medium">{order.userID}</span>
+                      <span className="font-medium">{order.userId}</span>
                       <div className="text-muted-foreground flex items-center text-xs">
                         <MapPin className="mr-1 h-3 w-3" />
                         {formatAddress(order?.shippingAddress as Address)}

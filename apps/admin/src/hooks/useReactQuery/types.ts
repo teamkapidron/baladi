@@ -4,8 +4,15 @@ export enum ReactQueryKeys {
 
   // Products
   GET_ALL_PRODUCTS = 'GET::/product/all',
+  GET_PRODUCT_DETAILS = 'GET::/product/:productId',
   GET_LOW_STOCK_PRODUCTS = 'GET::/product/low-stock',
   GET_TOP_PRODUCTS = 'GET::/product/top',
+  GET_PRODUCT_STATS = 'GET::/product/stats',
+
+  // Inventory
+  GET_ALL_INVENTORY = 'GET::/inventory',
+  GET_PRODUCT_INVENTORY = 'GET::/inventory/product/:productId',
+  GET_INVENTORY_STATS = 'GET::/inventory/stats',
 
   // Users
   GET_ALL_USERS = 'GET::/user/all',

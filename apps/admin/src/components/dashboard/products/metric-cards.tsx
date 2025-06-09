@@ -1,156 +1,229 @@
-import {
-  Archive,
-  ArrowUpRight,
-  DollarSign,
-  ShoppingBag,
-  TrendingUp,
-} from '@repo/ui/lib/icons';
+'use client';
 
-export function MetricCards() {
-  const totalProducts: number = 100;
-  const activeProducts: number = 80;
-  const totalValue: number = 1000;
-  const avgPrice: number = 10;
-  const lowStockProducts: number = 10;
-  const outOfStockProducts: number = 5;
-  const totalSales: number = 1000;
+// Node Modules
+import { memo, useMemo } from 'react';
+import { Archive, ShoppingBag, TrendingUp, Tag } from '@repo/ui/lib/icons';
+
+// Components
+import AnimatedCounter from '@repo/ui/components/base/animate-counter';
+
+// Hooks
+import { useProductStats, useProductDashboard } from '@/hooks/useProduct';
+
+function MetricCards() {
+  const { productStatsQuery } = useProductStats();
+  const { lowStockProductsQuery } = useProductDashboard();
+
+  const stats = useMemo(() => {
+    return {
+      totalProducts: productStatsQuery.data?.totalProducts ?? 0,
+      activeProducts: productStatsQuery.data?.activeProducts ?? 0,
+      totalCategories: productStatsQuery.data?.totalCategories ?? 0,
+      activeCategories: productStatsQuery.data?.activeCategories ?? 0,
+    };
+  }, [productStatsQuery.data]);
+
+  const stockStats = useMemo(() => {
+    return {
+      lowStockCount: lowStockProductsQuery.data?.lowStockCount ?? 0,
+      outOfStockCount: lowStockProductsQuery.data?.outOfStockCount ?? 0,
+    };
+  }, [lowStockProductsQuery.data]);
+
+  const isLoading =
+    productStatsQuery.isLoading || lowStockProductsQuery.isLoading;
 
   return (
-    <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
-      {/* Total Products Card */}
-      <div className="bg-background border-border border-b border-l-4 border-r border-t border-l-[var(--color-primary)] shadow-md">
-        <div className="border-border border-b px-5 py-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-foreground text-sm font-medium">
-              Total Products
-            </h3>
-            <div className="bg-[var(--color-primary)]/10 flex h-7 w-7 items-center justify-center">
-              <ShoppingBag className="h-4 w-4 text-[var(--color-primary)]" />
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="group relative overflow-hidden rounded-xl border border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100 shadow-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
+        <div className="absolute right-0 top-0 h-24 w-24 -translate-y-8 translate-x-8 rounded-full bg-blue-500/10" />
+        <div className="relative p-6">
+          <div className="mb-4 flex items-center justify-between">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-500 shadow-lg">
+              <ShoppingBag className="h-6 w-6 text-white" />
+            </div>
+            <div className="text-right">
+              <p className="text-2xl font-bold text-blue-900">
+                <AnimatedCounter value={stats.totalProducts} />
+              </p>
+              <p className="text-sm font-medium text-blue-600">
+                Total Products
+              </p>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-blue-700">Active Products</span>
+              <div className="flex items-center gap-1">
+                <span className="text-sm font-semibold text-blue-900">
+                  <AnimatedCounter value={stats.activeProducts} />
+                </span>
+                <span className="text-xs text-blue-600">
+                  (
+                  <AnimatedCounter
+                    value={
+                      stats.totalProducts > 0
+                        ? Math.round(
+                            (stats.activeProducts / stats.totalProducts) * 100,
+                          )
+                        : 0
+                    }
+                  />
+                  %)
+                </span>
+              </div>
+            </div>
+            <div className="h-2 w-full rounded-full bg-blue-200">
+              <div
+                className="h-2 rounded-full bg-blue-500 transition-all duration-500"
+                style={{
+                  width:
+                    stats.totalProducts > 0
+                      ? `${(stats.activeProducts / stats.totalProducts) * 100}%`
+                      : '0%',
+                }}
+              />
             </div>
           </div>
         </div>
-        <div className="p-6">
-          <div className="flex items-baseline gap-2">
-            <span className="text-foreground text-3xl font-bold">
-              {totalProducts}
-            </span>
-            <span className="bg-[var(--color-success)]/10 flex items-center px-1.5 py-0.5 text-xs font-medium text-[var(--color-success)]">
-              <ArrowUpRight className="mr-0.5 h-3 w-3" />
-              8.5%
-            </span>
+      </div>
+
+      <div className="group relative overflow-hidden rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-emerald-100 shadow-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
+        <div className="absolute right-0 top-0 h-24 w-24 -translate-y-8 translate-x-8 rounded-full bg-emerald-500/10" />
+        <div className="relative p-6">
+          <div className="mb-4 flex items-center justify-between">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500 shadow-lg">
+              <Tag className="h-6 w-6 text-white" />
+            </div>
+            <div className="text-right">
+              <p className="text-2xl font-bold text-emerald-900">
+                <AnimatedCounter value={stats.totalCategories} />
+              </p>
+              <p className="text-sm font-medium text-emerald-600">
+                Total Categories
+              </p>
+            </div>
           </div>
-          <div className="mt-4 flex flex-col gap-2">
+          <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground text-xs">
-                Active Products
+              <span className="text-sm text-emerald-700">
+                Active Categories
               </span>
-              <span className="text-foreground text-sm font-medium">
-                {activeProducts} (
-                {Math.round((activeProducts / totalProducts) * 100)}%)
+              <div className="flex items-center gap-1">
+                <span className="text-sm font-semibold text-emerald-900">
+                  <AnimatedCounter value={stats.activeCategories} />
+                </span>
+                <span className="text-xs text-emerald-600">
+                  (
+                  <AnimatedCounter
+                    value={
+                      stats.totalCategories > 0
+                        ? Math.round(
+                            (stats.activeCategories / stats.totalCategories) *
+                              100,
+                          )
+                        : 0
+                    }
+                  />
+                  %)
+                </span>
+              </div>
+            </div>
+            <div className="h-2 w-full rounded-full bg-emerald-200">
+              <div
+                className="h-2 rounded-full bg-emerald-500 transition-all duration-500"
+                style={{
+                  width:
+                    stats.totalCategories > 0
+                      ? `${(stats.activeCategories / stats.totalCategories) * 100}%`
+                      : '0%',
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="group relative overflow-hidden rounded-xl border border-amber-200 bg-gradient-to-br from-amber-50 to-amber-100 shadow-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
+        <div className="absolute right-0 top-0 h-24 w-24 -translate-y-8 translate-x-8 rounded-full bg-amber-500/10" />
+        <div className="relative p-6">
+          <div className="mb-4 flex items-center justify-between">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500 shadow-lg">
+              <Archive className="h-6 w-6 text-white" />
+            </div>
+            <div className="text-right">
+              <p className="text-2xl font-bold text-amber-900">
+                <AnimatedCounter
+                  value={stockStats.lowStockCount + stockStats.outOfStockCount}
+                />
+              </p>
+              <p className="text-sm font-medium text-amber-600">
+                Items Need Attention
+              </p>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-amber-700">Out of Stock</span>
+              <span className="text-sm font-semibold text-red-600">
+                <AnimatedCounter value={stockStats.outOfStockCount} />
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-amber-700">Low Stock</span>
+              <span className="text-sm font-semibold text-amber-900">
+                <AnimatedCounter value={stockStats.lowStockCount} />
               </span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Inventory Value Card */}
-      <div className="bg-background border-border border-b border-l-4 border-r border-t border-l-[var(--color-accent)] shadow-md">
-        <div className="border-border border-b px-5 py-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-foreground text-sm font-medium">
-              Inventory Value
-            </h3>
-            <div className="bg-[var(--color-accent)]/10 flex h-7 w-7 items-center justify-center">
-              <DollarSign className="h-4 w-4 text-[var(--color-accent)]" />
+      <div className="group relative overflow-hidden rounded-xl border border-purple-200 bg-gradient-to-br from-purple-50 to-purple-100 shadow-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
+        <div className="absolute right-0 top-0 h-24 w-24 -translate-y-8 translate-x-8 rounded-full bg-purple-500/10" />
+        <div className="relative p-6">
+          <div className="mb-4 flex items-center justify-between">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-purple-500 shadow-lg">
+              <TrendingUp className="h-6 w-6 text-white" />
+            </div>
+            <div className="text-right">
+              <p className="text-2xl font-bold text-purple-900">
+                <AnimatedCounter
+                  value={Math.round(
+                    (stats.activeProducts / Math.max(stats.totalProducts, 1)) *
+                      100,
+                  )}
+                />
+                %
+              </p>
+              <p className="text-sm font-medium text-purple-600">Active Rate</p>
             </div>
           </div>
-        </div>
-        <div className="p-6">
-          <div className="flex items-baseline gap-2">
-            <span className="text-foreground text-3xl font-bold">
-              ${totalValue?.toFixed(0)}
-            </span>
-            <span className="bg-[var(--color-success)]/10 flex items-center px-1.5 py-0.5 text-xs font-medium text-[var(--color-success)]">
-              <ArrowUpRight className="mr-0.5 h-3 w-3" />
-              12.3%
-            </span>
-          </div>
-          <div className="mt-4 flex flex-col gap-2">
+          <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground text-xs">
-                Avg. Product Value
-              </span>
-              <span className="text-foreground text-sm font-medium">
-                ${avgPrice?.toFixed(2)}
+              <span className="text-sm text-purple-700">Product Health</span>
+              <span className="text-sm font-semibold text-purple-900">
+                {stats.activeProducts > stats.totalProducts * 0.8
+                  ? 'Excellent'
+                  : stats.activeProducts > stats.totalProducts * 0.6
+                    ? 'Good'
+                    : stats.activeProducts > stats.totalProducts * 0.4
+                      ? 'Fair'
+                      : 'Needs Attention'}
               </span>
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Low Stock Card */}
-      <div className="bg-background border-border border-b border-l-4 border-r border-t border-l-amber-500 shadow-md">
-        <div className="border-border border-b px-5 py-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-foreground text-sm font-medium">
-              Low Stock Items
-            </h3>
-            <div className="flex h-7 w-7 items-center justify-center bg-amber-500/10">
-              <Archive className="h-4 w-4 text-amber-500" />
-            </div>
-          </div>
-        </div>
-        <div className="p-6">
-          <div className="flex items-baseline gap-2">
-            <span className="text-foreground text-3xl font-bold">
-              {lowStockProducts + outOfStockProducts}
-            </span>
-            <span className="flex items-center bg-amber-500/10 px-1.5 py-0.5 text-xs font-medium text-amber-600">
-              Needs attention
-            </span>
-          </div>
-          <div className="mt-4 flex flex-col gap-2">
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground text-xs">
-                Out of Stock
-              </span>
-              <span className="text-destructive text-sm font-medium">
-                {outOfStockProducts}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Sales Performance Card */}
-      <div className="bg-background border-border border-b border-l-4 border-r border-t border-l-[var(--color-chart-1)] shadow-md">
-        <div className="border-border border-b px-5 py-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-foreground text-sm font-medium">
-              Sales Performance
-            </h3>
-            <div className="bg-[var(--color-chart-1)]/10 flex h-7 w-7 items-center justify-center">
-              <TrendingUp className="h-4 w-4 text-[var(--color-chart-1)]" />
-            </div>
-          </div>
-        </div>
-        <div className="p-6">
-          <div className="flex items-baseline gap-2">
-            <span className="text-foreground text-3xl font-bold">
-              {totalSales}
-            </span>
-            <span className="bg-[var(--color-success)]/10 flex items-center px-1.5 py-0.5 text-xs font-medium text-[var(--color-success)]">
-              <ArrowUpRight className="mr-0.5 h-3 w-3" />
-              7.2%
-            </span>
-          </div>
-          <div className="mt-4 flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground text-xs">
-                Low Stock Items
-              </span>
-              <span className="text-foreground text-sm font-medium">
-                {lowStockProducts}
+              <span className="text-sm text-purple-700">Avg. per Category</span>
+              <span className="text-sm font-semibold text-purple-900">
+                <AnimatedCounter
+                  value={
+                    stats.activeCategories > 0
+                      ? Math.round(
+                          stats.activeProducts / stats.activeCategories,
+                        )
+                      : 0
+                  }
+                />
               </span>
             </div>
           </div>
@@ -159,3 +232,5 @@ export function MetricCards() {
     </div>
   );
 }
+
+export default memo(MetricCards);

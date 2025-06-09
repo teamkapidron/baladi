@@ -5,7 +5,7 @@ import { Check, CheckCircle, Clock, Loader2 } from '@repo/ui/lib/icons';
 
 function CustomerVerificationStatus() {
   const [isEditing, setIsEditing] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
+  const [isSaving] = useState(false);
 
   const currentUser = {
     isEmailVerified: true,

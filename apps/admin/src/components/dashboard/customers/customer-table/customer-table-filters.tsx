@@ -34,7 +34,8 @@ function CustomerTableFilters() {
     handleUserEmailFilterChange,
     handleUserNameFilterChange,
     handleUserTypeFilterChange,
-    paginationInfo,
+    page,
+    limit,
     handlePageSizeChange,
     handlePageChange,
     users,
@@ -43,8 +44,8 @@ function CustomerTableFilters() {
   const [filter, setFilter] = useState<UserFilter>(UserFilter.NAME);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const currentPage = Number(paginationInfo.page);
-  const pageSize = Number(paginationInfo.limit);
+  const currentPage = Number(page);
+  const pageSize = Number(limit);
   const totalPages = users?.totalPages || 1;
 
   const [pageInput, setPageInput] = useState<string>(currentPage.toString());

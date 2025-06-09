@@ -1,5 +1,7 @@
 'use client';
 
+// Node Modules
+import { memo, useState } from 'react';
 import {
   ArrowUpDown,
   Eye,
@@ -16,12 +18,11 @@ import {
   TableHeader,
   TableRow,
 } from '@repo/ui/components/base/table';
-import { Product } from '@repo/types/product';
-import { useState } from 'react';
+import { ProductResponse } from '@/hooks/useProduct/types';
 
-export function ProductTableContent() {
+function ProductTableContent() {
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
-  const [sortedProducts, setSortedProducts] = useState<Product[]>([]);
+  const [sortedProducts, setSortedProducts] = useState<ProductResponse[]>([]);
   const [sortConfig, setSortConfig] = useState<{
     key: 'name' | 'salePrice' | 'stock' | 'salesCount' | null;
     direction: 'ascending' | 'descending' | null;
@@ -242,16 +243,14 @@ export function ProductTableContent() {
                   </TableCell>
                   <TableCell className="border-none p-3">
                     <div className="flex flex-wrap gap-1">
-                      {product.categories?.map(
-                        (category: string, index: number) => (
-                          <div
-                            key={index}
-                            className="bg-primary/10 text-primary inline-flex items-center px-2.5 py-0.5 text-xs font-medium"
-                          >
-                            {category}
-                          </div>
-                        ),
-                      )}
+                      {product.categories?.map((category, index) => (
+                        <div
+                          key={index}
+                          className="bg-primary/10 text-primary inline-flex items-center px-2.5 py-0.5 text-xs font-medium"
+                        >
+                          {category.name}
+                        </div>
+                      ))}
                     </div>
                   </TableCell>
                   <TableCell className="border-none p-3">
@@ -292,3 +291,5 @@ export function ProductTableContent() {
     </div>
   );
 }
+
+export default memo(ProductTableContent);

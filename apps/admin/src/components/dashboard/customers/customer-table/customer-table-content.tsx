@@ -47,10 +47,18 @@ function CustomerTableContent() {
     }, [users]);
 
   const toggleSelectAll = () => {};
-  const toggleCustomerSelection = (customerId: string) => {};
-  const handleDeleteClick = (customerId: string, customerName: string) => {};
-  const handleApproveCustomer = (customerId: string) => {};
-  const handleRejectCustomer = (customerId: string) => {};
+  const toggleCustomerSelection = (customerId: string) => {
+    console.log(customerId);
+  };
+  const handleDeleteClick = (customerId: string, customerName: string) => {
+    console.log(customerId, customerName);
+  };
+  const handleApproveCustomer = (customerId: string) => {
+    console.log(customerId);
+  };
+  const handleRejectCustomer = (customerId: string) => {
+    console.log(customerId);
+  };
   const actionLoading = { approving: [], rejecting: [] };
 
   return (

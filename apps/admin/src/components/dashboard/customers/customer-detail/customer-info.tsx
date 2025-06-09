@@ -3,8 +3,8 @@
 import { memo, useState } from 'react';
 
 function CustomerInfo() {
-  const [isEditing, setIsEditing] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
+  const [isEditing] = useState(false);
+  const [isSaving] = useState(false);
 
   const currentUser = {
     name: 'John Doe',
@@ -13,19 +13,9 @@ function CustomerInfo() {
     userType: 'External',
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('handleInputChange');
-  };
+  const handleInputChange = () => {};
 
-  const handleSave = () => {
-    console.log('save');
-  };
-
-  const handleCancel = () => {
-    console.log('cancel');
-  };
-
-  const [editedUser, setEditedUser] = useState(currentUser);
+  const [editedUser] = useState(currentUser);
 
   return (
     <div className="border border-gray-200 bg-white">

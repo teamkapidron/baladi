@@ -1,6 +1,15 @@
 import { ApiData } from '@/utils/types.util';
 import { Order, OrderStatus } from '@repo/types/order';
 
+export enum OrderStatusFilter {
+  ALL = 'all',
+  PENDING = 'pending',
+  CONFIRMED = 'confirmed',
+  SHIPPED = 'shipped',
+  DELIVERED = 'delivered',
+  CANCELLED = 'cancelled'
+}
+
 export type GetAllOrdersRequest = ApiData<
   {
     page?: string;

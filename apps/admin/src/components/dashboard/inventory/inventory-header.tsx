@@ -1,67 +1,95 @@
 'use client';
 
-import { memo, useMemo } from 'react';
-import { Package, AlertTriangle, Download } from '@repo/ui/lib/icons';
-import { Button } from '@repo/ui/components/base/button';
-import AnimatedCounter from '@repo/ui/components/base/animate-counter';
+// Node Modules
+import { format } from '@repo/ui/lib/date';
+import React, { memo } from 'react';
+import { Archive, Download, Clock, TrendingUp } from '@repo/ui/lib/icons';
+
+// Components
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from '@repo/ui/components/base/select';
+
+// Hooks
+import { useDatePresets } from '@repo/ui/hooks/useDate/useDatePresets';
+import { useDateRangeInParams } from '@repo/ui/hooks/useDate/useDateRangeInParams';
 
 function InventoryHeader() {
-  const metrics = useMemo(() => {
-    return {
-      totalProducts: 247,
-      lowStockItems: 12,
-      outOfStockItems: 5,
-      totalValue: 45789.5,
-    };
-  }, []);
+  const { dateRange, setDateRange } = useDateRangeInParams();
+  const { presetOptions, currentPreset, handlePresetChange, getDisplayText } =
+    useDatePresets({
+      dateRange,
+      setDateRange,
+    });
 
   return (
-    <div className="border-border border bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] p-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white">
-            Inventory Management
-          </h1>
-          <div className="mt-2 flex items-center">
-            <div className="text-sm text-white/90">
-              <AnimatedCounter
-                value={metrics.totalProducts}
-                className="font-medium text-white"
-              />{' '}
-              total products •
-              <AnimatedCounter
-                value={metrics.lowStockItems}
-                className="ml-1 font-medium text-white"
-              />{' '}
-              low stock alerts
+    <div className="relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-[var(--baladi-primary)] via-[var(--baladi-primary)] to-[var(--baladi-secondary)] p-6 shadow-lg">
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute -right-4 -top-4 h-32 w-32 rounded-full bg-white/20"></div>
+        <div className="absolute -bottom-8 -left-8 h-40 w-40 rounded-full bg-white/10"></div>
+        <div className="absolute right-1/4 top-1/2 h-24 w-24 rounded-full bg-white/5"></div>
+      </div>
+
+      <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
+              <Archive className="h-6 w-6 text-white" />
             </div>
-            <div className="mx-2 h-4 w-px bg-white/20"></div>
-            <div className="flex items-center text-sm text-white/90">
-              <AlertTriangle className="mr-1 h-3.5 w-3.5 text-white/80" />
-              <AnimatedCounter
-                value={metrics.outOfStockItems}
-                className="font-medium text-white"
-              />
-              <span className="ml-1">out of stock</span>
+            <div>
+              <h1 className="font-[family-name:var(--font-sora)] text-xl font-bold tracking-tight text-white lg:text-2xl">
+                Inventory Dashboard
+              </h1>
+              <p className="font-[family-name:var(--font-dm-sans)] text-sm text-white/80">
+                Monitor and manage all inventory activities
+              </p>
             </div>
-            <div className="mx-2 h-4 w-px bg-white/20"></div>
-            <div className="flex items-center text-sm text-white/90">
-              <Package className="mr-1 h-3.5 w-3.5 text-white/80" />
-              <span className="font-medium text-white">
-                ${metrics.totalValue.toLocaleString()}
+          </div>
+
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2">
+              <Clock className="h-4 w-4 text-white/60" />
+              <span className="font-[family-name:var(--font-dm-sans)] text-sm text-white/80">
+                Last updated: {format(new Date(), 'MMM d, yyyy h:mm a')}
               </span>
-              <span className="ml-1">total value</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4 text-white/60" />
+              <span className="font-[family-name:var(--font-dm-sans)] text-sm text-white/80">
+                Showing {getDisplayText()} data
+              </span>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          <Button className="h-9 bg-white/90 text-[var(--color-primary)] shadow-lg hover:bg-white">
-            <Download className="mr-1.5 h-3.5 w-3.5" />
-            Export Report
-          </Button>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="flex items-center gap-3">
+            <Select value={currentPreset} onValueChange={handlePresetChange}>
+              <SelectTrigger className="w-[160px] border-[var(--baladi-border)] bg-white font-[family-name:var(--font-dm-sans)] text-sm hover:border-[var(--baladi-primary)]">
+                <SelectValue placeholder="Select period" />
+              </SelectTrigger>
+              <SelectContent>
+                {presetOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <button className="group flex h-11 items-center gap-2 rounded-lg bg-white px-4 py-2 font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-primary)] shadow-lg transition-all duration-200 hover:scale-105 hover:bg-white/95 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-white/40">
+            <Download className="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
+            <span>Export Inventory</span>
+          </button>
         </div>
       </div>
+
+      <div className="absolute bottom-0 left-0 h-1 w-full bg-gradient-to-r from-[var(--baladi-accent)] via-white/50 to-[var(--baladi-accent)]"></div>
     </div>
   );
 }
