@@ -9,10 +9,14 @@ import Inventory from '@/models/inventory.model';
 
 // Utils
 import { formatDate } from '@/utils/common/date.util';
-import { getOrderFiltersFromQuery } from '@/utils/order.utils';
 import { sendResponse } from '@/utils/common/response.util';
-import { getDateMatchStage, fillMissingDates } from '@/utils/common/date.util';
+import { getOrderFiltersFromQuery } from '@/utils/order.utils';
 import { getPagination } from '@/utils/common/pagination.utils';
+import {
+  pickingListTemplate,
+  freightLabelTemplate,
+} from '@/templates/pdf.templates';
+import { getDateMatchStage, fillMissingDates } from '@/utils/common/date.util';
 
 // Handlers
 import { asyncHandler } from '@/handlers/async.handler';
@@ -34,6 +38,8 @@ import type {
   GetOrderStatusGraphDataSchema,
   GetOrderRevenueGraphDataSchema,
   GetRecentOrdersSchema,
+  PreviewPickingListSchema,
+  PreviewFreightLabelSchema,
 } from '@/validators/order.validator';
 import {
   OrderCancellationReason,
@@ -683,6 +689,38 @@ export const getRecentOrders = asyncHandler(
     ]);
 
     sendResponse(res, 200, 'Recent orders fetched successfully', { orders });
+  },
+);
+
+export const previewPickingList = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { orderId } = req.params as PreviewPickingListSchema['params'];
+
+    const order = await Order.findById(orderId).lean();
+    if (!order) {
+      throw new ErrorHandler(404, 'Order not found', 'NOT_FOUND');
+    }
+
+    const pickingList = pickingListTemplate(order);
+    sendResponse(res, 200, 'Picking list preview fetched successfully', {
+      html: pickingList,
+    });
+  },
+);
+
+export const previewFreightLabel = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { orderId } = req.params as PreviewFreightLabelSchema['params'];
+
+    const order = await Order.findById(orderId).lean();
+    if (!order) {
+      throw new ErrorHandler(404, 'Order not found', 'NOT_FOUND');
+    }
+
+    const freightLabel = freightLabelTemplate(order);
+    sendResponse(res, 200, 'Freight label preview fetched successfully', {
+      html: freightLabel,
+    });
   },
 );
 /****************** END: Admin Controllers ********************/

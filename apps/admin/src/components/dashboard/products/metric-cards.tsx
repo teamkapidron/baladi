@@ -30,9 +30,6 @@ function MetricCards() {
     };
   }, [lowStockProductsQuery.data]);
 
-  const isLoading =
-    productStatsQuery.isLoading || lowStockProductsQuery.isLoading;
-
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
       <div className="group relative overflow-hidden rounded-xl border border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100 shadow-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">

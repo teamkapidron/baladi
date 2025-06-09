@@ -36,12 +36,7 @@ export type GetCategoryByIdSchema = z.infer<typeof getCategoryByIdSchema>;
 /******************* END: User Validators *******************/
 
 /******************* START: Admin Validators *******************/
-export const getAllCategoriesSchema = z.object({
-  query: z.object({
-    page: z.string().optional(),
-    limit: z.string().optional(),
-  }),
-});
+export const getAllCategoriesSchema = z.object({});
 
 export const getAllCategoriesFlattenedSchema = z.object({
   query: z.object({

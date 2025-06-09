@@ -10,16 +10,9 @@ export interface CategoryRequestBody {
 }
 
 export type GetAllCategoriesRequest = ApiData<
-  {
-    page: string;
-    limit: string;
-  },
+  undefined,
   {
     categories: HierarchicalCategory[];
-    total: number;
-    currentPage: number;
-    perPage: number;
-    totalPages: number;
   }
 >;
 

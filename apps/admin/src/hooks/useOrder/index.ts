@@ -1,6 +1,6 @@
 // Node Modules
 import { useCallback, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 // Hooks
 import { useRequest } from '@/hooks/useRequest';
@@ -16,6 +16,8 @@ import type {
   GetOrderStatusGraphDataRequest,
   GetOrderRevenueGraphDataRequest,
   GetRecentOrdersRequest,
+  PreviewPickingListRequest,
+  PreviewFreightLabelRequest,
 } from './types';
 import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
 
@@ -207,5 +209,44 @@ export function useOrder() {
     orders,
     isLoading,
     refetchOrders,
+  };
+}
+
+export function useOrderPreview() {
+  const api = useRequest();
+
+  const getPickingList = useCallback(
+    async (payload: PreviewPickingListRequest['payload']) => {
+      const response = await api.get<PreviewPickingListRequest['response']>(
+        `/order/preview/picking-list/${payload.orderId}`,
+        { params: payload },
+      );
+      return response.data.data;
+    },
+    [api],
+  );
+
+  const pickingListMutation = useMutation({
+    mutationFn: getPickingList,
+  });
+
+  const getFreightLabel = useCallback(
+    async (payload: PreviewFreightLabelRequest['payload']) => {
+      const response = await api.get<PreviewFreightLabelRequest['response']>(
+        `/order/preview/freight-label/${payload.orderId}`,
+        { params: payload },
+      );
+      return response.data.data;
+    },
+    [api],
+  );
+
+  const freightLabelMutation = useMutation({
+    mutationFn: getFreightLabel,
+  });
+
+  return {
+    pickingListMutation,
+    freightLabelMutation,
   };
 }

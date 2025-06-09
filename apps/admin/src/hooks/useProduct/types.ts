@@ -114,7 +114,7 @@ export type TopProductsRequest = ApiData<
 >;
 
 export type ProductStatsRequest = ApiData<
-  {},
+  undefined,
   {
     totalProducts: number;
     totalCategories: number;

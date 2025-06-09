@@ -1,113 +1,197 @@
 'use client';
 
-import { memo, useState } from 'react';
-import { ChevronDown, Search } from '@repo/ui/lib/icons';
+// Node Modules
+import { memo, useCallback, useState } from 'react';
+import { ChevronDown, Search, Filter, ShoppingBag } from '@repo/ui/lib/icons';
+
+// Components
 import { Input } from '@repo/ui/components/base/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@repo/ui/components/base/select';
+
+// Hooks
+import { useProduct } from '@/hooks/useProduct';
+import { usePagination } from '@repo/ui/hooks/usePagination';
+import { useProductFilters } from '@/hooks/useProduct/useProductFilters';
 
 function ProductTableFilters() {
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [pageSize, setPageSize] = useState<number>(10);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [totalPages, setTotalPages] = useState<number>(1);
-  const [goToNextPage, setGoToNextPage] = useState<() => void>(() => {});
-  const [goToPreviousPage, setGoToPreviousPage] = useState<() => void>(
-    () => {},
+  const { page, limit, handlePageSizeChange, handlePageChange } =
+    usePagination();
+
+  const { products } = useProduct();
+  const { search, handleSearchFilterChange } = useProductFilters();
+
+  const currentPage = Number(page);
+  const pageSize = Number(limit);
+  const totalPages = products?.totalPages || 1;
+
+  const [searchQuery, setSearchQuery] = useState<string>(search ?? '');
+  const [pageInput, setPageInput] = useState<string>(currentPage.toString());
+
+  const handleSearch = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchQuery(e.target.value);
+      handleSearchFilterChange(e.target.value);
+    },
+    [handleSearchFilterChange],
   );
 
-  const handlePageSizeChange = (size: number) => {
-    setPageSize(size);
+  const handlePageInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPageInput(e.target.value);
   };
 
-  const goToPage = (page: number) => {
-    setCurrentPage(page);
+  const handlePageInputSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const page = parseInt(pageInput, 10);
+    if (!isNaN(page) && page >= 1 && page <= totalPages) {
+      handlePageChange(page);
+    } else {
+      setPageInput(currentPage.toString());
+    }
   };
 
   return (
-    <div className="mb-4 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-      <div className="relative w-full max-w-md sm:w-auto">
-        <div className="relative">
-          <Search className="text-muted-foreground absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2" />
-          <Input
-            type="text"
-            placeholder="Search by name, category, or ID..."
-            className="w-full rounded-none pl-9 pr-4"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-      </div>
+    <div className="mb-6 space-y-4">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="flex items-center gap-2">
+            <div className="bg-[var(--baladi-primary)]/10 flex h-8 w-8 items-center justify-center rounded-lg">
+              <Filter className="h-4 w-4 text-[var(--baladi-primary)]" />
+            </div>
+            <span className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-gray)]">
+              Search Products
+            </span>
+          </div>
 
-      <div className="flex items-center gap-4">
-        {/* Page size selector */}
-        <div className="flex items-center gap-2">
-          <span className="text-muted-foreground text-sm">Show:</span>
-          <select
-            className="border-input bg-background h-8 rounded-none border px-2 text-sm"
-            value={pageSize}
-            onChange={(e) => handlePageSizeChange(Number(e.target.value))}
-          >
-            <option value={10}>10</option>
-            <option value={25}>25</option>
-            <option value={50}>50</option>
-            <option value={100}>100</option>
-            <option value={250}>250</option>
-            <option value={500}>500</option>
-          </select>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+            <Input
+              type="text"
+              placeholder="Search by product name, category..."
+              className="w-80 pl-9 pr-4 font-[family-name:var(--font-dm-sans)] text-sm"
+              value={searchQuery}
+              onChange={handleSearch}
+            />
+          </div>
         </div>
 
-        <div className="flex items-center gap-1">
-          <button
-            className="border-input bg-background hover:bg-primary flex h-8 w-8 items-center justify-center rounded-none border p-0 hover:text-white"
-            disabled={currentPage === 1}
-            onClick={goToPreviousPage}
-            title="Previous page"
-            aria-label="Previous page"
-          >
-            <ChevronDown className="h-4 w-4 rotate-90" />
-          </button>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <span className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-gray)]">
+              Show:
+            </span>
+            <Select
+              value={pageSize.toString()}
+              onValueChange={(value) => handlePageSizeChange(Number(value))}
+            >
+              <SelectTrigger className="w-20 font-[family-name:var(--font-dm-sans)] text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="25">25</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-          {/* Generate page buttons */}
-          {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-            // Show current page and adjacent pages
-            let pageNum;
-            if (totalPages <= 5) {
-              pageNum = i + 1;
-            } else if (currentPage <= 3) {
-              pageNum = i + 1;
-            } else if (currentPage >= totalPages - 2) {
-              pageNum = totalPages - 4 + i;
-            } else {
-              pageNum = currentPage - 2 + i;
-            }
-
-            return (
+          {totalPages > 1 && (
+            <div className="flex items-center gap-1">
               <button
-                key={pageNum}
-                onClick={() => goToPage(pageNum)}
-                className={`h-8 min-w-8 rounded-none border px-3 ${
-                  pageNum === currentPage
-                    ? 'bg-primary/5 text-primary border-primary'
-                    : 'border-input bg-background hover:bg-primary hover:text-white'
-                }`}
-                title={`Page ${pageNum}`}
-                aria-label={`Page ${pageNum}`}
+                className="flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--baladi-border)] bg-white transition-all duration-300 hover:border-[var(--baladi-primary)] hover:bg-[var(--baladi-primary)] hover:text-white disabled:opacity-50 disabled:hover:bg-white disabled:hover:text-[var(--baladi-gray)]"
+                disabled={currentPage === 1}
+                onClick={() => handlePageChange(currentPage - 1)}
+                title="Previous page"
               >
-                {pageNum}
+                <ChevronDown className="h-4 w-4 rotate-90" />
               </button>
-            );
-          })}
 
-          <button
-            className="border-input bg-background hover:bg-primary flex h-8 w-8 items-center justify-center rounded-none border p-0 hover:text-white"
-            disabled={currentPage === totalPages || totalPages === 0}
-            onClick={goToNextPage}
-            title="Next page"
-            aria-label="Next page"
-          >
-            <ChevronDown className="h-4 w-4 -rotate-90" />
-          </button>
+              {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                let pageNum;
+                if (totalPages <= 5) {
+                  pageNum = i + 1;
+                } else if (currentPage <= 3) {
+                  pageNum = i + 1;
+                } else if (currentPage >= totalPages - 2) {
+                  pageNum = totalPages - 4 + i;
+                } else {
+                  pageNum = currentPage - 2 + i;
+                }
+
+                return (
+                  <button
+                    key={`page-${pageNum}`}
+                    onClick={() => handlePageChange(pageNum)}
+                    className={`h-8 min-w-8 rounded-lg px-3 font-[family-name:var(--font-sora)] text-sm font-medium transition-all duration-300 ${
+                      pageNum === currentPage
+                        ? 'bg-[var(--baladi-primary)] text-white shadow-md'
+                        : 'border border-[var(--baladi-border)] bg-white text-[var(--baladi-dark)] hover:border-[var(--baladi-primary)] hover:bg-[var(--baladi-primary)] hover:text-white'
+                    }`}
+                    title={`Page ${pageNum}`}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
+
+              {totalPages > 5 && (
+                <form
+                  onSubmit={handlePageInputSubmit}
+                  className="ml-1 flex items-center gap-1"
+                >
+                  <input
+                    type="text"
+                    value={pageInput}
+                    onChange={handlePageInputChange}
+                    className="hover:border-[var(--baladi-primary)]/50 focus:ring-[var(--baladi-primary)]/20 h-8 w-12 rounded-lg border border-[var(--baladi-border)] bg-white px-2 text-center font-[family-name:var(--font-dm-sans)] text-sm shadow-sm transition-all duration-300 focus:border-[var(--baladi-primary)] focus:outline-none focus:ring-2"
+                    placeholder="Go"
+                  />
+                  <button
+                    type="submit"
+                    className="h-8 rounded-lg border border-[var(--baladi-border)] bg-white px-2 font-[family-name:var(--font-dm-sans)] text-xs font-medium transition-all duration-300 hover:border-[var(--baladi-primary)] hover:bg-[var(--baladi-primary)] hover:text-white"
+                  >
+                    Go
+                  </button>
+                </form>
+              )}
+
+              <button
+                className="flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--baladi-border)] bg-white transition-all duration-300 hover:border-[var(--baladi-primary)] hover:bg-[var(--baladi-primary)] hover:text-white disabled:opacity-50 disabled:hover:bg-white disabled:hover:text-[var(--baladi-gray)]"
+                disabled={currentPage === totalPages}
+                onClick={() => handlePageChange(currentPage + 1)}
+                title="Next page"
+              >
+                <ChevronDown className="h-4 w-4 -rotate-90" />
+              </button>
+            </div>
+          )}
         </div>
       </div>
+
+      {products && (
+        <div className="flex items-center justify-between rounded-lg bg-[var(--baladi-light)] px-4 py-2">
+          <div className="flex items-center gap-2">
+            <div className="bg-[var(--baladi-primary)]/10 flex h-6 w-6 items-center justify-center rounded">
+              <ShoppingBag className="h-3.5 w-3.5 text-[var(--baladi-primary)]" />
+            </div>
+            <span className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
+              Showing {(currentPage - 1) * pageSize + 1} to{' '}
+              {Math.min(currentPage * pageSize, products.totalProducts)} of{' '}
+              {products.totalProducts} products
+            </span>
+          </div>
+          {totalPages > 1 && (
+            <span className="font-[family-name:var(--font-sora)] text-sm font-medium text-[var(--baladi-dark)]">
+              Page {currentPage} of {totalPages}
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 }

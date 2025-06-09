@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import { Visibility } from '@repo/types/product';
 
 export interface ProductFilter {
@@ -5,7 +6,9 @@ export interface ProductFilter {
   salePrice?: { $gte?: number; $lte?: number };
   isActive?: boolean;
   visibility?: Visibility;
-  category?: string;
+  categories?: {
+    $in?: Types.ObjectId[];
+  };
 }
 
 export interface QuickSearchProductAggregateType {

@@ -23,6 +23,11 @@ export default function AdminDashboardLayout(props: AdminDashboardLayoutProps) {
         icon: 'package',
       },
       {
+        title: 'Categories',
+        href: '/dashboard/categories',
+        icon: 'tag',
+      },
+      {
         title: 'Inventory',
         href: '/dashboard/inventory',
         icon: 'boxes',
@@ -37,7 +42,11 @@ export default function AdminDashboardLayout(props: AdminDashboardLayoutProps) {
         href: '/dashboard/customers',
         icon: 'users',
       },
-
+      {
+        title: 'Discounts',
+        href: '/dashboard/discounts',
+        icon: 'percent',
+      },
       {
         title: 'Newsletter',
         href: '/dashboard/newsletter',
@@ -46,7 +55,12 @@ export default function AdminDashboardLayout(props: AdminDashboardLayoutProps) {
       {
         title: 'Promotions',
         href: '/dashboard/promotion',
-        icon: 'tag',
+        icon: 'badge-percent',
+      },
+      {
+        title: 'Settings',
+        href: '/dashboard/settings',
+        icon: 'settings',
       },
     ],
     [],
@@ -82,7 +96,7 @@ export default function AdminDashboardLayout(props: AdminDashboardLayoutProps) {
     <DashboardLayout
       sidebarLinks={sidebarLinks}
       bottomBarLinks={bottomBarLinks}
-      sidebarSlice={5}
+      sidebarSlice={7}
     >
       {children}
     </DashboardLayout>

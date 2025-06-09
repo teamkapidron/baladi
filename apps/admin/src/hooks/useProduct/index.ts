@@ -1,10 +1,11 @@
 // Node Modules
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 
 // Hooks
 import { useRequest } from '@/hooks/useRequest';
-import { useGetParams } from '@repo/ui/hooks/useParams';
+import { useProductFilters } from './useProductFilters';
+import { usePagination } from '@repo/ui/hooks/usePagination';
 import { useDateRangeInParams } from '@repo/ui/hooks/useDate/useDateRangeInParams';
 
 // Types
@@ -107,11 +108,8 @@ export function useProductDashboard() {
 
 export function useProduct() {
   const api = useRequest();
-  const { getAllParams } = useGetParams();
-
-  const params = useMemo(() => {
-    return getAllParams();
-  }, [getAllParams]);
+  const { page, limit } = usePagination();
+  const { search, category } = useProductFilters();
 
   const getAllProducts = useCallback(
     async (payload: GetAllProductsRequest['payload']) => {
@@ -125,8 +123,8 @@ export function useProduct() {
   );
 
   const { data: products, isLoading } = useQuery({
-    queryKey: [ReactQueryKeys.GET_ALL_PRODUCTS, JSON.stringify(params)],
-    queryFn: () => getAllProducts(params),
+    queryKey: [ReactQueryKeys.GET_ALL_PRODUCTS, page, limit, search, category],
+    queryFn: () => getAllProducts({ page, limit, search, category }),
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
   });

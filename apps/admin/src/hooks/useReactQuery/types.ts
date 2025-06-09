@@ -42,4 +42,7 @@ export enum ReactQueryKeys {
 
   // Promotion
   PREVIEW_PROMOTION_POSTER = 'POST::/promotion/preview-poster',
+
+  // Discounts
+  GET_DISCOUNTS = 'GET::/discount/all',
 }

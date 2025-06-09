@@ -1,15 +1,19 @@
 'use client';
 
 // Node Modules
-import { memo, useState } from 'react';
-import {
-  ArrowUpDown,
-  Eye,
-  ImageIcon,
-  Trash,
-  EditIcon,
-} from '@repo/ui/lib/icons';
+import Link from 'next/link';
 import Image from 'next/image';
+import { memo, useMemo } from 'react';
+import {
+  Eye,
+  EditIcon,
+  Package,
+  DollarSign,
+  Barcode,
+  Tag,
+} from '@repo/ui/lib/icons';
+
+// Components
 import {
   Table,
   TableBody,
@@ -18,268 +22,251 @@ import {
   TableHeader,
   TableRow,
 } from '@repo/ui/components/base/table';
-import { ProductResponse } from '@/hooks/useProduct/types';
+
+// Hooks
+import { useProduct } from '@/hooks/useProduct';
 
 function ProductTableContent() {
-  const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
-  const [sortedProducts, setSortedProducts] = useState<ProductResponse[]>([]);
-  const [sortConfig, setSortConfig] = useState<{
-    key: 'name' | 'salePrice' | 'stock' | 'salesCount' | null;
-    direction: 'ascending' | 'descending' | null;
-  }>({ key: null, direction: null });
+  const { products: productsData } = useProduct();
 
-  const toggleSelectAll = () => {
-    setSelectedProducts(
-      selectedProducts.length === sortedProducts.length
-        ? []
-        : sortedProducts.map((product) => product._id),
-    );
+  const products = useMemo(() => {
+    return productsData?.products || [];
+  }, [productsData]);
+
+  const getStockStatus = (stock: number) => {
+    if (stock === 0)
+      return {
+        label: 'Out of Stock',
+        color: 'text-[var(--baladi-error)] bg-red-50',
+        badge: 'bg-red-100 text-red-800',
+      };
+    if (stock < 10)
+      return {
+        label: `Low Stock (${stock})`,
+        color: 'text-[var(--baladi-warning)] bg-amber-50',
+        badge: 'bg-amber-100 text-amber-800',
+      };
+    return {
+      label: stock.toString(),
+      color: 'text-[var(--baladi-success)] bg-green-50',
+      badge: 'bg-green-100 text-green-800',
+    };
   };
 
-  const toggleProductSelection = (productId: string) => {
-    setSelectedProducts((prev) =>
-      prev.includes(productId)
-        ? prev.filter((id) => id !== productId)
-        : [...prev, productId],
-    );
-  };
-
-  const handleSort = (key: 'name' | 'salePrice' | 'stock' | 'salesCount') => {
-    setSortConfig((prev) => ({
-      key,
-      direction:
-        prev.key === key
-          ? prev.direction === 'ascending'
-            ? 'descending'
-            : 'ascending'
-          : 'ascending',
-    }));
-  };
-
-  const handleDeleteClick = (productId: string, productName: string) => {
-    console.log(`Deleting product: ${productName} (${productId})`);
-  };
-
-  const currentPage = 1;
-  const itemsPerPage = 10;
-
-  const currentPageData = sortedProducts.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage,
-  );
-
-  const isValidImageUrl = (url: string | undefined): boolean => {
-    if (!url) return false;
-    try {
-      new URL(url);
-      return true;
-    } catch (error) {
-      return false;
+  const getVisibilityBadge = (visibility: string) => {
+    switch (visibility) {
+      case 'public':
+        return 'bg-green-100 text-green-800';
+      case 'private':
+        return 'bg-gray-100 text-gray-800';
+      case 'hidden':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
   return (
     <div className="relative">
-      <div className="max-h-[600px] overflow-auto">
-        <Table className="w-full border-none">
-          <TableHeader className="border-none">
-            <TableRow className="border-none">
-              <TableHead className="bg-background sticky top-0 z-50 w-10 border-none p-3 text-left">
-                <input
-                  type="checkbox"
-                  className="border-input bg-background h-4 w-4 cursor-pointer"
-                  checked={
-                    selectedProducts.length === sortedProducts.length &&
-                    sortedProducts.length > 0
-                  }
-                  onChange={toggleSelectAll}
-                  title="Select all products"
-                  aria-label="Select all products"
-                />
+      <div className="max-h-[700px] overflow-auto rounded-xl border border-[var(--baladi-border)] bg-white shadow-sm">
+        <Table className="w-full">
+          <TableHeader>
+            <TableRow className="border-b border-[var(--baladi-border)] bg-[var(--baladi-light)]">
+              <TableHead className="sticky top-0 z-50 bg-[var(--baladi-light)] p-4 text-left font-[family-name:var(--font-sora)] text-sm font-semibold text-[var(--baladi-primary)]">
+                Product Details
               </TableHead>
-              <TableHead className="text-muted-foreground bg-background sticky top-0 z-50 border-none p-3 text-left text-sm font-medium">
-                <button
-                  onClick={() => handleSort('name')}
-                  className="hover:text-foreground flex items-center gap-1"
-                  title="Sort by product name"
-                >
-                  Product Name
-                  <ArrowUpDown
-                    className={`h-3.5 w-3.5 ${
-                      sortConfig.key === 'name'
-                        ? 'text-primary'
-                        : 'text-muted-foreground'
-                    }`}
-                  />
-                </button>
+              <TableHead className="sticky top-0 z-50 bg-[var(--baladi-light)] p-4 text-left font-[family-name:var(--font-sora)] text-sm font-semibold text-[var(--baladi-primary)]">
+                Pricing & SKU
               </TableHead>
-              <TableHead className="text-muted-foreground bg-background sticky top-0 z-50 border-none p-3 text-left text-sm font-medium">
-                <button
-                  onClick={() => handleSort('salePrice')}
-                  className="hover:text-foreground flex items-center gap-1"
-                  title="Sort by price"
-                >
-                  Price
-                  <ArrowUpDown
-                    className={`h-3.5 w-3.5 ${
-                      sortConfig.key === 'salePrice'
-                        ? 'text-primary'
-                        : 'text-muted-foreground'
-                    }`}
-                  />
-                </button>
+              <TableHead className="sticky top-0 z-50 bg-[var(--baladi-light)] p-4 text-left font-[family-name:var(--font-sora)] text-sm font-semibold text-[var(--baladi-primary)]">
+                Inventory
               </TableHead>
-              <TableHead className="text-muted-foreground bg-background sticky top-0 z-50 border-none p-3 text-left text-sm font-medium">
-                <button
-                  onClick={() => handleSort('stock')}
-                  className="hover:text-foreground flex items-center gap-1"
-                  title="Sort by stock"
-                >
-                  Stock
-                  <ArrowUpDown
-                    className={`h-3.5 w-3.5 ${
-                      sortConfig.key === 'stock'
-                        ? 'text-primary'
-                        : 'text-muted-foreground'
-                    }`}
-                  />
-                </button>
+              <TableHead className="sticky top-0 z-50 bg-[var(--baladi-light)] p-4 text-left font-[family-name:var(--font-sora)] text-sm font-semibold text-[var(--baladi-primary)]">
+                Categories
               </TableHead>
-              <TableHead className="text-muted-foreground bg-background sticky top-0 z-50 border-none p-3 text-left text-sm font-medium">
-                Category
+              <TableHead className="sticky top-0 z-50 bg-[var(--baladi-light)] p-4 text-left font-[family-name:var(--font-sora)] text-sm font-semibold text-[var(--baladi-primary)]">
+                Status
               </TableHead>
-              <TableHead className="text-muted-foreground bg-background sticky top-0 z-50 border-none p-3 text-left text-sm font-medium">
-                <button
-                  onClick={() => handleSort('salesCount')}
-                  className="hover:text-foreground flex items-center gap-1"
-                  title="Sort by sales"
-                >
-                  Sales
-                  <ArrowUpDown
-                    className={`h-3.5 w-3.5 ${
-                      sortConfig.key === 'salesCount'
-                        ? 'text-primary'
-                        : 'text-muted-foreground'
-                    }`}
-                  />
-                </button>
-              </TableHead>
-              <TableHead className="text-muted-foreground bg-background sticky top-0 z-50 border-none p-3 text-left text-sm font-medium">
+              <TableHead className="sticky top-0 z-50 bg-[var(--baladi-light)] p-4 text-center font-[family-name:var(--font-sora)] text-sm font-semibold text-[var(--baladi-primary)]">
                 Actions
               </TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody className="border-none">
-            {currentPageData.map((product) => {
-              const isSelected = selectedProducts.includes(product._id);
+          <TableBody>
+            {products.map((product, index) => {
+              const stockStatus = getStockStatus(product.stock);
               return (
                 <TableRow
                   key={product._id}
-                  className={`${isSelected ? 'selected' : ''} border-none`}
+                  className={`border-b border-[var(--baladi-border)] transition-colors hover:bg-[var(--baladi-muted)] ${
+                    index % 2 === 0 ? 'bg-white' : 'bg-[var(--baladi-light)]'
+                  }`}
                 >
-                  <TableCell className="border-none p-3">
-                    <input
-                      type="checkbox"
-                      className="border-input bg-background h-4 w-4 cursor-pointer"
-                      checked={isSelected}
-                      onChange={() => toggleProductSelection(product._id)}
-                      title={`Select ${product.name}`}
-                      aria-label={`Select ${product.name}`}
-                    />
-                  </TableCell>
-                  <TableCell className="border-none p-3">
-                    <div className="flex items-center space-x-3">
-                      <div className="bg-muted flex h-10 w-10 items-center justify-center">
-                        {product.images &&
-                        product.images.length > 0 &&
-                        isValidImageUrl(product.images[0]) ? (
+                  {/* Product Details */}
+                  <TableCell className="p-4">
+                    <div className="flex items-start space-x-4">
+                      <div className="relative h-16 w-16 overflow-hidden rounded-lg border border-[var(--baladi-border)] bg-[var(--baladi-muted)]">
+                        {product.images && product.images.length > 0 ? (
                           <Image
-                            src={product.images?.[0] || ''}
                             alt={product.name}
+                            src={product.images[0]!}
                             className="h-full w-full object-cover"
-                            width={40}
-                            height={40}
+                            width={64}
+                            height={64}
                           />
                         ) : (
-                          <ImageIcon className="text-muted-foreground h-4 w-4" />
+                          <div className="flex h-full w-full items-center justify-center">
+                            <Package className="h-6 w-6 text-[var(--baladi-gray)]" />
+                          </div>
                         )}
                       </div>
-                      <div>
-                        <div className="text-foreground font-medium">
+                      <div className="min-w-0 flex-1">
+                        <h3 className="truncate font-[family-name:var(--font-sora)] text-base font-semibold text-[var(--baladi-primary)]">
                           {product.name}
-                        </div>
-                        <div className="text-muted-foreground text-xs">
-                          ID: {product._id}
+                        </h3>
+                        <p className="mt-1 line-clamp-2 text-sm text-[var(--baladi-gray)]">
+                          {product.shortDescription ||
+                            product.description ||
+                            'No description available'}
+                        </p>
+                        <div className="mt-2 flex items-center space-x-2">
+                          <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700">
+                            ID: {product._id}
+                          </span>
+                          {product.sku && (
+                            <span className="inline-flex items-center rounded-md bg-purple-50 px-2 py-1 text-xs font-medium text-purple-700">
+                              <Barcode className="mr-1 h-3 w-3" />
+                              {product.sku}
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className="border-none p-3">
-                    <div className="font-medium">
-                      ${product.salePrice?.toFixed(2) || '0.00'}
+
+                  {/* Pricing & SKU */}
+                  <TableCell className="p-4">
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2">
+                        <DollarSign className="h-4 w-4 text-[var(--baladi-success)]" />
+                        <span className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-primary)]">
+                          ${product.salePrice?.toFixed(2) || '0.00'}
+                        </span>
+                      </div>
+                      <div className="text-sm text-[var(--baladi-gray)]">
+                        Cost: ${product.costPrice?.toFixed(2) || '0.00'}
+                      </div>
                       {product.vat > 0 && (
-                        <span className="text-muted-foreground bg-muted ml-2 px-1.5 py-0.5 text-xs">
+                        <span className="inline-flex items-center rounded-md bg-orange-50 px-2 py-1 text-xs font-medium text-orange-700">
                           +{product.vat}% VAT
+                        </span>
+                      )}
+                      {product.barcode && (
+                        <div className="text-xs text-[var(--baladi-gray)]">
+                          Barcode: {product.barcode}
+                        </div>
+                      )}
+                    </div>
+                  </TableCell>
+
+                  {/* Inventory */}
+                  <TableCell className="p-4">
+                    <div className="space-y-3">
+                      <div
+                        className={`inline-flex items-center rounded-lg px-3 py-2 ${stockStatus.color}`}
+                      >
+                        <Package className="mr-2 h-4 w-4" />
+                        <span className="font-medium">{stockStatus.label}</span>
+                      </div>
+                      <div className="space-y-1">
+                        <div className="text-sm text-[var(--baladi-gray)]">
+                          Units: {product.noOfUnits || 1}
+                        </div>
+                        {product.weight && (
+                          <div className="text-xs text-[var(--baladi-gray)]">
+                            Weight: {product.weight}kg
+                          </div>
+                        )}
+                        {product.dimensions && (
+                          <div className="text-xs text-[var(--baladi-gray)]">
+                            Dimensions: {product.dimensions.length}×
+                            {product.dimensions.width}×
+                            {product.dimensions.height}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </TableCell>
+
+                  {/* Categories */}
+                  <TableCell className="p-4">
+                    <div className="space-y-2">
+                      {product.categories && product.categories.length > 0 ? (
+                        <div className="flex flex-wrap gap-1">
+                          {product.categories
+                            .slice(0, 3)
+                            .map((category, idx) => (
+                              <span
+                                key={idx}
+                                className="bg-[var(--baladi-primary)]/10 inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium text-[var(--baladi-primary)]"
+                              >
+                                <Tag className="mr-1 h-3 w-3" />
+                                {category.name}
+                              </span>
+                            ))}
+                          {product.categories.length > 3 && (
+                            <span className="inline-flex items-center rounded-md bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600">
+                              +{product.categories.length - 3} more
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-sm text-[var(--baladi-gray)]">
+                          No categories
                         </span>
                       )}
                     </div>
                   </TableCell>
-                  <TableCell className="border-none p-3">
-                    <div
-                      className={`font-medium ${
-                        product.stock === 0
-                          ? 'text-destructive'
-                          : product.stock < 10
-                            ? 'text-amber-600'
-                            : 'text-[var(--color-success)]'
-                      }`}
-                    >
-                      {product.stock === 0
-                        ? 'Out of Stock'
-                        : product.stock < 10
-                          ? `Low Stock (${product.stock})`
-                          : product.stock}
+
+                  {/* Status */}
+                  <TableCell className="p-4">
+                    <div className="space-y-2">
+                      <span
+                        className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${
+                          product.isActive
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800'
+                        }`}
+                      >
+                        {product.isActive ? 'Active' : 'Inactive'}
+                      </span>
+                      <br />
+                      <span
+                        className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${getVisibilityBadge(product.visibility)}`}
+                      >
+                        {product.visibility?.charAt(0).toUpperCase() +
+                          product.visibility?.slice(1) || 'Unknown'}
+                      </span>
                     </div>
                   </TableCell>
-                  <TableCell className="border-none p-3">
-                    <div className="flex flex-wrap gap-1">
-                      {product.categories?.map((category, index) => (
-                        <div
-                          key={index}
-                          className="bg-primary/10 text-primary inline-flex items-center px-2.5 py-0.5 text-xs font-medium"
-                        >
-                          {category.name}
-                        </div>
-                      ))}
-                    </div>
-                  </TableCell>
-                  <TableCell className="border-none p-3">
-                    <div className="font-medium">{0}</div>
-                  </TableCell>
-                  <TableCell className="border-none p-3">
-                    <div className="flex items-center space-x-2">
-                      <a
+
+                  {/* Actions */}
+                  <TableCell className="p-4">
+                    <div className="flex items-center justify-center space-x-2">
+                      <Link
                         href={`/dashboard/products/${product.slug}`}
-                        className="text-muted-foreground hover:text-foreground p-1"
+                        className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition-colors hover:bg-blue-100"
                         title="View Product"
                       >
                         <Eye className="h-4 w-4" />
-                      </a>
-                      <button
-                        className="p-1 text-blue-500 hover:text-blue-600"
+                      </Link>
+                      <Link
+                        href={`/dashboard/products/edit/${product.slug}`}
+                        className="bg-[var(--baladi-primary)]/10 hover:bg-[var(--baladi-primary)]/20 flex h-8 w-8 items-center justify-center rounded-lg text-[var(--baladi-primary)] transition-colors"
                         title="Edit Product"
                       >
                         <EditIcon className="h-4 w-4" />
-                      </button>
-                      <button
-                        className="text-destructive hover:text-destructive/80 p-1"
-                        title="Delete Product"
-                        onClick={() =>
-                          handleDeleteClick(product._id, product.name)
-                        }
-                      >
-                        <Trash className="h-4 w-4" />
-                      </button>
+                      </Link>
                     </div>
                   </TableCell>
                 </TableRow>

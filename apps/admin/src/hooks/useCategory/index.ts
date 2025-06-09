@@ -1,12 +1,11 @@
 // Node Modules
-import { useCallback, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { useCallback } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from '@repo/ui/lib/sonner';
 
 // Hooks
 import { useRequest } from '@/hooks/useRequest';
-import { useGetParams, useUpdateParams } from '@repo/ui/hooks/useParams';
+import { useDateRangeInParams } from '@repo/ui/hooks/useDate/useDateRangeInParams';
 
 // Types
 import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
@@ -22,15 +21,7 @@ import type {
 export function useCategory() {
   const api = useRequest();
   const queryClient = useQueryClient();
-  const { getParam } = useGetParams();
-  const updateParams = useUpdateParams();
-
-  const dateParams = useMemo(() => {
-    return {
-      from: getParam('from') ?? undefined,
-      to: getParam('to') ?? undefined,
-    };
-  }, [getParam]);
+  const { dateRangeInString } = useDateRangeInParams();
 
   const getAllCategories = useCallback(async () => {
     const response =
@@ -80,6 +71,7 @@ export function useCategory() {
       queryClient.invalidateQueries({
         queryKey: [ReactQueryKeys.GET_ALL_CATEGORIES_FLATTENED],
       });
+      toast.success('Category created successfully');
     },
   });
 
@@ -103,6 +95,7 @@ export function useCategory() {
       queryClient.invalidateQueries({
         queryKey: [ReactQueryKeys.GET_ALL_CATEGORIES_FLATTENED],
       });
+      toast.success('Category updated successfully');
     },
   });
 
@@ -125,6 +118,7 @@ export function useCategory() {
       queryClient.invalidateQueries({
         queryKey: [ReactQueryKeys.GET_ALL_CATEGORIES_FLATTENED],
       });
+      toast.success('Category deleted successfully');
     },
   });
 
@@ -140,21 +134,19 @@ export function useCategory() {
   );
 
   const categoryStatsQuery = useQuery({
-    queryKey: [ReactQueryKeys.GET_CATEGORY_STATS],
-    queryFn: () => getCategoryStats(dateParams),
+    queryKey: [
+      ReactQueryKeys.GET_CATEGORY_STATS,
+      dateRangeInString.from,
+      dateRangeInString.to,
+    ],
+    queryFn: () =>
+      getCategoryStats({
+        from: dateRangeInString.from,
+        to: dateRangeInString.to,
+      }),
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
   });
-
-  const updateDateParams = useCallback(
-    (params: Partial<GetCategoryStatsRequest['payload']>) => {
-      updateParams({
-        from: params.from,
-        to: params.to,
-      });
-    },
-    [updateParams],
-  );
 
   return {
     // Queries
@@ -168,8 +160,5 @@ export function useCategory() {
     createCategoryMutation,
     updateCategoryMutation,
     deleteCategoryMutation,
-
-    // Actions
-    updateDateParams,
   };
 }

@@ -20,14 +20,8 @@ import { usePagination } from '@repo/ui/hooks/usePagination';
 import { useOrderFilters } from '@/hooks/useOrder/useOrderFilters';
 
 function OrderTableFilters() {
-  const {
-    page,
-    limit,
-    handlePageSizeChange,
-    handlePageChange,
-    goToNextPage,
-    goToPreviousPage,
-  } = usePagination();
+  const { page, limit, handlePageSizeChange, handlePageChange } =
+    usePagination();
 
   const { search, handleSearchFilterChange } = useOrderFilters();
   const { orders } = useOrder();
@@ -102,9 +96,6 @@ function OrderTableFilters() {
                 <SelectItem value="10">10</SelectItem>
                 <SelectItem value="25">25</SelectItem>
                 <SelectItem value="50">50</SelectItem>
-                <SelectItem value="100">100</SelectItem>
-                <SelectItem value="250">250</SelectItem>
-                <SelectItem value="500">500</SelectItem>
               </SelectContent>
             </Select>
           </div>

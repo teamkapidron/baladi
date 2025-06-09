@@ -4,9 +4,9 @@
 import { memo } from 'react';
 
 // Components
-import ProductTableHeader from './product-table/product-table-header';
-import ProductTableFilters from './product-table/product-table-filters';
-import ProductTableContent from './product-table/product-table-content';
+import ProductTableHeader from './product-table-header';
+import ProductTableFilters from './product-table-filters';
+import ProductTableContent from './product-table-content';
 
 function ProductTable() {
   return (

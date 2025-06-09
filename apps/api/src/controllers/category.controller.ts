@@ -130,19 +130,8 @@ export const getCategoryById = asyncHandler(
 );
 
 export const getAllCategories = asyncHandler(
-  async (req: Request, res: Response) => {
-    const { page, limit } = req.query as GetAllCategoriesSchema['query'];
-
-    const perPage = parseInt(limit ?? '10', 10);
-    const currentPage = parseInt(page ?? '1', 10);
-
-    const categories = await Category.find()
-      .skip((currentPage - 1) * perPage)
-      .limit(perPage)
-      .sort({ createdAt: -1 })
-      .lean();
-
-    const total = await Category.countDocuments();
+  async (_: Request, res: Response) => {
+    const categories = await Category.find().sort({ createdAt: -1 }).lean();
 
     const categoryMap = new Map<string, HierarchicalCategory>();
     const rootCategories: HierarchicalCategory[] = [];
@@ -181,10 +170,6 @@ export const getAllCategories = asyncHandler(
 
     sendResponse(res, 200, 'Categories fetched successfully', {
       categories: rootCategories,
-      total,
-      currentPage,
-      perPage,
-      totalPages: Math.ceil(total / perPage),
     });
   },
 );

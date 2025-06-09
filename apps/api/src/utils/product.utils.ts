@@ -1,4 +1,4 @@
-import { PipelineStage } from 'mongoose';
+import { PipelineStage, Types } from 'mongoose';
 import { Visibility } from '@repo/types/product';
 
 import type { ProductFilter } from '@/types/product.types';
@@ -22,7 +22,7 @@ export function getProductFilterFromQuery(
   }
 
   if (category) {
-    queryObject.category = category;
+    queryObject.categories = { $in: [new Types.ObjectId(category)] };
   }
 
   if (isActive) {

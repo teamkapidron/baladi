@@ -173,6 +173,22 @@ export const getRecentOrdersSchema = z.object({
   }),
 });
 
+export const previewPickingListSchema = z.object({
+  params: z.object({
+    orderId: z.string().refine((val) => isValidObjectId(val), {
+      message: 'Invalid order ID format',
+    }),
+  }),
+});
+
+export const previewFreightLabelSchema = z.object({
+  params: z.object({
+    orderId: z.string().refine((val) => isValidObjectId(val), {
+      message: 'Invalid order ID format',
+    }),
+  }),
+});
+
 export type GetAllOrdersSchema = z.infer<typeof getAllOrdersSchema>;
 export type GetOrderDetailsAdminSchema = z.infer<
   typeof getOrderDetailsAdminSchema
@@ -190,4 +206,8 @@ export type GetOrderRevenueGraphDataSchema = z.infer<
   typeof getOrderRevenueGraphDataSchema
 >;
 export type GetRecentOrdersSchema = z.infer<typeof getRecentOrdersSchema>;
+export type PreviewPickingListSchema = z.infer<typeof previewPickingListSchema>;
+export type PreviewFreightLabelSchema = z.infer<
+  typeof previewFreightLabelSchema
+>;
 /****************** END: Admin Validators ********************/

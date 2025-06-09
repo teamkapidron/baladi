@@ -1,19 +1,22 @@
 import debounce from 'lodash.debounce';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useGetParams, useUpdateParams } from '@repo/ui/hooks/useParams';
+import { Visibility } from '@repo/types/product';
 
-import { OrderStatusFilter } from './types';
-
-export function useOrderFilters(debounceDelay = 400) {
+export function useProductFilters(debounceDelay = 400) {
   const { getParam } = useGetParams();
   const updateParams = useUpdateParams();
 
-  const status = useMemo(() => {
-    return (getParam('status') as OrderStatusFilter) ?? OrderStatusFilter.ALL;
+  const search = useMemo(() => {
+    return getParam('search') ?? undefined;
   }, [getParam]);
 
-  const search = useMemo(() => {
-    return getParam('search') as string;
+  const category = useMemo(() => {
+    return getParam('category') ?? undefined;
+  }, [getParam]);
+
+  const visibility = useMemo(() => {
+    return getParam('visibility') as Visibility;
   }, [getParam]);
 
   const debouncedSearchUpdateRef = useRef(
@@ -30,22 +33,24 @@ export function useOrderFilters(debounceDelay = 400) {
     };
   }, []);
 
-  const handleStatusFilterChange = useCallback(
-    (status: OrderStatusFilter) => {
-      updateParams({ status });
-    },
-    [updateParams],
-  );
-
   const handleSearchFilterChange = useCallback((search: string) => {
     debouncedSearchUpdateRef.current(search);
   }, []);
 
+  const handleCategoryFilterChange = useCallback(
+    (category: string) => {
+      updateParams({ category });
+    },
+    [updateParams],
+  );
+
   return {
-    status,
-    handleStatusFilterChange,
+    visibility,
 
     search,
     handleSearchFilterChange,
+
+    category,
+    handleCategoryFilterChange,
   };
 }

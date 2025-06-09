@@ -7,7 +7,7 @@ export enum OrderStatusFilter {
   CONFIRMED = 'confirmed',
   SHIPPED = 'shipped',
   DELIVERED = 'delivered',
-  CANCELLED = 'cancelled'
+  CANCELLED = 'cancelled',
 }
 
 export type GetAllOrdersRequest = ApiData<
@@ -24,7 +24,7 @@ export type GetAllOrdersRequest = ApiData<
     sortOrder?: 'asc' | 'desc';
   },
   {
-    orders: Order;
+    orders: Order[];
     totalOrders: number;
     currentPage: number;
     perPage: number;
@@ -116,5 +116,23 @@ export type GetRecentOrdersRequest = ApiData<
         name: string;
       };
     }[];
+  }
+>;
+
+export type PreviewPickingListRequest = ApiData<
+  {
+    orderId: string;
+  },
+  {
+    html: string;
+  }
+>;
+
+export type PreviewFreightLabelRequest = ApiData<
+  {
+    orderId: string;
+  },
+  {
+    html: string;
   }
 >;
