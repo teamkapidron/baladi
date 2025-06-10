@@ -55,7 +55,7 @@ export type GetAllOrdersRequest = ApiData<
     sortOrder?: 'asc' | 'desc';
   },
   {
-    orders: Order[];
+    orders: OrderResponse[];
     totalOrders: number;
     currentPage: number;
     perPage: number;

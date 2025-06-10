@@ -117,7 +117,7 @@ function OrderTableContent() {
   const { pickingListMutation, freightLabelMutation } = useOrderPreview();
 
   const orders = useMemo(() => {
-    return (ordersData?.orders || []) as OrderResponse[];
+    return ordersData?.orders || [];
   }, [ordersData]);
 
   const handleDownloadPickingList = useCallback(
