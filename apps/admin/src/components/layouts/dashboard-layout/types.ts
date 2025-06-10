@@ -6,6 +6,7 @@ export interface LinkItem {
   label?: string;
   icon: IconName;
   selectedIcon?: IconName;
+  exactMatch?: boolean;
 }
 
 export interface DashboardLayoutProps {

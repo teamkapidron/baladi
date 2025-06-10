@@ -16,6 +16,7 @@ export default function AdminDashboardLayout(props: AdminDashboardLayoutProps) {
         title: 'Hjem',
         href: '/dashboard',
         icon: 'home',
+        exactMatch: true,
       },
       {
         title: 'Produkter',

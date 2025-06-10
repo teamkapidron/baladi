@@ -23,8 +23,12 @@ function SidebarItem(props: SidebarItemProps) {
   const pathname = usePathname();
 
   const isActive = useMemo(() => {
-    return pathname === link.href;
-  }, [link.href, pathname]);
+    if (link.exactMatch) {
+      return pathname === link.href;
+    }
+
+    return pathname.startsWith(link.href);
+  }, [link.href, link.exactMatch, pathname]);
 
   const Icon = useMemo(() => {
     return <DynamicIcon name={link.icon} className={cn('size-5')} />;
