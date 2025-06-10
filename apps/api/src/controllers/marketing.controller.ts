@@ -10,8 +10,8 @@ import { sendResponse } from '@/utils/common/response.util';
 import {
   newArrivalTemplate,
   productPromotionTemplate,
-  promotionPosterTemplate,
-} from '@/templates/mail.template';
+} from '@/templates/newsletter.template';
+import { promotionPosterTemplate } from '@/templates/poster.template';
 
 // Handlers
 import { asyncHandler } from '@/handlers/async.handler';
@@ -107,14 +107,18 @@ export const previewPromotionPoster = asyncHandler(
     const productsData = products.map((product) => ({
       name: product.name,
       price: product.salePrice,
-      originalPrice: product.salePrice,
       image: product.images?.[0] ?? '',
+      tagline: 'Buy 3 or more and get 10% off',
+      promotionTitle: 'Special Offer',
     }));
 
-    const html = promotionPosterTemplate(productsData, posterType);
+    const posters = productsData.map((product) => {
+      const html = promotionPosterTemplate(product);
+      return html;
+    });
 
     sendResponse(res, 200, 'Promotion poster preview fetched successfully', {
-      html,
+      html: posters,
     });
   },
 );

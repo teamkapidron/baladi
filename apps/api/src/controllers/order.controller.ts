@@ -15,7 +15,7 @@ import { getPagination } from '@/utils/common/pagination.utils';
 import {
   pickingListTemplate,
   freightLabelTemplate,
-} from '@/templates/pdf.templates';
+} from '@/templates/order.template';
 import { getDateMatchStage, fillMissingDates } from '@/utils/common/date.util';
 
 // Handlers
@@ -697,7 +697,7 @@ export const previewPickingList = asyncHandler(
 
     const order = await Order.findById(orderId)
       .populate([
-        { path: 'items.productId', select: 'name' },
+        { path: 'items.productId', select: 'name sku barcode' },
         { path: 'userId', select: 'name email' },
         {
           path: 'shippingAddress',
