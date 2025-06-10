@@ -2,7 +2,7 @@
 
 // Node Modules
 import { memo, useMemo } from 'react';
-import { Users, UserX, SendHorizonal, TrendingUp } from '@repo/ui/lib/icons';
+import { Users, UserX, SendHorizonal } from '@repo/ui/lib/icons';
 
 // Components
 import AnimatedCounter from '@repo/ui/components/base/animate-counter';
@@ -22,17 +22,6 @@ function NewsletterMetrics() {
     };
   }, [newsLetterStatsQuery.data]);
 
-  const { engagementRate, totalReach } = useMemo(() => {
-    const totalUsers = metrics.subscribers + metrics.unsubscribed;
-    const engagement =
-      totalUsers > 0 ? Math.round((metrics.subscribers / totalUsers) * 100) : 0;
-
-    return {
-      engagementRate: engagement,
-      totalReach: totalUsers,
-    };
-  }, [metrics]);
-
   return (
     <div className="rounded-xl bg-white p-6 shadow-lg ring-1 ring-[var(--baladi-border)]">
       <div className="mb-6">
@@ -42,29 +31,6 @@ function NewsletterMetrics() {
         <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
           Spor abonnentengasjement og kampanjeeffektivitet
         </p>
-      </div>
-
-      {/* Key Performance Indicators */}
-      <div className="mb-6 grid grid-cols-2 gap-4">
-        <div className="bg-[var(--baladi-success)]/5 rounded-lg p-3">
-          <div className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-success)]">
-            Engasjementsrate
-          </div>
-          <div className="flex items-center gap-1">
-            <span className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
-              {engagementRate}%
-            </span>
-            <TrendingUp className="h-4 w-4 text-[var(--baladi-success)]" />
-          </div>
-        </div>
-        <div className="bg-[var(--baladi-info)]/5 rounded-lg p-3">
-          <div className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-info)]">
-            Total Rekkevidde
-          </div>
-          <div className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
-            {totalReach.toLocaleString()}
-          </div>
-        </div>
       </div>
 
       {/* Main Metrics Grid */}
@@ -153,32 +119,6 @@ function NewsletterMetrics() {
             <p className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
               Totale kampanjer sendt
             </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Summary Footer */}
-      <div className="mt-6 rounded-lg bg-[var(--baladi-light)] p-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-dark)]">
-              Nyhetsbrev Helsescore
-            </p>
-            <p className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
-              Basert på engasjement og vekstmålinger
-            </p>
-          </div>
-          <div className="text-right">
-            <div className="flex items-center gap-2">
-              <div className="rounded-full bg-[var(--baladi-success)] px-3 py-1">
-                <span className="font-[family-name:var(--font-dm-sans)] text-sm font-bold text-white">
-                  Utmerket
-                </span>
-              </div>
-              <span className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-success)]">
-                {engagementRate}%
-              </span>
-            </div>
           </div>
         </div>
       </div>
