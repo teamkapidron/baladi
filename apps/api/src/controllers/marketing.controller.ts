@@ -10,8 +10,8 @@ import { sendResponse } from '@/utils/common/response.util';
 import {
   newArrivalTemplate,
   productPromotionTemplate,
-  promotionPosterTemplate,
-} from '@/templates/mail.template';
+} from '@/templates/newsletter.template';
+import { promotionPosterTemplate } from '@/templates/poster.template';
 
 // Handlers
 import { asyncHandler } from '@/handlers/async.handler';
@@ -103,15 +103,21 @@ export const previewPromotionPoster = asyncHandler(
     if (products.length !== productsIds.length) {
       throw new ErrorHandler(400, 'Some products are not found', 'BAD_REQUEST');
     }
-
     const productsData = products.map((product) => ({
       name: product.name,
       price: product.salePrice,
-      originalPrice: product.salePrice,
-      image: product.images?.[0] ?? '',
+      image:
+        'https://res.cloudinary.com/dv7ar9aca/image/upload/v1749557763/iFOnK_Tagine_hvit_stor_b__nner_1_kg_x_20_1_cxiuvr.png',
+      tagline: 'Buy 3 or more and get 10% off',
+      promotionTitle: 'Special Offer',
     }));
+    const posters = await Promise.allSettled(
+      productsData.map((product) => promotionPosterTemplate(product)),
+    );
 
-    const html = promotionPosterTemplate(productsData, posterType);
+    const html = posters
+      .filter((poster) => poster.status === 'fulfilled')
+      .map((poster) => poster.value);
 
     sendResponse(res, 200, 'Promotion poster preview fetched successfully', {
       html,
