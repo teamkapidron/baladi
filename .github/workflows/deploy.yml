@@ -28,14 +28,17 @@ jobs:
           key: |
             node_modules-${{ hashFiles('pnpm-lock.yaml') }}
 
-      - name: Cache Turbo build
+      - name: Cache Turbo + Next.js build
         uses: actions/cache@v4
         with:
           path: |
-            ~/.npm
+            ~/.pnpm
             ${{ github.workspace }}/.turbo
-          key: |
-            turbo-${{ hashFiles('pnpm-lock.yaml') }}
+            apps/admin/.next/cache
+            apps/user/.next/cache
+          key: build-cache-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            build-cache-
 
       - name: Install dependencies
         run: pnpm install
