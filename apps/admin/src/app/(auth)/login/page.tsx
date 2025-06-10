@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 import LoginForm from '@/components/auth/login/login-form';
 
 export const metadata: Metadata = {
-  title: 'Login',
+  title: 'Logg inn',
 };
 
 export default function Login() {
@@ -13,14 +13,14 @@ export default function Login() {
         <div className="mb-10 text-center">
           <div className="mb-6">
             <h2 className="font-[family-name:var(--font-sora)] text-4xl font-bold tracking-tight text-[var(--baladi-dark)]">
-              Welcome back
+              Velkommen tilbake
             </h2>
             <div className="mt-3 flex items-center justify-center">
               <div className="h-1 w-12 rounded-full bg-[var(--baladi-primary)]"></div>
             </div>
           </div>
           <p className="font-[family-name:var(--font-dm-sans)] text-lg text-[var(--baladi-gray)]">
-            Sign in to access your admin dashboard
+            Logg inn for å få tilgang til ditt admin-dashbord
           </p>
         </div>
 
@@ -45,7 +45,7 @@ export default function Login() {
             />
           </svg>
           <span className="font-[family-name:var(--font-dm-sans)]">
-            Secured with enterprise-grade encryption
+            Sikret med kryptering av bedriftskvalitet
           </span>
         </div>
 
@@ -59,7 +59,7 @@ export default function Login() {
               Baladi
             </span>
             <span className="font-[family-name:var(--font-dm-sans)]">
-              • All rights reserved
+              • Alle rettigheter forbeholdt
             </span>
           </div>
         </div>

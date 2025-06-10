@@ -16,21 +16,21 @@ function AuthSidebar() {
         <div className="max-w-xl text-white">
           <div className="mb-12 text-center lg:text-left">
             <div className="mb-8 flex items-center justify-center space-x-4 lg:justify-start">
-              <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-white/20 p-3 backdrop-blur-sm">
+              <div className="flex size-24 items-center justify-center rounded-xl bg-white/20 p-3 backdrop-blur-sm">
                 <Image
                   src="/images/brand/logo.png"
                   alt="Baladi Logo"
                   width={500}
                   height={500}
-                  className="size-12"
+                  className="h-auto w-32"
                 />
               </div>
               <div className="text-left">
                 <h1 className="font-[family-name:var(--font-sora)] text-3xl font-bold text-white">
-                  Baladi
+                  Baladi Engross
                 </h1>
                 <p className="font-[family-name:var(--font-dm-sans)] text-sm text-white/80">
-                  Admin Portal
+                  Administrasjonsportal
                 </p>
               </div>
             </div>
@@ -39,12 +39,12 @@ function AuthSidebar() {
           <div className="space-y-6 text-center lg:text-left">
             <div className="space-y-4">
               <h2 className="font-[family-name:var(--font-sora)] text-4xl font-bold leading-tight text-white">
-                Welcome to Your Dashboard
+                Velkommen til ditt dashbord
               </h2>
 
               <p className="font-[family-name:var(--font-dm-sans)] text-lg leading-relaxed text-white/90">
-                Manage your business with our powerful and intuitive admin
-                platform. Monitor performance and drive growth.
+                Administrer din virksomhet med vår kraftige og intuitive
+                admin-plattform. Overvåk ytelse og driv vekst.
               </p>
             </div>
 
@@ -66,7 +66,7 @@ function AuthSidebar() {
                   </svg>
                 </div>
                 <span className="font-[family-name:var(--font-dm-sans)] text-white/90">
-                  Real-time Analytics
+                  Sanntidsanalyse
                 </span>
               </div>
 
@@ -87,7 +87,7 @@ function AuthSidebar() {
                   </svg>
                 </div>
                 <span className="font-[family-name:var(--font-dm-sans)] text-white/90">
-                  Secure Platform
+                  Sikker plattform
                 </span>
               </div>
 
@@ -108,7 +108,7 @@ function AuthSidebar() {
                   </svg>
                 </div>
                 <span className="font-[family-name:var(--font-dm-sans)] text-white/90">
-                  Business Reports
+                  Forretningsrapporter
                 </span>
               </div>
             </div>

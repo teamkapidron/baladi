@@ -70,7 +70,7 @@ function OrderTableFilters() {
               <Filter className="h-4 w-4 text-[var(--baladi-primary)]" />
             </div>
             <span className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-gray)]">
-              Search Orders
+              Søk Bestillinger
             </span>
           </div>
 
@@ -78,7 +78,7 @@ function OrderTableFilters() {
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
             <Input
               type="text"
-              placeholder="Search by order ID, customer name or address..."
+              placeholder="Søk etter bestillings-ID, kundenavn eller adresse..."
               className="w-80 pl-9 pr-4 font-[family-name:var(--font-dm-sans)] text-sm"
               value={searchQuery}
               onChange={handleSearch}
@@ -89,7 +89,7 @@ function OrderTableFilters() {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <span className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-gray)]">
-              Show:
+              Vis:
             </span>
             <Select
               value={pageSize.toString()}
@@ -112,7 +112,7 @@ function OrderTableFilters() {
                 className="flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--baladi-border)] bg-white transition-all duration-300 hover:border-[var(--baladi-primary)] hover:bg-[var(--baladi-primary)] hover:text-white disabled:opacity-50 disabled:hover:bg-white disabled:hover:text-[var(--baladi-gray)]"
                 disabled={currentPage === 1}
                 onClick={() => handlePageChange(currentPage - 1)}
-                title="Previous page"
+                title="Forrige side"
               >
                 <ChevronDown className="h-4 w-4 rotate-90" />
               </button>
@@ -138,7 +138,7 @@ function OrderTableFilters() {
                         ? 'bg-[var(--baladi-primary)] text-white shadow-md'
                         : 'border border-[var(--baladi-border)] bg-white text-[var(--baladi-dark)] hover:border-[var(--baladi-primary)] hover:bg-[var(--baladi-primary)] hover:text-white'
                     }`}
-                    title={`Page ${pageNum}`}
+                    title={`Side ${pageNum}`}
                   >
                     {pageNum}
                   </button>
@@ -155,13 +155,13 @@ function OrderTableFilters() {
                     value={pageInput}
                     onChange={handlePageInputChange}
                     className="hover:border-[var(--baladi-primary)]/50 focus:ring-[var(--baladi-primary)]/20 h-8 w-12 rounded-lg border border-[var(--baladi-border)] bg-white px-2 text-center font-[family-name:var(--font-dm-sans)] text-sm shadow-sm transition-all duration-300 focus:border-[var(--baladi-primary)] focus:outline-none focus:ring-2"
-                    placeholder="Go"
+                    placeholder="Gå"
                   />
                   <button
                     type="submit"
                     className="h-8 rounded-lg border border-[var(--baladi-border)] bg-white px-2 font-[family-name:var(--font-dm-sans)] text-xs font-medium transition-all duration-300 hover:border-[var(--baladi-primary)] hover:bg-[var(--baladi-primary)] hover:text-white"
                   >
-                    Go
+                    Gå
                   </button>
                 </form>
               )}
@@ -170,7 +170,7 @@ function OrderTableFilters() {
                 className="flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--baladi-border)] bg-white transition-all duration-300 hover:border-[var(--baladi-primary)] hover:bg-[var(--baladi-primary)] hover:text-white disabled:opacity-50 disabled:hover:bg-white disabled:hover:text-[var(--baladi-gray)]"
                 disabled={currentPage === totalPages}
                 onClick={() => handlePageChange(currentPage + 1)}
-                title="Next page"
+                title="Neste side"
               >
                 <ChevronDown className="h-4 w-4 -rotate-90" />
               </button>
@@ -186,14 +186,14 @@ function OrderTableFilters() {
               <ShoppingBag className="h-3.5 w-3.5 text-[var(--baladi-primary)]" />
             </div>
             <span className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-              Showing {(currentPage - 1) * pageSize + 1} to{' '}
-              {Math.min(currentPage * pageSize, orders.totalOrders)} of{' '}
-              {orders.totalOrders} orders
+              Viser {(currentPage - 1) * pageSize + 1} til{' '}
+              {Math.min(currentPage * pageSize, orders.totalOrders)} av{' '}
+              {orders.totalOrders} bestillinger
             </span>
           </div>
           {totalPages > 1 && (
             <span className="font-[family-name:var(--font-sora)] text-sm font-medium text-[var(--baladi-dark)]">
-              Page {currentPage} of {totalPages}
+              Side {currentPage} av {totalPages}
             </span>
           )}
         </div>

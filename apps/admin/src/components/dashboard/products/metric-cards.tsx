@@ -44,13 +44,13 @@ function MetricCards() {
                 <AnimatedCounter value={stats.totalProducts} />
               </p>
               <p className="text-sm font-medium text-blue-600">
-                Total Products
+                Totale Produkter
               </p>
             </div>
           </div>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-blue-700">Active Products</span>
+              <span className="text-sm text-blue-700">Aktive Produkter</span>
               <div className="flex items-center gap-1">
                 <span className="text-sm font-semibold text-blue-900">
                   <AnimatedCounter value={stats.activeProducts} />
@@ -97,14 +97,14 @@ function MetricCards() {
                 <AnimatedCounter value={stats.totalCategories} />
               </p>
               <p className="text-sm font-medium text-emerald-600">
-                Total Categories
+                Totale Kategorier
               </p>
             </div>
           </div>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-sm text-emerald-700">
-                Active Categories
+                Aktive Kategorier
               </span>
               <div className="flex items-center gap-1">
                 <span className="text-sm font-semibold text-emerald-900">
@@ -155,19 +155,21 @@ function MetricCards() {
                 />
               </p>
               <p className="text-sm font-medium text-amber-600">
-                Items Need Attention
+                Varer som Trenger Oppmerksomhet
               </p>
             </div>
           </div>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-amber-700">Out of Stock</span>
+              <span className="text-sm text-amber-700">Utsolgt</span>
               <span className="text-sm font-semibold text-red-600">
                 <AnimatedCounter value={stockStats.outOfStockCount} />
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-amber-700">Low Stock</span>
+              <span className="text-sm text-amber-700">
+                Lav Lagerbeholdning
+              </span>
               <span className="text-sm font-semibold text-amber-900">
                 <AnimatedCounter value={stockStats.lowStockCount} />
               </span>
@@ -193,24 +195,26 @@ function MetricCards() {
                 />
                 %
               </p>
-              <p className="text-sm font-medium text-purple-600">Active Rate</p>
+              <p className="text-sm font-medium text-purple-600">Aktiv Rate</p>
             </div>
           </div>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-purple-700">Product Health</span>
+              <span className="text-sm text-purple-700">Produkthelse</span>
               <span className="text-sm font-semibold text-purple-900">
                 {stats.activeProducts > stats.totalProducts * 0.8
-                  ? 'Excellent'
+                  ? 'Utmerket'
                   : stats.activeProducts > stats.totalProducts * 0.6
-                    ? 'Good'
+                    ? 'Bra'
                     : stats.activeProducts > stats.totalProducts * 0.4
-                      ? 'Fair'
-                      : 'Needs Attention'}
+                      ? 'Greit'
+                      : 'Trenger Oppmerksomhet'}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-purple-700">Avg. per Category</span>
+              <span className="text-sm text-purple-700">
+                Snitt per Kategori
+              </span>
               <span className="text-sm font-semibold text-purple-900">
                 <AnimatedCounter
                   value={

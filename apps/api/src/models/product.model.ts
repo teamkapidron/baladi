@@ -79,6 +79,12 @@ const productSchema = new Schema<IProduct>(
       default: Visibility.BOTH,
     },
 
+    hasVolumeDiscount: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+
     dimensions: {
       length: {
         type: Number,

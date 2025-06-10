@@ -27,6 +27,8 @@ export interface Product {
   isActive: boolean;
   visibility: Visibility;
 
+  hasVolumeDiscount?: boolean;
+
   dimensions?: {
     length: number;
     width: number;

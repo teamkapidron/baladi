@@ -9,7 +9,6 @@ import {
   Save,
   Percent,
   BoxesIcon,
-  DollarSign,
   Barcode,
   Weight,
   Ruler,
@@ -26,6 +25,7 @@ import {
   Image as ImageIcon,
   X,
   Plus,
+  Landmark,
 } from '@repo/ui/lib/icons';
 
 // Components
@@ -96,6 +96,7 @@ function ProductForm() {
       images: [],
       isActive: true,
       visibility: Visibility.BOTH,
+      hasVolumeDiscount: true,
       dimensions: {
         length: 0,
         width: 0,
@@ -165,10 +166,11 @@ function ProductForm() {
       {/* Header */}
       <div className="rounded-xl border border-[var(--baladi-border)] bg-gradient-to-r from-[var(--baladi-primary)] to-[var(--baladi-secondary)] p-6 shadow-lg">
         <h1 className="font-[family-name:var(--font-sora)] text-2xl font-bold text-white">
-          Create New Product
+          Opprett Nytt Produkt
         </h1>
         <p className="mt-2 text-blue-100">
-          Fill in the details below to add a new product to your inventory
+          Fyll ut detaljene nedenfor for å legge til et nytt produkt i lageret
+          ditt
         </p>
       </div>
 
@@ -184,7 +186,7 @@ function ProductForm() {
                     <Package className="h-5 w-5 text-blue-600" />
                   </div>
                   <h2 className="font-[family-name:var(--font-sora)] text-xl font-semibold text-[var(--baladi-primary)]">
-                    Basic Information
+                    Grunnleggende Informasjon
                   </h2>
                 </div>
 
@@ -195,13 +197,13 @@ function ProductForm() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="font-[family-name:var(--font-sora)] font-medium text-[var(--baladi-primary)]">
-                          Product Name *
+                          Produktnavn *
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
                             <Package className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
-                              placeholder="Enter product name"
+                              placeholder="Skriv inn produktnavn"
                               className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
                               {...field}
                               onChange={(e) => {
@@ -232,14 +234,14 @@ function ProductForm() {
                           <div className="relative">
                             <Hash className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
-                              placeholder="product-slug"
+                              placeholder="produkt-slug"
                               className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
                               {...field}
                             />
                           </div>
                         </FormControl>
                         <p className="text-xs text-[var(--baladi-gray)]">
-                          Auto-generated from product name
+                          Automatisk generert fra produktnavn
                         </p>
                         <FormMessage />
                       </FormItem>
@@ -252,11 +254,11 @@ function ProductForm() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="font-[family-name:var(--font-sora)] font-medium text-[var(--baladi-primary)]">
-                          Short Description
+                          Kort Beskrivelse
                         </FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="Brief product description"
+                            placeholder="Kort produktbeskrivelse"
                             className="h-12 rounded-lg border-[var(--baladi-border)] focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
                             {...field}
                             value={field.value || ''}
@@ -273,13 +275,13 @@ function ProductForm() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="font-[family-name:var(--font-sora)] font-medium text-[var(--baladi-primary)]">
-                          Full Description
+                          Fullstendig Beskrivelse
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
                             <FileText className="absolute left-3 top-3 h-4 w-4 text-[var(--baladi-gray)]" />
                             <Textarea
-                              placeholder="Detailed product description"
+                              placeholder="Detaljert produktbeskrivelse"
                               className="min-h-[120px] rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
                               {...field}
                               value={field.value || ''}
@@ -300,7 +302,7 @@ function ProductForm() {
                     <Tag className="h-5 w-5 text-emerald-600" />
                   </div>
                   <h2 className="font-[family-name:var(--font-sora)] text-xl font-semibold text-[var(--baladi-primary)]">
-                    Categories
+                    Kategorier
                   </h2>
                 </div>
 
@@ -310,14 +312,14 @@ function ProductForm() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="font-[family-name:var(--font-sora)] font-medium text-[var(--baladi-primary)]">
-                        Select Categories *
+                        Velg Kategorier *
                       </FormLabel>
                       <FormControl>
                         <MultiSelect
                           options={categoryOptions}
                           onValueChange={field.onChange}
                           defaultValue={field.value}
-                          placeholder="Search and select categories..."
+                          placeholder="Søk og velg kategorier..."
                           variant="default"
                           animation={0.2}
                           maxCount={5}
@@ -325,8 +327,8 @@ function ProductForm() {
                         />
                       </FormControl>
                       <p className="text-xs text-[var(--baladi-gray)]">
-                        Select one or more categories that best describe your
-                        product
+                        Velg en eller flere kategorier som best beskriver
+                        produktet ditt
                       </p>
                       <FormMessage />
                     </FormItem>
@@ -341,7 +343,7 @@ function ProductForm() {
                     <ImageIcon className="h-5 w-5 text-pink-600" />
                   </div>
                   <h2 className="font-[family-name:var(--font-sora)] text-xl font-semibold text-[var(--baladi-primary)]">
-                    Product Images
+                    Produktbilder
                   </h2>
                 </div>
 
@@ -351,7 +353,7 @@ function ProductForm() {
                   render={() => (
                     <FormItem>
                       <FormLabel className="font-[family-name:var(--font-sora)] font-medium text-[var(--baladi-primary)]">
-                        Upload Images
+                        Last opp Bilder
                       </FormLabel>
                       <FormControl>
                         <div className="space-y-4">
@@ -363,10 +365,10 @@ function ProductForm() {
                             <div className="text-center">
                               <Upload className="mx-auto h-8 w-8 text-[var(--baladi-gray)]" />
                               <p className="mt-2 text-sm font-medium text-[var(--baladi-primary)]">
-                                Click to upload images
+                                Klikk for å laste opp bilder
                               </p>
                               <p className="text-xs text-[var(--baladi-gray)]">
-                                PNG, JPG, JPEG up to 10MB each
+                                PNG, JPG, JPEG opptil 10MB hver
                               </p>
                             </div>
                           </div>
@@ -386,7 +388,7 @@ function ProductForm() {
                             <div className="space-y-3">
                               <div className="flex items-center justify-between">
                                 <p className="text-sm font-medium text-[var(--baladi-primary)]">
-                                  Uploaded Images ({uploadedImages.length})
+                                  Opplastede Bilder ({uploadedImages.length})
                                 </p>
                                 <Button
                                   type="button"
@@ -396,7 +398,7 @@ function ProductForm() {
                                   className="h-8 border-[var(--baladi-border)] text-[var(--baladi-primary)] hover:bg-[var(--baladi-primary)] hover:text-white"
                                 >
                                   <Plus className="mr-1 h-3 w-3" />
-                                  Add More
+                                  Legg til Flere
                                 </Button>
                               </div>
 
@@ -424,7 +426,7 @@ function ProductForm() {
                                     </div>
                                     <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2">
                                       <p className="text-xs font-medium text-white">
-                                        Image {index + 1}
+                                        Bilde {index + 1}
                                       </p>
                                     </div>
                                   </div>
@@ -435,8 +437,8 @@ function ProductForm() {
                         </div>
                       </FormControl>
                       <p className="text-xs text-[var(--baladi-gray)]">
-                        Upload high-quality images of your product. The first
-                        image will be used as the main product image.
+                        Last opp høykvalitetsbilder av produktet ditt. Det
+                        første bildet vil bli brukt som hovedproduktbilde.
                       </p>
                       <FormMessage />
                     </FormItem>
@@ -448,10 +450,10 @@ function ProductForm() {
               <div className="rounded-xl border border-[var(--baladi-border)] bg-white p-6 shadow-sm">
                 <div className="mb-6 flex items-center space-x-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-100">
-                    <DollarSign className="h-5 w-5 text-green-600" />
+                    <Landmark className="h-5 w-5 text-green-600" />
                   </div>
                   <h2 className="font-[family-name:var(--font-sora)] text-xl font-semibold text-[var(--baladi-primary)]">
-                    Pricing & Inventory
+                    Priser
                   </h2>
                 </div>
 
@@ -462,11 +464,11 @@ function ProductForm() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="font-[family-name:var(--font-sora)] font-medium text-[var(--baladi-primary)]">
-                          Cost Price (£) *
+                          Kostpris (kr) *
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <DollarSign className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                            <Landmark className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
                               type="number"
                               step="0.01"
@@ -491,11 +493,11 @@ function ProductForm() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="font-[family-name:var(--font-sora)] font-medium text-[var(--baladi-primary)]">
-                          Sale Price (£) *
+                          Salgspris (kr) *
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <DollarSign className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-success)]" />
+                            <Landmark className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-success)]" />
                             <Input
                               type="number"
                               step="0.01"
@@ -520,7 +522,7 @@ function ProductForm() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="font-[family-name:var(--font-sora)] font-medium text-[var(--baladi-primary)]">
-                          VAT (%) *
+                          MVA (%) *
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
@@ -531,7 +533,7 @@ function ProductForm() {
                             >
                               <FormControl>
                                 <SelectTrigger className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]">
-                                  <SelectValue placeholder="Select VAT" />
+                                  <SelectValue placeholder="Velg MVA" />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent className="rounded-lg">
@@ -558,7 +560,7 @@ function ProductForm() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="font-[family-name:var(--font-sora)] font-medium text-[var(--baladi-primary)]">
-                          Number of Units *
+                          Antall Enheter *
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
@@ -589,7 +591,7 @@ function ProductForm() {
                     <Tag className="h-5 w-5 text-purple-600" />
                   </div>
                   <h2 className="font-[family-name:var(--font-sora)] text-xl font-semibold text-[var(--baladi-primary)]">
-                    Product Identifiers
+                    Produktidentifikatorer
                   </h2>
                 </div>
 
@@ -606,7 +608,7 @@ function ProductForm() {
                           <div className="relative">
                             <Tag className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
-                              placeholder="Enter SKU"
+                              placeholder="Skriv inn SKU"
                               className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
                               {...field}
                               onChange={(e) => {
@@ -626,13 +628,13 @@ function ProductForm() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="font-[family-name:var(--font-sora)] font-medium text-[var(--baladi-primary)]">
-                          Barcode
+                          Strekkode
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
                             <Barcode className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
-                              placeholder="Enter barcode"
+                              placeholder="Skriv inn strekkode"
                               className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
                               {...field}
                               value={field.value || ''}
@@ -650,7 +652,7 @@ function ProductForm() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="font-[family-name:var(--font-sora)] font-medium text-[var(--baladi-primary)]">
-                          Weight (kg)
+                          Vekt (kg)
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
@@ -682,7 +684,7 @@ function ProductForm() {
                     <Ruler className="h-5 w-5 text-orange-600" />
                   </div>
                   <h2 className="font-[family-name:var(--font-sora)] text-xl font-semibold text-[var(--baladi-primary)]">
-                    Dimensions
+                    Dimensjoner
                   </h2>
                 </div>
 
@@ -693,7 +695,7 @@ function ProductForm() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="font-[family-name:var(--font-sora)] font-medium text-[var(--baladi-primary)]">
-                          Length (cm)
+                          Lengde (cm)
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
@@ -722,7 +724,7 @@ function ProductForm() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="font-[family-name:var(--font-sora)] font-medium text-[var(--baladi-primary)]">
-                          Width (cm)
+                          Bredde (cm)
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
@@ -751,7 +753,7 @@ function ProductForm() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="font-[family-name:var(--font-sora)] font-medium text-[var(--baladi-primary)]">
-                          Height (cm)
+                          Høyde (cm)
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
@@ -786,7 +788,7 @@ function ProductForm() {
                     <Eye className="h-5 w-5 text-gray-600" />
                   </div>
                   <h2 className="font-[family-name:var(--font-sora)] text-xl font-semibold text-[var(--baladi-primary)]">
-                    Settings
+                    Innstillinger
                   </h2>
                 </div>
 
@@ -797,7 +799,7 @@ function ProductForm() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="font-[family-name:var(--font-sora)] font-medium text-[var(--baladi-primary)]">
-                          Visibility
+                          Synlighet
                         </FormLabel>
                         <Select
                           onValueChange={field.onChange}
@@ -806,18 +808,16 @@ function ProductForm() {
                           <FormControl className="relative">
                             <SelectTrigger className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]">
                               <Eye className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
-                              <SelectValue placeholder="Select visibility" />
+                              <SelectValue placeholder="Velg synlighet" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent className="rounded-lg">
                             <SelectItem value="both">
-                              Both (Internal & External)
+                              Begge (Intern & Ekstern)
                             </SelectItem>
-                            <SelectItem value="internal">
-                              Internal Only
-                            </SelectItem>
+                            <SelectItem value="internal">Kun Intern</SelectItem>
                             <SelectItem value="external">
-                              External Only
+                              Kun Ekstern
                             </SelectItem>
                           </SelectContent>
                         </Select>
@@ -840,10 +840,35 @@ function ProductForm() {
                         </FormControl>
                         <div className="space-y-1 leading-none">
                           <FormLabel className="font-[family-name:var(--font-sora)] font-medium text-[var(--baladi-primary)]">
-                            Active Product
+                            Aktivt Produkt
                           </FormLabel>
                           <p className="text-sm text-[var(--baladi-gray)]">
-                            Product will be visible and available
+                            Produktet vil være synlig og tilgjengelig
+                          </p>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="hasVolumeDiscount"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-lg border border-[var(--baladi-border)] p-4">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            className="border-[var(--baladi-border)] data-[state=checked]:bg-[var(--baladi-primary)]"
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel className="font-[family-name:var(--font-sora)] font-medium text-[var(--baladi-primary)]">
+                            Er dette produktet egnet for volumrabatt?
+                          </FormLabel>
+                          <p className="text-sm text-[var(--baladi-gray)]">
+                            Produktet kan tilbys med rabatt ved kjøp av større
+                            mengder
                           </p>
                         </div>
                       </FormItem>
@@ -859,7 +884,7 @@ function ProductForm() {
                     <Building className="h-5 w-5 text-indigo-600" />
                   </div>
                   <h2 className="font-[family-name:var(--font-sora)] text-xl font-semibold text-[var(--baladi-primary)]">
-                    Supplier Information
+                    Leverandørinformasjon
                   </h2>
                 </div>
 
@@ -870,13 +895,13 @@ function ProductForm() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="font-[family-name:var(--font-sora)] font-medium text-[var(--baladi-primary)]">
-                          Supplier Name
+                          Leverandørnavn
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
                             <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
-                              placeholder="Supplier name"
+                              placeholder="Leverandørnavn"
                               className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
                               {...field}
                               value={field.value || ''}
@@ -894,13 +919,13 @@ function ProductForm() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="font-[family-name:var(--font-sora)] font-medium text-[var(--baladi-primary)]">
-                          Supplier Number
+                          Leverandørnummer
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
                             <Hash className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
-                              placeholder="Supplier number"
+                              placeholder="Leverandørnummer"
                               className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
                               {...field}
                               value={field.value || ''}
@@ -918,13 +943,13 @@ function ProductForm() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="font-[family-name:var(--font-sora)] font-medium text-[var(--baladi-primary)]">
-                          Location
+                          Lokasjon
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
                             <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
-                              placeholder="Supplier location"
+                              placeholder="Leverandørens lokasjon"
                               className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
                               {...field}
                               value={field.value || ''}
@@ -942,13 +967,13 @@ function ProductForm() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="font-[family-name:var(--font-sora)] font-medium text-[var(--baladi-primary)]">
-                          Country of Origin
+                          Opprinnelsesland
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
                             <Globe className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
-                              placeholder="Country of origin"
+                              placeholder="Opprinnelsesland"
                               className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
                               {...field}
                               value={field.value || ''}
@@ -972,7 +997,7 @@ function ProductForm() {
                           <div className="relative">
                             <Barcode className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
-                              placeholder="HS code"
+                              placeholder="HS kode"
                               className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
                               {...field}
                               value={field.value || ''}
@@ -999,12 +1024,12 @@ function ProductForm() {
               {form.formState.isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  Creating Product...
+                  Oppretter Produkt...
                 </>
               ) : (
                 <>
                   <Save className="mr-2 h-5 w-5" />
-                  Create Product
+                  Opprett Produkt
                 </>
               )}
             </Button>

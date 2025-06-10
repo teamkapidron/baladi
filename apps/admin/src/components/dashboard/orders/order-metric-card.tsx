@@ -83,7 +83,7 @@ function OrderMetricCards() {
 
             <div>
               <h3 className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-text-muted)]">
-                Total Orders
+                Totale Bestillinger
               </h3>
               <div className="mt-2 flex items-baseline gap-2">
                 <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-text)]">
@@ -93,7 +93,7 @@ function OrderMetricCards() {
                   <div className="bg-[var(--baladi-success)]/10 flex items-center gap-1 rounded-full px-2 py-1">
                     <TrendingUp className="h-3 w-3 text-[var(--baladi-success)]" />
                     <span className="text-xs font-medium text-[var(--baladi-success)]">
-                      Active
+                      Aktiv
                     </span>
                   </div>
                 )}
@@ -105,11 +105,11 @@ function OrderMetricCards() {
         <div className="relative mt-4 border-t border-[var(--baladi-border)] pt-4">
           <div className="flex items-center justify-between text-sm">
             <span className="text-[var(--baladi-text-muted)]">
-              Revenue Generated
+              Omsetning Generert
             </span>
             <span className="font-medium text-[var(--baladi-text)]">
-              $
               <AnimatedCounter value={revenueStats.totalRevenue} />
+              kr
             </span>
           </div>
         </div>
@@ -126,7 +126,7 @@ function OrderMetricCards() {
 
             <div>
               <h3 className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-text-muted)]">
-                Pending Orders
+                Ventende Bestillinger
               </h3>
               <div className="mt-2 flex items-baseline gap-2">
                 <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-text)]">
@@ -145,10 +145,10 @@ function OrderMetricCards() {
         <div className="relative mt-4 border-t border-[var(--baladi-border)] pt-4">
           <div className="flex items-center justify-between text-sm">
             <span className="text-[var(--baladi-text-muted)]">
-              Awaiting Processing
+              Avventer Behandling
             </span>
             <span className="font-medium text-[var(--baladi-warning)]">
-              {statusStats.pendingOrders} orders
+              {statusStats.pendingOrders} bestillinger
             </span>
           </div>
         </div>
@@ -165,7 +165,7 @@ function OrderMetricCards() {
 
             <div>
               <h3 className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-text-muted)]">
-                Confirmed Orders
+                Bekreftede Bestillinger
               </h3>
               <div className="mt-2 flex items-baseline gap-2">
                 <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-text)]">
@@ -184,10 +184,10 @@ function OrderMetricCards() {
         <div className="relative mt-4 border-t border-[var(--baladi-border)] pt-4">
           <div className="flex items-center justify-between text-sm">
             <span className="text-[var(--baladi-text-muted)]">
-              Ready to Ship
+              Klar til Frakt
             </span>
             <span className="font-medium text-[var(--baladi-secondary)]">
-              {statusStats.confirmedOrders} orders
+              {statusStats.confirmedOrders} bestillinger
             </span>
           </div>
         </div>
@@ -204,7 +204,7 @@ function OrderMetricCards() {
 
             <div>
               <h3 className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-text-muted)]">
-                Shipped Orders
+                Sendte Bestillinger
               </h3>
               <div className="mt-2 flex items-baseline gap-2">
                 <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-text)]">
@@ -222,9 +222,9 @@ function OrderMetricCards() {
 
         <div className="relative mt-4 border-t border-[var(--baladi-border)] pt-4">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-[var(--baladi-text-muted)]">In Transit</span>
+            <span className="text-[var(--baladi-text-muted)]">På Vei</span>
             <span className="font-medium text-[var(--baladi-success)]">
-              {statusStats.shippedOrders} orders
+              {statusStats.shippedOrders} bestillinger
             </span>
           </div>
         </div>
@@ -241,7 +241,7 @@ function OrderMetricCards() {
 
             <div>
               <h3 className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-text-muted)]">
-                Cancelled Orders
+                Kansellerte Bestillinger
               </h3>
               <div className="mt-2 flex items-baseline gap-2">
                 <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-text)]">
@@ -260,10 +260,10 @@ function OrderMetricCards() {
         <div className="relative mt-4 border-t border-[var(--baladi-border)] pt-4">
           <div className="flex items-center justify-between text-sm">
             <span className="text-[var(--baladi-text-muted)]">
-              Refund Pending
+              Refundering Ventende
             </span>
             <span className="font-medium text-[var(--baladi-error)]">
-              {statusStats.cancelledOrders} orders
+              {statusStats.cancelledOrders} bestillinger
             </span>
           </div>
         </div>
@@ -280,17 +280,18 @@ function OrderMetricCards() {
 
             <div>
               <h3 className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-text-muted)]">
-                Total Revenue
+                Total Omsetning
               </h3>
               <div className="mt-2 flex items-baseline gap-2">
                 <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-text)]">
-                  $<AnimatedCounter value={revenueStats.totalRevenue} />
+                  <AnimatedCounter value={revenueStats.totalRevenue} />
+                  kr
                 </span>
                 {revenueStats.totalRevenue > 0 && (
                   <div className="bg-[var(--baladi-success)]/10 flex items-center gap-1 rounded-full px-2 py-1">
                     <ArrowUpRight className="h-3 w-3 text-[var(--baladi-success)]" />
                     <span className="text-xs font-medium text-[var(--baladi-success)]">
-                      Revenue
+                      Omsetning
                     </span>
                   </div>
                 )}
@@ -301,9 +302,12 @@ function OrderMetricCards() {
 
         <div className="relative mt-4 border-t border-[var(--baladi-border)] pt-4">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-[var(--baladi-text-muted)]">Total Cost</span>
+            <span className="text-[var(--baladi-text-muted)]">
+              Total Kostnad
+            </span>
             <span className="font-medium text-[var(--baladi-text)]">
-              $<AnimatedCounter value={revenueStats.totalCost} />
+              <AnimatedCounter value={revenueStats.totalCost} />
+              kr
             </span>
           </div>
         </div>
@@ -320,11 +324,12 @@ function OrderMetricCards() {
 
             <div>
               <h3 className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-text-muted)]">
-                Total Profit
+                Total Fortjeneste
               </h3>
               <div className="mt-2 flex items-baseline gap-2">
                 <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-text)]">
-                  $<AnimatedCounter value={revenueStats.totalProfit} />
+                  <AnimatedCounter value={revenueStats.totalProfit} />
+                  kr
                 </span>
                 {revenueStats.profitMargin > 0 && (
                   <div className="bg-[var(--baladi-accent)]/10 flex items-center gap-1 rounded-full px-2 py-1">
@@ -341,7 +346,7 @@ function OrderMetricCards() {
         <div className="relative mt-4 border-t border-[var(--baladi-border)] pt-4">
           <div className="flex items-center justify-between text-sm">
             <span className="text-[var(--baladi-text-muted)]">
-              Profit Margin
+              Fortjenestemargin
             </span>
             <span className="font-medium text-[var(--baladi-accent)]">
               {revenueStats.profitMargin.toFixed(1)}%
@@ -361,16 +366,17 @@ function OrderMetricCards() {
 
             <div>
               <h3 className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-text-muted)]">
-                Avg. Order Value
+                Gj.snitt Bestillingsverdi
               </h3>
               <div className="mt-2 flex items-baseline gap-2">
                 <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-text)]">
-                  $<AnimatedCounter value={revenueStats.avgOrderValue} />
+                  <AnimatedCounter value={revenueStats.avgOrderValue} />
+                  kr
                 </span>
                 {revenueStats.avgOrderValue > 0 && (
                   <div className="bg-[var(--baladi-secondary)]/10 flex items-center gap-1 rounded-full px-2 py-1">
                     <span className="text-xs font-medium text-[var(--baladi-secondary)]">
-                      AOV
+                      GBV
                     </span>
                   </div>
                 )}
@@ -381,11 +387,9 @@ function OrderMetricCards() {
 
         <div className="relative mt-4 border-t border-[var(--baladi-border)] pt-4">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-[var(--baladi-text-muted)]">
-              Per Customer
-            </span>
+            <span className="text-[var(--baladi-text-muted)]">Per Kunde</span>
             <span className="font-medium text-[var(--baladi-secondary)]">
-              ${revenueStats.avgOrderValue.toFixed(2)}
+              {revenueStats.avgOrderValue.toFixed(2)}kr
             </span>
           </div>
         </div>

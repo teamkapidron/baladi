@@ -20,17 +20,17 @@ function TopCustomers() {
       <div className="mb-4 flex items-center justify-between">
         <div>
           <h3 className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
-            Top Customers
+            Toppkunder
           </h3>
           <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-            Highest value customers by total spending
+            Høyest verdi kunder etter totalt forbruk
           </p>
         </div>
         <Link
           href="/dashboard/customers"
           className="bg-[var(--baladi-primary)]/10 hover:bg-[var(--baladi-primary)]/20 group flex items-center gap-1 rounded-lg px-3 py-1.5 font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-primary)] transition-colors"
         >
-          View All
+          Se alle
           <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
         </Link>
       </div>
@@ -41,17 +41,17 @@ function TopCustomers() {
             <Users className="h-8 w-8 text-[var(--baladi-gray)]" />
           </div>
           <h4 className="mb-2 font-[family-name:var(--font-sora)] text-lg font-semibold text-[var(--baladi-dark)]">
-            No customer data yet
+            Ingen kundedata ennå
           </h4>
           <p className="mb-4 font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-            Top customers will appear here once you have sales data.
+            Toppkunder vil vises her når du har salgsdata.
           </p>
           <Link
             href="/dashboard/customers"
             className="hover:bg-[var(--baladi-primary)]/90 inline-flex items-center gap-2 rounded-lg bg-[var(--baladi-primary)] px-4 py-2 font-[family-name:var(--font-dm-sans)] text-sm font-medium text-white transition-colors"
           >
             <Users className="h-4 w-4" />
-            View Customers
+            Se kunder
           </Link>
         </div>
       ) : (
@@ -95,11 +95,11 @@ function TopCustomers() {
 
                 <div className="text-right">
                   <div className="font-[family-name:var(--font-sora)] text-sm font-bold text-[var(--baladi-dark)]">
-                    ${customer.totalAmount?.toFixed(2) || '0.00'}
+                    {customer.totalAmount?.toFixed(2) || '0.00'} kr
                   </div>
                   <div className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
-                    {customer.totalOrders} order
-                    {customer.totalOrders !== 1 ? 's' : ''}
+                    {customer.totalOrders} bestilling
+                    {customer.totalOrders !== 1 ? 'er' : ''}
                   </div>
                 </div>
               </div>
@@ -111,17 +111,17 @@ function TopCustomers() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-dark)]">
-                    Showing top {customers.length} customers
+                    Viser topp {customers.length} kunder
                   </p>
                   <p className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
-                    Based on total spending amount
+                    Basert på totalt forbruksbeløp
                   </p>
                 </div>
                 <Link
                   href="/dashboard/customers"
                   className="hover:text-[var(--baladi-primary)]/80 font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-primary)]"
                 >
-                  View All Customers →
+                  Se alle kunder →
                 </Link>
               </div>
             </div>

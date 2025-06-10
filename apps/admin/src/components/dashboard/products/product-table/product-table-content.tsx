@@ -26,6 +26,9 @@ import {
 // Hooks
 import { useProduct } from '@/hooks/useProduct';
 
+// Types
+import { Visibility } from '@repo/types/product';
+
 function ProductTableContent() {
   const { products: productsData } = useProduct();
 
@@ -36,13 +39,13 @@ function ProductTableContent() {
   const getStockStatus = (stock: number) => {
     if (stock === 0)
       return {
-        label: 'Out of Stock',
+        label: 'Utsolgt',
         color: 'text-[var(--baladi-error)] bg-red-50',
         badge: 'bg-red-100 text-red-800',
       };
     if (stock < 10)
       return {
-        label: `Low Stock (${stock})`,
+        label: `Lav Lagerbeholdning (${stock})`,
         color: 'text-[var(--baladi-warning)] bg-amber-50',
         badge: 'bg-amber-100 text-amber-800',
       };
@@ -73,22 +76,22 @@ function ProductTableContent() {
           <TableHeader>
             <TableRow className="border-b border-[var(--baladi-border)] bg-[var(--baladi-light)]">
               <TableHead className="sticky top-0 z-50 bg-[var(--baladi-light)] p-4 text-left font-[family-name:var(--font-sora)] text-sm font-semibold text-[var(--baladi-primary)]">
-                Product Details
+                Produktdetaljer
               </TableHead>
               <TableHead className="sticky top-0 z-50 bg-[var(--baladi-light)] p-4 text-left font-[family-name:var(--font-sora)] text-sm font-semibold text-[var(--baladi-primary)]">
-                Pricing & SKU
+                Priser & SKU
               </TableHead>
               <TableHead className="sticky top-0 z-50 bg-[var(--baladi-light)] p-4 text-left font-[family-name:var(--font-sora)] text-sm font-semibold text-[var(--baladi-primary)]">
-                Inventory
+                Lager
               </TableHead>
               <TableHead className="sticky top-0 z-50 bg-[var(--baladi-light)] p-4 text-left font-[family-name:var(--font-sora)] text-sm font-semibold text-[var(--baladi-primary)]">
-                Categories
+                Kategorier
               </TableHead>
               <TableHead className="sticky top-0 z-50 bg-[var(--baladi-light)] p-4 text-left font-[family-name:var(--font-sora)] text-sm font-semibold text-[var(--baladi-primary)]">
                 Status
               </TableHead>
               <TableHead className="sticky top-0 z-50 bg-[var(--baladi-light)] p-4 text-center font-[family-name:var(--font-sora)] text-sm font-semibold text-[var(--baladi-primary)]">
-                Actions
+                Handlinger
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -127,7 +130,7 @@ function ProductTableContent() {
                         <p className="mt-1 line-clamp-2 text-sm text-[var(--baladi-gray)]">
                           {product.shortDescription ||
                             product.description ||
-                            'No description available'}
+                            'Ingen beskrivelse tilgjengelig'}
                         </p>
                         <div className="mt-2 flex items-center space-x-2">
                           <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700">
@@ -150,11 +153,11 @@ function ProductTableContent() {
                       <div className="flex items-center space-x-2">
                         <DollarSign className="h-4 w-4 text-[var(--baladi-success)]" />
                         <span className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-primary)]">
-                          ${product.salePrice?.toFixed(2) || '0.00'}
+                          {product.salePrice?.toFixed(2) || '0.00'} kr
                         </span>
                       </div>
                       <div className="text-sm text-[var(--baladi-gray)]">
-                        Cost: ${product.costPrice?.toFixed(2) || '0.00'}
+                        Kostnad: {product.costPrice?.toFixed(2) || '0.00'} kr
                       </div>
                       {product.vat > 0 && (
                         <span className="inline-flex items-center rounded-md bg-orange-50 px-2 py-1 text-xs font-medium text-orange-700">
@@ -180,16 +183,16 @@ function ProductTableContent() {
                       </div>
                       <div className="space-y-1">
                         <div className="text-sm text-[var(--baladi-gray)]">
-                          Units: {product.noOfUnits || 1}
+                          Enheter: {product.noOfUnits || 1}
                         </div>
                         {product.weight && (
                           <div className="text-xs text-[var(--baladi-gray)]">
-                            Weight: {product.weight}kg
+                            Vekt: {product.weight}kg
                           </div>
                         )}
                         {product.dimensions && (
                           <div className="text-xs text-[var(--baladi-gray)]">
-                            Dimensions: {product.dimensions.length}×
+                            Dimensjoner: {product.dimensions.length}×
                             {product.dimensions.width}×
                             {product.dimensions.height}
                           </div>
@@ -222,7 +225,7 @@ function ProductTableContent() {
                         </div>
                       ) : (
                         <span className="text-sm text-[var(--baladi-gray)]">
-                          No categories
+                          Ingen kategorier
                         </span>
                       )}
                     </div>
@@ -238,14 +241,19 @@ function ProductTableContent() {
                             : 'bg-red-100 text-red-800'
                         }`}
                       >
-                        {product.isActive ? 'Active' : 'Inactive'}
+                        {product.isActive ? 'Aktiv' : 'Inaktiv'}
                       </span>
                       <br />
                       <span
                         className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${getVisibilityBadge(product.visibility)}`}
                       >
-                        {product.visibility?.charAt(0).toUpperCase() +
-                          product.visibility?.slice(1) || 'Unknown'}
+                        {product.visibility === Visibility.BOTH
+                          ? 'Begge'
+                          : product.visibility === Visibility.INTERNAL
+                            ? 'Kun Intern'
+                            : product.visibility === Visibility.EXTERNAL
+                              ? 'Kun Ekstern'
+                              : 'Ukjent'}
                       </span>
                     </div>
                   </TableCell>
@@ -256,14 +264,14 @@ function ProductTableContent() {
                       <Link
                         href={`/dashboard/products/${product.slug}`}
                         className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition-colors hover:bg-blue-100"
-                        title="View Product"
+                        title="Se Produkt"
                       >
                         <Eye className="h-4 w-4" />
                       </Link>
                       <Link
                         href={`/dashboard/products/edit/${product.slug}`}
                         className="bg-[var(--baladi-primary)]/10 hover:bg-[var(--baladi-primary)]/20 flex h-8 w-8 items-center justify-center rounded-lg text-[var(--baladi-primary)] transition-colors"
-                        title="Edit Product"
+                        title="Rediger Produkt"
                       >
                         <EditIcon className="h-4 w-4" />
                       </Link>

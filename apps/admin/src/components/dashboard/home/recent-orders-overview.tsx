@@ -20,17 +20,17 @@ function RecentOrdersOverview() {
       <div className="mb-4 flex items-center justify-between">
         <div>
           <h3 className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
-            Recent Orders
+            Nylige bestillinger
           </h3>
           <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-            Latest customer orders and status updates
+            Siste kundebestillinger og statusoppdateringer
           </p>
         </div>
         <Link
           href="/dashboard/orders"
           className="bg-[var(--baladi-primary)]/10 hover:bg-[var(--baladi-primary)]/20 group flex items-center gap-1 rounded-lg px-3 py-1.5 font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-primary)] transition-colors"
         >
-          View All
+          Se alle
           <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
         </Link>
       </div>
@@ -41,11 +41,11 @@ function RecentOrdersOverview() {
             <ShoppingBag className="h-8 w-8 text-[var(--baladi-gray)]" />
           </div>
           <h4 className="mb-2 font-[family-name:var(--font-sora)] text-lg font-semibold text-[var(--baladi-dark)]">
-            No recent orders
+            Ingen nylige bestillinger
           </h4>
           <p className="mb-4 font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-            Recent customer orders will appear here once you start receiving
-            orders.
+            Nylige kundebestillinger vil vises her når du begynner å motta
+            bestillinger.
           </p>
         </div>
       ) : (
@@ -70,7 +70,7 @@ function RecentOrdersOverview() {
                       <span>{order._id}</span>
                       <span>•</span>
                       <span>
-                        {order.itemsCount} item{order.itemsCount > 1 ? 's' : ''}
+                        {order.itemsCount} vare{order.itemsCount > 1 ? 'r' : ''}
                       </span>
                       <span>•</span>
                       <span>{order.createdAt.toLocaleDateString()}</span>
@@ -81,7 +81,7 @@ function RecentOrdersOverview() {
                 {/* Amount */}
                 <div className="text-right">
                   <div className="font-[family-name:var(--font-dm-sans)] text-sm font-bold text-[var(--baladi-dark)]">
-                    ${order.totalAmount}
+                    {order.totalAmount} kr
                   </div>
                 </div>
               </div>

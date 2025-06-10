@@ -20,17 +20,17 @@ function TopProducts() {
       <div className="mb-4 flex items-center justify-between">
         <div>
           <h3 className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
-            Top Products
+            Topprodukter
           </h3>
           <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-            Best performing products by sales volume
+            Best presterende produkter etter salgsvolum
           </p>
         </div>
         <Link
           href="/dashboard/products"
           className="bg-[var(--baladi-primary)]/10 hover:bg-[var(--baladi-primary)]/20 group flex items-center gap-1 rounded-lg px-3 py-1.5 font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-primary)] transition-colors"
         >
-          View All
+          Se alle
           <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
         </Link>
       </div>
@@ -41,17 +41,17 @@ function TopProducts() {
             <Package className="h-8 w-8 text-[var(--baladi-gray)]" />
           </div>
           <h4 className="mb-2 font-[family-name:var(--font-sora)] text-lg font-semibold text-[var(--baladi-dark)]">
-            No product data yet
+            Ingen produktdata ennå
           </h4>
           <p className="mb-4 font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-            Top performing products will appear here once you have sales data.
+            Toppresterende produkter vil vises her når du har salgsdata.
           </p>
           <Link
             href="/dashboard/products"
             className="hover:bg-[var(--baladi-primary)]/90 inline-flex items-center gap-2 rounded-lg bg-[var(--baladi-primary)] px-4 py-2 font-[family-name:var(--font-dm-sans)] text-sm font-medium text-white transition-colors"
           >
             <Package className="h-4 w-4" />
-            View Products
+            Se produkter
           </Link>
         </div>
       ) : (
@@ -76,9 +76,9 @@ function TopProducts() {
                       {product.product.name}
                     </div>
                     <div className="flex items-center gap-2 font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
-                      <span>{product.totalOrders} orders</span>
+                      <span>{product.totalOrders} bestillinger</span>
                       <span>•</span>
-                      <span>{product.totalQuantity} units sold</span>
+                      <span>{product.totalQuantity} enheter solgt</span>
                     </div>
                   </div>
                 </div>
@@ -88,11 +88,11 @@ function TopProducts() {
                   <div className="flex items-center gap-1">
                     <TrendingUp className="h-3 w-3 text-[var(--baladi-success)]" />
                     <span className="font-[family-name:var(--font-sora)] text-sm font-bold text-[var(--baladi-dark)]">
-                      ${product.product.unitPrice?.toFixed(2) || '0.00'}
+                      {product.product.unitPrice?.toFixed(2) || '0.00'} kr
                     </span>
                   </div>
                   <div className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
-                    Unit Price
+                    Enhetspris
                   </div>
                 </div>
               </div>
@@ -104,17 +104,17 @@ function TopProducts() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-dark)]">
-                    Showing top {products.length} products
+                    Viser topp {products.length} produkter
                   </p>
                   <p className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
-                    Based on sales performance
+                    Basert på salgsytelse
                   </p>
                 </div>
                 <Link
                   href="/dashboard/products"
                   className="hover:text-[var(--baladi-primary)]/80 font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-primary)]"
                 >
-                  View All Products →
+                  Se alle produkter →
                 </Link>
               </div>
             </div>

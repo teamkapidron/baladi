@@ -66,17 +66,17 @@ function StockAlertsList() {
       <div className="mb-4 flex items-center justify-between">
         <div>
           <h3 className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
-            Stock Alerts
+            Lagervarslinger
           </h3>
           <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-            Products requiring immediate attention
+            Produkter som krever umiddelbar oppmerksomhet
           </p>
         </div>
         <Link
           href="/dashboard/inventory"
           className="bg-[var(--baladi-primary)]/10 hover:bg-[var(--baladi-primary)]/20 group flex items-center gap-1 rounded-lg px-3 py-1.5 font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-primary)] transition-colors"
         >
-          Manage
+          Administrer
           <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
         </Link>
       </div>
@@ -90,12 +90,12 @@ function StockAlertsList() {
             </div>
             <div className="bg-[var(--baladi-error)]/10 rounded-full px-2 py-1">
               <span className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-error)]">
-                Critical
+                Kritisk
               </span>
             </div>
           </div>
           <div className="mb-1 font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-gray)]">
-            Out of Stock
+            Utsolgt
           </div>
           <div className="font-[family-name:var(--font-sora)] text-2xl font-bold text-[var(--baladi-dark)]">
             {outOfStockCount}
@@ -110,12 +110,12 @@ function StockAlertsList() {
             </div>
             <div className="bg-[var(--baladi-warning)]/10 rounded-full px-2 py-1">
               <span className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-warning)]">
-                Warning
+                Advarsel
               </span>
             </div>
           </div>
           <div className="mb-1 font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-gray)]">
-            Low Stock
+            Lavt lager
           </div>
           <div className="font-[family-name:var(--font-sora)] text-2xl font-bold text-[var(--baladi-dark)]">
             {lowStockCount}
@@ -129,10 +129,10 @@ function StockAlertsList() {
             <Package className="h-8 w-8 text-[var(--baladi-success)]" />
           </div>
           <h4 className="mb-2 font-[family-name:var(--font-sora)] text-lg font-semibold text-[var(--baladi-dark)]">
-            All products in stock
+            Alle produkter på lager
           </h4>
           <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-            All your products have sufficient stock levels. Great job!
+            Alle produktene dine har tilstrekkelige lagernivå. Flott jobbet!
           </p>
         </div>
       ) : (
@@ -204,7 +204,7 @@ function StockAlertsList() {
                 href="/dashboard/inventory"
                 className="hover:text-[var(--baladi-primary)]/80 font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-primary)]"
               >
-                View {stockAlerts.length - 8} more alerts
+                Se {stockAlerts.length - 8} flere varslinger
               </a>
             </div>
           )}
@@ -227,5 +227,5 @@ function getStatusBgColor(status: 'low' | 'out') {
 }
 
 function getStatusText(status: 'low' | 'out') {
-  return status === 'out' ? 'Out of Stock' : 'Low Stock';
+  return status === 'out' ? 'Utsolgt' : 'Lavt lager';
 }

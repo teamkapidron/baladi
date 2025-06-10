@@ -60,11 +60,9 @@ function InventoryTable() {
       <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">
-              Inventory Overview
-            </h2>
+            <h2 className="text-2xl font-bold text-gray-900">Lageroversikt</h2>
             <p className="mt-1 text-sm text-gray-600">
-              Manage your product stock levels and monitor inventory status
+              Administrer dine produktlagernivåer og overvåk lagerstatus
             </p>
           </div>
 
@@ -73,7 +71,7 @@ function InventoryTable() {
               <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
               <Input
                 type="text"
-                placeholder="Search products..."
+                placeholder="Søk produkter..."
                 className="w-72 rounded-xl border-gray-200 bg-white pl-12 pr-4 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 value={searchQuery}
                 onChange={handleSearch}
@@ -84,13 +82,13 @@ function InventoryTable() {
               <Filter className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
               <Select value={status} onValueChange={handleStatusFilterChange}>
                 <SelectTrigger className="w-full rounded-xl border-gray-200 bg-white py-2.5 pl-11 pr-10 text-sm font-medium shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                  <SelectValue placeholder="All" />
+                  <SelectValue placeholder="Alle" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All</SelectItem>
-                  <SelectItem value="in-stock">In Stock</SelectItem>
-                  <SelectItem value="low-stock">Low Stock</SelectItem>
-                  <SelectItem value="out-of-stock">Out of Stock</SelectItem>
+                  <SelectItem value="all">Alle</SelectItem>
+                  <SelectItem value="in-stock">På Lager</SelectItem>
+                  <SelectItem value="low-stock">Lavt Lager</SelectItem>
+                  <SelectItem value="out-of-stock">Tomt på Lager</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -103,19 +101,19 @@ function InventoryTable() {
           <TableHeader>
             <TableRow className="border-b border-gray-100 bg-gray-50/50">
               <TableHead className="px-8 py-4 text-left">
-                Product Details
+                Produktdetaljer
               </TableHead>
-              <TableHead className="px-4 py-4 text-left">Category</TableHead>
-              <TableHead className="px-4 py-4 text-left">Stock Level</TableHead>
+              <TableHead className="px-4 py-4 text-left">Kategori</TableHead>
+              <TableHead className="px-4 py-4 text-left">Lagernivå</TableHead>
               <TableHead className="px-4 py-4 text-left text-gray-700">
                 Status
               </TableHead>
-              <TableHead className="px-4 py-4 text-left">Price</TableHead>
+              <TableHead className="px-4 py-4 text-left">Pris</TableHead>
               <TableHead className="px-4 py-4 text-left text-gray-700">
-                Last Updated
+                Sist Oppdatert
               </TableHead>
               <TableHead className="px-8 py-4 text-left text-gray-700">
-                Actions
+                Handlinger
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -192,7 +190,7 @@ function InventoryTable() {
                 <TableCell className="px-4 py-6">
                   <div className="space-y-1">
                     <div className="text-lg font-bold text-gray-900">
-                      ${item.productId.price}
+                      {item.productId.price}kr
                     </div>
                   </div>
                 </TableCell>
@@ -207,13 +205,13 @@ function InventoryTable() {
                   <div className="flex items-center gap-2">
                     <button
                       className="group/btn rounded-lg p-2 text-gray-400 transition-all hover:bg-green-50 hover:text-green-600"
-                      title="View Details"
+                      title="Vis Detaljer"
                     >
                       <Eye className="h-4 w-4" />
                     </button>
                     <button
                       className="group/btn rounded-lg p-2 text-gray-400 transition-all hover:bg-gray-100 hover:text-gray-600"
-                      title="More Options"
+                      title="Flere Alternativer"
                     >
                       <MoreHorizontal className="h-4 w-4" />
                     </button>
@@ -244,20 +242,20 @@ function getStatusBadge(quantity: number, shelfLife: number) {
     return (
       <div className="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 ring-1 ring-red-600/20">
         <div className="h-1.5 w-1.5 rounded-full bg-red-500"></div>
-        Out of Stock
+        Tomt på Lager
       </div>
     );
   if (percentage <= 50)
     return (
       <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-700 ring-1 ring-amber-600/20">
         <div className="h-1.5 w-1.5 rounded-full bg-amber-500"></div>
-        Low Stock
+        Lavt Lager
       </div>
     );
   return (
     <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-600/20">
       <div className="h-1.5 w-1.5 rounded-full bg-emerald-500"></div>
-      In Stock
+      På Lager
     </div>
   );
 }

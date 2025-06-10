@@ -35,17 +35,17 @@ function PreviewDialog(props: PreviewDialogProps) {
         <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle className="font-[family-name:var(--font-sora)] text-xl font-bold text-[var(--baladi-dark)]">
-              Poster Preview
+              Plakat Forhåndsvisning
             </DialogTitle>
           </div>
         </DialogHeader>
         <iframe
           srcDoc={poster}
           className="h-[80%] w-full border-0"
-          title="Newsletter Preview"
+          title="Newsletter Forhåndsvisning"
         />
         <div className="flex justify-end">
-          <Button onClick={handleDownload}>Download</Button>
+          <Button onClick={handleDownload}>Last ned</Button>
         </div>
       </DialogContent>
     </Dialog>

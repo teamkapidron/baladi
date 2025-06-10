@@ -28,6 +28,8 @@ export const productSchema = z.object({
   isActive: z.boolean().default(true),
   visibility: z.nativeEnum(Visibility).default(Visibility.BOTH),
 
+  hasVolumeDiscount: z.boolean(),
+
   dimensions: z
     .object({
       length: z.number().min(0, 'Length must be positive'),

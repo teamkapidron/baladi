@@ -42,10 +42,10 @@ function LoginForm() {
     <div className="w-full space-y-6">
       <div className="text-center">
         <h3 className="mb-2 font-[family-name:var(--font-sora)] text-xl font-semibold text-[var(--baladi-dark)]">
-          Sign in to your account
+          Logg inn på kontoen din
         </h3>
         <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-          Enter your credentials to access the admin panel
+          Oppgi legitimasjonen din for å få tilgang til admin-panelet
         </p>
       </div>
 
@@ -58,7 +58,7 @@ function LoginForm() {
               <FormItem className="space-y-2">
                 <FormLabel className="flex items-center gap-2 font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-dark)]">
                   <Mail className="h-4 w-4 text-[var(--baladi-gray)]" />
-                  Email Address
+                  E-postadresse
                 </FormLabel>
                 <FormControl>
                   <Input
@@ -80,13 +80,13 @@ function LoginForm() {
               <FormItem className="space-y-2">
                 <FormLabel className="flex items-center gap-2 font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-dark)]">
                   <Lock className="h-4 w-4 text-[var(--baladi-gray)]" />
-                  Password
+                  Passord
                 </FormLabel>
                 <FormControl>
                   <Input
                     {...field}
                     type="password"
-                    placeholder="Enter your password"
+                    placeholder="Skriv inn passordet ditt"
                     className="focus:ring-[var(--baladi-primary)]/20 w-full rounded-lg border border-[var(--baladi-border)] bg-[var(--baladi-muted)] px-4 py-3 font-[family-name:var(--font-dm-sans)] transition-all duration-200 focus:border-[var(--baladi-primary)] focus:bg-white focus:ring-2"
                   />
                 </FormControl>
@@ -104,11 +104,11 @@ function LoginForm() {
               {loginMutation.isPending ? (
                 <>
                   <Loader2 className="mr-3 h-5 w-5 animate-spin text-white" />
-                  <span>Signing in...</span>
+                  <span>Logger inn...</span>
                 </>
               ) : (
                 <>
-                  <span>Sign In</span>
+                  <span>Logg inn</span>
                   <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
                 </>
               )}

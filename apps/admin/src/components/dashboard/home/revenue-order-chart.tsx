@@ -26,19 +26,19 @@ function RevenueOrdersChart() {
 
   const chartConfig = {
     orderCount: {
-      label: 'Order Count',
+      label: 'Antall bestillinger',
       color: 'var(--baladi-info)',
     },
     totalRevenue: {
-      label: 'Revenue',
+      label: 'Inntekt',
       color: 'var(--baladi-success)',
     },
     totalCost: {
-      label: 'Cost',
+      label: 'Kostnad',
       color: 'var(--baladi-warning)',
     },
     totalProfit: {
-      label: 'Profit',
+      label: 'Fortjeneste',
       color: 'var(--baladi-primary)',
     },
   };
@@ -64,10 +64,10 @@ function RevenueOrdersChart() {
     <div className="h-full rounded-xl bg-white p-6 shadow-lg ring-1 ring-[var(--baladi-border)]">
       <div className="mb-4">
         <h3 className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
-          Daily Revenue & Orders
+          Daglig inntekt og bestillinger
         </h3>
         <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-          Track revenue, costs, profits and order volumes over time
+          Spor inntekt, kostnader, fortjeneste og bestillingsvolum over tid
         </p>
       </div>
 
@@ -89,11 +89,11 @@ function RevenueOrdersChart() {
             </svg>
           </div>
           <h4 className="mb-2 font-[family-name:var(--font-sora)] text-lg font-semibold text-[var(--baladi-dark)]">
-            No revenue data yet
+            Ingen inntektsdata ennå
           </h4>
           <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-            Revenue and order analytics will appear here once you start
-            receiving orders.
+            Inntekts- og bestillingsanalyse vil vises her når du begynner å
+            motta bestillinger.
           </p>
         </div>
       ) : (
@@ -174,8 +174,8 @@ function RevenueOrdersChart() {
                                     chartConfig.totalRevenue.color,
                                 }}
                               />
-                              Revenue: $
-                              {data.totalRevenue?.toLocaleString() || 0}
+                              Inntekt:{' '}
+                              {data.totalRevenue?.toLocaleString() || 0} kr
                             </p>
                             <p className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
                               <span
@@ -184,7 +184,7 @@ function RevenueOrdersChart() {
                                   backgroundColor: chartConfig.orderCount.color,
                                 }}
                               />
-                              Orders: {data.orderCount || 0}
+                              Bestillinger: {data.orderCount || 0}
                             </p>
                             <p className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
                               <span
@@ -193,7 +193,8 @@ function RevenueOrdersChart() {
                                   backgroundColor: chartConfig.totalCost.color,
                                 }}
                               />
-                              Cost: ${data.totalCost?.toLocaleString() || 0}
+                              Kostnad: {data.totalCost?.toLocaleString() || 0}{' '}
+                              kr
                             </p>
                             <p className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
                               <span
@@ -203,7 +204,8 @@ function RevenueOrdersChart() {
                                     chartConfig.totalProfit.color,
                                 }}
                               />
-                              Profit: ${data.totalProfit?.toLocaleString() || 0}
+                              Fortjeneste:{' '}
+                              {data.totalProfit?.toLocaleString() || 0} kr
                             </p>
                           </div>
                         </div>
@@ -271,15 +273,15 @@ function RevenueOrdersChart() {
           <div className="mt-6 grid grid-cols-2 gap-4 border-t border-[var(--baladi-border)] pt-4">
             <div className="bg-[var(--baladi-success)]/5 rounded-lg p-3">
               <p className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-success)]">
-                Total Revenue
+                Total inntekt
               </p>
               <p className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
-                ${totalMetrics.totalRevenue.toLocaleString()}
+                {totalMetrics.totalRevenue.toLocaleString()} kr
               </p>
             </div>
             <div className="bg-[var(--baladi-info)]/5 rounded-lg p-3">
               <p className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-info)]">
-                Total Orders
+                Total bestillinger
               </p>
               <p className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
                 {totalMetrics.orderCount.toLocaleString()}

@@ -76,7 +76,7 @@ function DesktopLayout(props: DesktopLayoutProps) {
                   Baladi
                 </span>
                 <span className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
-                  Admin Panel
+                  Administrasjonsportal
                 </span>
               </div>
             </div>

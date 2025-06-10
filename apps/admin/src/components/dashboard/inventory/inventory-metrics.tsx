@@ -39,18 +39,19 @@ function InventoryMetrics() {
             </div>
             <div className="text-right">
               <p className="text-2xl font-bold text-green-900">
-                $<AnimatedCounter value={metrics.totalInventoryValue} />
+                <AnimatedCounter value={metrics.totalInventoryValue} />
+                kr
               </p>
               <p className="text-sm font-medium text-green-600">
-                Total Inventory Value
+                Total Lagerverdi
               </p>
             </div>
           </div>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-green-700">Asset Worth</span>
+              <span className="text-sm text-green-700">Aktivaverdi</span>
               <span className="text-sm font-semibold text-green-900">
-                ${(metrics.totalInventoryValue / 1000).toFixed(1)}K
+                {(metrics.totalInventoryValue / 1000).toFixed(1)}K kr
               </span>
             </div>
             <div className="h-2 w-full rounded-full bg-green-200">
@@ -72,18 +73,18 @@ function InventoryMetrics() {
                 <AnimatedCounter value={totalStockIssues} />
               </p>
               <p className="text-sm font-medium text-orange-600">
-                Total Stock Issues
+                Totale Lagerproblemer
               </p>
             </div>
           </div>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-orange-700">Items Affected</span>
+              <span className="text-sm text-orange-700">Varer Påvirket</span>
               <div className="flex items-center gap-1">
                 <span className="text-sm font-semibold text-orange-900">
                   <AnimatedCounter value={totalStockIssues} />
                 </span>
-                <span className="text-xs text-orange-600">items</span>
+                <span className="text-xs text-orange-600">varer</span>
               </div>
             </div>
             <div className="h-2 w-full rounded-full bg-orange-200">
@@ -110,7 +111,7 @@ function InventoryMetrics() {
                 <AnimatedCounter value={metrics.lowStockCount} />
               </p>
               <p className="text-sm font-medium text-amber-600">
-                Low Stock Items
+                Lavt Lager Varer
               </p>
             </div>
           </div>
@@ -118,17 +119,17 @@ function InventoryMetrics() {
             <div className="flex items-center justify-between">
               <span className="text-sm text-amber-700">Status</span>
               <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-1 text-xs font-medium text-amber-800">
-                {metrics.lowStockCount > 0 ? 'Needs Attention' : 'Good'}
+                {metrics.lowStockCount > 0 ? 'Trenger Oppmerksomhet' : 'Bra'}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-amber-700">Priority</span>
+              <span className="text-sm text-amber-700">Prioritet</span>
               <span className="text-sm font-semibold text-amber-900">
                 {metrics.lowStockCount > 10
-                  ? 'High'
+                  ? 'Høy'
                   : metrics.lowStockCount > 0
-                    ? 'Medium'
-                    : 'Low'}
+                    ? 'Middels'
+                    : 'Lav'}
               </span>
             </div>
           </div>
@@ -146,20 +147,20 @@ function InventoryMetrics() {
               <p className="text-2xl font-bold text-red-900">
                 <AnimatedCounter value={metrics.outOfStockCount} />
               </p>
-              <p className="text-sm font-medium text-red-600">Out of Stock</p>
+              <p className="text-sm font-medium text-red-600">Tomt på Lager</p>
             </div>
           </div>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-sm text-red-700">Status</span>
               <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800">
-                {metrics.outOfStockCount > 0 ? 'Critical' : 'Good'}
+                {metrics.outOfStockCount > 0 ? 'Kritisk' : 'Bra'}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-red-700">Action Required</span>
+              <span className="text-sm text-red-700">Handling Kreves</span>
               <span className="text-sm font-semibold text-red-900">
-                {metrics.outOfStockCount > 0 ? 'Urgent' : 'None'}
+                {metrics.outOfStockCount > 0 ? 'Haster' : 'Ingen'}
               </span>
             </div>
           </div>

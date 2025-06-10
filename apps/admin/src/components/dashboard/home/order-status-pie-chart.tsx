@@ -45,27 +45,27 @@ function OrderStatusPieChart() {
   const orderData = useMemo(() => {
     return [
       {
-        status: 'Pending',
+        status: 'Avventer',
         count: data.pending,
         color: 'var(--baladi-warning)',
       },
       {
-        status: 'Confirmed',
+        status: 'Bekreftet',
         count: data.confirmed,
         color: 'var(--baladi-info)',
       },
       {
-        status: 'Shipping',
+        status: 'Sendes',
         count: data.shipping,
         color: 'var(--baladi-secondary)',
       },
       {
-        status: 'Delivered',
+        status: 'Levert',
         count: data.delivered,
         color: 'var(--baladi-success)',
       },
       {
-        status: 'Canceled',
+        status: 'Avbrutt',
         count: data.canceled,
         color: 'var(--baladi-error)',
       },
@@ -76,10 +76,10 @@ function OrderStatusPieChart() {
     <div className="h-full rounded-xl bg-white p-4 shadow-lg ring-1 ring-[var(--baladi-border)]">
       <div className="mb-3">
         <h3 className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
-          Order Status Distribution
+          Bestillingsstatus fordeling
         </h3>
         <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-          Overview of all order statuses
+          Oversikt over alle bestillingsstatuser
         </p>
       </div>
 
@@ -87,7 +87,7 @@ function OrderStatusPieChart() {
       <div className="mb-3 grid grid-cols-2 gap-3">
         <div className="bg-[var(--baladi-success)]/10 rounded-md p-2">
           <div className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-success)]">
-            Delivery Rate
+            Leveringsrate
           </div>
           <div className="font-[family-name:var(--font-dm-sans)] text-sm font-bold text-[var(--baladi-success)]">
             {deliveryRate}%
@@ -95,7 +95,7 @@ function OrderStatusPieChart() {
         </div>
         <div className="bg-[var(--baladi-warning)]/10 rounded-md p-2">
           <div className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-warning)]">
-            Pending Rate
+            Avventende rate
           </div>
           <div className="font-[family-name:var(--font-dm-sans)] text-sm font-bold text-[var(--baladi-warning)]">
             {pendingRate}%
@@ -121,10 +121,10 @@ function OrderStatusPieChart() {
             </svg>
           </div>
           <p className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-dark)]">
-            No orders yet
+            Ingen bestillinger ennå
           </p>
           <p className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
-            Order data will appear here once you have orders
+            Bestillingsdata vil vises her når du får bestillinger
           </p>
         </div>
       ) : (
@@ -171,7 +171,7 @@ function OrderStatusPieChart() {
       {/* Compact Status Breakdown */}
       <div className="space-y-1.5">
         <div className="mb-2 font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-dark)]">
-          Status Details
+          Statusdetaljer
         </div>
         {orderData.map((item, index) => {
           const percentage =

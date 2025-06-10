@@ -73,8 +73,25 @@ function getStatusIcon(status: string) {
   }
 }
 
+function getStatusLabel(status: string) {
+  switch (status.toLowerCase()) {
+    case 'pending':
+      return 'Ventende';
+    case 'confirmed':
+      return 'Bekreftet';
+    case 'shipped':
+      return 'Sendt';
+    case 'delivered':
+      return 'Levert';
+    case 'cancelled':
+      return 'Kansellert';
+    default:
+      return status;
+  }
+}
+
 function formatAddress(address: OrderResponse['shippingAddress']) {
-  if (!address) return 'No shipping address';
+  if (!address) return 'Ingen fraktadresse';
   const parts = [
     address.addressLine1,
     address.addressLine2,
@@ -141,22 +158,22 @@ function OrderTableContent() {
           <TableHeader className="border-b border-gray-200 bg-gray-50">
             <TableRow className="border-b border-gray-200">
               <TableHead className="sticky top-0 z-50 border-b border-gray-200 bg-gray-50 p-4 text-left text-sm font-semibold text-gray-900">
-                Order Details
+                Bestillingsdetaljer
               </TableHead>
               <TableHead className="sticky top-0 z-50 border-b border-gray-200 bg-gray-50 p-4 text-left text-sm font-semibold text-gray-900">
-                Customer
+                Kunde
               </TableHead>
               <TableHead className="sticky top-0 z-50 border-b border-gray-200 bg-gray-50 p-4 text-left text-sm font-semibold text-gray-900">
-                Products
+                Produkter
               </TableHead>
               <TableHead className="sticky top-0 z-50 border-b border-gray-200 bg-gray-50 p-4 text-left text-sm font-semibold text-gray-900">
-                Shipping
+                Frakt
               </TableHead>
               <TableHead className="sticky top-0 z-50 border-b border-gray-200 bg-gray-50 p-4 text-left text-sm font-semibold text-gray-900">
                 Status
               </TableHead>
               <TableHead className="sticky top-0 z-50 border-b border-gray-200 bg-gray-50 p-4 text-left text-sm font-semibold text-gray-900">
-                Actions
+                Handlinger
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -188,11 +205,11 @@ function OrderTableContent() {
                       </div>
                       <div className="flex items-center justify-between">
                         <div className="text-lg font-bold text-gray-900">
-                          ${order.totalAmount.toFixed(2)}
+                          {order.totalAmount.toFixed(2)}kr
                         </div>
                         <div className="text-xs text-gray-500">
                           {new Date(order.createdAt).toLocaleDateString(
-                            'en-US',
+                            'nb-NO',
                             {
                               month: 'short',
                               day: 'numeric',
@@ -235,11 +252,11 @@ function OrderTableContent() {
                       <div className="flex items-center space-x-2">
                         <Package className="h-4 w-4 text-gray-400" />
                         <span className="font-medium text-gray-900">
-                          {order.items.length} product
-                          {order.items.length !== 1 ? 's' : ''}
+                          {order.items.length} produkt
+                          {order.items.length !== 1 ? 'er' : ''}
                         </span>
                         <span className="text-sm text-gray-500">
-                          ({totalItems} item{totalItems !== 1 ? 's' : ''})
+                          ({totalItems} vare{totalItems !== 1 ? 'r' : ''})
                         </span>
                       </div>
                       <div className="flex -space-x-2">
@@ -250,7 +267,7 @@ function OrderTableContent() {
                             <div
                               key={itemData._id || itemIndex}
                               className="relative"
-                              title={`${itemData.productId.name} (Qty: ${item.quantity})`}
+                              title={`${itemData.productId.name} (Ant: ${item.quantity})`}
                             >
                               {itemData.productId.images &&
                               itemData.productId.images.length > 0 ? (
@@ -259,7 +276,7 @@ function OrderTableContent() {
                                     width={32}
                                     height={32}
                                     src={itemData.productId.images[0]!}
-                                    alt={itemData.productId.name || 'Product'}
+                                    alt={itemData.productId.name || 'Produkt'}
                                     className="h-8 w-8 rounded-full border-2 border-white object-cover shadow-sm"
                                   />
                                 </div>
@@ -306,7 +323,9 @@ function OrderTableContent() {
                       className={`inline-flex items-center space-x-1 rounded-full border px-3 py-1 text-xs font-medium ${getStatusColor(order.status)}`}
                     >
                       {getStatusIcon(order.status)}
-                      <span className="capitalize">{order.status}</span>
+                      <span className="capitalize">
+                        {getStatusLabel(order.status)}
+                      </span>
                     </Badge>
                   </TableCell>
 
@@ -316,7 +335,7 @@ function OrderTableContent() {
                       <Link
                         href={`/dashboard/orders/${order._id}`}
                         className="group relative"
-                        title="View order details"
+                        title="Vis bestillingsdetaljer"
                       >
                         <Button
                           variant="outline"
@@ -333,7 +352,7 @@ function OrderTableContent() {
                         onClick={() => handleDownloadPickingList(order._id)}
                         disabled={pickingListMutation.isPending}
                         className="h-8 w-8 border-green-200 p-0 text-green-600 transition-all duration-150 hover:border-green-300 hover:bg-green-50"
-                        title="Download picking list"
+                        title="Last ned plukkliste"
                       >
                         {pickingListMutation.isPending ? (
                           <div className="h-4 w-4 animate-spin rounded-full border-2 border-green-600 border-t-transparent"></div>
@@ -348,7 +367,7 @@ function OrderTableContent() {
                         onClick={() => handleDownloadFreightLabel(order._id)}
                         disabled={freightLabelMutation.isPending}
                         className="h-8 w-8 border-purple-200 p-0 text-purple-600 transition-all duration-150 hover:border-purple-300 hover:bg-purple-50"
-                        title="Download freight label"
+                        title="Last ned fraktetikett"
                       >
                         {freightLabelMutation.isPending ? (
                           <div className="h-4 w-4 animate-spin rounded-full border-2 border-purple-600 border-t-transparent"></div>
@@ -371,10 +390,10 @@ function OrderTableContent() {
                     </div>
                     <div>
                       <p className="mb-1 text-lg font-medium text-gray-900">
-                        No orders found
+                        Ingen bestillinger funnet
                       </p>
                       <p className="text-sm text-gray-500">
-                        Orders will appear here when customers place them
+                        Bestillinger vil vises her når kunder legger dem inn
                       </p>
                     </div>
                   </div>

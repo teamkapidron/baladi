@@ -62,7 +62,7 @@ function DiscountsMetrics() {
 
   const metricCards = [
     {
-      title: 'Total Discounts',
+      title: 'Totale Rabatter',
       value: metrics.totalDiscounts,
       icon: Percent,
       gradient: 'from-blue-500 to-blue-600',
@@ -71,7 +71,7 @@ function DiscountsMetrics() {
       iconColor: 'text-blue-600',
     },
     {
-      title: 'Active Discounts',
+      title: 'Aktive Rabatter',
       value: metrics.activeDiscounts,
       icon: TrendingUp,
       gradient: 'from-green-500 to-green-600',
@@ -80,7 +80,7 @@ function DiscountsMetrics() {
       iconColor: 'text-green-600',
     },
     {
-      title: 'Scheduled',
+      title: 'Planlagt',
       value: metrics.scheduledDiscounts,
       icon: Clock,
       gradient: 'from-orange-500 to-orange-600',
@@ -89,7 +89,7 @@ function DiscountsMetrics() {
       iconColor: 'text-orange-600',
     },
     {
-      title: 'Average Discount',
+      title: 'Gjennomsnittlig Rabatt',
       value: `${metrics.averageDiscount.toFixed(1)}%`,
       icon: TrendingDown,
       gradient: 'from-purple-500 to-purple-600',

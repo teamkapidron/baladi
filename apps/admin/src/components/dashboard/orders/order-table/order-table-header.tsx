@@ -6,10 +6,10 @@ function OrderTableHeader() {
       <div className="flex items-center gap-4">
         <div>
           <h2 className="font-[family-name:var(--font-sora)] text-xl font-bold text-[var(--baladi-dark)]">
-            Orders
+            Bestillinger
           </h2>
           <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-            Manage your order database
+            Administrer din bestillingsdatabase
           </p>
         </div>
       </div>

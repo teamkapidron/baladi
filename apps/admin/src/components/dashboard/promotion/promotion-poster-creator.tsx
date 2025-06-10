@@ -39,9 +39,9 @@ interface PromotionPosterCreatorProps {
 }
 
 const formSchema = z.object({
-  title: z.string().min(1, 'Title is required'),
+  title: z.string().min(1, 'Tittel er påkrevd'),
   posterType: z.enum(['new-arrival', 'discounted'], {
-    required_error: 'Please select a poster type',
+    required_error: 'Vennligst velg en plakattype',
   }),
 });
 
@@ -87,10 +87,10 @@ function PromotionPosterCreator(props: PromotionPosterCreatorProps) {
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
-              Create Promotion Poster
+              Opprett Kampanjeplakat
             </CardTitle>
             <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-              Design eye-catching posters for your promotional campaigns
+              Design iøynefallende plakater for dine markedsføringskampanjer
             </p>
           </div>
           <div className="bg-[var(--baladi-primary)]/10 flex h-10 w-10 items-center justify-center rounded-lg">
@@ -104,7 +104,7 @@ function PromotionPosterCreator(props: PromotionPosterCreatorProps) {
           <Card className="bg-[var(--baladi-primary)]/5">
             <CardContent>
               <div className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-primary)]">
-                Selected Products
+                Valgte Produkter
               </div>
               <div className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
                 {selectedProducts.length}
@@ -114,10 +114,10 @@ function PromotionPosterCreator(props: PromotionPosterCreatorProps) {
           <Card className="bg-[var(--baladi-success)]/5">
             <CardContent>
               <div className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-success)]">
-                Poster Ready
+                Plakat Klar
               </div>
               <div className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
-                {form.formState.isValid ? 'Yes' : 'No'}
+                {form.formState.isValid ? 'Ja' : 'Nei'}
               </div>
             </CardContent>
           </Card>
@@ -131,25 +131,25 @@ function PromotionPosterCreator(props: PromotionPosterCreatorProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="font-[family-name:var(--font-dm-sans)] font-medium text-[var(--baladi-dark)]">
-                    Poster Type
+                    Plakattype
                   </FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger className="h-11">
-                        <SelectValue placeholder="Select poster type" />
+                        <SelectValue placeholder="Velg plakattype" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
                       <SelectItem value="new-arrival">
                         <div className="flex items-center gap-2">
                           <Sparkles className="h-4 w-4 text-[var(--baladi-info)]" />
-                          New Arrival
+                          Nyheter
                         </div>
                       </SelectItem>
                       <SelectItem value="discounted">
                         <div className="flex items-center gap-2">
                           <Tag className="h-4 w-4 text-[var(--baladi-accent)]" />
-                          Special Discount
+                          Spesiell Rabatt
                         </div>
                       </SelectItem>
                     </SelectContent>
@@ -165,11 +165,11 @@ function PromotionPosterCreator(props: PromotionPosterCreatorProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="font-[family-name:var(--font-dm-sans)] font-medium text-[var(--baladi-dark)]">
-                    Poster Title
+                    Plakattittel
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Enter an engaging poster title..."
+                      placeholder="Skriv en engasjerende plakattittel..."
                       className="h-11"
                       {...field}
                     />
@@ -190,7 +190,9 @@ function PromotionPosterCreator(props: PromotionPosterCreatorProps) {
                 }
               >
                 <ImageIcon className="h-4 w-4" />
-                {form.formState.isSubmitting ? 'Creating...' : 'Create Poster'}
+                {form.formState.isSubmitting
+                  ? 'Oppretter...'
+                  : 'Opprett Plakat'}
               </Button>
             </div>
           </form>

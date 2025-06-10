@@ -31,7 +31,7 @@ function formatDate(date: Date | string): string {
     month: 'short',
     day: 'numeric',
   };
-  return dateObj.toLocaleDateString('en-US', options);
+  return dateObj.toLocaleDateString('nb-NO', options);
 }
 
 function CustomerTableContent() {
@@ -78,30 +78,30 @@ function CustomerTableContent() {
                         sortedCustomers.length > 0
                       }
                       onChange={toggleSelectAll}
-                      title="Select all customers"
+                      title="Velg alle kunder"
                     />
                   </div>
                 </TableHead>
                 <TableHead className="sticky top-0 z-50 bg-[var(--baladi-light)] p-4 text-left font-[family-name:var(--font-sora)] text-sm font-semibold">
-                  Customer
+                  Kunde
                 </TableHead>
                 <TableHead className="sticky top-0 z-50 bg-[var(--baladi-light)] p-4 text-left font-[family-name:var(--font-sora)] text-sm font-semibold">
-                  Company & Address
+                  Firma og adresse
                 </TableHead>
                 <TableHead className="sticky top-0 z-50 bg-[var(--baladi-light)] p-4 text-left">
-                  Contact Info
+                  Kontaktinfo
                 </TableHead>
                 <TableHead className="sticky top-0 z-50 bg-[var(--baladi-light)] p-4 text-left">
                   Status
                 </TableHead>
                 <TableHead className="sticky top-0 z-50 bg-[var(--baladi-light)] p-4 text-left">
-                  User Type
+                  Brukertype
                 </TableHead>
                 <TableHead className="sticky top-0 z-50 bg-[var(--baladi-light)] p-4 text-left">
-                  Created At
+                  Opprettet
                 </TableHead>
                 <TableHead className="sticky top-0 z-50 bg-[var(--baladi-light)] p-4 text-center font-[family-name:var(--font-sora)] text-sm font-semibold text-[var(--baladi-dark)]">
-                  Actions
+                  Handlinger
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -131,7 +131,7 @@ function CustomerTableContent() {
                           className="focus:ring-[var(--baladi-primary)]/20 h-4 w-4 cursor-pointer rounded border-[var(--baladi-border)] text-[var(--baladi-primary)] transition-colors duration-200 focus:ring-2"
                           checked={isSelected}
                           onChange={() => toggleCustomerSelection(customer._id)}
-                          title={`Select ${customer.name}`}
+                          title={`Velg ${customer.name}`}
                         />
                       </div>
                     </TableCell>
@@ -153,14 +153,15 @@ function CustomerTableContent() {
                     <TableCell className="p-4">
                       <div>
                         <div className="font-[family-name:var(--font-sora)] text-sm font-semibold text-[var(--baladi-dark)]">
-                          {customer.companyName || 'N/A'}
+                          {customer.companyName || 'Ikke tilgjengelig'}
                         </div>
                         <div className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
-                          Org#: {customer.organizationNumber || 'N/A'}
+                          Org#:{' '}
+                          {customer.organizationNumber || 'Ikke tilgjengelig'}
                         </div>
                         <div className="mt-2 flex items-center font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
                           <MapPin className="mr-1.5 h-3 w-3" />
-                          {customer.address || 'No address provided'}
+                          {customer.address || 'Ingen adresse oppgitt'}
                         </div>
                       </div>
                     </TableCell>
@@ -170,16 +171,16 @@ function CustomerTableContent() {
                           {customer.email}
                           {customer.isEmailVerified ? (
                             <span className="bg-[var(--baladi-success)]/10 ml-2 rounded-full px-2 py-0.5 font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-success)]">
-                              Verified
+                              Verifisert
                             </span>
                           ) : (
                             <span className="bg-[var(--baladi-warning)]/10 ml-2 rounded-full px-2 py-0.5 font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-warning)]">
-                              Unverified
+                              Uverifisert
                             </span>
                           )}
                         </div>
                         <div className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
-                          Tel: {customer.phoneNumber || 'N/A'}
+                          Tel: {customer.phoneNumber || 'Ikke tilgjengelig'}
                         </div>
                       </div>
                     </TableCell>
@@ -191,12 +192,12 @@ function CustomerTableContent() {
                             : 'bg-[var(--baladi-warning)]/10 text-[var(--baladi-warning)]'
                         }`}
                       >
-                        {customer.isApprovedByAdmin ? 'Approved' : 'Pending'}
+                        {customer.isApprovedByAdmin ? 'Godkjent' : 'Avventende'}
                       </span>
                     </TableCell>
                     <TableCell className="p-4">
                       <span className="bg-[var(--baladi-primary)]/10 inline-flex items-center rounded-full px-3 py-1 font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-primary)]">
-                        {customer.userType || 'External'}
+                        {customer.userType || 'Ekstern'}
                       </span>
                     </TableCell>
                     <TableCell className="p-4">
@@ -209,7 +210,7 @@ function CustomerTableContent() {
                         <a
                           href={`/dashboard/customers/${customer._id}`}
                           className="group flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--baladi-border)] bg-white text-[var(--baladi-gray)] transition-all duration-200 hover:border-[var(--baladi-primary)] hover:bg-[var(--baladi-primary)] hover:text-white"
-                          title="View Customer"
+                          title="Se kunde"
                         >
                           <Eye className="h-4 w-4" />
                         </a>
@@ -217,7 +218,7 @@ function CustomerTableContent() {
                           <>
                             <button
                               className="border-[var(--baladi-success)]/20 bg-[var(--baladi-success)]/5 group flex h-8 w-8 items-center justify-center rounded-lg border text-[var(--baladi-success)] transition-all duration-200 hover:border-[var(--baladi-success)] hover:bg-[var(--baladi-success)] hover:text-white disabled:opacity-50"
-                              title="Approve Customer"
+                              title="Godkjenn kunde"
                               onClick={() =>
                                 handleApproveCustomer(customer._id)
                               }
@@ -231,7 +232,7 @@ function CustomerTableContent() {
                             </button>
                             <button
                               className="border-[var(--baladi-error)]/20 bg-[var(--baladi-error)]/5 group flex h-8 w-8 items-center justify-center rounded-lg border text-[var(--baladi-error)] transition-all duration-200 hover:border-[var(--baladi-error)] hover:bg-[var(--baladi-error)] hover:text-white disabled:opacity-50"
-                              title="Reject Customer"
+                              title="Avvis kunde"
                               onClick={() => handleRejectCustomer(customer._id)}
                               disabled={isApproving || isRejecting}
                             >
@@ -245,7 +246,7 @@ function CustomerTableContent() {
                         )}
                         <button
                           className="border-[var(--baladi-error)]/20 bg-[var(--baladi-error)]/5 group flex h-8 w-8 items-center justify-center rounded-lg border text-[var(--baladi-error)] transition-all duration-200 hover:border-[var(--baladi-error)] hover:bg-[var(--baladi-error)] hover:text-white"
-                          title="Delete Customer"
+                          title="Slett kunde"
                           onClick={() =>
                             handleDeleteClick(customer._id, customer.name)
                           }
@@ -267,10 +268,10 @@ function CustomerTableContent() {
                       </div>
                       <div>
                         <div className="font-[family-name:var(--font-sora)] text-sm font-semibold text-[var(--baladi-dark)]">
-                          No customers found
+                          Ingen kunder funnet
                         </div>
                         <div className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
-                          Try adjusting your search criteria
+                          Prøv å justere søkekriteriene dine
                         </div>
                       </div>
                     </div>

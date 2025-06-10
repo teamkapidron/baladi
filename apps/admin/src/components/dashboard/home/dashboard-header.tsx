@@ -33,17 +33,17 @@ function DashboardHeader() {
       <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-[family-name:var(--font-sora)] text-2xl font-bold text-[var(--baladi-dark)]">
-            Dashboard Overview
+            Dashbord oversikt
           </h1>
           <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-            Monitor your business performance and key metrics
+            Overvåk din forretningsytelse og nøkkeltall
           </p>
         </div>
 
         <div className="flex items-center gap-2 rounded-lg bg-[var(--baladi-light)] px-3 py-2">
           <Clock className="h-4 w-4 text-[var(--baladi-gray)]" />
           <span className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-            Updated: {format(new Date(), 'MMM d, h:mm a')}
+            Oppdatert: {format(new Date(), 'MMM d, h:mm a')}
           </span>
         </div>
       </div>
@@ -53,7 +53,7 @@ function DashboardHeader() {
           <div className="flex items-center gap-2">
             <Filter className="h-5 w-5 text-[var(--baladi-primary)]" />
             <span className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-dark)]">
-              Time Period:
+              Tidsperiode:
             </span>
           </div>
 
@@ -67,7 +67,7 @@ function DashboardHeader() {
         <div className="flex items-center gap-3">
           <Select value={currentPreset} onValueChange={handlePresetChange}>
             <SelectTrigger className="w-[160px] border-[var(--baladi-border)] bg-white font-[family-name:var(--font-dm-sans)] text-sm hover:border-[var(--baladi-primary)]">
-              <SelectValue placeholder="Select period" />
+              <SelectValue placeholder="Velg periode" />
             </SelectTrigger>
             <SelectContent>
               {presetOptions.map((option) => (
@@ -87,10 +87,10 @@ function DashboardHeader() {
           </div>
           <div>
             <p className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-gray)]">
-              Date Range
+              Datoområde
             </p>
             <p className="font-[family-name:var(--font-dm-sans)] text-sm font-semibold text-[var(--baladi-dark)]">
-              {totalDays} days
+              {totalDays} dager
             </p>
           </div>
         </div>
@@ -101,7 +101,7 @@ function DashboardHeader() {
           </div>
           <div>
             <p className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-gray)]">
-              From Date
+              Fra dato
             </p>
             <p className="font-[family-name:var(--font-dm-sans)] text-sm font-semibold text-[var(--baladi-dark)]">
               {format(dateRange.from, 'MMM d, yyyy')}
@@ -115,7 +115,7 @@ function DashboardHeader() {
           </div>
           <div>
             <p className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-gray)]">
-              To Date
+              Til dato
             </p>
             <p className="font-[family-name:var(--font-dm-sans)] text-sm font-semibold text-[var(--baladi-dark)]">
               {format(dateRange.to, 'MMM d, yyyy')}

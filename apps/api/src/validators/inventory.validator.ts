@@ -24,10 +24,7 @@ export const createInventorySchema = z.object({
   }),
   body: z.object({
     quantity: z.number().min(1, 'Quantity must be greater than 0'),
-    shelfLife: z.object({
-      duration: z.number().min(1, 'Duration must be greater than 0'),
-      unit: z.enum(['days', 'weeks', 'months', 'years']),
-    }),
+    expirationDate: dateSchema.unwrap(),
   }),
 });
 

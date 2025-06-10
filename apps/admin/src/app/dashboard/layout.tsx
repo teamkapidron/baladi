@@ -13,52 +13,52 @@ export default function AdminDashboardLayout(props: AdminDashboardLayoutProps) {
   const sidebarLinks = useMemo<LinkItem[]>(
     () => [
       {
-        title: 'Home',
+        title: 'Hjem',
         href: '/dashboard',
         icon: 'home',
       },
       {
-        title: 'Products',
+        title: 'Produkter',
         href: '/dashboard/products',
         icon: 'package',
       },
       {
-        title: 'Categories',
+        title: 'Kategorier',
         href: '/dashboard/categories',
         icon: 'tag',
       },
       {
-        title: 'Inventory',
+        title: 'Lager',
         href: '/dashboard/inventory',
         icon: 'boxes',
       },
       {
-        title: 'Orders',
+        title: 'Bestillinger',
         href: '/dashboard/orders',
         icon: 'shopping-cart',
       },
       {
-        title: 'Customers',
+        title: 'Kunder',
         href: '/dashboard/customers',
         icon: 'users',
       },
       {
-        title: 'Discounts',
+        title: 'Rabatter',
         href: '/dashboard/discounts',
         icon: 'percent',
       },
       {
-        title: 'Newsletter',
+        title: 'Nyhetsbrev',
         href: '/dashboard/newsletter',
         icon: 'mail',
       },
       {
-        title: 'Promotions',
+        title: 'Kampanjer',
         href: '/dashboard/promotion',
         icon: 'badge-percent',
       },
       {
-        title: 'Settings',
+        title: 'Innstillinger',
         href: '/dashboard/settings',
         icon: 'settings',
       },
@@ -69,22 +69,22 @@ export default function AdminDashboardLayout(props: AdminDashboardLayoutProps) {
   const bottomBarLinks = useMemo<LinkItem[]>(
     () => [
       {
-        title: 'Home',
+        title: 'Hjem',
         href: '/dashboard',
         icon: 'home',
       },
       {
-        title: 'Products',
+        title: 'Produkter',
         href: '/dashboard/products',
         icon: 'package',
       },
       {
-        title: 'Orders',
+        title: 'Bestillinger',
         href: '/dashboard/orders',
         icon: 'shopping-cart',
       },
       {
-        title: 'Customers',
+        title: 'Kunder',
         href: '/dashboard/customers',
         icon: 'users',
       },

@@ -37,10 +37,10 @@ function NewsletterMetrics() {
     <div className="rounded-xl bg-white p-6 shadow-lg ring-1 ring-[var(--baladi-border)]">
       <div className="mb-6">
         <h3 className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
-          Newsletter Performance
+          Nyhetsbrev Ytelse
         </h3>
         <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-          Track subscriber engagement and campaign effectiveness
+          Spor abonnentengasjement og kampanjeeffektivitet
         </p>
       </div>
 
@@ -48,7 +48,7 @@ function NewsletterMetrics() {
       <div className="mb-6 grid grid-cols-2 gap-4">
         <div className="bg-[var(--baladi-success)]/5 rounded-lg p-3">
           <div className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-success)]">
-            Engagement Rate
+            Engasjementsrate
           </div>
           <div className="flex items-center gap-1">
             <span className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
@@ -59,7 +59,7 @@ function NewsletterMetrics() {
         </div>
         <div className="bg-[var(--baladi-info)]/5 rounded-lg p-3">
           <div className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-info)]">
-            Total Reach
+            Total Rekkevidde
           </div>
           <div className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
             {totalReach.toLocaleString()}
@@ -77,7 +77,7 @@ function NewsletterMetrics() {
             </div>
             <div className="bg-[var(--baladi-success)]/10 rounded-full px-2 py-1">
               <span className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-success)]">
-                Active
+                Aktiv
               </span>
             </div>
           </div>
@@ -90,10 +90,10 @@ function NewsletterMetrics() {
 
           <div>
             <p className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-dark)]">
-              Subscribers
+              Abonnenter
             </p>
             <p className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
-              Active newsletter subscribers
+              Aktive nyhetsbrev abonnenter
             </p>
           </div>
         </div>
@@ -106,7 +106,7 @@ function NewsletterMetrics() {
             </div>
             <div className="bg-[var(--baladi-error)]/10 rounded-full px-2 py-1">
               <span className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-error)]">
-                Inactive
+                Inaktiv
               </span>
             </div>
           </div>
@@ -119,10 +119,10 @@ function NewsletterMetrics() {
 
           <div>
             <p className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-dark)]">
-              Unsubscribed
+              Avmeldt
             </p>
             <p className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
-              Users who opted out
+              Brukere som meldte seg av
             </p>
           </div>
         </div>
@@ -135,7 +135,7 @@ function NewsletterMetrics() {
             </div>
             <div className="bg-[var(--baladi-primary)]/10 rounded-full px-2 py-1">
               <span className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-primary)]">
-                Sent
+                Sendt
               </span>
             </div>
           </div>
@@ -148,10 +148,10 @@ function NewsletterMetrics() {
 
           <div>
             <p className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-dark)]">
-              Campaigns
+              Kampanjer
             </p>
             <p className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
-              Total campaigns sent
+              Totale kampanjer sendt
             </p>
           </div>
         </div>
@@ -162,17 +162,17 @@ function NewsletterMetrics() {
         <div className="flex items-center justify-between">
           <div>
             <p className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-dark)]">
-              Newsletter Health Score
+              Nyhetsbrev Helsescore
             </p>
             <p className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
-              Based on engagement and growth metrics
+              Basert på engasjement og vekstmålinger
             </p>
           </div>
           <div className="text-right">
             <div className="flex items-center gap-2">
               <div className="rounded-full bg-[var(--baladi-success)] px-3 py-1">
                 <span className="font-[family-name:var(--font-dm-sans)] text-sm font-bold text-white">
-                  Excellent
+                  Utmerket
                 </span>
               </div>
               <span className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-success)]">

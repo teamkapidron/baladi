@@ -21,10 +21,10 @@ function CustomersHeader() {
             </div>
             <div>
               <h1 className="font-[family-name:var(--font-sora)] text-xl font-bold tracking-tight text-white lg:text-2xl">
-                Customers Dashboard
+                Kunder dashbord
               </h1>
               <p className="font-[family-name:var(--font-dm-sans)] text-sm text-white/80">
-                Monitor and manage all customers activities
+                Overvåk og administrer alle kundeaktiviteter
               </p>
             </div>
           </div>
@@ -33,7 +33,7 @@ function CustomersHeader() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <button className="group flex h-11 items-center gap-2 rounded-lg bg-white px-4 py-2 font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-primary)] shadow-lg transition-all duration-200 hover:scale-105 hover:bg-white/95 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-white/40">
             <Download className="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
-            <span>Export Customers</span>
+            <span>Eksporter kunder</span>
           </button>
         </div>
       </div>

@@ -21,10 +21,10 @@ function DiscountsHeader() {
             </div>
             <div>
               <h1 className="font-[family-name:var(--font-sora)] text-xl font-bold tracking-tight text-white lg:text-2xl">
-                Discounts Dashboard
+                Rabatter Dashboard
               </h1>
               <p className="font-[family-name:var(--font-dm-sans)] text-sm text-white/80">
-                Monitor and manage all discounts activities
+                Overvåk og administrer alle rabattaktiviteter
               </p>
             </div>
           </div>

@@ -53,7 +53,7 @@ function CustomerMetricCards() {
             </div>
             <div className="text-right">
               <p className="mb-1 font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-gray)]">
-                Growth Rate
+                Vekstrate
               </p>
               <div className="flex items-center gap-1">
                 <ArrowUpRight className="h-3 w-3 text-[var(--baladi-success)]" />
@@ -66,7 +66,7 @@ function CustomerMetricCards() {
 
           <div className="space-y-2">
             <h3 className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-gray)]">
-              Total Customers
+              Totale kunder
             </h3>
             <div className="flex items-baseline gap-2">
               <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-dark)]">
@@ -78,7 +78,7 @@ function CustomerMetricCards() {
           <div className="mt-4 border-t border-[var(--baladi-border)] pt-4">
             <div className="flex items-center justify-between">
               <span className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
-                Approved
+                Godkjent
               </span>
               <div className="flex items-center gap-1">
                 <span className="font-[family-name:var(--font-sora)] text-sm font-semibold text-[var(--baladi-dark)]">
@@ -104,14 +104,14 @@ function CustomerMetricCards() {
             </div>
             <div className="bg-[var(--baladi-success)]/10 rounded-full px-3 py-1.5">
               <span className="font-[family-name:var(--font-dm-sans)] text-xs font-semibold text-[var(--baladi-success)]">
-                Active
+                Aktiv
               </span>
             </div>
           </div>
 
           <div className="space-y-2">
             <h3 className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-gray)]">
-              Approved Customers
+              Godkjente kunder
             </h3>
             <div className="flex items-baseline gap-2">
               <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-dark)]">
@@ -123,7 +123,7 @@ function CustomerMetricCards() {
           <div className="mt-4 border-t border-[var(--baladi-border)] pt-4">
             <div className="flex items-center justify-between">
               <span className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
-                Approval Rate
+                Godkjenningsrate
               </span>
               <span className="font-[family-name:var(--font-sora)] text-sm font-semibold text-[var(--baladi-success)]">
                 <AnimatedCounter value={metrics.approvalRate} />%
@@ -143,21 +143,21 @@ function CustomerMetricCards() {
             </div>
             <div className="bg-[var(--baladi-warning)]/10 rounded-full px-3 py-1.5">
               <span className="font-[family-name:var(--font-dm-sans)] text-xs font-semibold text-[var(--baladi-warning)]">
-                Attention
+                Oppmerksomhet
               </span>
             </div>
           </div>
 
           <div className="space-y-2">
             <h3 className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-gray)]">
-              Pending Customers
+              Avventende kunder
             </h3>
             <div className="flex items-baseline gap-2">
               <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-dark)]">
                 <AnimatedCounter value={metrics.pendingCustomers} />
               </span>
               <span className="bg-[var(--baladi-warning)]/10 rounded-full px-2 py-1 font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-warning)]">
-                Review
+                Gjennomgang
               </span>
             </div>
           </div>
@@ -165,7 +165,7 @@ function CustomerMetricCards() {
           <div className="mt-4 border-t border-[var(--baladi-border)] pt-4">
             <div className="flex items-center justify-between">
               <span className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
-                Pending Rate
+                Avventende rate
               </span>
               <span className="font-[family-name:var(--font-sora)] text-sm font-semibold text-[var(--baladi-warning)]">
                 <AnimatedCounter value={metrics.pendingRate} />%
@@ -193,14 +193,14 @@ function CustomerMetricCards() {
 
           <div className="space-y-2">
             <h3 className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-gray)]">
-              Unverified Customers
+              Uverifiserte kunder
             </h3>
             <div className="flex items-baseline gap-2">
               <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-dark)]">
                 <AnimatedCounter value={metrics.unverifiedCustomers} />
               </span>
               <span className="bg-[var(--baladi-error)]/10 rounded-full px-2 py-1 font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-error)]">
-                Action
+                Handling
               </span>
             </div>
           </div>
@@ -208,7 +208,7 @@ function CustomerMetricCards() {
           <div className="mt-4 border-t border-[var(--baladi-border)] pt-4">
             <div className="flex items-center justify-between">
               <span className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
-                Unverified Rate
+                Uverifisert rate
               </span>
               <span className="font-[family-name:var(--font-sora)] text-sm font-semibold text-[var(--baladi-error)]">
                 <AnimatedCounter value={metrics.unverifiedRate} />%

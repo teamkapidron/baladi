@@ -1,8 +1,6 @@
 import { ApiData } from '@/utils/types.util';
 import { Inventory } from '@repo/types/inventory';
 
-export type InventoryBodyRequest = Pick<Inventory, 'quantity' | 'shelfLife'>;
-
 export type InventoryResponse = Omit<Inventory, 'productId'> & {
   productId: {
     _id: string;
@@ -45,7 +43,10 @@ export type GetProductInventoryRequest = ApiData<
 export type CreateInventoryRequest = ApiData<
   {
     productId: string;
-    inventory: InventoryBodyRequest;
+    inventory: {
+      quantity: number;
+      expirationDate: string;
+    };
   },
   {
     inventory: Inventory;

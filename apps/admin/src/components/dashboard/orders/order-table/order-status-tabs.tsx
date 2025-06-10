@@ -57,7 +57,7 @@ function OrderStatusTabs() {
               )}
             />
           </div>
-          <span>All Orders</span>
+          <span>Alle Bestillinger</span>
         </button>
 
         <button
@@ -86,7 +86,7 @@ function OrderStatusTabs() {
               )}
             />
           </div>
-          <span>Pending</span>
+          <span>Ventende</span>
         </button>
 
         <button
@@ -115,7 +115,7 @@ function OrderStatusTabs() {
               )}
             />
           </div>
-          <span>Confirmed</span>
+          <span>Bekreftet</span>
         </button>
 
         <button
@@ -144,7 +144,7 @@ function OrderStatusTabs() {
               )}
             />
           </div>
-          <span>Shipped</span>
+          <span>Sendt</span>
         </button>
 
         <button
@@ -173,7 +173,7 @@ function OrderStatusTabs() {
               )}
             />
           </div>
-          <span>Delivered</span>
+          <span>Levert</span>
         </button>
 
         <button
@@ -202,7 +202,7 @@ function OrderStatusTabs() {
               )}
             />
           </div>
-          <span>Cancelled</span>
+          <span>Kansellert</span>
         </button>
       </div>
     </div>

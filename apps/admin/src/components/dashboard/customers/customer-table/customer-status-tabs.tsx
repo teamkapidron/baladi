@@ -50,7 +50,7 @@ function CustomerStatusTabs() {
               )}
             />
           </div>
-          <span>All Customers</span>
+          <span>Alle kunder</span>
         </button>
 
         <button
@@ -79,7 +79,7 @@ function CustomerStatusTabs() {
               )}
             />
           </div>
-          <span>Approved</span>
+          <span>Godkjent</span>
         </button>
 
         <button
@@ -108,7 +108,7 @@ function CustomerStatusTabs() {
               )}
             />
           </div>
-          <span>Pending</span>
+          <span>Avventende</span>
         </button>
 
         <button
@@ -137,7 +137,7 @@ function CustomerStatusTabs() {
               )}
             />
           </div>
-          <span>Unverified</span>
+          <span>Uverifisert</span>
         </button>
       </div>
     </div>

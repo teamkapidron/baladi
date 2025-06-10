@@ -1,3 +1,5 @@
+import { Metadata } from 'next';
+
 import { Suspense } from 'react';
 
 import DashboardHeader from '@/components/dashboard/home/dashboard-header';
@@ -8,6 +10,10 @@ import StockAlertsList from '@/components/dashboard/home/stock-alert-list';
 import CustomerRegistrationChart from '@/components/dashboard/home/customer-registration-chart';
 import TopCustomers from '@/components/dashboard/home/top-customers';
 import TopProducts from '@/components/dashboard/home/top-products';
+
+export const metadata: Metadata = {
+  title: 'Dashboard',
+};
 
 export default function DashboardPage() {
   return (

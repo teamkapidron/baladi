@@ -22,10 +22,10 @@ function ProductsHeader() {
             </div>
             <div>
               <h1 className="font-[family-name:var(--font-sora)] text-xl font-bold tracking-tight text-white lg:text-2xl">
-                Products Dashboard
+                Produkter Dashboard
               </h1>
               <p className="font-[family-name:var(--font-dm-sans)] text-sm text-white/80">
-                Monitor and manage all products activities
+                Overvåk og administrer alle produktaktiviteter
               </p>
             </div>
           </div>
@@ -37,11 +37,11 @@ function ProductsHeader() {
             className="group flex h-11 items-center gap-2 rounded-lg bg-white px-4 py-2 font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-primary)] shadow-lg transition-all duration-200 hover:scale-105 hover:bg-white/95 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-white/40"
           >
             <Plus className="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
-            <span>Add Product</span>
+            <span>Legg til Produkt</span>
           </Link>
           <button className="group flex h-11 items-center gap-2 rounded-lg bg-white px-4 py-2 font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-primary)] shadow-lg transition-all duration-200 hover:scale-105 hover:bg-white/95 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-white/40">
             <Download className="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
-            <span>Export Products</span>
+            <span>Eksporter Produkter</span>
           </button>
         </div>
       </div>

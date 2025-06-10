@@ -42,7 +42,7 @@ interface NewsletterCreatorProps {
 }
 
 const formSchema = z.object({
-  subject: z.string().min(1, 'Subject is required'),
+  subject: z.string().min(1, 'Emne er påkrevd'),
   products: z.array(z.string()),
   campaignType: z.nativeEnum(CampaignType),
 });
@@ -90,10 +90,10 @@ function NewsletterCreator(props: NewsletterCreatorProps) {
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
-              Create Newsletter Campaign
+              Opprett Nyhetsbrev Kampanje
             </CardTitle>
             <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-              Design and send engaging newsletters to your subscribers
+              Design og send engasjerende nyhetsbrev til dine abonnenter
             </p>
           </div>
           <div className="bg-[var(--baladi-primary)]/10 flex h-10 w-10 items-center justify-center rounded-lg">
@@ -107,7 +107,7 @@ function NewsletterCreator(props: NewsletterCreatorProps) {
           <Card className="bg-[var(--baladi-primary)]/5">
             <CardContent>
               <div className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-primary)]">
-                Selected Products
+                Valgte Produkter
               </div>
               <div className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
                 {selectedProducts.length}
@@ -117,10 +117,10 @@ function NewsletterCreator(props: NewsletterCreatorProps) {
           <Card className="bg-[var(--baladi-success)]/5">
             <CardContent>
               <div className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-success)]">
-                Ready to Send
+                Klar til Sending
               </div>
               <div className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
-                {form.formState.isValid ? 'Yes' : 'No'}
+                {form.formState.isValid ? 'Ja' : 'Nei'}
               </div>
             </CardContent>
           </Card>
@@ -134,7 +134,7 @@ function NewsletterCreator(props: NewsletterCreatorProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="font-[family-name:var(--font-dm-sans)] font-medium text-[var(--baladi-dark)]">
-                    Campaign Type
+                    Kampanjetype
                   </FormLabel>
                   <Select
                     onValueChange={field.onChange}
@@ -142,20 +142,20 @@ function NewsletterCreator(props: NewsletterCreatorProps) {
                   >
                     <FormControl>
                       <SelectTrigger className="h-11">
-                        <SelectValue placeholder="Select campaign type" />
+                        <SelectValue placeholder="Velg kampanjetype" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
                       <SelectItem value={CampaignType.NEW_ARRIVAL}>
                         <div className="flex items-center gap-2">
                           <Sparkles className="h-4 w-4 text-[var(--baladi-info)]" />
-                          New Arrival
+                          Nyheter
                         </div>
                       </SelectItem>
                       <SelectItem value={CampaignType.PROMOTION}>
                         <div className="flex items-center gap-2">
                           <Badge className="h-4 w-4 bg-[var(--baladi-accent)]" />
-                          Product Promotion
+                          Produktkampanje
                         </div>
                       </SelectItem>
                     </SelectContent>
@@ -171,11 +171,11 @@ function NewsletterCreator(props: NewsletterCreatorProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="font-[family-name:var(--font-dm-sans)] font-medium text-[var(--baladi-dark)]">
-                    Email Subject Line
+                    E-post Emnelinje
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Enter a compelling subject line that grabs attention..."
+                      placeholder="Skriv inn en overbevisende emnelinje som fanger oppmerksomhet..."
                       className="h-11"
                       {...field}
                     />
@@ -189,7 +189,7 @@ function NewsletterCreator(props: NewsletterCreatorProps) {
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <CardTitle className="font-[family-name:var(--font-sora)] text-base font-semibold text-[var(--baladi-dark)]">
-                    Newsletter Preview
+                    Nyhetsbrev Forhåndsvisning
                   </CardTitle>
                   <Button
                     type="button"
@@ -203,7 +203,7 @@ function NewsletterCreator(props: NewsletterCreatorProps) {
                     }
                   >
                     <Eye className="h-4 w-4" />
-                    Show Preview
+                    Vis Forhåndsvisning
                   </Button>
                 </div>
               </CardHeader>
@@ -214,7 +214,7 @@ function NewsletterCreator(props: NewsletterCreatorProps) {
                     <iframe
                       srcDoc={preview}
                       className="h-[600px] w-full border-0"
-                      title="Newsletter Preview"
+                      title="Nyhetsbrev Forhåndsvisning"
                     />
                   </div>
                 ) : (
@@ -223,11 +223,11 @@ function NewsletterCreator(props: NewsletterCreatorProps) {
                       <Eye className="h-8 w-8 text-[var(--baladi-primary)]" />
                     </div>
                     <h4 className="mb-2 font-[family-name:var(--font-sora)] text-lg font-semibold text-[var(--baladi-dark)]">
-                      Preview Your Newsletter
+                      Forhåndsvis Ditt Nyhetsbrev
                     </h4>
                     <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-                      Click the &quot;Show Preview&quot; button above to see how
-                      your newsletter will look
+                      Klikk &quot;Vis Forhåndsvisning&quot; knappen ovenfor for
+                      å se hvordan ditt nyhetsbrev vil se ut
                     </p>
                   </div>
                 )}
@@ -238,7 +238,7 @@ function NewsletterCreator(props: NewsletterCreatorProps) {
               <div className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
                 {!form.formState.isValid && (
                   <span className="text-[var(--baladi-error)]">
-                    Please fill all required fields to send newsletter
+                    Vennligst fyll ut alle påkrevde felt for å sende nyhetsbrev
                   </span>
                 )}
               </div>
@@ -252,8 +252,8 @@ function NewsletterCreator(props: NewsletterCreatorProps) {
                 >
                   <Send className="h-4 w-4" />
                   {form.formState.isSubmitting
-                    ? 'Sending...'
-                    : 'Send Newsletter'}
+                    ? 'Sender...'
+                    : 'Send Nyhetsbrev'}
                 </Button>
               </div>
             </div>

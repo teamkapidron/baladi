@@ -57,11 +57,11 @@ function DiscountsTable() {
               <Percent className="h-8 w-8 text-[var(--baladi-primary)]" />
             </div>
             <h3 className="font-[family-name:var(--font-sora)] text-lg font-semibold text-[var(--baladi-text)]">
-              No discounts found
+              Ingen rabatter funnet
             </h3>
             <p className="mt-2 text-sm text-[var(--baladi-gray)]">
-              Create your first discount to start offering promotions to
-              customers.
+              Opprett din første rabatt for å begynne å tilby kampanjer til
+              kunder.
             </p>
           </div>
         </div>
@@ -78,26 +78,26 @@ function DiscountsTable() {
               <TableHead className="font-[family-name:var(--font-sora)] font-semibold text-[var(--baladi-text)]">
                 <div className="flex items-center gap-2">
                   <Package className="h-4 w-4" />
-                  Product ID
+                  Produkt-ID
                 </div>
               </TableHead>
               <TableHead className="font-[family-name:var(--font-sora)] font-semibold text-[var(--baladi-text)]">
                 <div className="flex items-center gap-2">
                   <Percent className="h-4 w-4" />
-                  Discount
+                  Rabatt
                 </div>
               </TableHead>
               <TableHead className="font-[family-name:var(--font-sora)] font-semibold text-[var(--baladi-text)]">
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4" />
-                  Valid Period
+                  Gyldig Periode
                 </div>
               </TableHead>
               <TableHead className="font-[family-name:var(--font-sora)] font-semibold text-[var(--baladi-text)]">
                 Status
               </TableHead>
               <TableHead className="w-[100px] font-[family-name:var(--font-sora)] font-semibold text-[var(--baladi-text)]">
-                Actions
+                Handlinger
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -121,7 +121,7 @@ function DiscountsTable() {
                         {discount.discountValue}%
                       </span>
                       <span className="text-sm text-[var(--baladi-gray)]">
-                        off
+                        av
                       </span>
                     </div>
                   </TableCell>
@@ -129,19 +129,19 @@ function DiscountsTable() {
                     <div className="space-y-1 text-sm">
                       {discount.validFrom && (
                         <div className="text-[var(--baladi-text)]">
-                          From:{' '}
+                          Fra:{' '}
                           {format(new Date(discount.validFrom), 'MMM dd, yyyy')}
                         </div>
                       )}
                       {discount.validTo && (
                         <div className="text-[var(--baladi-text)]">
-                          To:{' '}
+                          Til:{' '}
                           {format(new Date(discount.validTo), 'MMM dd, yyyy')}
                         </div>
                       )}
                       {!discount.validFrom && !discount.validTo && (
                         <div className="text-[var(--baladi-gray)]">
-                          No time limit
+                          Ingen tidsbegrensning
                         </div>
                       )}
                     </div>
@@ -153,7 +153,7 @@ function DiscountsTable() {
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="h-8 w-8 p-0">
-                          <span className="sr-only">Open menu</span>
+                          <span className="sr-only">Åpne meny</span>
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
@@ -165,12 +165,12 @@ function DiscountsTable() {
                           {discount.isActive ? (
                             <>
                               <ToggleLeft className="mr-2 h-4 w-4" />
-                              Make Inactive
+                              Gjør Inaktiv
                             </>
                           ) : (
                             <>
                               <ToggleRight className="mr-2 h-4 w-4" />
-                              Make Active
+                              Gjør Aktiv
                             </>
                           )}
                         </DropdownMenuItem>
@@ -195,16 +195,16 @@ function getDiscountStatus(discount: Discount) {
   const validTo = discount.validTo ? new Date(discount.validTo) : null;
 
   if (!discount.isActive) {
-    return { label: 'Inactive', variant: 'secondary' as const };
+    return { label: 'Inaktiv', variant: 'secondary' as const };
   }
 
   if (validFrom && now < validFrom) {
-    return { label: 'Scheduled', variant: 'outline' as const };
+    return { label: 'Planlagt', variant: 'outline' as const };
   }
 
   if (validTo && now > validTo) {
-    return { label: 'Expired', variant: 'destructive' as const };
+    return { label: 'Utløpt', variant: 'destructive' as const };
   }
 
-  return { label: 'Active', variant: 'default' as const };
+  return { label: 'Aktiv', variant: 'default' as const };
 }

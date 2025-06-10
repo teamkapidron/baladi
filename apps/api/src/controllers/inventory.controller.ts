@@ -78,7 +78,8 @@ export const getProductInventory = asyncHandler(
 export const createInventory = asyncHandler(
   async (req: Request, res: Response) => {
     const { productId } = req.params as CreateInventorySchema['params'];
-    const { quantity, shelfLife } = req.body as CreateInventorySchema['body'];
+    const { quantity, expirationDate } =
+      req.body as CreateInventorySchema['body'];
 
     const product = await Product.findById(productId);
 
@@ -86,16 +87,12 @@ export const createInventory = asyncHandler(
       throw new ErrorHandler(404, 'Product not found', 'NOT_FOUND');
     }
 
-    const expirationDate = new Date(
-      new Date().getTime() +
-        shelfLife.duration * getDurationInMs(shelfLife.unit),
-    );
+    const expiryDate = new Date(expirationDate);
 
     const inventory = await Inventory.create({
       productId,
       quantity,
-      shelfLife,
-      expirationDate,
+      expirationDate: expiryDate,
     });
 
     sendResponse(res, 201, 'Inventory created successfully', {

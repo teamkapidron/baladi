@@ -2,7 +2,7 @@ import { z } from '@repo/ui/lib/form';
 import { Visibility } from '@repo/types/product';
 
 export const productFormSchema = z.object({
-  name: z.string().min(1, 'Product name is required'),
+  name: z.string().min(1, 'Produktnavn er påkrevd'),
   slug: z.string().optional(),
   description: z.string().optional(),
   shortDescription: z.string().optional(),
@@ -10,27 +10,29 @@ export const productFormSchema = z.object({
   sku: z.string().optional(),
   barcode: z.string().optional(),
 
-  vat: z.number().min(0).max(100, 'VAT must be between 0 and 100'),
+  vat: z.number().min(0).max(100, 'MVA må være mellom 0 og 100'),
 
-  costPrice: z.number().min(0, 'Cost price must be positive'),
-  salePrice: z.number().min(0, 'Sale price must be positive'),
-  noOfUnits: z.number().min(0, 'Number of units must be positive'),
+  costPrice: z.number().min(0, 'Kostpris må være positiv'),
+  salePrice: z.number().min(0, 'Salgspris må være positiv'),
+  noOfUnits: z.number().min(0, 'Antall enheter må være positivt'),
 
-  categories: z.array(z.string()).min(1, 'At least one category is required'),
+  categories: z.array(z.string()).min(1, 'Minst én kategori er påkrevd'),
 
   images: z.array(z.string()).optional(),
 
   isActive: z.boolean().default(true),
   visibility: z.nativeEnum(Visibility).default(Visibility.BOTH),
 
+  hasVolumeDiscount: z.boolean().default(true),
+
   dimensions: z
     .object({
-      length: z.number().min(0, 'Length must be positive'),
-      width: z.number().min(0, 'Width must be positive'),
-      height: z.number().min(0, 'Height must be positive'),
+      length: z.number().min(0, 'Lengde må være positiv'),
+      width: z.number().min(0, 'Bredde må være positiv'),
+      height: z.number().min(0, 'Høyde må være positiv'),
     })
     .optional(),
-  weight: z.number().min(0, 'Weight must be positive').optional(),
+  weight: z.number().min(0, 'Vekt må være positiv').optional(),
 
   supplier: z
     .object({
@@ -52,7 +54,7 @@ export enum VAT {
 }
 
 export const vatOptions = [
-  { label: '0 % VAT (MVA 0%)', value: VAT.VAT_0 },
-  { label: '15 % VAT (MVA 15%)', value: VAT.VAT_15 },
-  { label: '25 % VAT (MVA 25%)', value: VAT.VAT_25 },
+  { label: '0 % MVA (MVA 0%)', value: VAT.VAT_0 },
+  { label: '15 % MVA (MVA 15%)', value: VAT.VAT_15 },
+  { label: '25 % MVA (MVA 25%)', value: VAT.VAT_25 },
 ];

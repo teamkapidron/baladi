@@ -6,10 +6,10 @@ function ProductTableHeader() {
       <div className="flex items-center gap-4">
         <div>
           <h2 className="font-[family-name:var(--font-sora)] text-xl font-bold text-[var(--baladi-dark)]">
-            Products
+            Produkter
           </h2>
           <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-            Manage your product database
+            Administrer produktdatabasen din
           </p>
         </div>
       </div>

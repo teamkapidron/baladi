@@ -51,10 +51,10 @@ function NewsletterProductSelection(props: NewsletterProductSelectionProps) {
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
-              Select Products for Newsletter
+              Velg Produkter for Nyhetsbrev
             </CardTitle>
             <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-              Choose products to feature in your next newsletter campaign
+              Velg produkter som skal fremheves i din neste nyhetsbrevkampanje
             </p>
           </div>
           <div className="bg-[var(--baladi-primary)]/10 flex h-10 w-10 items-center justify-center rounded-lg">
@@ -70,8 +70,8 @@ function NewsletterProductSelection(props: NewsletterProductSelectionProps) {
               <div className="flex items-center gap-2">
                 <CheckCircle className="h-5 w-5 text-[var(--baladi-success)]" />
                 <span className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-success)]">
-                  {selectedCount} product{selectedCount > 1 ? 's' : ''} selected
-                  for newsletter
+                  {selectedCount} produkt{selectedCount > 1 ? 'er' : ''} valgt
+                  for nyhetsbrev
                 </span>
               </div>
             </CardContent>
@@ -121,14 +121,14 @@ function NewsletterProductSelection(props: NewsletterProductSelectionProps) {
                           <div className="mt-2 flex flex-wrap items-center gap-2">
                             <Badge variant="secondary" className="text-xs">
                               <Tag className="mr-1 h-3 w-3" />
-                              {product.categories?.[0]?.name ?? 'Uncategorized'}
+                              {product.categories?.[0]?.name ?? 'Ukategorisert'}
                             </Badge>
                           </div>
                         </div>
 
                         {isSelected && (
                           <Badge className="ml-2 bg-[var(--baladi-primary)] text-white">
-                            Selected
+                            Valgt
                           </Badge>
                         )}
                       </div>
@@ -147,11 +147,11 @@ function NewsletterProductSelection(props: NewsletterProductSelectionProps) {
                     <Package className="h-8 w-8 text-[var(--baladi-gray)]" />
                   </div>
                   <h4 className="mb-2 font-[family-name:var(--font-sora)] text-lg font-semibold text-[var(--baladi-dark)]">
-                    No products available
+                    Ingen produkter tilgjengelig
                   </h4>
                   <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-                    Add some products to your inventory to feature them in
-                    newsletters
+                    Legg til noen produkter i lageret ditt for å fremheve dem i
+                    nyhetsbrev
                   </p>
                 </div>
               </CardContent>
@@ -165,11 +165,11 @@ function NewsletterProductSelection(props: NewsletterProductSelectionProps) {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-dark)]">
-                    Ready to feature in newsletter
+                    Klar til å fremheve i nyhetsbrev
                   </p>
                   <p className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
-                    {selectedCount} product{selectedCount > 1 ? 's' : ''} will
-                    be included
+                    {selectedCount} produkt{selectedCount > 1 ? 'er' : ''} vil
+                    bli inkludert
                   </p>
                 </div>
                 <Button
@@ -178,7 +178,7 @@ function NewsletterProductSelection(props: NewsletterProductSelectionProps) {
                   onClick={() => setSelectedProducts([])}
                   className="hover:text-[var(--baladi-primary)]/80 text-[var(--baladi-primary)]"
                 >
-                  Clear Selection
+                  Fjern Valg
                 </Button>
               </div>
             </CardContent>

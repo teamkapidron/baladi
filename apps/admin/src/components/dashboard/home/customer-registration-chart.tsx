@@ -25,11 +25,11 @@ function CustomerRegistrationChart() {
 
   const chartConfig = {
     newRegistrations: {
-      label: 'New Registrations',
+      label: 'Nye registreringer',
       color: 'var(--baladi-primary)',
     },
     totalUsers: {
-      label: 'Total Users',
+      label: 'Totale brukere',
       color: 'var(--baladi-secondary)',
     },
   };
@@ -70,10 +70,10 @@ function CustomerRegistrationChart() {
     <div className="h-full rounded-xl bg-white p-6 shadow-lg ring-1 ring-[var(--baladi-border)]">
       <div className="mb-4">
         <h3 className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
-          Customer Registration
+          Kunderegistrering
         </h3>
         <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-          Track new user registrations and total user growth over time
+          Spor nye brukerregistreringer og total brukervekst over tid
         </p>
       </div>
 
@@ -83,11 +83,11 @@ function CustomerRegistrationChart() {
             <Users className="h-8 w-8 text-[var(--baladi-gray)]" />
           </div>
           <h4 className="mb-2 font-[family-name:var(--font-sora)] text-lg font-semibold text-[var(--baladi-dark)]">
-            No registration data yet
+            Ingen registreringsdata ennå
           </h4>
           <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-            Customer registration analytics will appear here once users start
-            signing up.
+            Kunderegistreringsanalyse vil vises her når brukere begynner å
+            registrere seg.
           </p>
         </div>
       ) : (
@@ -104,10 +104,10 @@ function CustomerRegistrationChart() {
               </div>
               <div>
                 <p className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-dark)]">
-                  User Growth
+                  Brukervekst
                 </p>
                 <p className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
-                  Overall period growth
+                  Samlet periodisk vekst
                 </p>
               </div>
             </div>
@@ -219,7 +219,7 @@ function CustomerRegistrationChart() {
                                     chartConfig.newRegistrations.color,
                                 }}
                               />
-                              New Users: {data.newRegistrations}
+                              Nye brukere: {data.newRegistrations}
                             </p>
                             <p className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
                               <span
@@ -228,7 +228,7 @@ function CustomerRegistrationChart() {
                                   backgroundColor: chartConfig.totalUsers.color,
                                 }}
                               />
-                              Total Users:{' '}
+                              Totale brukere:{' '}
                               {data.totalUsers?.toLocaleString() || 0}
                             </p>
                           </div>
@@ -270,7 +270,7 @@ function CustomerRegistrationChart() {
           <div className="mt-6 grid grid-cols-2 gap-4 border-t border-[var(--baladi-border)] pt-4">
             <div className="bg-[var(--baladi-primary)]/5 rounded-lg p-3">
               <p className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-primary)]">
-                New Registrations
+                Nye registreringer
               </p>
               <p className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
                 {totalNewRegistrations.toLocaleString()}
@@ -278,7 +278,7 @@ function CustomerRegistrationChart() {
             </div>
             <div className="bg-[var(--baladi-secondary)]/5 rounded-lg p-3">
               <p className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-secondary)]">
-                Total Users
+                Totale brukere
               </p>
               <p className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
                 {totalUsers.toLocaleString()}
