@@ -491,14 +491,10 @@ export const getOrderRevenueStats = asyncHandler(
       },
     ]);
 
-    if (!revenueStats) {
-      throw new ErrorHandler(404, 'No revenue stats found', 'NOT_FOUND');
-    }
-
     sendResponse(res, 200, 'Order revenue stats fetched successfully', {
-      totalRevenue: revenueStats.totalRevenue,
-      totalCost: revenueStats.totalCost,
-      totalProfit: revenueStats.totalProfit,
+      totalRevenue: revenueStats?.totalRevenue ?? 0,
+      totalCost: revenueStats?.totalCost ?? 0,
+      totalProfit: revenueStats?.totalProfit ?? 0,
     });
   },
 );
