@@ -6,7 +6,7 @@ import CustomerMetricCards from '@/components/dashboard/customers/customer-metri
 import CustomersTable from '@/components/dashboard/customers/customer-table/customers-table';
 
 export const metadata: Metadata = {
-  title: 'Customers',
+  title: 'Kunder',
 };
 
 export default function CustomersPage() {

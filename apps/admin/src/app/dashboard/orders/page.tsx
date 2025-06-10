@@ -6,7 +6,7 @@ import OrderMetricCards from '@/components/dashboard/orders/order-metric-card';
 import OrderTable from '@/components/dashboard/orders/order-table/order-table';
 
 export const metadata: Metadata = {
-  title: 'Orders',
+  title: 'Ordrer',
 };
 
 export default function OrdersPage() {

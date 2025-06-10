@@ -36,11 +36,11 @@ export interface UseDatePresetsReturn {
 }
 
 export const presetOptions: readonly DatePresetOption[] = [
-  { value: '7d' as const, label: 'Last 7 days', days: 7 },
-  { value: '14d' as const, label: 'Last 14 days', days: 14 },
-  { value: '30d' as const, label: 'Last 30 days', days: 30 },
-  { value: '1y' as const, label: 'Last year', days: 365 },
-  { value: 'prev_year' as const, label: 'Previous year', days: 0 },
+  { value: '7d' as const, label: 'Siste 7 dager', days: 7 },
+  { value: '14d' as const, label: 'Siste 14 dager', days: 14 },
+  { value: '30d' as const, label: 'Siste 30 dager', days: 30 },
+  { value: '1y' as const, label: 'Siste år', days: 365 },
+  { value: 'prev_year' as const, label: 'Forrige år', days: 0 },
 ] as const;
 
 export function useDatePresets({
@@ -120,7 +120,7 @@ export function useDatePresets({
 
   const getDisplayText = useCallback((): string => {
     const preset = presetOptions.find((p) => p.value === currentPreset);
-    return preset?.label || 'Last 30 days';
+    return preset?.label || 'Siste 30 dager';
   }, [currentPreset]);
 
   const totalDays = useMemo(() => {

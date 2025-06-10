@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 import PromotionBody from '@/components/dashboard/promotion/promotion-body';
 
 export const metadata: Metadata = {
-  title: 'Product Promotion Poster',
+  title: 'Produktpromosjon',
 };
 
 export default function PromotionPage() {

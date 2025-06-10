@@ -1,6 +1,11 @@
+import { Metadata } from 'next';
 import { Suspense } from 'react';
 
 import ProductForm from '@/components/dashboard/products/product-form/product-form';
+
+export const metadata: Metadata = {
+  title: 'Legg til produkt',
+};
 
 export default function NewProductPage() {
   return (

@@ -6,7 +6,7 @@ import CategoryTree from '@/components/dashboard/categories/category-tree/catego
 import ProductList from '@/components/dashboard/categories/product-list/product-list';
 
 export const metadata: Metadata = {
-  title: 'Categories',
+  title: 'Kategorier',
 };
 
 export default function CategoriesPage() {

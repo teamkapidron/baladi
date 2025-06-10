@@ -6,7 +6,7 @@ import MetricCards from '@/components/dashboard/products/metric-cards';
 import ProductTable from '@/components/dashboard/products/product-table/product-table';
 
 export const metadata: Metadata = {
-  title: 'Products',
+  title: 'Produkter',
 };
 
 export default function ProductsPage() {

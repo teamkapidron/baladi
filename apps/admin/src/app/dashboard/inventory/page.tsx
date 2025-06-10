@@ -6,7 +6,7 @@ import InventoryMetrics from '@/components/dashboard/inventory/inventory-metrics
 import InventoryTable from '@/components/dashboard/inventory/inventory-table';
 
 export const metadata: Metadata = {
-  title: 'Inventory',
+  title: 'Lager',
 };
 
 export default function InventoryPage() {

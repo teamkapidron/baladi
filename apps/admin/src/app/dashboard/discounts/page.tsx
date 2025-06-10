@@ -6,7 +6,7 @@ import DiscountsMetrics from '@/components/dashboard/discounts/discounts-metrics
 import DiscountsTable from '@/components/dashboard/discounts/discounts-table';
 
 export const metadata: Metadata = {
-  title: 'Discounts',
+  title: 'Rabatter',
 };
 
 export default function DiscountsPage() {

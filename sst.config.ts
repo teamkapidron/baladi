@@ -17,5 +17,6 @@ export default $config({
     await import('./stacks/ApiStack');
     await import('./stacks/AdminStack');
     await import('./stacks/UserStack');
+    await import('./stacks/StorageStack');
   },
 });
