@@ -25,8 +25,6 @@ const dmSans = DM_Sans({
   variable: '--font-dm-sans',
 });
 
-export const dynamic = 'force-dynamic';
-
 interface RootLayoutProps {
   children: React.ReactNode;
 }
