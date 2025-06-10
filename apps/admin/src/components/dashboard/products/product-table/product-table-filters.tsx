@@ -24,7 +24,7 @@ function ProductTableFilters() {
     usePagination();
 
   const { products } = useProduct();
-  const { search, handleSearchFilterChange } = useProductFilters();
+  const { search, changeSearch } = useProductFilters();
 
   const currentPage = Number(page);
   const pageSize = Number(limit);
@@ -36,9 +36,9 @@ function ProductTableFilters() {
   const handleSearch = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setSearchQuery(e.target.value);
-      handleSearchFilterChange(e.target.value);
+      changeSearch(e.target.value);
     },
-    [handleSearchFilterChange],
+    [changeSearch],
   );
 
   const handlePageInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -1,27 +1,22 @@
 import debounce from 'lodash.debounce';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { useGetParams, useUpdateParams } from '@repo/ui/hooks/useParams';
+import { parseAsString, parseAsStringEnum, useQueryState } from 'nuqs';
+import { useCallback, useEffect, useRef } from 'react';
+
 import { Visibility } from '@repo/types/product';
 
 export function useProductFilters(debounceDelay = 400) {
-  const { getParam } = useGetParams();
-  const updateParams = useUpdateParams();
-
-  const search = useMemo(() => {
-    return getParam('search') ?? undefined;
-  }, [getParam]);
-
-  const category = useMemo(() => {
-    return getParam('category') ?? undefined;
-  }, [getParam]);
-
-  const visibility = useMemo(() => {
-    return getParam('visibility') as Visibility;
-  }, [getParam]);
+  const [search, setSearch] = useQueryState('search', parseAsString);
+  const [category, setCategory] = useQueryState('category', parseAsString);
+  const [visibility, setVisibility] = useQueryState(
+    'visibility',
+    parseAsStringEnum<Visibility>(Object.values(Visibility)).withDefault(
+      Visibility.BOTH,
+    ),
+  );
 
   const debouncedSearchUpdateRef = useRef(
     debounce((search: string) => {
-      updateParams({ search });
+      setSearch(search);
     }, debounceDelay),
   );
 
@@ -37,20 +32,14 @@ export function useProductFilters(debounceDelay = 400) {
     debouncedSearchUpdateRef.current(search);
   }, []);
 
-  const handleCategoryFilterChange = useCallback(
-    (category: string) => {
-      updateParams({ category });
-    },
-    [updateParams],
-  );
-
   return {
     visibility,
+    changeVisibility: setVisibility,
 
     search,
-    handleSearchFilterChange,
+    changeSearch: handleSearchFilterChange,
 
     category,
-    handleCategoryFilterChange,
+    changeCategory: setCategory,
   };
 }

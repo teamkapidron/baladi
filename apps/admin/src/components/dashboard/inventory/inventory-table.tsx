@@ -110,7 +110,7 @@ function InventoryTable() {
               </TableHead>
               <TableHead className="px-4 py-4 text-left">Pris</TableHead>
               <TableHead className="px-4 py-4 text-left text-gray-700">
-                Sist Oppdatert
+                Utløpsdato
               </TableHead>
               <TableHead className="px-8 py-4 text-left text-gray-700">
                 Handlinger
@@ -157,21 +157,19 @@ function InventoryTable() {
                       <span className="text-lg font-bold text-gray-900">
                         {item.quantity}
                       </span>
-                      <span className="text-sm text-gray-500">
-                        / {item.shelfLife.duration} {item.shelfLife.unit}
-                      </span>
+                      <span className="text-sm text-gray-500">enheter</span>
                     </div>
                     <div className="w-24">
                       <div className="h-2 rounded-full bg-gray-200">
                         <div
                           className={`h-2 rounded-full transition-all duration-300 ${getStockProgressColor(
                             item.quantity,
-                            item.shelfLife.duration,
+                            item.expirationDate,
                           )}`}
                           style={{
                             width: getStockProgressWidth(
                               item.quantity,
-                              item.shelfLife.duration,
+                              item.expirationDate,
                             ),
                           }}
                         ></div>
@@ -182,8 +180,8 @@ function InventoryTable() {
 
                 <TableCell className="px-4 py-6">
                   <div className="flex items-center gap-3">
-                    {getStatusIcon(item.quantity, item.shelfLife.duration)}
-                    {getStatusBadge(item.quantity, item.shelfLife.duration)}
+                    {getStatusIcon(item.quantity, item.expirationDate)}
+                    {getStatusBadge(item.quantity, item.expirationDate)}
                   </div>
                 </TableCell>
 
@@ -197,7 +195,7 @@ function InventoryTable() {
 
                 <TableCell className="px-4 py-6">
                   <div className="text-sm text-gray-600">
-                    {formatDate(item.updatedAt, 'MMM d, yyyy')}
+                    {formatDate(item.expirationDate, 'MMM d, yyyy')}
                   </div>
                 </TableCell>
 
@@ -228,28 +226,36 @@ function InventoryTable() {
 
 export default memo(InventoryTable);
 
-function getStatusIcon(quantity: number, shelfLife: number) {
-  const percentage = (quantity / (shelfLife * 2)) * 100;
-  if (percentage <= 25) return <XCircle className="h-5 w-5 text-red-500" />;
-  if (percentage <= 50)
+function getDaysUntilExpiration(expirationDate: Date) {
+  const today = new Date();
+  const diffTime = expirationDate.getTime() - today.getTime();
+  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+}
+
+function getStatusIcon(quantity: number, expirationDate: Date) {
+  const daysUntilExpiry = getDaysUntilExpiration(expirationDate);
+
+  if (quantity === 0) return <XCircle className="h-5 w-5 text-red-500" />;
+  if (daysUntilExpiry <= 7 || quantity <= 5)
     return <AlertTriangle className="h-5 w-5 text-amber-500" />;
   return <CheckCircle className="h-5 w-5 text-emerald-500" />;
 }
 
-function getStatusBadge(quantity: number, shelfLife: number) {
-  const percentage = (quantity / (shelfLife * 2)) * 100;
-  if (percentage <= 25)
+function getStatusBadge(quantity: number, expirationDate: Date) {
+  const daysUntilExpiry = getDaysUntilExpiration(expirationDate);
+
+  if (quantity === 0)
     return (
       <div className="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 ring-1 ring-red-600/20">
         <div className="h-1.5 w-1.5 rounded-full bg-red-500"></div>
         Tomt på Lager
       </div>
     );
-  if (percentage <= 50)
+  if (daysUntilExpiry <= 7 || quantity <= 5)
     return (
       <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-700 ring-1 ring-amber-600/20">
         <div className="h-1.5 w-1.5 rounded-full bg-amber-500"></div>
-        Lavt Lager
+        {daysUntilExpiry <= 7 ? 'Utløper Snart' : 'Lavt Lager'}
       </div>
     );
   return (
@@ -260,16 +266,25 @@ function getStatusBadge(quantity: number, shelfLife: number) {
   );
 }
 
-function getStockProgressColor(current: number, min: number) {
-  const percentage = (current / (min * 2)) * 100;
-  if (percentage <= 25) return 'bg-red-500';
-  if (percentage <= 50) return 'bg-amber-500';
+function getStockProgressColor(quantity: number, expirationDate: Date) {
+  const daysUntilExpiry = getDaysUntilExpiration(expirationDate);
+
+  if (quantity === 0) return 'bg-red-500';
+  if (daysUntilExpiry <= 7 || quantity <= 5) return 'bg-amber-500';
   return 'bg-emerald-500';
 }
 
-function getStockProgressWidth(current: number, min: number) {
-  const percentage = Math.min((current / (min * 2)) * 100, 100);
-  return `${percentage}%`;
+function getStockProgressWidth(quantity: number, expirationDate: Date) {
+  const daysUntilExpiry = getDaysUntilExpiration(expirationDate);
+
+  if (quantity === 0) return '0%';
+
+  const quantityPercentage = Math.min((quantity / 20) * 100, 100);
+  const expiryPercentage = Math.min((daysUntilExpiry / 30) * 100, 100);
+
+  const finalPercentage = Math.min(quantityPercentage, expiryPercentage);
+
+  return `${Math.max(finalPercentage, 5)}%`;
 }
 
 function getCategoryColor(category: string) {

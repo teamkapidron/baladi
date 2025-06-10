@@ -124,7 +124,13 @@ export function useProduct() {
 
   const { data: products, isLoading } = useQuery({
     queryKey: [ReactQueryKeys.GET_ALL_PRODUCTS, page, limit, search, category],
-    queryFn: () => getAllProducts({ page, limit, search, category }),
+    queryFn: () =>
+      getAllProducts({
+        page,
+        limit,
+        search: search ?? undefined,
+        category: category ?? undefined,
+      }),
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
   });

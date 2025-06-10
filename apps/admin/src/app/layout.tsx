@@ -1,5 +1,6 @@
 import '@/styles/globals.css';
 import { Sora, DM_Sans } from 'next/font/google';
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { Toaster } from '@repo/ui/components/base/sonner';
 import ReactQueryProvider from '@/providers/react-query-provider';
 
@@ -33,8 +34,10 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <html lang="en" className={`${sora.variable} ${dmSans.variable}`}>
       <body className="font-dm-sans">
         <ReactQueryProvider>
-          <main>{children}</main>
-          <Toaster richColors />
+          <NuqsAdapter>
+            <main>{children}</main>
+            <Toaster richColors />
+          </NuqsAdapter>
         </ReactQueryProvider>
       </body>
     </html>
