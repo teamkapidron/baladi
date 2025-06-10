@@ -1,5 +1,7 @@
 export default {
-  middleware: {
-    external: true,
+  default: {
+    middleware: {
+      external: true,
+    },
   },
 };
