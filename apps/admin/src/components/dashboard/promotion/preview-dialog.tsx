@@ -9,6 +9,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from '@repo/ui/components/base/dialog';
 import { Button } from '@repo/ui/components/base/button';
 
@@ -31,7 +32,7 @@ function PreviewDialog(props: PreviewDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="h-[80%] w-[90%]">
+      <DialogContent className="w-[90%]">
         <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle className="font-[family-name:var(--font-sora)] text-xl font-bold text-[var(--baladi-dark)]">
@@ -39,14 +40,16 @@ function PreviewDialog(props: PreviewDialogProps) {
             </DialogTitle>
           </div>
         </DialogHeader>
-        <iframe
-          srcDoc={poster}
-          className="h-[80%] w-full border-0"
-          title="Newsletter Forhåndsvisning"
-        />
-        <div className="flex justify-end">
-          <Button onClick={handleDownload}>Last ned</Button>
+        <div className="h-[70svh]">
+          <iframe
+            srcDoc={poster}
+            className="h-full w-full border-0"
+            title="Newsletter Forhåndsvisning"
+          />
         </div>
+        <DialogFooter>
+          <Button onClick={handleDownload}>Last ned</Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

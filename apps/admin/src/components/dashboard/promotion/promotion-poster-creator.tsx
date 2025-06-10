@@ -202,7 +202,7 @@ function PromotionPosterCreator(props: PromotionPosterCreatorProps) {
       <PreviewDialog
         open={isPreviewOpen}
         onOpenChange={setIsPreviewOpen}
-        poster={poster ?? ''}
+        poster={poster?.[0] ?? ''}
         title={form.getValues('title')}
       />
     </Card>
