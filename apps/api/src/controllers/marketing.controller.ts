@@ -11,7 +11,10 @@ import {
   newArrivalTemplate,
   productPromotionTemplate,
 } from '@/templates/newsletter.template';
-import { promotionPosterTemplate } from '@/templates/poster.template';
+import {
+  multiProductPromotionTemplate,
+  promotionPosterTemplate,
+} from '@/templates/poster.template';
 
 // Handlers
 import { asyncHandler } from '@/handlers/async.handler';
@@ -111,14 +114,39 @@ export const previewPromotionPoster = asyncHandler(
       tagline: 'Buy 3 or more and get 10% off',
       promotionTitle: 'Special Offer',
     }));
+    if (productsData.length > 3) {
+      throw new ErrorHandler(
+        400,
+        'You can only select up to 3 products',
+        'BAD_REQUEST',
+      );
+    }
 
-    const posters = productsData.map((product) => {
-      const html = promotionPosterTemplate(product);
-      return html;
-    });
+    if (productsData.length === 1) {
+      const posters = productsData.map((product) => {
+        const html = promotionPosterTemplate(product);
+        return html;
+      });
+      return sendResponse(
+        res,
+        200,
+        'Promotion poster preview fetched successfully',
+        {
+          html: posters,
+        },
+      );
+    }
+
+    const html = [
+      multiProductPromotionTemplate({
+        promotionTitle: 'Special Offer',
+        tagline: 'Buy 3 or more and get 10% off',
+        items: productsData,
+      }),
+    ];
 
     sendResponse(res, 200, 'Promotion poster preview fetched successfully', {
-      html: posters,
+      html,
     });
   },
 );
