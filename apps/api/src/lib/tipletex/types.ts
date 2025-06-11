@@ -10,5 +10,5 @@ export interface TripletexClientConfig {
 export interface DefaultTripletexInputs {
   from?: number;
   count?: number;
-  sorting?: string;
+  sorting?: Date;
 }

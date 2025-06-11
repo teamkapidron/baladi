@@ -31,7 +31,7 @@ export abstract class TripletexBase {
     const sessionToken = await this.getToken();
     const baseUrl = this.config.baseUrl ?? defaultBaseUrl;
     const url = `${baseUrl.replace(/\/$/, '')}${path}`;
-
+    console.log(url);
     const basicAuth = Buffer.from(
       [this.config.organizationId ?? '0', sessionToken].join(':'),
     ).toString('base64');
@@ -41,22 +41,6 @@ export abstract class TripletexBase {
       headers: {
         'User-Agent': this.config.userAgent ?? 'baladi/1.0.0',
         Authorization: `Basic ${basicAuth}`,
-        ...options.headers,
-      },
-    });
-  }
-
-  protected async unauthenticatedRequest<T>(
-    path: string,
-    options: RequestOptions = {},
-  ): Promise<T> {
-    const baseUrl = this.config.baseUrl ?? defaultBaseUrl;
-    const url = `${baseUrl.replace(/\/$/, '')}${path}`;
-
-    return makeRequest<T>(url, {
-      ...options,
-      headers: {
-        'User-Agent': this.config.userAgent ?? 'baladi/1.0.0',
         ...options.headers,
       },
     });
@@ -86,7 +70,8 @@ export abstract class TripletexBase {
       return this.sessionToken;
     }
 
-    const expirationDate = this.config.expirationDate ?? addDays(new Date(), 2);
+    const expirationDate =
+      this.config.expirationDate ?? addDays(new Date(), 2).toString();
 
     if (!this.config.employeeToken) {
       throw new Error('employeeToken is required in config');
@@ -99,7 +84,7 @@ export abstract class TripletexBase {
       const tokenResponse = await this.tokenClient.createSessionToken({
         employeeToken: this.config.employeeToken,
         consumerToken: this.config.consumerToken,
-        expirationDate,
+        expirationDate: addDays(new Date(), 2),
       });
 
       this.sessionToken = tokenResponse.value.token;

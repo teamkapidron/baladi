@@ -21,9 +21,9 @@ export const productSchema = z.object({
   costExcludingVatCurrency: z.number().nullable().optional(),
   priceExcludingVatCurrency: z.number().nullable().optional(),
   priceIncludingVatCurrency: z.number().nullable().optional(),
-  isInactive: z.boolean(),
+  isInactive: z.boolean().optional(),
   unitOfMeasure: resourceRefSchema,
-  isStockItem: z.boolean(),
+  isStockItem: z.boolean().optional(),
   stockOfGoods: z.number().nullable().optional(),
   vatType: resourceRefSchema,
   currency: resourceRefSchema,
@@ -42,8 +42,6 @@ export const productSchema = z.object({
   supplier: resourceRefSchema,
 });
 
-export type Product = z.infer<typeof productSchema>;
-
 // Create product input schema
 export const createProductInputSchema = z.object({
   name: z.string().min(1, 'Product name is required'),
@@ -55,9 +53,9 @@ export const createProductInputSchema = z.object({
   costExcludingVatCurrency: z.number().optional(),
   priceExcludingVatCurrency: z.number().optional(),
   priceIncludingVatCurrency: z.number().optional(),
-  isInactive: z.boolean().default(false),
+  isInactive: z.boolean().optional(),
   unitOfMeasureId: z.number().optional(),
-  isStockItem: z.boolean().default(false),
+  isStockItem: z.boolean().optional(),
   stockOfGoods: z.number().optional(),
   vatTypeId: z.number().optional(),
   currencyId: z.number().optional(),
@@ -77,16 +75,6 @@ export const createProductInputSchema = z.object({
 });
 
 export type CreateProductInput = z.infer<typeof createProductInputSchema>;
-
-// List products response schema
-export const listProductsResponseSchema = z.object({
-  from: z.number(),
-  count: z.number(),
-  versionDigest: z.string().nullable().optional(),
-  values: z.array(productSchema),
-});
-
-export type ListProductsResponse = z.infer<typeof listProductsResponseSchema>;
 
 // Create product response schema
 export const createProductResponseSchema = z.object({

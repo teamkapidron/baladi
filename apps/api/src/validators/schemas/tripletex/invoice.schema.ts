@@ -40,41 +40,6 @@ export const invoiceSchema = z.object({
   ehfSendStatus: z.string().nullable().optional(),
 });
 
-export type Invoice = z.infer<typeof invoiceSchema>;
-
-// Create invoice input schema
-export const createInvoiceInputSchema = z.object({
-  invoiceDate: z.string().optional(), // Will default to today if not provided
-  customerId: z.number().min(1, 'Customer ID is required'),
-  invoiceDueDate: z.string().optional(), // Will be calculated based on customer settings if not provided
-  kid: z.string().optional(),
-  invoiceComment: z.string().optional(),
-  comment: z.string().optional(),
-  orderIds: z.array(z.number()).optional(),
-  projectId: z.number().optional(),
-  invoiceRemarks: z.string().optional(),
-  invoiceReceiver: z.string().optional(),
-  invoiceType: z.string().optional(),
-  currencyId: z.number().optional(),
-  deliveryDate: z.string().optional(),
-
-  sendToCustomer: z.boolean().default(false),
-  // Options for creating from order
-  orderId: z.number().optional(), // Single order ID for convenience
-});
-
-export type CreateInvoiceInput = z.infer<typeof createInvoiceInputSchema>;
-
-// List invoices response schema
-export const listInvoicesResponseSchema = z.object({
-  from: z.number(),
-  count: z.number(),
-  versionDigest: z.string().nullable().optional(),
-  values: z.array(invoiceSchema),
-});
-
-export type ListInvoicesResponse = z.infer<typeof listInvoicesResponseSchema>;
-
 // Create invoice response schema
 export const createInvoiceResponseSchema = z.object({
   value: invoiceSchema,

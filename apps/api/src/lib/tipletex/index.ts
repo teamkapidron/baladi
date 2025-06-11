@@ -7,116 +7,110 @@ import { TripletexInvoice } from './calls/invoice/invoice';
 import type {
   CreateCustomerInput,
   CreateCustomerResult,
-  Customer,
 } from '@/validators/schemas/tripletex/customer.schema';
 import type {
   CreateProductInput,
   CreateProductResult,
-  Product,
 } from '@/validators/schemas/tripletex/product.schema';
 import type {
   CreateOrderInput,
   CreateOrderResult,
-  Order,
 } from '@/validators/schemas/tripletex/order.schema';
 import type {
-  CreateInvoiceInput,
   CreateInvoiceResult,
   ViewInvoiceResult,
-  Invoice,
 } from '@/validators/schemas/tripletex/invoice.schema';
+import { addDays } from 'date-fns';
 
-// Factory class for creating Tripletex instances
+export class Tripletex {
+  public customer: TripletexCustomer;
+  public product: TripletexProduct;
+  public order: TripletexOrder;
+  public invoice: TripletexInvoice;
 
-export class TripletexFactory {
-  constructor(private readonly config: TripletexClientConfig) {}
+  private tokenClient: TripletexToken;
+  private sessionToken?: string;
+  private tokenPromise?: Promise<string>;
 
-  async create(): Promise<Tripletex> {
-    const tokenService = new TripletexToken(this.config);
-    const sessionTokenResponse = await tokenService.createSessionToken({
+  constructor(private readonly config: TripletexClientConfig) {
+    this.tokenClient = new TripletexToken(config);
+
+    this.customer = new TripletexCustomer(config);
+    this.product = new TripletexProduct(config);
+    this.order = new TripletexOrder(config);
+    this.invoice = new TripletexInvoice(config);
+  }
+
+  private async getSessionToken(): Promise<string> {
+    if (this.sessionToken) {
+      return this.sessionToken;
+    }
+
+    if (this.tokenPromise) {
+      return this.tokenPromise;
+    }
+
+    this.tokenPromise = this.createSessionToken();
+    this.sessionToken = await this.tokenPromise;
+    return this.sessionToken;
+  }
+
+  private async createSessionToken(): Promise<string> {
+    const sessionTokenResponse = await this.tokenClient.createSessionToken({
       employeeToken: this.config.employeeToken ?? '',
       consumerToken: this.config.consumerToken ?? '',
-      expirationDate: new Date(Date.now() + 1000 * 60 * 60 * 24),
+      expirationDate: addDays(new Date(), 2),
     });
-    return new Tripletex(this.config, sessionTokenResponse.value.token);
+
+    return sessionTokenResponse.value.token;
   }
-}
 
-// Main Tripletex client class
-export class Tripletex {
-  public readonly customer: TripletexCustomer;
-  public readonly product: TripletexProduct;
-  public readonly order: TripletexOrder;
-  public readonly invoice: TripletexInvoice;
+  private async initializeSession(): Promise<void> {
+    const token = await this.getSessionToken();
 
-  constructor(config: TripletexClientConfig, sessionToken?: string) {
-    this.customer = new TripletexCustomer(config, sessionToken);
-    this.product = new TripletexProduct(config, sessionToken);
-    this.order = new TripletexOrder(config, sessionToken);
-    this.invoice = new TripletexInvoice(config, sessionToken);
+    // Update all service instances with the session token
+
+    this.customer = new TripletexCustomer(this.config, token);
+    this.product = new TripletexProduct(this.config, token);
+    this.order = new TripletexOrder(this.config, token);
+    this.invoice = new TripletexInvoice(this.config, token);
   }
-}
 
-// Export main class constructors
-export { TripletexCustomer } from './calls/customer/customer';
-export { TripletexProduct } from './calls/product/product';
-export { TripletexOrder } from './calls/order/order';
-export { TripletexInvoice } from './calls/invoice/invoice';
+  async createCustomer(
+    input: CreateCustomerInput,
+  ): Promise<CreateCustomerResult> {
+    await this.initializeSession();
+    return this.customer.create(input);
+  }
 
-// Export types
-export type { TripletexClientConfig } from './types';
-export type { CreateCustomerInput, CreateCustomerResult, Customer };
-export type { CreateProductInput, CreateProductResult, Product };
-export type { CreateOrderInput, CreateOrderResult, Order };
-export type {
-  CreateInvoiceInput,
-  CreateInvoiceResult,
-  ViewInvoiceResult,
-  Invoice,
-};
+  async makeCustomerActive(
+    customerId: number,
+    isInactive: boolean,
+  ): Promise<CreateCustomerResult> {
+    await this.initializeSession();
+    return this.customer.makeCustomerActive(customerId, isInactive);
+  }
 
-// Convenience functions for the main operations
-export async function createCustomer(
-  config: TripletexClientConfig,
-  input: CreateCustomerInput,
-  sessionToken?: string,
-): Promise<CreateCustomerResult> {
-  const tripletex = new Tripletex(config, sessionToken);
-  return tripletex.customer.create(input);
-}
+  async createProduct(input: CreateProductInput): Promise<CreateProductResult> {
+    await this.initializeSession();
+    return this.product.create(input);
+  }
 
-export async function createProduct(
-  config: TripletexClientConfig,
-  input: CreateProductInput,
-  sessionToken?: string,
-): Promise<CreateProductResult> {
-  const tripletex = new Tripletex(config, sessionToken);
-  return tripletex.product.create(input);
-}
+  async createOrder(input: CreateOrderInput): Promise<CreateOrderResult> {
+    await this.initializeSession();
+    return this.order.create(input);
+  }
 
-export async function createOrder(
-  config: TripletexClientConfig,
-  input: CreateOrderInput,
-  sessionToken?: string,
-): Promise<CreateOrderResult> {
-  const tripletex = new Tripletex(config, sessionToken);
-  return tripletex.order.create(input);
-}
+  async createInvoice(
+    orderId: number,
+    invoiceDate: string,
+  ): Promise<CreateInvoiceResult> {
+    await this.initializeSession();
+    return this.invoice.create(orderId, invoiceDate);
+  }
 
-export async function createInvoice(
-  config: TripletexClientConfig,
-  input: CreateInvoiceInput,
-  sessionToken?: string,
-): Promise<CreateInvoiceResult> {
-  const tripletex = new Tripletex(config, sessionToken);
-  return tripletex.invoice.create(input);
-}
-
-export async function viewInvoice(
-  config: TripletexClientConfig,
-  invoiceId: number,
-  sessionToken?: string,
-): Promise<ViewInvoiceResult> {
-  const tripletex = new Tripletex(config, sessionToken);
-  return tripletex.invoice.view(invoiceId);
+  async viewInvoice(invoiceId: number): Promise<ViewInvoiceResult> {
+    await this.initializeSession();
+    return this.invoice.view(invoiceId);
+  }
 }

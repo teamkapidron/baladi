@@ -87,34 +87,29 @@ export const createCustomerInputSchema = z.object({
   phoneNumber: z.string().optional(),
   phoneNumberMobile: z.string().optional(),
   description: z.string().optional(),
-  language: z.enum(['NO', 'EN', 'SV']).default('NO'),
-  isPrivateIndividual: z.boolean().default(false),
-  singleCustomerInvoice: z.boolean().default(false),
+  language: z.enum(['NO', 'EN', 'SV']).default('NO').optional(),
+  isPrivateIndividual: z.boolean().default(false).optional(),
+  singleCustomerInvoice: z.boolean().default(false).optional(),
   invoiceSendMethod: z
     .enum(['EMAIL', 'EHF', 'EFAKTURA', 'VIPPS', 'PAPER', 'MANUAL'])
-    .default('EMAIL'),
-  emailAttachmentType: z.enum(['LINK', 'ATTACHMENT']).default('LINK'),
+    .default('EMAIL')
+    .optional(),
+  emailAttachmentType: z
+    .enum(['LINK', 'ATTACHMENT'])
+    .default('LINK')
+    .optional(),
   invoicesDueIn: z.number().optional(),
   invoicesDueInType: z
     .enum(['DAYS', 'MONTHS', 'RECURRING_DAY_OF_MONTH'])
-    .default('DAYS'),
-  isCustomer: z.boolean().default(true),
-  isSupplier: z.boolean().default(false),
+    .default('DAYS')
+    .optional(),
+  isCustomer: z.boolean().default(true).optional(),
+  isSupplier: z.boolean().default(false).optional(),
   accountManagerId: z.number().optional(),
   currencyId: z.number().optional(),
 });
 
 export type CreateCustomerInput = z.infer<typeof createCustomerInputSchema>;
-
-// List customers response schema
-export const listCustomersResponseSchema = z.object({
-  from: z.number(),
-  count: z.number(),
-  versionDigest: z.string().nullable().optional(),
-  values: z.array(customerSchema),
-});
-
-export type ListCustomersResponse = z.infer<typeof listCustomersResponseSchema>;
 
 // Create customer response schema
 export const createCustomerResponseSchema = z.object({
@@ -128,6 +123,7 @@ export type CreateCustomerResponse = z.infer<
 // Create customer result (just the ID)
 export const createCustomerResultSchema = z.object({
   customerId: z.number(),
+  isInactive: z.boolean().nullable().optional(),
 });
 
 export type CreateCustomerResult = z.infer<typeof createCustomerResultSchema>;

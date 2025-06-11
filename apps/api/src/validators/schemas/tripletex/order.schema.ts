@@ -38,7 +38,7 @@ export const orderSchema = z.object({
   deliveryComment: z.string().nullable().optional(),
   isPrioritizeAmountsIncludingVat: z.boolean().nullable().optional(),
   orderLineSorting: z.enum(['ID', 'PRODUCT', 'CUSTOM']).nullable().optional(),
-  orderLines: z.array(orderLineSchema).nullable().optional(),
+
   isSubscription: z.boolean().nullable().optional(),
   subscriptionDuration: z.number().nullable().optional(),
   subscriptionDurationType: z.enum(['MONTHS', 'YEAR']).nullable().optional(),
@@ -60,8 +60,25 @@ export type Order = z.infer<typeof orderSchema>;
 
 // Create order input schema
 export const createOrderInputSchema = z.object({
-  customerId: z.number().min(1, 'Customer ID is required'),
-  contactId: z.number().optional(),
+  customer: z.object({ id: z.number().min(1, 'Customer ID is required') }),
+  deliveryDate: z.string(),
+  orderDate: z.string(),
+  orderLines: z
+    .array(
+      z.object({
+        product: z.object({ id: z.number().min(1, 'Product ID is required') }),
+        count: z.number().min(1, 'Count is required'),
+        unitPriceExcludingVatCurrency: z.number().optional(),
+
+        unitPriceIncludingVatCurrency: z.number().optional(),
+
+        discount: z.number().optional(),
+        vatType: z.object({ id: z.number().optional() }).optional(),
+      }),
+    )
+    .optional(),
+
+  //optional fields
   attnId: z.number().optional(),
   receiverEmail: z.string().email().optional(),
   overdueNoticeEmail: z.string().email().optional(),
@@ -69,24 +86,25 @@ export const createOrderInputSchema = z.object({
   ourContactId: z.number().optional(),
   ourContactEmployeeId: z.number().optional(),
   departmentId: z.number().optional(),
-  orderDate: z.string().optional(), // Will default to today if not provided
   projectId: z.number().optional(),
   invoiceComment: z.string().optional(),
   currencyId: z.number().optional(),
   invoicesDueIn: z.number().optional(),
   invoicesDueInType: z
     .enum(['DAYS', 'MONTHS', 'RECURRING_DAY_OF_MONTH'])
-    .default('DAYS'),
-  isShowOpenPostsOnInvoices: z.boolean().default(false),
-  deliveryDate: z.string().optional(), // Will default to today if not provided
+    .default('DAYS')
+    .optional(),
+  isShowOpenPostsOnInvoices: z.boolean().default(false).optional(),
+
   deliveryAddressId: z.number().optional(),
   deliveryComment: z.string().optional(),
-  isPrioritizeAmountsIncludingVat: z.boolean().default(false),
-  orderLineSorting: z.enum(['ID', 'PRODUCT', 'CUSTOM']).default('ID'),
-  orderLines: z
-    .array(createOrderLineInputSchema)
-    .min(1, 'At least one order line is required'),
-  isSubscription: z.boolean().default(false),
+  isPrioritizeAmountsIncludingVat: z.boolean().default(false).optional(),
+  orderLineSorting: z
+    .enum(['ID', 'PRODUCT', 'CUSTOM'])
+    .default('ID')
+    .optional(),
+
+  isSubscription: z.boolean().default(false).optional(),
   subscriptionDuration: z.number().optional(),
   subscriptionDurationType: z.enum(['MONTHS', 'YEAR']).optional(),
   subscriptionPeriodsOnInvoice: z.number().optional(),
@@ -95,20 +113,10 @@ export const createOrderInputSchema = z.object({
     .optional(),
   subscriptionInvoicingTime: z.number().optional(),
   subscriptionInvoicingTimeType: z.enum(['DAYS', 'MONTHS']).optional(),
-  isSubscriptionAutoInvoicing: z.boolean().default(false),
+  isSubscriptionAutoInvoicing: z.boolean().default(false).optional(),
 });
 
 export type CreateOrderInput = z.infer<typeof createOrderInputSchema>;
-
-// List orders response schema
-export const listOrdersResponseSchema = z.object({
-  from: z.number(),
-  count: z.number(),
-  versionDigest: z.string().nullable().optional(),
-  values: z.array(orderSchema),
-});
-
-export type ListOrdersResponse = z.infer<typeof listOrdersResponseSchema>;
 
 // Create order response schema
 export const createOrderResponseSchema = z.object({
