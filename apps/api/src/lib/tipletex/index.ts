@@ -1,25 +1,25 @@
 import { TripletexCustomer } from './calls/customer/customer';
 import { TripletexOrder } from './calls/order/order';
 import { TripletexToken } from './calls/token/token';
-import { TripletexClientConfig } from '@/lib/tipletex/types';
+import { TripletexClientConfig } from '@/lib/tipletex/types/config';
 import { TripletexProduct } from './calls/product/product';
 import { TripletexInvoice } from './calls/invoice/invoice';
 import type {
   CreateCustomerInput,
   CreateCustomerResult,
-} from '@/validators/schemas/tripletex/customer.schema';
+} from '@/lib/tipletex/types/customer.types';
 import type {
   CreateProductInput,
   CreateProductResult,
-} from '@/validators/schemas/tripletex/product.schema';
+} from '@/lib/tipletex/types/product.types';
 import type {
   CreateOrderInput,
   CreateOrderResult,
-} from '@/validators/schemas/tripletex/order.schema';
+} from '@/lib/tipletex/types/order.types';
 import type {
   CreateInvoiceResult,
   ViewInvoiceResult,
-} from '@/validators/schemas/tripletex/invoice.schema';
+} from '@/lib/tipletex/types/invoice.types';
 import { addDays } from 'date-fns';
 
 export class Tripletex {

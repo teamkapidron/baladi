@@ -1,10 +1,10 @@
-import { TripletexClientConfig } from '@/lib/tipletex/types';
-import { defaultBaseUrl, formatDate, makeRequest } from '@/lib/tipletex/utils';
+import { TripletexClientConfig } from '@/lib/tipletex/types/config';
+import { defaultBaseUrl, makeRequest } from '@/lib/tipletex/utils';
+import { formatDate } from 'date-fns';
 import {
-  getTokenResponseSchema,
   GetTokenResponse,
   SessionToken,
-} from '@/validators/schemas/tripletex/token.schema';
+} from '@/lib/tipletex/types/token.types';
 
 export interface CreateSessionTokenInput {
   employeeToken: string;
@@ -23,7 +23,7 @@ export class TripletexToken {
 
     const query = {
       ...args,
-      expirationDate: formatDate(args.expirationDate),
+      expirationDate: formatDate(args.expirationDate, 'yyyy-MM-dd'),
     };
 
     const rawResponse = await makeRequest(url, {
@@ -34,7 +34,7 @@ export class TripletexToken {
       query,
     });
 
-    return getTokenResponseSchema.parse(rawResponse);
+    return rawResponse as GetTokenResponse;
   }
 }
 

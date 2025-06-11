@@ -1,16 +1,6 @@
-import { format, isValid } from 'date-fns';
 import axios from 'axios';
 
 export const defaultBaseUrl = 'https://api-test.tripletex.tech/';
-
-export function formatDate(d: Date | number): string {
-  return format(d, 'yyyy-MM-dd');
-}
-
-export function formatMonthYear(d: Date | number): string {
-  return format(d, 'yyyy-MM');
-}
-
 export class TripletexError extends Error {
   constructor(
     message: string,

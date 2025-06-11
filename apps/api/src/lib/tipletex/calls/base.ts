@@ -1,5 +1,5 @@
 import { addDays } from 'date-fns';
-import { TripletexClientConfig } from '@/lib/tipletex/types';
+import { TripletexClientConfig } from '../types/config';
 import {
   defaultBaseUrl,
   makeRequest,
@@ -31,7 +31,7 @@ export abstract class TripletexBase {
     const sessionToken = await this.getToken();
     const baseUrl = this.config.baseUrl ?? defaultBaseUrl;
     const url = `${baseUrl.replace(/\/$/, '')}${path}`;
-    console.log(url);
+
     const basicAuth = Buffer.from(
       [this.config.organizationId ?? '0', sessionToken].join(':'),
     ).toString('base64');
@@ -47,22 +47,11 @@ export abstract class TripletexBase {
   }
 
   protected async performRequest<T>(requestFn: () => Promise<T>): Promise<T> {
-    for (let n = 0; n <= 3; n++) {
-      try {
-        return await requestFn();
-      } catch (error) {
-        if (error instanceof TripletexError && error.status === 429) {
-          // Rate limiting - wait and retry
-          const secondsToRetry = 2;
-          const millis = secondsToRetry * 1000 + 100;
-          await new Promise((resolve) => setTimeout(resolve, millis));
-        } else {
-          throw error;
-        }
-      }
+    try {
+      return await requestFn();
+    } catch (error) {
+      throw error;
     }
-
-    throw new Error('Not able to perform request after retries');
   }
 
   private async getToken(): Promise<string> {

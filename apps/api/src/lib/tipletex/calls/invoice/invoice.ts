@@ -1,11 +1,10 @@
 import { TripletexBase } from '../base';
 import {
-  createInvoiceResponseSchema,
   CreateInvoiceResult,
+  Invoice,
+  InvoicePdfResponse,
   ViewInvoiceResult,
-  invoicePdfResponseSchema,
-  invoiceSchema,
-} from '@/validators/schemas/tripletex/invoice.schema';
+} from '@/lib/tipletex/types/invoice.types';
 
 export class TripletexInvoice extends TripletexBase {
   async create(
@@ -21,8 +20,7 @@ export class TripletexInvoice extends TripletexBase {
       ),
     );
 
-    const response = createInvoiceResponseSchema.parse(rawResponse);
-    return { invoiceId: response.value.id };
+    return rawResponse as CreateInvoiceResult;
   }
 
   async view(invoiceId: number): Promise<ViewInvoiceResult> {
@@ -33,7 +31,7 @@ export class TripletexInvoice extends TripletexBase {
       }),
     );
 
-    const invoice = invoiceSchema.parse(invoiceResponse);
+    const invoice = invoiceResponse as Invoice;
 
     // Get PDF URL
     const pdfResponse = await this.performRequest(() =>
@@ -42,7 +40,7 @@ export class TripletexInvoice extends TripletexBase {
       }),
     );
 
-    const pdfData = invoicePdfResponseSchema.parse(pdfResponse);
+    const pdfData = pdfResponse as InvoicePdfResponse;
 
     return {
       invoiceUrl: pdfData.url,

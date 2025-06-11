@@ -1,10 +1,9 @@
 import { TripletexBase } from '../base';
 import {
-  createCustomerInputSchema,
-  createCustomerResponseSchema,
   CreateCustomerInput,
+  CreateCustomerResponse,
   CreateCustomerResult,
-} from '@/validators/schemas/tripletex/customer.schema';
+} from '@/lib/tipletex/types/customer.types';
 
 export class TripletexCustomer extends TripletexBase {
   async makeCustomerActive(
@@ -27,25 +26,24 @@ export class TripletexCustomer extends TripletexBase {
         },
       }),
     );
-    const response = createCustomerResponseSchema.parse(rawResponse);
+    const response = rawResponse as CreateCustomerResponse;
     return {
       customerId: response.value.id,
-      isInactive: response.value.isInactive,
+      isInactive: response.value.isInactive ?? false,
     };
   }
 
   async create(input: CreateCustomerInput): Promise<CreateCustomerResult> {
     // Validate input
-    const validatedInput = createCustomerInputSchema.parse(input);
 
     const rawResponse = await this.performRequest(() =>
       this.authenticatedRequest('/v2/customer', {
         method: 'POST',
-        body: validatedInput,
+        body: input,
       }),
     );
 
-    const response = createCustomerResponseSchema.parse(rawResponse);
+    const response = rawResponse as CreateCustomerResponse;
     return { customerId: response.value.id };
   }
 }
