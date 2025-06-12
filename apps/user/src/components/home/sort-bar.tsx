@@ -1,4 +1,7 @@
-import { useMemo, memo, useState } from 'react';
+'use client';
+
+// Node Modules
+import { useMemo, memo } from 'react';
 import { ArrowDownAZ, ArrowUpAZ, Star, Clock, Menu } from '@repo/ui/lib/icons';
 import {
   DropdownMenu,
@@ -8,64 +11,126 @@ import {
 } from '@repo/ui/components/base/dropdown-menu';
 import { Button } from '@repo/ui/components/base/button';
 
+// Hooks
+import { useProducts } from '@/hooks/useProduct';
+import { usePagination } from '@repo/ui/hooks/usePagination';
+import { useProductFilters } from '@/hooks/useProduct/useProductFilters';
+
+// Types
+import { ProductSort } from '@/hooks/useProduct/types';
+
 const sortOptions = [
-  { id: 'popularity', label: 'Popularitet', icon: <Star size={16} /> },
   {
-    id: 'price-asc',
+    id: ProductSort.POPULARITY,
+    label: 'Popularitet',
+    icon: <Star size={16} />,
+  },
+  {
+    id: ProductSort.PRICE_ASC,
     label: 'Pris: Lav til Høy',
     icon: <ArrowUpAZ size={16} />,
   },
   {
-    id: 'price-desc',
+    id: ProductSort.PRICE_DESC,
     label: 'Pris: Høy til Lav',
     icon: <ArrowDownAZ size={16} />,
   },
-  { id: 'newest', label: 'Nyeste', icon: <Clock size={16} /> },
+  { id: ProductSort.NEWEST, label: 'Nyeste', icon: <Clock size={16} /> },
 ];
 
 function ProductsSortBar() {
-  const [currentPage] = useState(1);
-  const [itemsPerPage] = useState(24);
-  const [isLoading] = useState(false);
-  const [totalProducts] = useState(0);
+  const { handleSortChange } = useProductFilters();
+  const { limit, handlePageSizeChange } = usePagination();
+  const { data: productsData, isLoading } = useProducts();
 
-  // Memoize the status text
   const statusText = useMemo(() => {
-    if (isLoading) return 'Laster...';
+    if (isLoading) return 'Laster produkter...';
 
-    const startItem = (currentPage - 1) * itemsPerPage + 1;
-    const endItem = Math.min(currentPage * itemsPerPage, totalProducts);
+    if (!productsData) return 'Ingen produkter funnet';
+
+    const { totalProducts, currentPage, perPage } = productsData;
+    const startItem = (currentPage - 1) * perPage + 1;
+    const endItem = Math.min(currentPage * perPage, totalProducts);
 
     return `Viser ${startItem}-${endItem} av ${totalProducts} produkter`;
-  }, [isLoading, totalProducts, currentPage, itemsPerPage]);
+  }, [isLoading, productsData]);
 
   return (
-    <div className="mb-6 flex items-center justify-between rounded-lg border border-[var(--baladi-border)] bg-white p-3 shadow-sm transition-shadow duration-300 ease-in-out hover:shadow-md">
-      <div className="text-sm font-medium text-[var(--baladi-dark)]">
+    <div className="hover:border-[var(--baladi-primary)]/20 mb-6 flex items-center justify-between rounded-lg border border-[var(--baladi-border)] bg-white p-4 shadow-sm transition-all duration-300 hover:shadow-md">
+      <div className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-dark)]">
         {statusText}
       </div>
 
       <div className="flex items-center gap-3">
-        <button
-          className="flex items-center gap-2 rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-medium text-white transition-transform duration-300 ease-in-out hover:scale-105 active:scale-95 md:hidden"
+        <Button
+          variant="outline"
+          size="sm"
           onClick={() => {}}
-          aria-label="Vis filtre"
+          className="flex items-center gap-2 border-[var(--baladi-border)] font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-dark)] transition-all duration-200 hover:border-[var(--baladi-primary)] hover:bg-[var(--baladi-light)] hover:text-[var(--baladi-primary)] md:hidden"
         >
-          <Menu size={18} />
+          <Menu size={16} />
           <span>Filter</span>
-        </button>
+        </Button>
 
         <div className="hidden md:block">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-[var(--baladi-border)] font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-dark)] transition-all duration-200 hover:border-[var(--baladi-primary)] hover:bg-[var(--baladi-light)] hover:text-[var(--baladi-primary)]"
+              >
                 Sorter Etter
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent>
+            <DropdownMenuContent
+              align="end"
+              className="w-48 border-[var(--baladi-border)] bg-white shadow-lg"
+            >
               {sortOptions.map((option) => (
-                <DropdownMenuItem key={option.id}>
-                  {option.label}
+                <DropdownMenuItem
+                  key={option.id}
+                  onClick={() => handleSortChange(option.id)}
+                  className="flex cursor-pointer items-center gap-3 px-3 py-2 font-[family-name:var(--font-dm-sans)] text-sm transition-colors hover:bg-[var(--baladi-light)] focus:bg-[var(--baladi-light)]"
+                >
+                  <span className="text-[var(--baladi-primary)]">
+                    {option.icon}
+                  </span>
+                  <span className="text-[var(--baladi-dark)]">
+                    {option.label}
+                  </span>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+
+        <div className="hidden lg:block">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)] transition-colors hover:bg-[var(--baladi-light)] hover:text-[var(--baladi-primary)]"
+              >
+                {limit} per side
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              className="w-32 border-[var(--baladi-border)] bg-white shadow-lg"
+            >
+              {[12, 24, 48, 96].map((perPage) => (
+                <DropdownMenuItem
+                  key={perPage}
+                  onClick={() => handlePageSizeChange(perPage)}
+                  className="flex cursor-pointer items-center justify-center px-3 py-2 font-[family-name:var(--font-dm-sans)] text-sm transition-colors hover:bg-[var(--baladi-light)] focus:bg-[var(--baladi-light)]"
+                >
+                  <span
+                    className={`${limit === perPage.toString() ? 'font-semibold text-[var(--baladi-primary)]' : 'text-[var(--baladi-dark)]'}`}
+                  >
+                    {perPage}
+                  </span>
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>

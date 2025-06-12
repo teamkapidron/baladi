@@ -15,19 +15,19 @@ const userSchema = new Schema<IUser>(
     },
     companyName: {
       type: String,
-      required: true,
+      required: false,
     },
     organizationNumber: {
       type: String,
-      required: true,
+      required: false,
     },
     phoneNumber: {
       type: String,
-      required: true,
+      required: false,
     },
     address: {
       type: String,
-      required: true,
+      required: false,
     },
     password: {
       type: String,

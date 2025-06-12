@@ -1,39 +1,34 @@
-import { useCallback, useMemo } from 'react';
-import { useGetParams, useUpdateParams } from '@repo/ui/hooks/useParams';
+import { useCallback } from 'react';
+import { parseAsString, useQueryState } from 'nuqs';
 
 export function usePagination() {
-  const { getParam } = useGetParams();
-  const updateParams = useUpdateParams();
-
-  const page = useMemo(() => {
-    return getParam('page') ?? '1';
-  }, [getParam]);
-
-  const limit = useMemo(() => {
-    return getParam('limit') ?? '10';
-  }, [getParam]);
+  const [page, setPage] = useQueryState('page', parseAsString.withDefault('1'));
+  const [limit, setLimit] = useQueryState(
+    'limit',
+    parseAsString.withDefault('10'),
+  );
 
   const handlePageSizeChange = useCallback(
     (size: number) => {
-      updateParams({ limit: size.toString() });
+      setLimit(size.toString());
     },
-    [updateParams],
+    [setLimit],
   );
 
   const handlePageChange = useCallback(
     (page: number) => {
-      updateParams({ page: page.toString() });
+      setPage(page.toString());
     },
-    [updateParams],
+    [setPage],
   );
 
   const goToNextPage = useCallback(() => {
-    updateParams({ page: (Number(page) + 1).toString() });
-  }, [updateParams, page]);
+    setPage((Number(page) + 1).toString());
+  }, [setPage, page]);
 
   const goToPreviousPage = useCallback(() => {
-    updateParams({ page: (Number(page) - 1).toString() });
-  }, [updateParams, page]);
+    setPage((Number(page) - 1).toString());
+  }, [setPage, page]);
 
   return {
     page,

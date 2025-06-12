@@ -1,31 +1,54 @@
+import { Metadata } from 'next';
 import { Suspense } from 'react';
 
 import Header from '@/components/common/header/header';
 import Carousel from '@/components/common/carousel';
 import Footer from '@/components/common/footer/footer';
+import ProductsSidebar from '@/components/home/filter-sidebar';
+import ProductsSortBar from '@/components/home/sort-bar';
+import ProductGrid from '@/components/home/product-grid';
 
 import { carouselSlides } from '@/constants/slides';
 
+export const metadata: Metadata = {
+  title: 'Hjem | Baladi Engros',
+  description:
+    'Din pålitelige partner for asiatiske og orientalske ingredienser',
+};
+
 export default function Home() {
   return (
-    <div>
-      <Header />
-      <Carousel
-        slides={carouselSlides}
-        showControls={true}
-        showIndicators={true}
-      />
-      <main className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <h1 className="my-6 mb-6 text-center text-3xl font-bold md:text-4xl">
-          Våre Produkter
-        </h1>
-        <div className="mb-8">
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-4 lg:grid-cols-5">
-            <Suspense></Suspense>
+    <Suspense>
+      <div className="min-h-screen bg-[var(--baladi-background)]">
+        <Header />
+        <Carousel
+          slides={carouselSlides}
+          showControls={true}
+          showIndicators={true}
+        />
+
+        <main className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
+          <div className="mb-8 text-center">
+            <h1 className="mb-4 font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-dark)] md:text-4xl">
+              Våre Produkter
+            </h1>
+            <p className="mx-auto max-w-2xl font-[family-name:var(--font-dm-sans)] text-lg text-[var(--baladi-gray)]">
+              Opplev vårt omfattende sortiment av autentiske asiatiske og
+              orientalske ingredienser
+            </p>
           </div>
-        </div>
-      </main>
-      <Footer />
-    </div>
+
+          <div className="flex gap-8">
+            <ProductsSidebar />
+            <div className="flex-1">
+              <ProductsSortBar />
+              <ProductGrid />
+            </div>
+          </div>
+        </main>
+
+        <Footer />
+      </div>
+    </Suspense>
   );
 }

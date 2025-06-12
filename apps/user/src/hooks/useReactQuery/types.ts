@@ -15,8 +15,8 @@ export enum ReactQueryKeys {
   GET_CATEGORY_BY_ID = 'GET::/category/:categoryId',
 
   // Order
-  GET_USER_ORDERS = 'GET::/order/my',
-  GET_USER_ORDER_DETAILS = 'GET::/order/:orderId',
+  GET_MY_ORDERS = 'GET::/order/my',
+  GET_ORDER_DETAILS = 'GET::/order/:orderId',
 
   // Product
   GET_PRODUCTS = 'GET::/product/list',

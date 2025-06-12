@@ -1,9 +1,9 @@
 import { memo } from 'react';
+import Image from 'next/image';
 
 function AuthSidebar() {
   return (
-    <div className="relative hidden overflow-hidden bg-gradient-to-br from-[var(--baladi-primary)] to-[var(--baladi-primary-dark)] lg:block lg:w-1/2">
-      {/* Abstract Geometric Background */}
+    <div className="relative hidden overflow-hidden bg-gradient-to-br from-[var(--baladi-dark)] via-[var(--baladi-primary)] to-[var(--baladi-primary-dark)] lg:block lg:w-1/2">
       <div className="absolute inset-0 opacity-20">
         <svg
           viewBox="0 0 100 100"
@@ -19,7 +19,7 @@ function AuthSidebar() {
               fx="50%"
               fy="50%"
             >
-              <stop offset="0%" stopColor="white" stopOpacity="0.3" />
+              <stop offset="0%" stopColor="white" stopOpacity="0.4" />
               <stop offset="100%" stopColor="white" stopOpacity="0" />
             </radialGradient>
             <linearGradient
@@ -29,7 +29,7 @@ function AuthSidebar() {
               x2="100%"
               y2="100%"
             >
-              <stop offset="0%" stopColor="white" stopOpacity="0.2" />
+              <stop offset="0%" stopColor="white" stopOpacity="0.3" />
               <stop offset="100%" stopColor="white" stopOpacity="0" />
             </linearGradient>
           </defs>
@@ -39,7 +39,7 @@ function AuthSidebar() {
             fill="url(#linearGradient)"
             stroke="white"
             strokeWidth="0.5"
-            strokeOpacity="0.2"
+            strokeOpacity="0.3"
           />
           <circle
             cx="50"
@@ -48,13 +48,21 @@ function AuthSidebar() {
             fill="none"
             stroke="white"
             strokeWidth="0.5"
-            strokeOpacity="0.3"
+            strokeOpacity="0.4"
+          />
+          <circle
+            cx="50"
+            cy="50"
+            r="35"
+            fill="none"
+            stroke="white"
+            strokeWidth="0.3"
+            strokeOpacity="0.2"
           />
         </svg>
       </div>
 
-      {/* Animated Waves */}
-      <div className="absolute inset-0 opacity-30">
+      <div className="absolute inset-0 opacity-25">
         <svg
           viewBox="0 0 1440 320"
           preserveAspectRatio="none"
@@ -62,13 +70,13 @@ function AuthSidebar() {
           className="absolute bottom-0 h-80 w-full"
         >
           <path
-            fill="rgba(255, 255, 255, 0.2)"
+            fill="rgba(255, 255, 255, 0.15)"
             fillOpacity="1"
             d="M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,181.3C960,181,1056,235,1152,234.7C1248,235,1344,181,1392,154.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
             className="animate-wave"
           ></path>
           <path
-            fill="rgba(255, 255, 255, 0.3)"
+            fill="rgba(255, 255, 255, 0.2)"
             fillOpacity="1"
             d="M0,192L60,208C120,224,240,256,360,245.3C480,235,600,181,720,170.7C840,160,960,192,1080,197.3C1200,203,1320,181,1380,170.7L1440,160L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"
             className="animate-wave-slow"
@@ -76,95 +84,134 @@ function AuthSidebar() {
         </svg>
       </div>
 
-      {/* Floating Elements */}
       <div className="absolute inset-0">
-        <div className="animate-float absolute left-1/4 top-1/4 h-32 w-32 rounded-full bg-white/10 blur-xl"></div>
-        <div className="animate-float-delay absolute right-1/4 top-2/3 h-24 w-24 rounded-full bg-white/10 blur-lg"></div>
-        <div className="absolute bottom-1/4 left-1/3 h-20 w-20 animate-pulse rounded-full bg-white/10 blur-md"></div>
+        <div className="animate-float left-1/6 top-1/6 bg-white/8 absolute h-40 w-40 rounded-full blur-2xl"></div>
+        <div className="animate-float-delay right-1/6 bg-white/12 absolute top-3/4 h-32 w-32 rounded-full blur-xl"></div>
+        <div className="absolute bottom-1/3 left-1/4 h-24 w-24 animate-pulse rounded-full bg-white/10 blur-lg"></div>
+        <div
+          className="bg-[var(--baladi-accent)]/20 absolute right-1/3 top-1/3 h-16 w-16 animate-bounce rounded-full blur-md"
+          style={{ animationDuration: '3s' }}
+        ></div>
       </div>
 
-      {/* Mesh Grid */}
-      <div className="absolute inset-0 opacity-10">
+      <div className="opacity-8 absolute inset-0">
         <div
           className="h-full w-full"
           style={{
             backgroundImage:
-              'linear-gradient(0deg, transparent 24%, rgba(255, 255, 255, 0.3) 25%, rgba(255, 255, 255, 0.3) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, 0.3) 75%, rgba(255, 255, 255, 0.3) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(255, 255, 255, 0.3) 25%, rgba(255, 255, 255, 0.3) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, 0.3) 75%, rgba(255, 255, 255, 0.3) 76%, transparent 77%, transparent)',
-            backgroundSize: '50px 50px',
+              'linear-gradient(0deg, transparent 24%, rgba(255, 255, 255, 0.15) 25%, rgba(255, 255, 255, 0.15) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, 0.15) 75%, rgba(255, 255, 255, 0.15) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(255, 255, 255, 0.15) 25%, rgba(255, 255, 255, 0.15) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, 0.15) 75%, rgba(255, 255, 255, 0.15) 76%, transparent 77%, transparent)',
+            backgroundSize: '80px 80px',
           }}
         ></div>
       </div>
 
-      {/* Content */}
       <div className="absolute inset-0 z-10 flex items-center justify-center">
         <div className="p-12 text-center text-white">
-          {/* Glowing Icon */}
-          <div className="relative mb-8 inline-flex h-28 w-28 items-center justify-center">
-            <div className="absolute inset-0 animate-pulse rounded-full bg-white/20 blur-xl"></div>
-            <div className="relative rounded-full border border-white/30 bg-white/10 p-6 shadow-[0_0_15px_rgba(255,255,255,0.3)] backdrop-blur-sm">
-              <svg
-                className="h-14 w-14 text-white"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M12 15V17M6 21H18C19.1046 21 20 20.1046 20 19V13C20 11.8954 19.1046 11 18 11H6C4.89543 11 4 11.8954 4 13V19C4 20.1046 4.89543 21 6 21ZM16 11V7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7V11H16Z"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+          <div className="relative mb-16 inline-flex items-center justify-center">
+            <div className="absolute inset-0 animate-pulse rounded-full bg-white/15 blur-3xl"></div>
+            <div className="absolute -inset-4 rounded-3xl bg-gradient-to-r from-white/5 to-white/10 blur-xl"></div>
+            <div className="relative flex items-center space-x-6 rounded-3xl border border-white/40 bg-gradient-to-br from-white/15 to-white/5 p-8 shadow-[0_0_50px_rgba(255,255,255,0.15)] backdrop-blur-lg">
+              <div className="relative">
+                <div className="absolute inset-0 rounded-2xl bg-white/20 blur-md"></div>
+                <div className="relative flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-white/25 to-white/10 p-3 shadow-lg">
+                  <Image
+                    src="/images/brand/logo.png"
+                    alt="Baladi Engros Logo"
+                    width={80}
+                    height={80}
+                    className="h-auto w-14 drop-shadow-lg"
+                  />
+                </div>
+              </div>
+              <div className="text-left">
+                <h1 className="font-[family-name:var(--font-sora)] text-3xl font-bold text-white drop-shadow-lg">
+                  Baladi Engros
+                </h1>
+                <p className="font-[family-name:var(--font-dm-sans)] text-base text-white/90 drop-shadow-sm">
+                  Din engros-partner
+                </p>
+                <div className="mt-2 h-0.5 w-24 rounded-full bg-gradient-to-r from-[var(--baladi-accent)] to-transparent"></div>
+              </div>
             </div>
           </div>
 
-          {/* Title */}
-          <h2 className="mb-4 text-4xl font-bold drop-shadow-lg">
-            Gjenopprett Tilgang
-          </h2>
-          <div className="mx-auto mb-6 h-1 w-24 rounded-full bg-gradient-to-r from-white to-transparent"></div>
-          <p className="mx-auto mb-10 max-w-md text-xl opacity-90">
-            Vi hjelper deg med å komme tilbake til kontoen din med noen enkle
-            trinn
-          </p>
+          <div className="relative mx-auto max-w-lg">
+            <div className="absolute bottom-0 left-10 top-0 w-1 rounded-full bg-gradient-to-b from-white/50 via-white/30 to-white/10"></div>
 
-          {/* Process Steps */}
-          <div className="relative mx-auto mt-12 max-w-sm">
-            <div className="absolute bottom-0 left-8 top-0 w-0.5 bg-gradient-to-b from-white/60 to-white/10"></div>
-
-            <div className="group relative mb-8 flex items-center">
-              <div className="z-10 flex h-16 w-16 items-center justify-center rounded-full border border-white/30 bg-white/10 shadow-lg backdrop-blur-md transition-all duration-300 group-hover:scale-110">
-                <span className="text-2xl font-bold">1</span>
+            <div className="group relative mb-12 flex items-center">
+              <div className="z-10 flex h-20 w-20 items-center justify-center rounded-full border-2 border-white/40 bg-gradient-to-br from-white/25 to-white/10 shadow-2xl backdrop-blur-lg transition-all duration-500 group-hover:scale-125 group-hover:from-white/35 group-hover:to-white/20 group-hover:shadow-[0_0_30px_rgba(255,255,255,0.3)]">
+                <svg
+                  className="h-8 w-8 text-white drop-shadow-lg"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2.5}
+                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                  />
+                </svg>
               </div>
-              <div className="ml-6 flex-1 rounded-lg border border-white/20 bg-white/10 p-4 backdrop-blur-sm transition-all group-hover:translate-x-1">
-                <h3 className="text-lg font-medium">Skriv inn e-post</h3>
-                <p className="text-sm opacity-80">
-                  Oppgi e-postadressen knyttet til kontoen din
+              <div className="ml-8 flex-1 rounded-2xl border border-white/30 bg-gradient-to-r from-white/15 to-white/5 p-6 backdrop-blur-sm transition-all duration-300 group-hover:translate-x-2 group-hover:from-white/20 group-hover:to-white/10 group-hover:shadow-lg">
+                <h3 className="font-[family-name:var(--font-sora)] text-xl font-semibold drop-shadow-sm">
+                  Omfattende produktkatalog
+                </h3>
+                <p className="mt-1 font-[family-name:var(--font-dm-sans)] text-sm opacity-90">
+                  Utforsk tusenvis av produkter fra pålitelige leverandører
                 </p>
               </div>
             </div>
 
-            <div className="group relative mb-8 flex items-center">
-              <div className="z-10 flex h-16 w-16 items-center justify-center rounded-full border border-white/30 bg-white/10 shadow-lg backdrop-blur-md transition-all duration-300 group-hover:scale-110">
-                <span className="text-2xl font-bold">2</span>
+            <div className="group relative mb-12 flex items-center">
+              <div className="z-10 flex h-20 w-20 items-center justify-center rounded-full border-2 border-white/40 bg-gradient-to-br from-white/25 to-white/10 shadow-2xl backdrop-blur-lg transition-all duration-500 group-hover:scale-125 group-hover:from-white/35 group-hover:to-white/20 group-hover:shadow-[0_0_30px_rgba(255,255,255,0.3)]">
+                <svg
+                  className="h-8 w-8 text-white drop-shadow-lg"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2.5}
+                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
+                  />
+                </svg>
               </div>
-              <div className="ml-6 flex-1 rounded-lg border border-white/20 bg-white/10 p-4 backdrop-blur-sm transition-all group-hover:translate-x-1">
-                <h3 className="text-lg font-medium">Sjekk e-posten din</h3>
-                <p className="text-sm opacity-80">
-                  Vi sender deg en sikker tilbakestillingslenke
+              <div className="ml-8 flex-1 rounded-2xl border border-white/30 bg-gradient-to-r from-white/15 to-white/5 p-6 backdrop-blur-sm transition-all duration-300 group-hover:translate-x-2 group-hover:from-white/20 group-hover:to-white/10 group-hover:shadow-lg">
+                <h3 className="font-[family-name:var(--font-sora)] text-xl font-semibold drop-shadow-sm">
+                  Konkurransedyktige priser
+                </h3>
+                <p className="mt-1 font-[family-name:var(--font-dm-sans)] text-sm opacity-90">
+                  Få de beste prisene og eksklusive tilbud for engros-kunder
                 </p>
               </div>
             </div>
 
             <div className="group relative flex items-center">
-              <div className="z-10 flex h-16 w-16 items-center justify-center rounded-full border border-white/30 bg-white/10 shadow-lg backdrop-blur-md transition-all duration-300 group-hover:scale-110">
-                <span className="text-2xl font-bold">3</span>
+              <div className="z-10 flex h-20 w-20 items-center justify-center rounded-full border-2 border-white/40 bg-gradient-to-br from-white/25 to-white/10 shadow-2xl backdrop-blur-lg transition-all duration-500 group-hover:scale-125 group-hover:from-white/35 group-hover:to-white/20 group-hover:shadow-[0_0_30px_rgba(255,255,255,0.3)]">
+                <svg
+                  className="h-8 w-8 text-white drop-shadow-lg"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2.5}
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
+                </svg>
               </div>
-              <div className="ml-6 flex-1 rounded-lg border border-white/20 bg-white/10 p-4 backdrop-blur-sm transition-all group-hover:translate-x-1">
-                <h3 className="text-lg font-medium">Lag nytt passord</h3>
-                <p className="text-sm opacity-80">
-                  Opprett et sterkt, nytt passord for kontoen din
+              <div className="ml-8 flex-1 rounded-2xl border border-white/30 bg-gradient-to-r from-white/15 to-white/5 p-6 backdrop-blur-sm transition-all duration-300 group-hover:translate-x-2 group-hover:from-white/20 group-hover:to-white/10 group-hover:shadow-lg">
+                <h3 className="font-[family-name:var(--font-sora)] text-xl font-semibold drop-shadow-sm">
+                  Rask og pålitelig service
+                </h3>
+                <p className="mt-1 font-[family-name:var(--font-dm-sans)] text-sm opacity-90">
+                  Effektiv bestilling, rask levering og 24/7 kundestøtte
                 </p>
               </div>
             </div>

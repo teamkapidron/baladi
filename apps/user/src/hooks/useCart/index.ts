@@ -1,155 +1,87 @@
-// Node Modules
-import { useCallback, useMemo } from 'react';
-import { toast } from '@repo/ui/lib/sonner';
+import { useShallow } from 'zustand/shallow';
+import { useCallback, useEffect } from 'react';
 
-// Hooks
 import { useAuth } from '@/hooks/useAuth';
-import { useLocalStorage } from '@repo/ui/hooks/useLocalStorage';
+import { useCartStore } from '@/store/cart';
 
-// Utils
-import { calculateItemTotal, createCartItem, updateCartItem } from './utils';
-
-// Types
-import { type Product } from '@repo/types/product';
-import { CartItem, CART_STORAGE_KEY, TOAST_MESSAGES } from './type';
+import { ProductResponse } from '../useProduct/types';
 
 export function useCart() {
   const { user, isAuthenticated } = useAuth();
-  const [cart, setCart] = useLocalStorage<CartItem[]>(CART_STORAGE_KEY, []);
+  const {
+    cart,
+    cartSummary,
+    userCartItems,
+    addToCart: addToCartStore,
+    removeFromCart: removeFromCartStore,
+    clearCart: clearCartStore,
+    updateQuantity: updateQuantityStore,
+    getItemQuantity: getItemQuantityStore,
+    isInCart: isInCartStore,
+    setUserId,
+  } = useCartStore(
+    useShallow((state) => ({
+      cart: state.cart,
+      cartSummary: state.cartSummary,
+      userCartItems: state.userCartItems,
+      addToCart: state.addToCart,
+      removeFromCart: state.removeFromCart,
+      clearCart: state.clearCart,
+      updateQuantity: state.updateQuantity,
+      getItemQuantity: state.getItemQuantity,
+      isInCart: state.isInCart,
+      setUserId: state.setUserId,
+    })),
+  );
 
-  const cartSummary = useMemo(() => {
-    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-    const totalPrice = cart.reduce((sum, item) => sum + item.totalPrice, 0);
-    const uniqueItems = cart.length;
-
-    return {
-      totalItems,
-      totalPrice: Math.round(totalPrice * 100) / 100,
-      uniqueItems,
-      isEmpty: cart.length === 0,
-    };
-  }, [cart]);
-
-  const requireAuth = useCallback(() => {
-    if (!isAuthenticated || !user) {
-      toast.error(TOAST_MESSAGES.LOGIN_REQUIRED);
-      return false;
-    }
-    return true;
-  }, [isAuthenticated, user]);
+  useEffect(() => {
+    setUserId(user?._id || null);
+  }, [user?._id, setUserId]);
 
   const addToCart = useCallback(
-    (product: Product, quantity: number) => {
-      if (!quantity || quantity <= 0) {
-        toast.error(TOAST_MESSAGES.INVALID_QUANTITY);
-        return;
-      }
-
-      if (!requireAuth()) return;
-
-      setCart((prevCart) => {
-        const userCart = prevCart.filter((item) => item.userId === user!._id);
-        const otherUsersCart = prevCart.filter(
-          (item) => item.userId !== user!._id,
-        );
-
-        const existingItemIndex = userCart.findIndex(
-          (item) => item.product._id === product._id,
-        );
-
-        let updatedUserCart: CartItem[];
-
-        if (existingItemIndex !== -1) {
-          updatedUserCart = userCart.map((item, index) =>
-            index === existingItemIndex ? updateCartItem(item, quantity) : item,
-          );
-          toast.success(TOAST_MESSAGES.ITEM_UPDATED);
-        } else {
-          const newItem = createCartItem(user!._id, product, quantity);
-          updatedUserCart = [...userCart, newItem];
-          toast.success(TOAST_MESSAGES.ITEM_ADDED);
-        }
-
-        return [...otherUsersCart, ...updatedUserCart];
-      });
+    (product: ProductResponse, quantity: number) => {
+      if (!isAuthenticated || !user) return;
+      addToCartStore(user._id, product, quantity);
     },
-    [setCart, user, requireAuth],
+    [addToCartStore, user, isAuthenticated],
   );
 
   const removeFromCart = useCallback(
     (productId: string) => {
-      if (!requireAuth()) return;
-
-      setCart((prevCart) =>
-        prevCart.filter(
-          (item) =>
-            !(item.product._id === productId && item.userId === user!._id),
-        ),
-      );
-      toast.success(TOAST_MESSAGES.ITEM_REMOVED);
+      if (!isAuthenticated || !user) return;
+      removeFromCartStore(user._id, productId);
     },
-    [setCart, user, requireAuth],
+    [removeFromCartStore, user, isAuthenticated],
   );
 
   const clearCart = useCallback(() => {
-    if (!requireAuth()) return;
-
-    setCart((prevCart) => prevCart.filter((item) => item.userId !== user!._id));
-    toast.success(TOAST_MESSAGES.CART_CLEARED);
-  }, [setCart, user, requireAuth]);
+    if (!isAuthenticated || !user) return;
+    clearCartStore(user._id);
+  }, [clearCartStore, user, isAuthenticated]);
 
   const getItemQuantity = useCallback(
     (productId: string): number => {
       if (!user) return 0;
-
-      const item = cart.find(
-        (item) => item.product._id === productId && item.userId === user._id,
-      );
-      return item?.quantity || 0;
+      return getItemQuantityStore(user._id, productId);
     },
-    [cart, user],
+    [getItemQuantityStore, user],
   );
 
   const isInCart = useCallback(
     (productId: string): boolean => {
-      return getItemQuantity(productId) > 0;
+      if (!user) return false;
+      return isInCartStore(user._id, productId);
     },
-    [getItemQuantity],
+    [isInCartStore, user],
   );
 
   const updateQuantity = useCallback(
     (productId: string, newQuantity: number) => {
-      if (!requireAuth()) return;
-
-      if (newQuantity <= 0) {
-        removeFromCart(productId);
-        return;
-      }
-
-      setCart((prevCart) =>
-        prevCart.map((item) =>
-          item.product._id === productId && item.userId === user!._id
-            ? {
-                ...item,
-                quantity: newQuantity,
-                totalPrice: calculateItemTotal(
-                  newQuantity,
-                  item.product.salePrice,
-                ),
-                updatedAt: new Date(),
-              }
-            : item,
-        ),
-      );
-      toast.success(TOAST_MESSAGES.ITEM_UPDATED);
+      if (!isAuthenticated || !user) return;
+      updateQuantityStore(user._id, productId, newQuantity);
     },
-    [requireAuth, setCart, removeFromCart, user],
+    [updateQuantityStore, user, isAuthenticated],
   );
-
-  const userCartItems = useMemo(() => {
-    if (!user) return [];
-    return cart.filter((item) => item.userId === user._id);
-  }, [cart, user]);
 
   return {
     cart,

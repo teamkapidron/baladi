@@ -17,7 +17,7 @@ import type {
 } from './types';
 import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
 
-export function useAddress(addressId: string) {
+export function useAddress() {
   const api = useRequest();
   const queryClient = useQueryClient();
 
@@ -31,21 +31,6 @@ export function useAddress(addressId: string) {
     queryKey: [ReactQueryKeys.GET_ADDRESSES],
     queryFn: getAddresses,
   });
-
-  const getAddressDetails = useCallback(async () => {
-    const response = await api.get<GetAddressDetailsRequest['response']>(
-      `/address/${addressId}`,
-    );
-    return response.data.data;
-  }, [api, addressId]);
-
-  const { data: addressDetails, isLoading: isAddressDetailsLoading } = useQuery(
-    {
-      queryKey: [ReactQueryKeys.GET_ADDRESS_DETAILS, addressId],
-      queryFn: getAddressDetails,
-      enabled: !!addressId,
-    },
-  );
 
   const addAddress = useCallback(
     async (payload: AddAddressRequest['payload']) => {
@@ -132,9 +117,7 @@ export function useAddress(addressId: string) {
   return {
     // Queries
     address,
-    addressDetails,
     isAddressLoading,
-    isAddressDetailsLoading,
 
     // Mutations
     addAddressMutation,
@@ -142,4 +125,25 @@ export function useAddress(addressId: string) {
     deleteAddressMutation,
     setDefaultAddressMutation,
   };
+}
+
+export function useAddressDetails(addressId: string) {
+  const api = useRequest();
+
+  const getAddressDetails = useCallback(async () => {
+    const response = await api.get<GetAddressDetailsRequest['response']>(
+      `/address/${addressId}`,
+    );
+
+    return response.data.data;
+  }, [api, addressId]);
+
+  const { data: addressDetails, isLoading: isAddressDetailsLoading } = useQuery(
+    {
+      queryKey: [ReactQueryKeys.GET_ADDRESS_DETAILS, addressId],
+      queryFn: getAddressDetails,
+    },
+  );
+
+  return { addressDetails, isAddressDetailsLoading };
 }

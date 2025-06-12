@@ -1,8 +1,10 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import React, { useState, useCallback, useEffect, memo } from 'react';
-import { ArrowLeft, ArrowRight } from '@repo/ui/lib/icons';
+import { ArrowLeft, ArrowRight, ChevronRight } from '@repo/ui/lib/icons';
+import { Button } from '@repo/ui/components/base/button';
 
 export interface CarouselSlide {
   id: string | number;
@@ -54,9 +56,9 @@ function Carousel(props: CarouselProps) {
   if (!slides?.length) return null;
 
   return (
-    <div className="relative overflow-hidden rounded-lg">
+    <div className="relative overflow-hidden shadow-2xl">
       <div
-        className="relative overflow-hidden bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)]"
+        className="relative overflow-hidden bg-gradient-to-br from-[var(--baladi-primary)] via-[var(--baladi-secondary)] to-[var(--baladi-primary-dark)]"
         style={{
           height: `var(--carousel-height, ${height.mobile})`,
         }}
@@ -64,80 +66,137 @@ function Carousel(props: CarouselProps) {
         {slides.map((slide, index) => (
           <div
             key={slide.id}
-            className={`absolute inset-0 h-full w-full transition-opacity duration-500 ease-in-out ${
-              index === currentSlide ? 'z-10 opacity-100' : 'z-0 opacity-0'
+            className={`absolute inset-0 h-full w-full transition-all duration-700 ease-in-out ${
+              index === currentSlide
+                ? 'z-10 scale-100 opacity-100'
+                : 'z-0 scale-105 opacity-0'
             }`}
             aria-hidden={index !== currentSlide}
           >
-            <div className="absolute inset-0 z-10 bg-black/40" />
+            <div className="absolute inset-0 z-10 bg-gradient-to-r from-black/60 via-black/40 to-black/60" />
+
             <Image
               src={slide.imageUrl}
               alt={slide.title}
               fill
               sizes="(max-width: 768px) 100vw, 100vw"
-              className="object-cover"
+              className="object-cover transition-transform duration-700 ease-out"
               priority={index === 0}
               loading={index === 0 ? 'eager' : 'lazy'}
-              quality={80}
+              quality={85}
             />
 
             <div className="absolute inset-0 z-20 flex items-center justify-center">
-              <div className="max-w-3xl px-6 text-center md:px-0">
-                <h2 className="mb-4 text-3xl font-bold text-white md:text-5xl">
+              <div className="max-w-4xl px-6 text-center md:px-8">
+                <h2 className="animate-in slide-in-from-bottom-8 mb-6 font-[family-name:var(--font-sora)] text-4xl font-bold leading-tight text-white duration-700 md:text-6xl lg:text-7xl">
                   {slide.title}
                 </h2>
-                <p className="mx-auto mb-6 max-w-xl text-lg text-white md:text-xl">
+
+                <p className="animate-in slide-in-from-bottom-8 mx-auto mb-8 max-w-2xl font-[family-name:var(--font-dm-sans)] text-lg leading-relaxed text-white/90 delay-150 duration-700 md:text-xl lg:text-2xl">
                   {slide.description}
                 </p>
-                <a
-                  href={slide.ctaLink}
-                  className="inline-block bg-white px-6 py-3 font-medium text-[var(--color-primary)] shadow-lg transition-all duration-300 hover:-translate-y-1 hover:bg-opacity-90 hover:shadow-xl active:translate-y-0"
-                >
-                  {slide.ctaText}
-                </a>
+
+                <div className="animate-in slide-in-from-bottom-8 delay-300 duration-700">
+                  <Button
+                    asChild
+                    size="lg"
+                    className="hover:shadow-3xl group relative overflow-hidden rounded-full bg-white px-8 py-4 font-[family-name:var(--font-dm-sans)] text-lg font-semibold text-[var(--baladi-primary)] shadow-2xl transition-all duration-300 hover:scale-105"
+                  >
+                    <Link href={slide.ctaLink}>
+                      <div className="absolute inset-0 bg-gradient-to-r from-[var(--baladi-light)] to-white opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+                      <div className="relative flex items-center gap-2">
+                        <span>{slide.ctaText}</span>
+                        <ChevronRight
+                          size={20}
+                          className="transition-transform duration-200 group-hover:translate-x-1"
+                        />
+                      </div>
+                    </Link>
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      {showControls && (
+      {showControls && slides.length > 1 && (
         <>
-          <button
+          <Button
             onClick={prevSlide}
-            className="absolute left-4 top-1/2 z-30 -translate-y-1/2 rounded-full bg-white/20 p-2 text-white transition-all hover:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/50"
+            variant="secondary"
+            size="icon"
+            className="absolute left-4 top-1/2 z-30 h-12 w-12 -translate-y-1/2 rounded-full bg-white/10 text-white backdrop-blur-md transition-all duration-200 hover:scale-110 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50 md:left-6"
             aria-label="Previous slide"
             type="button"
           >
-            <ArrowLeft size={20} />
-          </button>
-          <button
+            <ArrowLeft size={24} />
+          </Button>
+
+          <Button
             onClick={nextSlide}
-            className="absolute right-4 top-1/2 z-30 -translate-y-1/2 rounded-full bg-white/20 p-2 text-white transition-all hover:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/50"
+            variant="secondary"
+            size="icon"
+            className="absolute right-4 top-1/2 z-30 h-12 w-12 -translate-y-1/2 rounded-full bg-white/10 text-white backdrop-blur-md transition-all duration-200 hover:scale-110 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50 md:right-6"
             aria-label="Next slide"
             type="button"
           >
-            <ArrowRight size={20} />
-          </button>
+            <ArrowRight size={24} />
+          </Button>
         </>
       )}
 
       {showIndicators && slides.length > 1 && (
-        <div className="absolute bottom-4 left-0 right-0 z-30 flex justify-center gap-2">
+        <div className="absolute bottom-6 left-0 right-0 z-30 flex justify-center gap-3">
           {slides.map((_, index) => (
             <button
               key={index}
               onClick={() => goToSlide(index)}
-              className={`h-2.5 w-2.5 rounded-full transition-all ${
-                index === currentSlide ? 'scale-125 bg-white' : 'bg-white/50'
+              className={`group relative h-3 rounded-full transition-all duration-300 ${
+                index === currentSlide
+                  ? 'w-12 bg-white shadow-lg'
+                  : 'w-3 bg-white/40 hover:bg-white/60'
               }`}
               aria-label={`Go to slide ${index + 1}`}
               aria-current={index === currentSlide ? 'true' : 'false'}
               type="button"
-            />
+            >
+              {index === currentSlide && (
+                <div className="absolute inset-0 rounded-full bg-white/50 blur-sm" />
+              )}
+            </button>
           ))}
         </div>
       )}
+
+      {autoPlayInterval > 0 && (
+        <div className="absolute bottom-0 left-0 right-0 z-30 h-1 bg-white/20">
+          <div
+            className="h-full bg-gradient-to-r from-[var(--baladi-accent)] to-white transition-all duration-100 ease-linear"
+            style={{
+              width: '100%',
+              animation: `slideProgress ${autoPlayInterval}ms linear infinite`,
+            }}
+          />
+        </div>
+      )}
+
+      <style>{`
+        @keyframes slideProgress {
+          from {
+            width: 0%;
+          }
+          to {
+            width: 100%;
+          }
+        }
+        @media (min-width: 768px) {
+          .relative {
+            --carousel-height: ${height.desktop};
+          }
+        }
+      `}</style>
     </div>
   );
 }

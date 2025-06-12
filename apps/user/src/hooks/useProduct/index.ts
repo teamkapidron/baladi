@@ -1,8 +1,11 @@
 // Node Modules
+import { useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 // Hooks
 import { useRequest } from '@/hooks/useRequest';
+import { useProductFilters } from './useProductFilters';
+import { usePagination } from '@repo/ui/hooks/usePagination';
 
 // Types
 import type {
@@ -14,33 +17,47 @@ import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
 
 export function useProducts() {
   const api = useRequest();
+  const { page, limit } = usePagination();
+  const { search, category } = useProductFilters();
 
-  return useQuery({
-    queryKey: [ReactQueryKeys.GET_PRODUCTS],
-    queryFn: async () => {
-      const response =
-        await api.get<GetProductsRequest['response']>('/product/list');
+  const getProducts = useCallback(
+    async (payload: GetProductsRequest['payload']) => {
+      const response = await api.get<GetProductsRequest['response']>(
+        '/product/list',
+        { params: payload },
+      );
       return response.data.data;
     },
+    [api],
+  );
+
+  return useQuery({
+    queryKey: [ReactQueryKeys.GET_PRODUCTS, search, category, page, limit],
+    queryFn: () =>
+      getProducts({
+        page,
+        limit,
+        search: search ?? undefined,
+        category: category ?? undefined,
+      }),
   });
 }
 
-export function useProductById(productId?: string) {
+export function useProductById(productId: string) {
   const api = useRequest();
 
   return useQuery({
     queryKey: [ReactQueryKeys.GET_PRODUCT_BY_ID, productId],
     queryFn: async () => {
       const response = await api.get<GetProductByIdRequest['response']>(
-        `/product/${productId}`,
+        `/product/details/${productId}`,
       );
       return response.data.data;
     },
-    enabled: !!productId,
   });
 }
 
-export function useProductBySlug(slug?: string) {
+export function useProductBySlug(slug: string) {
   const api = useRequest();
 
   return useQuery({
@@ -51,6 +68,5 @@ export function useProductBySlug(slug?: string) {
       );
       return response.data.data;
     },
-    enabled: !!slug,
   });
 }

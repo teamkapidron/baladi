@@ -38,10 +38,16 @@ const router: Router = express.Router();
 router.get('/list', addUserToRequest, validate(getProductsSchema), getProducts);
 router.get(
   '/details/:productId',
+  addUserToRequest,
   validate(getProductByIdSchema),
   getProductById,
 );
-router.get('/slug/:slug', validate(getProductBySlugSchema), getProductBySlug);
+router.get(
+  '/slug/:slug',
+  addUserToRequest,
+  validate(getProductBySlugSchema),
+  getProductBySlug,
+);
 router.get(
   '/search/quick',
   validate(quickSearchProductsSchema),

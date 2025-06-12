@@ -9,11 +9,10 @@ import { useRequest } from '@/hooks/useRequest';
 import type {
   GetCategoriesRequest,
   GetCategoriesFlattenedRequest,
-  GetCategoryByIdRequest,
 } from './types';
 import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
 
-export function useCategory(categoryId?: string) {
+export function useCategory() {
   const api = useRequest();
 
   const getCategories = useCallback(async () => {
@@ -27,39 +26,36 @@ export function useCategory(categoryId?: string) {
     queryFn: getCategories,
   });
 
-  const getCategoriesFlattened = useCallback(async () => {
-    const response = await api.get<GetCategoriesFlattenedRequest['response']>(
-      '/category/flattened',
-    );
-    return response.data.data;
-  }, [api]);
+  return {
+    categories,
+    isCategoriesLoading,
+  };
+}
+
+export function useCategoryFlattened() {
+  const api = useRequest();
+
+  const getCategoriesFlattened = useCallback(
+    async (params: GetCategoriesFlattenedRequest['payload']) => {
+      const response = await api.get<GetCategoriesFlattenedRequest['response']>(
+        '/category/flattened',
+        {
+          params,
+        },
+      );
+      return response.data.data;
+    },
+    [api],
+  );
 
   const { data: categoriesFlattened, isLoading: isCategoriesFlattenedLoading } =
     useQuery({
       queryKey: [ReactQueryKeys.GET_CATEGORIES_FLATTENED],
-      queryFn: getCategoriesFlattened,
+      queryFn: () => getCategoriesFlattened({ page: 1, limit: 100 }),
     });
 
-  const getCategoryById = useCallback(async () => {
-    const response = await api.get<GetCategoryByIdRequest['response']>(
-      `/category/${categoryId}`,
-    );
-    return response.data.data;
-  }, [api, categoryId]);
-
-  const { data: categoryById, isLoading: isCategoryByIdLoading } = useQuery({
-    queryKey: [ReactQueryKeys.GET_CATEGORY_BY_ID, categoryId],
-    queryFn: getCategoryById,
-    enabled: !!categoryId,
-  });
-
   return {
-    // Queries
-    categories,
     categoriesFlattened,
-    categoryById,
-    isCategoriesLoading,
     isCategoriesFlattenedLoading,
-    isCategoryByIdLoading,
   };
 }

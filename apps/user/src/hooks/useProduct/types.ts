@@ -1,28 +1,40 @@
 import { ApiData } from '@/utils/types.util';
 import { Product } from '@repo/types/product';
 
-export interface ProductResponse extends Product {
+export enum ProductSort {
+  POPULARITY = 'popularity',
+  PRICE_ASC = 'price-asc',
+  PRICE_DESC = 'price-desc',
+  NEWEST = 'newest',
+}
+
+export enum ProductStock {
+  ALL = 'all',
+  IN_STOCK = 'in-stock',
+  OUT_OF_STOCK = 'out-of-stock',
+}
+
+export interface ProductResponse extends Omit<Product, 'categories'> {
   isFavorite?: boolean;
-  category: {
+  categories: {
     _id: string;
     name: string;
     slug: string;
-  };
+  }[];
+  stock: number;
 }
 
 export type GetProductsRequest = ApiData<
   {
-    page: number;
-    limit: number;
-    search: string;
-    category: string;
-    minPrice: number;
-    maxPrice: number;
+    page: string;
+    limit: string;
+    search?: string;
+    category?: string;
   },
   {
     products: ProductResponse[];
     totalProducts: number;
-    page: number;
+    currentPage: number;
     perPage: number;
     totalPages: number;
   }
@@ -33,7 +45,7 @@ export type GetProductByIdRequest = ApiData<
     productId: string;
   },
   {
-    product: Product;
+    product: ProductResponse;
   }
 >;
 
@@ -42,6 +54,6 @@ export type GetProductBySlugRequest = ApiData<
     slug: string;
   },
   {
-    product: Product;
+    product: ProductResponse;
   }
 >;

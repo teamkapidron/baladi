@@ -83,7 +83,7 @@ export const getProducts = asyncHandler(async (req: Request, res: Response) => {
     },
     {
       $addFields: {
-        stock: { $sum: '$inventory.quantity' },
+        stock: { $ifNull: ['$inventory.quantity', 0] },
         bestBeforeDate: { $min: '$inventory.expirationDate' },
       },
     },
@@ -99,20 +99,16 @@ export const getProducts = asyncHandler(async (req: Request, res: Response) => {
       {
         $lookup: {
           from: 'favorites',
-          let: { productId: '$_id' },
+          localField: '_id',
+          foreignField: 'productId',
+          as: 'favorite',
           pipeline: [
             {
               $match: {
-                $expr: {
-                  $and: [
-                    { $eq: ['$product', '$$productId'] },
-                    { $eq: ['$user', new Types.ObjectId(userId)] },
-                  ],
-                },
+                userId: new Types.ObjectId(userId),
               },
             },
           ],
-          as: 'favorite',
         },
       },
       {
@@ -156,11 +152,29 @@ export const getProducts = asyncHandler(async (req: Request, res: Response) => {
 
 export const getProductById = asyncHandler(
   async (req: Request, res: Response) => {
+    const userId = req.user?._id;
     const { productId } = req.params as GetProductByIdSchema['params'];
 
-    const product = await Product.aggregate([
+    const pipeline: PipelineStage[] = [
       {
         $match: { _id: new Types.ObjectId(productId) },
+      },
+      {
+        $lookup: {
+          from: 'categories',
+          localField: 'categories',
+          foreignField: '_id',
+          as: 'categories',
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                name: 1,
+                slug: 1,
+              },
+            },
+          ],
+        },
       },
       {
         $lookup: {
@@ -171,11 +185,14 @@ export const getProductById = asyncHandler(
         },
       },
       {
-        $unwind: '$inventory',
+        $unwind: {
+          path: '$inventory',
+          preserveNullAndEmptyArrays: true,
+        },
       },
       {
         $addFields: {
-          stock: '$inventory.quantity',
+          stock: { $ifNull: ['$inventory.quantity', 0] },
           bestBeforeDate: { $min: '$inventory.expirationDate' },
         },
       },
@@ -184,7 +201,39 @@ export const getProductById = asyncHandler(
           inventory: 0,
         },
       },
-    ]);
+    ];
+
+    if (userId) {
+      pipeline.push(
+        {
+          $lookup: {
+            from: 'favorites',
+            localField: '_id',
+            foreignField: 'productId',
+            as: 'favorite',
+            pipeline: [
+              {
+                $match: {
+                  userId: new Types.ObjectId(userId),
+                },
+              },
+            ],
+          },
+        },
+        {
+          $addFields: {
+            isFavorite: { $gt: [{ $size: '$favorite' }, 0] },
+          },
+        },
+        {
+          $project: {
+            favorite: 0,
+          },
+        },
+      );
+    }
+
+    const product = await Product.aggregate(pipeline);
 
     if (!product) {
       throw new ErrorHandler(404, 'Product not found', 'NOT_FOUND');
@@ -198,11 +247,29 @@ export const getProductById = asyncHandler(
 
 export const getProductBySlug = asyncHandler(
   async (req: Request, res: Response) => {
+    const userId = req.user?._id;
     const { slug } = req.params as GetProductBySlugSchema['params'];
 
-    const product = await Product.aggregate([
+    const pipeline: PipelineStage[] = [
       {
         $match: { slug },
+      },
+      {
+        $lookup: {
+          from: 'categories',
+          localField: 'categories',
+          foreignField: '_id',
+          as: 'categories',
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                name: 1,
+                slug: 1,
+              },
+            },
+          ],
+        },
       },
       {
         $lookup: {
@@ -213,11 +280,14 @@ export const getProductBySlug = asyncHandler(
         },
       },
       {
-        $unwind: '$inventory',
+        $unwind: {
+          path: '$inventory',
+          preserveNullAndEmptyArrays: true,
+        },
       },
       {
         $addFields: {
-          stock: '$inventory.quantity',
+          stock: { $ifNull: ['$inventory.quantity', 0] },
           bestBeforeDate: { $min: '$inventory.expirationDate' },
         },
       },
@@ -226,7 +296,39 @@ export const getProductBySlug = asyncHandler(
           inventory: 0,
         },
       },
-    ]);
+    ];
+
+    if (userId) {
+      pipeline.push(
+        {
+          $lookup: {
+            from: 'favorites',
+            localField: '_id',
+            foreignField: 'productId',
+            as: 'favorite',
+            pipeline: [
+              {
+                $match: {
+                  userId: new Types.ObjectId(userId),
+                },
+              },
+            ],
+          },
+        },
+        {
+          $addFields: {
+            isFavorite: { $gt: [{ $size: '$favorite' }, 0] },
+          },
+        },
+        {
+          $project: {
+            favorite: 0,
+          },
+        },
+      );
+    }
+
+    const product = await Product.aggregate(pipeline);
 
     if (!product) {
       throw new ErrorHandler(404, 'Product not found', 'NOT_FOUND');

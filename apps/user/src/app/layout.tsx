@@ -7,7 +7,10 @@ import ReactQueryProvider from '@/providers/react-query-provider';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Baladi',
+  title: {
+    template: '%s | Baladi Engros',
+    default: 'Baladi Engros',
+  },
 };
 
 const sora = Sora({

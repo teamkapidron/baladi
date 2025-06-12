@@ -32,8 +32,7 @@ export function useFavourite() {
   const addToFavorites = useCallback(
     async (payload: AddToFavoritesRequest['payload']) => {
       const response = await api.post<AddToFavoritesRequest['response']>(
-        '/favorite',
-        payload,
+        `/favorite/${payload.productId}`,
       );
       return response.data.data;
     },
@@ -53,8 +52,7 @@ export function useFavourite() {
   const removeFromFavorites = useCallback(
     async (payload: RemoveFromFavoritesRequest['payload']) => {
       const response = await api.delete<RemoveFromFavoritesRequest['response']>(
-        '/favorite',
-        { params: payload },
+        `/favorite/${payload.productId}`,
       );
       return response.data.data;
     },

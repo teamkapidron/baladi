@@ -15,7 +15,7 @@ import type {
 } from './types';
 import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
 
-export function useOrder(orderId?: string) {
+export function useOrder() {
   const api = useRequest();
   const queryClient = useQueryClient();
 
@@ -34,13 +34,13 @@ export function useOrder(orderId?: string) {
     mutationFn: placeOrder,
     onSuccess: function () {
       queryClient.invalidateQueries({
-        queryKey: [ReactQueryKeys.GET_USER_ORDERS],
+        queryKey: [ReactQueryKeys.GET_MY_ORDERS],
       });
       toast.success('Order placed successfully');
     },
   });
 
-  const getUserOrders = useCallback(
+  const getMyOrders = useCallback(
     async (payload: GetUserOrdersRequest['payload']) => {
       const response = await api.get<GetUserOrdersRequest['response']>(
         '/order/my',
@@ -51,22 +51,9 @@ export function useOrder(orderId?: string) {
     [api],
   );
 
-  const { data: userOrders, isLoading: isUserOrdersLoading } = useQuery({
-    queryKey: [ReactQueryKeys.GET_USER_ORDERS],
-    queryFn: () => getUserOrders({ page: 1, limit: 10 }),
-  });
-
-  const getUserOrderDetails = useCallback(async () => {
-    const response = await api.get<GetUserOrderDetailsRequest['response']>(
-      `/order/${orderId}`,
-    );
-    return response.data.data;
-  }, [api, orderId]);
-
-  const orderDetailsQuery = useQuery({
-    queryKey: [ReactQueryKeys.GET_USER_ORDER_DETAILS, orderId],
-    queryFn: getUserOrderDetails,
-    enabled: !!orderId,
+  const { data: myOrders, isLoading: isMyOrdersLoading } = useQuery({
+    queryKey: [ReactQueryKeys.GET_MY_ORDERS],
+    queryFn: () => getMyOrders({ page: 1, limit: 10 }),
   });
 
   const cancelOrder = useCallback(
@@ -84,7 +71,7 @@ export function useOrder(orderId?: string) {
     mutationFn: cancelOrder,
     onSuccess: function () {
       queryClient.invalidateQueries({
-        queryKey: [ReactQueryKeys.GET_USER_ORDERS],
+        queryKey: [ReactQueryKeys.GET_MY_ORDERS],
       });
       toast.success('Order Cancelled successfully');
     },
@@ -92,12 +79,32 @@ export function useOrder(orderId?: string) {
 
   return {
     // Queries
-    userOrders,
-    orderDetailsQuery,
-    isUserOrdersLoading,
+    myOrders,
+    isMyOrdersLoading,
 
     // Mutations
     placeOrderMutation,
     cancelOrderMutation,
+  };
+}
+
+export function useOrderDetails(orderId: string) {
+  const api = useRequest();
+
+  const getOrderDetails = useCallback(async () => {
+    const response = await api.get<GetUserOrderDetailsRequest['response']>(
+      `/order/${orderId}`,
+    );
+    return response.data.data;
+  }, [api, orderId]);
+
+  const { data: orderDetails, isLoading: isOrderDetailsLoading } = useQuery({
+    queryKey: [ReactQueryKeys.GET_ORDER_DETAILS, orderId],
+    queryFn: getOrderDetails,
+  });
+
+  return {
+    orderDetails,
+    isOrderDetailsLoading,
   };
 }
