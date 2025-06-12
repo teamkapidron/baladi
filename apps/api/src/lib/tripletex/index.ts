@@ -1,26 +1,15 @@
-import { TripletexCustomer } from './calls/customer/customer';
-import { TripletexOrder } from './calls/order/order';
-import { TripletexToken } from './calls/token/token';
-import { TripletexClientConfig } from '@/lib/tipletex/types/config';
-import { TripletexProduct } from './calls/product/product';
-import { TripletexInvoice } from './calls/invoice/invoice';
-import type {
-  CreateCustomerInput,
-  CreateCustomerResult,
-} from '@/lib/tipletex/types/customer.types';
-import type {
-  CreateProductInput,
-  CreateProductResult,
-} from '@/lib/tipletex/types/product.types';
-import type {
-  CreateOrderInput,
-  CreateOrderResult,
-} from '@/lib/tipletex/types/order.types';
-import type {
-  CreateInvoiceResult,
-  ViewInvoiceResult,
-} from '@/lib/tipletex/types/invoice.types';
 import { addDays } from 'date-fns';
+
+import { TripletexCustomer } from '@/lib/tripletex/calls/customer/customer';
+import { TripletexOrder } from '@/lib/tripletex/calls/order/order';
+import { TripletexToken } from '@/lib/tripletex/calls/token/token';
+import { TripletexClientConfig } from '@/lib/tripletex/calls/types';
+import { TripletexProduct } from '@/lib/tripletex/calls/product/product';
+import { TripletexInvoice } from '@/lib/tripletex/calls/invoice/invoice';
+
+import type { CreateCustomerInput } from '@/lib/tripletex/calls/customer/types';
+import type { CreateProductInput } from '@/lib/tripletex/calls/product/types';
+import type { CreateOrderInput } from '@/lib/tripletex/calls/order/types';
 
 export class Tripletex {
   public customer: TripletexCustomer;
@@ -68,48 +57,38 @@ export class Tripletex {
   private async initializeSession(): Promise<void> {
     const token = await this.getSessionToken();
 
-    // Update all service instances with the session token
-
     this.customer = new TripletexCustomer(this.config, token);
     this.product = new TripletexProduct(this.config, token);
     this.order = new TripletexOrder(this.config, token);
     this.invoice = new TripletexInvoice(this.config, token);
   }
 
-  async createCustomer(
-    input: CreateCustomerInput,
-  ): Promise<CreateCustomerResult> {
+  async createCustomer(input: CreateCustomerInput) {
     await this.initializeSession();
     return this.customer.create(input);
   }
 
-  async makeCustomerActive(
-    customerId: number,
-    isInactive: boolean,
-  ): Promise<CreateCustomerResult> {
+  async makeCustomerActive(customerId: number, isInactive: boolean) {
     await this.initializeSession();
     return this.customer.makeCustomerActive(customerId, isInactive);
   }
 
-  async createProduct(input: CreateProductInput): Promise<CreateProductResult> {
+  async createProduct(input: CreateProductInput) {
     await this.initializeSession();
     return this.product.create(input);
   }
 
-  async createOrder(input: CreateOrderInput): Promise<CreateOrderResult> {
+  async createOrder(input: CreateOrderInput) {
     await this.initializeSession();
     return this.order.create(input);
   }
 
-  async createInvoice(
-    orderId: number,
-    invoiceDate: string,
-  ): Promise<CreateInvoiceResult> {
+  async createInvoice(orderId: number, invoiceDate: string) {
     await this.initializeSession();
     return this.invoice.create(orderId, invoiceDate);
   }
 
-  async viewInvoice(invoiceId: number): Promise<ViewInvoiceResult> {
+  async viewInvoice(invoiceId: number) {
     await this.initializeSession();
     return this.invoice.view(invoiceId);
   }

@@ -4,14 +4,14 @@ import {
   Invoice,
   InvoicePdfResponse,
   ViewInvoiceResult,
-} from '@/lib/tipletex/types/invoice.types';
+} from '@/lib/tripletex/calls/invoice/types';
 
 export class TripletexInvoice extends TripletexBase {
   async create(
     orderId: number,
     invoiceDate: string,
   ): Promise<CreateInvoiceResult> {
-    const rawResponse = await this.performRequest(() =>
+    const response = await this.performRequest<CreateInvoiceResult>(() =>
       this.authenticatedRequest(
         `/v2/order/${orderId}/:invoice?invoiceDate=${invoiceDate}`,
         {
@@ -20,27 +20,21 @@ export class TripletexInvoice extends TripletexBase {
       ),
     );
 
-    return rawResponse as CreateInvoiceResult;
+    return response;
   }
 
   async view(invoiceId: number): Promise<ViewInvoiceResult> {
-    // Get invoice details
-    const invoiceResponse = await this.performRequest(() =>
+    const invoice = await this.performRequest<Invoice>(() =>
       this.authenticatedRequest(`/v2/invoice/${invoiceId}`, {
         method: 'GET',
       }),
     );
 
-    const invoice = invoiceResponse as Invoice;
-
-    // Get PDF URL
-    const pdfResponse = await this.performRequest(() =>
+    const pdfData = await this.performRequest<InvoicePdfResponse>(() =>
       this.authenticatedRequest(`/v2/invoice/${invoiceId}/pdf`, {
         method: 'GET',
       }),
     );
-
-    const pdfData = pdfResponse as InvoicePdfResponse;
 
     return {
       invoiceUrl: pdfData.url,

@@ -1,11 +1,8 @@
 import { addDays } from 'date-fns';
-import { TripletexClientConfig } from '../types/config';
-import {
-  defaultBaseUrl,
-  makeRequest,
-  TripletexError,
-} from '@/lib/tipletex/utils';
-import { TripletexToken } from '@/lib/tipletex/calls/token/token';
+
+import { TripletexClientConfig } from './types';
+import { defaultBaseUrl, makeRequest } from '@/lib/tripletex/utils';
+import { TripletexToken } from '@/lib/tripletex/calls/token/token';
 
 interface RequestOptions {
   method?: string;
@@ -58,9 +55,6 @@ export abstract class TripletexBase {
     if (this.sessionToken) {
       return this.sessionToken;
     }
-
-    const expirationDate =
-      this.config.expirationDate ?? addDays(new Date(), 2).toString();
 
     if (!this.config.employeeToken) {
       throw new Error('employeeToken is required in config');

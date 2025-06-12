@@ -1,9 +1,5 @@
-// Resource reference type used across Tripletex entities
-export interface ResourceRef {
-  id: number;
-}
+import { ResourceRef } from '../types';
 
-// Order type
 export interface Order {
   id: number;
   version?: number | null;
@@ -41,7 +37,6 @@ export interface Order {
   preliminaryInvoice?: ResourceRef | null;
 }
 
-// Order line input type for creating orders
 export interface OrderLineInput {
   product: { id: number };
   count: number;
@@ -51,7 +46,6 @@ export interface OrderLineInput {
   vatType?: { id?: number };
 }
 
-// Create order input type
 export interface CreateOrderInput {
   customer: { id: number };
   deliveryDate: string;

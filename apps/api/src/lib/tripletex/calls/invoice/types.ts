@@ -1,9 +1,5 @@
-// Resource reference type used across Tripletex entities
-export interface ResourceRef {
-  id: number;
-}
+import { ResourceRef } from '../types';
 
-// Invoice type
 export interface Invoice {
   id: number;
   version?: number | null;
@@ -35,23 +31,19 @@ export interface Invoice {
   ehfSendStatus?: string | null;
 }
 
-// Create invoice response type
 export interface CreateInvoiceResponse {
   value: Invoice;
 }
 
-// Create invoice result type
 export interface CreateInvoiceResult {
   invoiceId: number;
 }
 
-// Invoice PDF response type
 export interface InvoicePdfResponse {
   url: string;
   filename?: string;
 }
 
-// View invoice result type
 export interface ViewInvoiceResult {
   invoiceUrl: string;
   invoiceId: number;

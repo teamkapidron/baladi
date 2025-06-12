@@ -12,3 +12,7 @@ export interface DefaultTripletexInputs {
   count?: number;
   sorting?: Date;
 }
+
+export interface ResourceRef {
+  id: number;
+}

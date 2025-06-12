@@ -1,9 +1,5 @@
-// Resource reference type used across Tripletex entities
-export interface ResourceRef {
-  id: number;
-}
+import { ResourceRef } from '../types';
 
-// Customer category type
 export interface CustomerCategory {
   id?: number | null;
   version?: number | null;
@@ -13,7 +9,6 @@ export interface CustomerCategory {
   type?: number | null;
 }
 
-// Company bank account presentation type
 export interface CompanyBankAccountPresentation {
   iban?: string | null;
   bban?: string | null;
@@ -22,7 +17,6 @@ export interface CompanyBankAccountPresentation {
   provider?: 'NETS' | 'AUTOPAY' | null;
 }
 
-// Customer type
 export interface Customer {
   id: number;
   version?: number | null;
@@ -64,7 +58,6 @@ export interface Customer {
   isInactive: boolean;
 }
 
-// Create customer input type
 export interface CreateCustomerInput {
   name: string;
   organizationNumber?: string;
@@ -92,12 +85,10 @@ export interface CreateCustomerInput {
   currencyId?: number;
 }
 
-// Create customer response type
 export interface CreateCustomerResponse {
   value: Customer;
 }
 
-// Create customer result type
 export interface CreateCustomerResult {
   customerId: number;
   isInactive?: boolean | null;

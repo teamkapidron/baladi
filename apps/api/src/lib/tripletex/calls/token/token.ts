@@ -1,16 +1,13 @@
-import { TripletexClientConfig } from '@/lib/tipletex/types/config';
-import { defaultBaseUrl, makeRequest } from '@/lib/tipletex/utils';
 import { formatDate } from 'date-fns';
-import {
-  GetTokenResponse,
-  SessionToken,
-} from '@/lib/tipletex/types/token.types';
 
-export interface CreateSessionTokenInput {
-  employeeToken: string;
-  consumerToken: string;
-  expirationDate: Date;
-}
+import { TripletexClientConfig } from '@/lib/tripletex/calls/types';
+import { defaultBaseUrl, makeRequest } from '@/lib/tripletex/utils';
+
+import type {
+  SessionToken,
+  GetTokenResponse,
+  CreateSessionTokenInput,
+} from '@/lib/tripletex/calls/token/types';
 
 export class TripletexToken {
   constructor(readonly config: TripletexClientConfig) {}
@@ -26,7 +23,7 @@ export class TripletexToken {
       expirationDate: formatDate(args.expirationDate, 'yyyy-MM-dd'),
     };
 
-    const rawResponse = await makeRequest(url, {
+    const response = await makeRequest<GetTokenResponse>(url, {
       method: 'PUT',
       headers: {
         'User-Agent': this.config.userAgent ?? 'baladi/1.0.0',
@@ -34,7 +31,7 @@ export class TripletexToken {
       query,
     });
 
-    return rawResponse as GetTokenResponse;
+    return response;
   }
 }
 

@@ -3,7 +3,7 @@ import {
   CreateCustomerInput,
   CreateCustomerResponse,
   CreateCustomerResult,
-} from '@/lib/tipletex/types/customer.types';
+} from '@/lib/tripletex/calls/customer/types';
 
 export class TripletexCustomer extends TripletexBase {
   async makeCustomerActive(
@@ -18,7 +18,7 @@ export class TripletexCustomer extends TripletexBase {
       throw new Error('isInactive is required');
     }
 
-    const rawResponse = await this.performRequest(() =>
+    const response = await this.performRequest<CreateCustomerResponse>(() =>
       this.authenticatedRequest(`/v2/customer/${customerId}`, {
         method: 'PUT',
         body: {
@@ -26,7 +26,6 @@ export class TripletexCustomer extends TripletexBase {
         },
       }),
     );
-    const response = rawResponse as CreateCustomerResponse;
     return {
       customerId: response.value.id,
       isInactive: response.value.isInactive ?? false,
@@ -34,16 +33,13 @@ export class TripletexCustomer extends TripletexBase {
   }
 
   async create(input: CreateCustomerInput): Promise<CreateCustomerResult> {
-    // Validate input
-
-    const rawResponse = await this.performRequest(() =>
+    const response = await this.performRequest<CreateCustomerResponse>(() =>
       this.authenticatedRequest('/v2/customer', {
         method: 'POST',
         body: input,
       }),
     );
 
-    const response = rawResponse as CreateCustomerResponse;
     return { customerId: response.value.id };
   }
 }

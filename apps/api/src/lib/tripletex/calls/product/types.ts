@@ -1,9 +1,5 @@
-// Resource reference type used across Tripletex entities
-export interface ResourceRef {
-  id: number;
-}
+import { ResourceRef } from '../types';
 
-// Product types
 export interface Product {
   id: number;
   version?: number | null;
@@ -37,7 +33,6 @@ export interface Product {
   supplier?: ResourceRef | null;
 }
 
-// Create product input type
 export interface CreateProductInput {
   name: string;
   number?: string;
@@ -69,12 +64,10 @@ export interface CreateProductInput {
   supplierId?: number;
 }
 
-// Create product response type
 export interface CreateProductResponse {
   value: Product;
 }
 
-// Create product result type
 export interface CreateProductResult {
   productId: number;
 }
