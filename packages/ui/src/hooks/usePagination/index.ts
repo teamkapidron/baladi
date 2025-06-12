@@ -1,11 +1,14 @@
 import { useCallback } from 'react';
 import { parseAsString, useQueryState } from 'nuqs';
 
-export function usePagination() {
-  const [page, setPage] = useQueryState('page', parseAsString.withDefault('1'));
+export function usePagination(pageQuery?: string, limitQuery?: string) {
+  const [page, setPage] = useQueryState(
+    'page',
+    parseAsString.withDefault(pageQuery ? pageQuery : '1'),
+  );
   const [limit, setLimit] = useQueryState(
     'limit',
-    parseAsString.withDefault('10'),
+    parseAsString.withDefault(limitQuery ? limitQuery : '10'),
   );
 
   const handlePageSizeChange = useCallback(

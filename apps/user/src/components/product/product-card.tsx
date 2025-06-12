@@ -104,7 +104,6 @@ function ProductCard(props: ProductCardProps) {
         )}
       </div>
 
-      {/* Product Details */}
       <div className="relative z-10 bg-white p-4">
         <div className="mb-2">
           <span className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-primary)]">
@@ -125,9 +124,6 @@ function ProductCard(props: ProductCardProps) {
           <div className="mb-3 flex items-baseline justify-between">
             <div className="flex items-baseline">
               <span className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-primary)]">
-                {formatPrice(product.salePrice)} kr
-              </span>
-              <span className="ml-2 font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)] line-through">
                 {formatPrice(product.salePrice)} kr
               </span>
             </div>

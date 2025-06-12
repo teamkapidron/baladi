@@ -196,7 +196,7 @@ export const getUserOrders = asyncHandler(
     const orders = await Order.find({ userId })
       .populate({
         path: 'items.productId',
-        select: 'name images',
+        select: 'name images categories salePrice',
       })
       .populate('shippingAddress')
       .sort({ createdAt: -1 })
@@ -234,7 +234,7 @@ export const getOrderDetails = asyncHandler(
     }
 
     await order.populate([
-      { path: 'items.productId', select: 'name images' },
+      { path: 'items.productId', select: 'name images categories salePrice' },
       { path: 'userId', select: 'name email' },
       { path: 'shippingAddress' },
     ]);

@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import OnboardingForm from '@/components/onboarding/onboarding-form';
+import OnboardingForm from '@/components/auth/onboarding/onboarding-form';
 
 export const metadata: Metadata = {
   title: 'Onboarding | Baladi',

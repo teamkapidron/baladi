@@ -17,7 +17,7 @@ import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
 
 export function useProducts() {
   const api = useRequest();
-  const { page, limit } = usePagination();
+  const { page, limit } = usePagination(undefined, '12');
   const { search, category } = useProductFilters();
 
   const getProducts = useCallback(
