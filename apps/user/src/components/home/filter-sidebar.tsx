@@ -10,7 +10,7 @@ import { Slider } from '@repo/ui/components/base/slider';
 import GetCategoryIcon from '@/components/common/get-category-icon';
 
 // Hooks
-import { useCategory } from '@/hooks/useCategory';
+import { useCategoryFlattened } from '@/hooks/useCategory';
 import { useProductFilters } from '@/hooks/useProduct/useProductFilters';
 
 // Types
@@ -18,7 +18,8 @@ import { formatPrice } from '@/utils/price.util';
 import { ProductStock } from '@/hooks/useProduct/types';
 
 function ProductsSidebar() {
-  const { categories, isCategoriesLoading } = useCategory();
+  const { categoriesFlattened, isCategoriesFlattenedLoading } =
+    useCategoryFlattened();
   const {
     category: selectedCategory,
     handleCategoryChange,
@@ -58,7 +59,7 @@ function ProductsSidebar() {
           <h3 className="mb-4 font-[family-name:var(--font-sora)] text-lg font-semibold text-[var(--baladi-dark)]">
             Kategorier
           </h3>
-          {isCategoriesLoading ? (
+          {isCategoriesFlattenedLoading ? (
             <div className="space-y-2">
               {Array.from({ length: 5 }).map((_, i) => (
                 <div
@@ -83,7 +84,7 @@ function ProductsSidebar() {
                   <span>Alle Produkter</span>
                 </Button>
               </li>
-              {categories?.categories.map((category) => (
+              {categoriesFlattened?.categories.map((category) => (
                 <li key={category._id}>
                   <Button
                     variant="ghost"

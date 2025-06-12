@@ -13,7 +13,6 @@ import { Button } from '@repo/ui/components/base/button';
 
 // Hooks
 import { useProducts } from '@/hooks/useProduct';
-import { usePagination } from '@repo/ui/hooks/usePagination';
 import { useProductFilters } from '@/hooks/useProduct/useProductFilters';
 
 // Types
@@ -40,7 +39,6 @@ const sortOptions = [
 
 function ProductsSortBar() {
   const { handleSortChange } = useProductFilters();
-  const { handlePageSizeChange } = usePagination();
   const { data: productsData, isLoading } = useProducts();
 
   const statusText = useMemo(() => {
@@ -98,38 +96,6 @@ function ProductsSortBar() {
                   </span>
                   <span className="text-[var(--baladi-dark)]">
                     {option.label}
-                  </span>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-
-        <div className="hidden lg:block">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)] transition-colors hover:bg-[var(--baladi-light)] hover:text-[var(--baladi-primary)]"
-              >
-                {productsData?.perPage} per side
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              className="w-32 border-[var(--baladi-border)] bg-white shadow-lg"
-            >
-              {[12, 24, 48, 96].map((perPage) => (
-                <DropdownMenuItem
-                  key={perPage}
-                  onClick={() => handlePageSizeChange(perPage)}
-                  className="flex cursor-pointer items-center justify-center px-3 py-2 font-[family-name:var(--font-dm-sans)] text-sm transition-colors hover:bg-[var(--baladi-light)] focus:bg-[var(--baladi-light)]"
-                >
-                  <span
-                    className={`${productsData?.perPage === perPage ? 'font-semibold text-[var(--baladi-primary)]' : 'text-[var(--baladi-dark)]'}`}
-                  >
-                    {perPage}
                   </span>
                 </DropdownMenuItem>
               ))}

@@ -58,6 +58,7 @@ function ProductCard(props: ProductCardProps) {
         <div className="absolute inset-0">
           <div className="relative h-full w-full">
             <Link
+              scroll={false}
               href={`/product/${product.slug}?category=${product.categories[0]?._id || ''}`}
               className="block h-full w-full"
             >
