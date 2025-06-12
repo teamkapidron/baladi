@@ -1,8 +1,7 @@
 'use client';
 
 // Node Modules
-import { memo, useCallback, useState, useRef, useEffect } from 'react';
-import Papa from 'papaparse';
+import { memo, useCallback, useState } from 'react';
 import {
   Upload,
   FileText,
@@ -18,304 +17,38 @@ import {
 import { Button } from '@repo/ui/components/base/button';
 import { Alert, AlertDescription } from '@repo/ui/components/base/alert';
 
-// Generic interfaces for CSV upload
-export interface CsvValidationError {
-  row: number;
-  column: string;
-  value: string;
-  error: string;
-}
-
-export interface CsvParseResult {
-  success: boolean;
-  data?: any[];
-  errors: CsvValidationError[];
-  missingColumns: string[];
-  totalRows: number;
-  validRows: number;
-}
-
-export interface CsvUploadConfig {
-  requiredColumns: string[];
-  allColumns?: string[];
-  templateData?: Record<string, string>;
-  validateRow?: (row: any, rowIndex: number) => CsvValidationError[];
-  maxFileSize?: number; // in MB
-  acceptedFileTypes?: string[]; // defaults to ['.csv']
-}
+// Hooks
+import { useBulk } from '@/hooks/useBulk';
 
 interface CsvUploadBoxProps {
-  config: CsvUploadConfig;
-  onUploadComplete?: (result: CsvParseResult) => void;
-  onUploadStart?: () => void;
   title?: string;
   description?: string;
   templateFileName?: string;
+  useBulkHook: () => ReturnType<typeof useBulk>;
 }
 
 function CsvUploadBox({
-  config,
-  onUploadComplete,
-  onUploadStart,
   title = 'Last opp CSV-fil',
   description = 'Last opp en CSV-fil for bulk import',
   templateFileName = 'template.csv',
+  useBulkHook,
 }: CsvUploadBoxProps) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [parseResult, setParseResult] = useState<CsvParseResult | null>(null);
-  const [fileName, setFileName] = useState<string>('');
-  const [isDragOver, setIsDragOver] = useState(false);
-  const [uploadKey, setUploadKey] = useState(0); // Key to force re-render of file input
-
   const {
-    requiredColumns,
-    allColumns = requiredColumns,
-    templateData = {},
-    validateRow,
-    maxFileSize = 10,
-    acceptedFileTypes = ['.csv'],
-  } = config;
+    csvConfig,
+    isUploading,
+    parseResult,
+    fileName,
+    uploadKey,
+    fileInputRef,
+    handleFileUpload,
+    triggerFileInput,
+    downloadTemplate,
+    resetUpload,
+    handleFileInputChange,
+  } = useBulkHook();
 
-  // Cleanup function to reset all states
-  const cleanup = useCallback(() => {
-    setParseResult(null);
-    setFileName('');
-    setIsUploading(false);
-    setIsDragOver(false);
-    setUploadKey((prev) => prev + 1); // Force file input re-render
-  }, []);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return cleanup;
-  }, [cleanup]);
-
-  const downloadTemplate = useCallback(() => {
-    try {
-      // Create CSV template with headers and example data
-      const headers = allColumns.join(',');
-      const exampleValues = allColumns.map(
-        (column) => templateData[column] || '',
-      );
-      const exampleRow = exampleValues.join(',');
-
-      const csvContent = `${headers}\n${exampleRow}`;
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-
-      // Create and trigger download link without DOM manipulation
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = templateFileName;
-
-      // Trigger download directly
-      link.click();
-
-      // Clean up the URL object
-      setTimeout(() => {
-        URL.revokeObjectURL(url);
-      }, 100);
-    } catch (error) {
-      console.error('Error downloading template:', error);
-    }
-  }, [allColumns, templateData, templateFileName]);
-
-  const validateFile = useCallback(
-    (file: File): string | null => {
-      // Check file type
-      const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
-      if (!acceptedFileTypes.includes(fileExtension)) {
-        return `Kun ${acceptedFileTypes.join(', ')} filer er tillatt`;
-      }
-
-      // Check file size
-      const fileSizeMB = file.size / (1024 * 1024);
-      if (fileSizeMB > maxFileSize) {
-        return `Filen er for stor. Maksimal størrelse er ${maxFileSize}MB`;
-      }
-
-      return null;
-    },
-    [maxFileSize, acceptedFileTypes],
-  );
-
-  const parseAndValidateCSV = useCallback(
-    async (file: File): Promise<CsvParseResult> => {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-
-        reader.onload = (e) => {
-          const csvString = e.target?.result as string;
-          Papa.parse(csvString, {
-            header: true,
-            skipEmptyLines: true,
-            complete: (results: Papa.ParseResult<any>) => {
-              const parseResult: CsvParseResult = {
-                success: false,
-                data: [],
-                errors: [],
-                missingColumns: [],
-                totalRows: results.data?.length || 0,
-                validRows: 0,
-              };
-
-              // Check for parsing errors
-              if (results.errors && results.errors.length > 0) {
-                parseResult.errors.push({
-                  row: 0,
-                  column: 'File',
-                  value: '',
-                  error: `CSV parsing feil: ${results.errors[0]?.message}`,
-                });
-                resolve(parseResult);
-                return;
-              }
-
-              // Check if we have data
-              if (!results.data || results.data.length === 0) {
-                parseResult.errors.push({
-                  row: 0,
-                  column: 'File',
-                  value: '',
-                  error:
-                    'CSV-filen er tom eller inneholder ingen gyldige rader',
-                });
-                resolve(parseResult);
-                return;
-              }
-
-              // Get the headers from the first row
-              const headers = Object.keys(results.data[0] as object);
-
-              // Check for missing required columns
-              const missingRequired = requiredColumns.filter(
-                (col) => !headers.includes(col),
-              );
-              if (missingRequired.length > 0) {
-                parseResult.missingColumns = missingRequired;
-                parseResult.errors.push({
-                  row: 0,
-                  column: 'Headers',
-                  value: '',
-                  error: `Mangler påkrevde kolonner: ${missingRequired.join(', ')}`,
-                });
-              }
-
-              // Validate each row if validation function is provided
-              const validatedData: any[] = [];
-
-              results.data.forEach((row: any, index: number) => {
-                if (validateRow) {
-                  const rowErrors = validateRow(row, index);
-                  if (rowErrors.length > 0) {
-                    parseResult.errors.push(...rowErrors);
-                  } else {
-                    validatedData.push(row);
-                    parseResult.validRows++;
-                  }
-                } else {
-                  // If no validation function, just include the row
-                  validatedData.push(row);
-                  parseResult.validRows++;
-                }
-              });
-
-              parseResult.data = validatedData;
-
-              // Success criteria:
-              // 1. No missing required columns
-              // 2. No validation errors (all rows passed validation)
-              // 3. At least one valid row exists
-              parseResult.success =
-                parseResult.missingColumns.length === 0 &&
-                parseResult.errors.length === 0 &&
-                parseResult.validRows > 0;
-
-              resolve(parseResult);
-            },
-            error: (error: any) => {
-              reject(new Error(`CSV parsing error: ${error.message}`));
-            },
-          });
-        };
-
-        reader.onerror = () => {
-          reject(new Error('Feil ved lesing av fil'));
-        };
-
-        reader.readAsText(file, 'UTF-8');
-      });
-    },
-    [requiredColumns, validateRow],
-  );
-
-  const handleFileUpload = useCallback(
-    async (file: File) => {
-      // Prevent multiple uploads
-      if (isUploading) return;
-
-      const fileError = validateFile(file);
-      if (fileError) {
-        setParseResult({
-          success: false,
-          errors: [
-            {
-              row: 0,
-              column: 'File',
-              value: file.name,
-              error: fileError,
-            },
-          ],
-          missingColumns: [],
-          totalRows: 0,
-          validRows: 0,
-        });
-        return;
-      }
-
-      setFileName(file.name);
-      setIsUploading(true);
-      setParseResult(null);
-      onUploadStart?.();
-
-      try {
-        const result = await parseAndValidateCSV(file);
-        setParseResult(result);
-        onUploadComplete?.(result);
-      } catch (error) {
-        setParseResult({
-          success: false,
-          errors: [
-            {
-              row: 0,
-              column: 'Processing',
-              value: '',
-              error: `Feil ved behandling av fil: ${String(error)}`,
-            },
-          ],
-          missingColumns: [],
-          totalRows: 0,
-          validRows: 0,
-        });
-      } finally {
-        setIsUploading(false);
-      }
-    },
-    [
-      isUploading,
-      validateFile,
-      parseAndValidateCSV,
-      onUploadStart,
-      onUploadComplete,
-    ],
-  );
-
-  const triggerFileInput = useCallback(() => {
-    if (fileInputRef.current && !isUploading) {
-      fileInputRef.current.click();
-    }
-  }, [isUploading]);
+  // Local UI state
+  const [isDragOver, setIsDragOver] = useState(false);
 
   const handleDrop = useCallback(
     (e: React.DragEvent<HTMLDivElement>) => {
@@ -329,30 +62,11 @@ function CsvUploadBox({
       if (files.length > 0) {
         const file = files[0];
         if (file) {
-          // Check if it's an accepted file type before processing
-          const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
-          if (acceptedFileTypes.includes(fileExtension)) {
-            handleFileUpload(file);
-          } else {
-            setParseResult({
-              success: false,
-              errors: [
-                {
-                  row: 0,
-                  column: 'File',
-                  value: file.name,
-                  error: `Kun ${acceptedFileTypes.join(', ')} filer er tillatt`,
-                },
-              ],
-              missingColumns: [],
-              totalRows: 0,
-              validRows: 0,
-            });
-          }
+          handleFileUpload(file);
         }
       }
     },
-    [isUploading, handleFileUpload, acceptedFileTypes],
+    [isUploading, handleFileUpload],
   );
 
   const handleDragOver = useCallback(
@@ -397,20 +111,6 @@ function CsvUploadBox({
     },
     [isUploading],
   );
-
-  const handleFileInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (file && !isUploading) {
-        handleFileUpload(file);
-      }
-    },
-    [handleFileUpload, isUploading],
-  );
-
-  const reset = useCallback(() => {
-    cleanup();
-  }, [cleanup]);
 
   return (
     <div className="rounded-xl border border-[var(--baladi-border)] bg-white p-6 shadow-sm">
@@ -464,11 +164,11 @@ function CsvUploadBox({
                   <p className="mt-4 text-lg font-medium text-[var(--baladi-primary)]">
                     {isDragOver
                       ? 'Slipp filen her'
-                      : `Dra og slipp ${acceptedFileTypes.join('/')} fil her eller klikk for å velge`}
+                      : `Dra og slipp ${csvConfig.acceptedFileTypes?.join('/')} fil her eller klikk for å velge`}
                   </p>
                   <p className="mt-2 text-sm text-[var(--baladi-gray)]">
-                    Maks {maxFileSize}MB • Kun {acceptedFileTypes.join(', ')}{' '}
-                    filer
+                    Maks {csvConfig.maxFileSize}MB • Kun{' '}
+                    {csvConfig.acceptedFileTypes?.join(', ')} filer
                   </p>
                 </>
               )}
@@ -479,7 +179,7 @@ function CsvUploadBox({
             key={uploadKey} // Force re-render with new key
             ref={fileInputRef}
             type="file"
-            accept={acceptedFileTypes.join(',')}
+            accept={csvConfig.acceptedFileTypes?.join(',')}
             onChange={handleFileInputChange}
             className="hidden"
             disabled={isUploading}
@@ -490,12 +190,12 @@ function CsvUploadBox({
             <Button
               type="button"
               variant="outline"
-              onClick={downloadTemplate}
+              onClick={() => downloadTemplate(templateFileName)}
               className="border-[var(--baladi-border)] text-[var(--baladi-primary)] hover:bg-[var(--baladi-primary)] hover:text-white"
               disabled={isUploading}
             >
               <Download className="mr-2 h-4 w-4" />
-              Last ned mal
+              Laste ned mal
             </Button>
           </div>
         </div>
@@ -603,7 +303,7 @@ function CsvUploadBox({
             <Button
               type="button"
               variant="outline"
-              onClick={reset}
+              onClick={resetUpload}
               className="border-[var(--baladi-border)] text-[var(--baladi-primary)] hover:bg-[var(--baladi-primary)] hover:text-white"
             >
               Last opp ny fil
@@ -628,7 +328,7 @@ function CsvUploadBox({
                   ) : (
                     <>
                       <CheckCircle className="mr-2 h-4 w-4" />
-                      Process {parseResult.data.length} items
+                      Behandle {parseResult.data.length} elementer
                     </>
                   )}
                 </Button>

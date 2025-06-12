@@ -2,25 +2,15 @@
 
 // Node Modules
 import { useRouter } from 'next/navigation';
-import {
-  Edit,
-  CheckCircle,
-  AlertTriangle,
-  FileText,
-  ArrowLeft,
-} from '@repo/ui/lib/icons';
+import { Package2, FileText, ArrowLeft } from '@repo/ui/lib/icons';
 
 // Components
 import CsvUploadBox from '@/components/csv-upload-box';
 import { Button } from '@repo/ui/components/base/button';
-import { Alert, AlertDescription } from '@repo/ui/components/base/alert';
+import { useBulkInventory } from '@/hooks/useBulk/inventory';
 
-// Hooks
-import { useBulkProduct } from '@/hooks/useBulk/product';
-
-export default function BulkUpdateProducts() {
+export default function BulkAddInventory() {
   const router = useRouter();
-  const { parsedData } = useBulkProduct();
 
   return (
     <div className="space-y-6 p-6">
@@ -36,14 +26,14 @@ export default function BulkUpdateProducts() {
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
-                <Edit className="h-6 w-6 text-white" />
+                <Package2 className="h-6 w-6 text-white" />
               </div>
               <div>
                 <h1 className="font-[family-name:var(--font-sora)] text-xl font-bold tracking-tight text-white lg:text-2xl">
-                  Bulk Oppdater Produkter
+                  Bulk Legg til Lager
                 </h1>
                 <p className="font-[family-name:var(--font-dm-sans)] text-sm text-white/80">
-                  Last opp en CSV-fil for å oppdatere flere produkter samtidig
+                  Last opp en CSV-fil for å legge til flere lagervarer samtidig
                 </p>
               </div>
             </div>
@@ -52,11 +42,11 @@ export default function BulkUpdateProducts() {
           <div className="flex gap-3">
             <Button
               variant="secondary"
-              onClick={() => router.push('/dashboard/products')}
+              onClick={() => router.push('/dashboard/inventory')}
               className="border-white/20 bg-white/20 text-white backdrop-blur-sm hover:bg-white/30"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Tilbake til Produkter
+              Tilbake til Lager
             </Button>
           </div>
         </div>
@@ -71,7 +61,7 @@ export default function BulkUpdateProducts() {
             <FileText className="h-4 w-4 text-[var(--baladi-info)]" />
           </div>
           <h3 className="font-[family-name:var(--font-sora)] text-lg font-semibold text-[var(--baladi-primary)]">
-            Instruksjoner for Bulk Oppdatering
+            Instruksjoner
           </h3>
         </div>
 
@@ -89,9 +79,8 @@ export default function BulkUpdateProducts() {
               2
             </span>
             <span>
-              Fyll ut CSV-filen med produktinformasjon. <strong>Merk:</strong>{' '}
-              Du må inkludere et ID eller SKU-felt for å identifisere
-              eksisterende produkter
+              Fyll ut CSV-filen med lagerinformasjon. Påkrevde felt: productId,
+              quantity, location, status
             </span>
           </div>
           <div className="flex items-start gap-2">
@@ -108,11 +97,22 @@ export default function BulkUpdateProducts() {
               Rett opp eventuelle feil og last opp på nytt om nødvendig
             </span>
           </div>
+          <div className="flex items-start gap-2">
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[var(--baladi-primary)] text-xs font-bold text-white">
+              5
+            </span>
+            <span>Klikk "Importer lager" for å fullføre importen</span>
+          </div>
         </div>
       </div>
 
       {/* Upload Component */}
-      <CsvUploadBox useBulkHook={useBulkProduct} />
+      <CsvUploadBox
+        title="Last opp lagervarer fra CSV"
+        description="Last opp en CSV-fil med lagerdata for bulk import"
+        templateFileName="bulk_inventory_template.csv"
+        useBulkHook={useBulkInventory}
+      />
     </div>
   );
 }
