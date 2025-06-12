@@ -2,6 +2,7 @@
 
 // Schemas
 import Discount from '@/models/discount.model';
+import BulkDiscount from '@/models/bulkDiscount.model';
 
 // Utils
 import { sendResponse } from '@/utils/common/response.util';
@@ -13,10 +14,20 @@ import { ErrorHandler } from '@/handlers/error.handler';
 // Types
 import type {
   CreateDiscountSchema,
+  CreateBulkDiscountSchema,
   UpdateDiscountSchema,
   MakeDiscountInactiveSchema,
 } from '@/validators/discount.validator';
 import type { Request, Response } from 'express';
+
+export const getActiveBulkDiscounts = asyncHandler(
+  async (_: Request, res: Response) => {
+    const bulkDiscounts = await BulkDiscount.find({ isActive: true });
+    sendResponse(res, 200, 'Active bulk discounts fetched successfully', {
+      bulkDiscounts,
+    });
+  },
+);
 
 export const getDiscounts = asyncHandler(async (_: Request, res: Response) => {
   const discounts = await Discount.find();
@@ -24,6 +35,15 @@ export const getDiscounts = asyncHandler(async (_: Request, res: Response) => {
     discounts,
   });
 });
+
+export const getBulkDiscounts = asyncHandler(
+  async (_: Request, res: Response) => {
+    const bulkDiscounts = await BulkDiscount.find();
+    sendResponse(res, 200, 'Bulk discounts fetched successfully', {
+      bulkDiscounts,
+    });
+  },
+);
 
 export const createDiscount = asyncHandler(
   async (req: Request, res: Response) => {
@@ -39,6 +59,24 @@ export const createDiscount = asyncHandler(
 
     sendResponse(res, 201, 'Discount created successfully', {
       discount,
+    });
+  },
+);
+
+export const createBulkDiscount = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { minQuantity, discountPercentage, validFrom, validTo } =
+      req.body as CreateBulkDiscountSchema['body'];
+
+    const bulkDiscount = await BulkDiscount.create({
+      minQuantity,
+      discountPercentage,
+      validFrom,
+      validTo,
+    });
+
+    sendResponse(res, 201, 'Bulk discount created successfully', {
+      bulkDiscount,
     });
   },
 );

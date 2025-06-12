@@ -40,7 +40,7 @@ const sortOptions = [
 
 function ProductsSortBar() {
   const { handleSortChange } = useProductFilters();
-  const { limit, handlePageSizeChange } = usePagination();
+  const { handlePageSizeChange } = usePagination();
   const { data: productsData, isLoading } = useProducts();
 
   const statusText = useMemo(() => {
@@ -113,7 +113,7 @@ function ProductsSortBar() {
                 size="sm"
                 className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)] transition-colors hover:bg-[var(--baladi-light)] hover:text-[var(--baladi-primary)]"
               >
-                {limit} per side
+                {productsData?.perPage} per side
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
@@ -127,7 +127,7 @@ function ProductsSortBar() {
                   className="flex cursor-pointer items-center justify-center px-3 py-2 font-[family-name:var(--font-dm-sans)] text-sm transition-colors hover:bg-[var(--baladi-light)] focus:bg-[var(--baladi-light)]"
                 >
                   <span
-                    className={`${limit === perPage.toString() ? 'font-semibold text-[var(--baladi-primary)]' : 'text-[var(--baladi-dark)]'}`}
+                    className={`${productsData?.perPage === perPage ? 'font-semibold text-[var(--baladi-primary)]' : 'text-[var(--baladi-dark)]'}`}
                   >
                     {perPage}
                   </span>

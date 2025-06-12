@@ -1,9 +1,12 @@
 'use client';
 
 import React, { useState, useEffect, lazy } from 'react';
-import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { getQueryClient } from '@/lib/react-query';
+import {
+  Persister,
+  PersistQueryClientProvider,
+} from '@tanstack/react-query-persist-client';
 
 declare global {
   interface Window {
@@ -34,7 +37,10 @@ export default function ReactQueryProvider({
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <PersistQueryClientProvider
+      client={queryClient.queryClient}
+      persistOptions={{ persister: queryClient.persister as Persister }}
+    >
       {children}
       <ReactQueryDevtools initialIsOpen />
       {showDevtools && (
@@ -42,6 +48,6 @@ export default function ReactQueryProvider({
           <ReactQueryDevtoolsProduction />
         </React.Suspense>
       )}
-    </QueryClientProvider>
+    </PersistQueryClientProvider>
   );
 }

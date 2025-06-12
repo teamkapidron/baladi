@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import React, { useCallback, memo } from 'react';
 import { Grid3X3, RefreshCw } from '@repo/ui/lib/icons';
 
@@ -71,8 +70,9 @@ function ProductsSidebar() {
           ) : (
             <ul className="no-scrollbar max-h-[250px] space-y-1 overflow-y-auto pr-2">
               <li>
-                <Link
-                  href="/"
+                <Button
+                  variant="ghost"
+                  onClick={() => handleCategoryChange('')}
                   className={`flex items-center rounded-lg px-3 py-2 font-[family-name:var(--font-dm-sans)] text-sm transition-all duration-200 ${
                     !selectedCategory
                       ? 'bg-[var(--baladi-light)] font-semibold text-[var(--baladi-primary)]'
@@ -81,12 +81,13 @@ function ProductsSidebar() {
                 >
                   <Grid3X3 size={16} className="mr-2.5" />
                   <span>Alle Produkter</span>
-                </Link>
+                </Button>
               </li>
               {categories?.categories.map((category) => (
                 <li key={category._id}>
-                  <Link
-                    href={`/?category=${category._id}`}
+                  <Button
+                    variant="ghost"
+                    onClick={() => handleCategoryChange(category._id)}
                     className={`flex items-center rounded-lg px-3 py-2 font-[family-name:var(--font-dm-sans)] text-sm transition-all duration-200 ${
                       selectedCategory === category._id
                         ? 'bg-[var(--baladi-light)] font-semibold text-[var(--baladi-primary)]'
@@ -97,7 +98,7 @@ function ProductsSidebar() {
                       <GetCategoryIcon categoryName={category.name} />
                     </span>
                     <span className="truncate">{category.name}</span>
-                  </Link>
+                  </Button>
                 </li>
               ))}
             </ul>

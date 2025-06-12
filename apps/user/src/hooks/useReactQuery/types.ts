@@ -24,4 +24,7 @@ export enum ReactQueryKeys {
   GET_PRODUCT_BY_SLUG = 'GET::/product/slug/:slug',
   QUICK_SEARCH_PRODUCTS = 'GET::/product/search/quick',
   FULL_SEARCH_PRODUCTS = 'GET::/product/search',
+
+  // Discount
+  GET_BULK_DISCOUNTS = 'GET::/discount/bulk/all',
 }

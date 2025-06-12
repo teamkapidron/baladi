@@ -11,6 +11,8 @@ import {
   Calendar,
   Scale,
   Ruler,
+  Percent,
+  TrendingDown,
 } from '@repo/ui/lib/icons';
 
 // Components
@@ -23,19 +25,26 @@ import {
 import { Separator } from '@repo/ui/components/base/separator';
 
 // Hooks
+import { useDiscount } from '@/hooks/useDiscount';
 import { useProductBySlug } from '@/hooks/useProduct';
 
 function ProductSpecifications() {
   const { slug } = useParams<{ slug: string }>();
 
+  const { bulkDiscountQuery } = useDiscount();
   const { data: productData, isLoading } = useProductBySlug(slug);
 
-  const { product, category } = useMemo(() => {
+  const bulkDiscounts = useMemo(() => {
+    return bulkDiscountQuery.data?.bulkDiscounts || [];
+  }, [bulkDiscountQuery.data]);
+
+  const { product, category, hasVolumeDiscount } = useMemo(() => {
     if (!productData?.product) return { product: null, category: null };
 
     return {
       product: productData?.product,
       category: productData?.product?.categories[0],
+      hasVolumeDiscount: productData?.product?.hasVolumeDiscount,
     };
   }, [productData?.product]);
 
@@ -58,13 +67,21 @@ function ProductSpecifications() {
   return (
     <div className="mt-12 rounded-lg p-4 shadow-md">
       <Tabs defaultValue="details" className="w-full">
-        <TabsList className="bg-[var(--baladi-light)]/50 grid w-full grid-cols-3">
+        <TabsList className="bg-[var(--baladi-light)]/50 grid w-full grid-cols-4">
           <TabsTrigger
             value="details"
             className="font-[family-name:var(--font-dm-sans)] data-[state=active]:bg-white data-[state=active]:text-[var(--baladi-primary)]"
           >
             Detaljer & Spesifikasjoner
           </TabsTrigger>
+          {hasVolumeDiscount && (
+            <TabsTrigger
+              value="discounts"
+              className="font-[family-name:var(--font-dm-sans)] data-[state=active]:bg-white data-[state=active]:text-[var(--baladi-primary)]"
+            >
+              Mengderabatter
+            </TabsTrigger>
+          )}
           <TabsTrigger
             value="delivery"
             className="font-[family-name:var(--font-dm-sans)] data-[state=active]:bg-white data-[state=active]:text-[var(--baladi-primary)]"
@@ -153,6 +170,102 @@ function ProductSpecifications() {
             )}
           </div>
         </TabsContent>
+
+        {hasVolumeDiscount && (
+          <TabsContent value="discounts" className="mt-6 space-y-6">
+            <div className="space-y-4">
+              <h3 className="font-[family-name:var(--font-sora)] text-lg font-semibold text-[var(--baladi-dark)]">
+                Mengderabatter
+              </h3>
+
+              <div className="from-[var(--baladi-primary)]/10 to-[var(--baladi-accent)]/10 mb-6 rounded-lg bg-gradient-to-r p-4">
+                <div className="mb-3 flex items-center gap-3">
+                  <TrendingDown
+                    size={24}
+                    className="text-[var(--baladi-primary)]"
+                  />
+                  <h4 className="font-[family-name:var(--font-sora)] font-semibold text-[var(--baladi-dark)]">
+                    Spar mer ved større bestillinger!
+                  </h4>
+                </div>
+                <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
+                  Jo flere enheter du kjøper, desto mer sparer du. Rabattene
+                  gjelder automatisk ved kassen.
+                </p>
+              </div>
+
+              {bulkDiscounts.length > 0 ? (
+                <div className="grid gap-4">
+                  {bulkDiscounts
+                    .sort((a, b) => a.minQuantity - b.minQuantity)
+                    .map((discount) => (
+                      <div
+                        key={discount._id}
+                        className="hover:border-[var(--baladi-primary)]/30 rounded-lg border-2 border-[var(--baladi-light)] bg-white p-4 transition-colors"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-4">
+                            <div className="bg-[var(--baladi-primary)]/10 rounded-full p-3">
+                              <Percent
+                                size={24}
+                                className="text-[var(--baladi-primary)]"
+                              />
+                            </div>
+                            <div>
+                              <h5 className="font-[family-name:var(--font-sora)] font-semibold text-[var(--baladi-dark)]">
+                                Kjøp {discount.minQuantity}+ enheter
+                              </h5>
+                              <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
+                                Få automatisk rabatt på hele bestillingen
+                              </p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="rounded-full bg-[var(--baladi-accent)] px-4 py-2 text-white">
+                              <span className="font-[family-name:var(--font-sora)] text-lg font-bold">
+                                {discount.discountPercentage}%
+                              </span>
+                            </div>
+                            <p className="mt-1 font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
+                              rabatt
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              ) : (
+                <div className="py-8 text-center">
+                  <Percent
+                    size={48}
+                    className="mx-auto mb-4 text-[var(--baladi-light)]"
+                  />
+                  <p className="font-[family-name:var(--font-dm-sans)] text-[var(--baladi-gray)]">
+                    Ingen mengderabatter tilgjengelig for øyeblikket
+                  </p>
+                </div>
+              )}
+
+              <div className="bg-[var(--baladi-light)]/30 mt-6 rounded-lg p-4">
+                <h5 className="mb-2 font-[family-name:var(--font-sora)] font-semibold text-[var(--baladi-dark)]">
+                  Slik fungerer mengderabattene:
+                </h5>
+                <ul className="space-y-2 font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
+                  <li>
+                    • Rabattene gjelder automatisk når du når minstekravet
+                  </li>
+                  <li>
+                    • Rabatten gjelder for hele bestillingen av dette produktet
+                  </li>
+                  <li>• Kan kombineres med andre tilbud og kampanjer</li>
+                  <li>
+                    • Vises tydelig i handlekurven før du fullfører kjøpet
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </TabsContent>
+        )}
 
         <TabsContent value="delivery" className="mt-6 space-y-6">
           <div className="space-y-4">

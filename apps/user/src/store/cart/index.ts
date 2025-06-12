@@ -10,7 +10,9 @@ import {
   calculateCartSummary,
   getUserCartItems,
 } from './utils';
+
 import { ProductResponse } from '@/hooks/useProduct/types';
+import { BulkDiscount } from '@repo/types/bulkDiscount';
 
 export const useCartStore = create<CartStore>()(
   persist(
@@ -19,6 +21,10 @@ export const useCartStore = create<CartStore>()(
       cartSummary: {
         totalItems: 0,
         totalPrice: 0,
+        totalVat: 0,
+        totalDiscount: 0,
+        netPrice: 0,
+        totalPriceWithDiscount: 0,
         uniqueItems: 0,
         isEmpty: true,
       },
@@ -28,6 +34,7 @@ export const useCartStore = create<CartStore>()(
         userId: string,
         product: ProductResponse,
         quantity: number,
+        bulkDiscounts: BulkDiscount[],
       ) => {
         if (!quantity || quantity <= 0) {
           toast.error(TOAST_MESSAGES.INVALID_QUANTITY);
@@ -65,7 +72,11 @@ export const useCartStore = create<CartStore>()(
           }
 
           const newCart = [...otherUsersCart, ...updatedUserCart];
-          const newCartSummary = calculateCartSummary(newCart, userId);
+          const newCartSummary = calculateCartSummary(
+            newCart,
+            bulkDiscounts,
+            userId,
+          );
           const newUserCartItems = getUserCartItems(newCart, userId);
 
           return {
@@ -76,7 +87,11 @@ export const useCartStore = create<CartStore>()(
         });
       },
 
-      removeFromCart: (userId: string, productId: string) => {
+      removeFromCart: (
+        userId: string,
+        productId: string,
+        bulkDiscounts: BulkDiscount[],
+      ) => {
         if (!userId) {
           toast.error(TOAST_MESSAGES.LOGIN_REQUIRED);
           return;
@@ -87,7 +102,11 @@ export const useCartStore = create<CartStore>()(
             (item) =>
               !(item.product._id === productId && item.userId === userId),
           );
-          const newCartSummary = calculateCartSummary(newCart, userId);
+          const newCartSummary = calculateCartSummary(
+            newCart,
+            bulkDiscounts,
+            userId,
+          );
           const newUserCartItems = getUserCartItems(newCart, userId);
 
           toast.success(TOAST_MESSAGES.ITEM_REMOVED);
@@ -100,7 +119,7 @@ export const useCartStore = create<CartStore>()(
         });
       },
 
-      clearCart: (userId: string) => {
+      clearCart: (userId: string, bulkDiscounts: BulkDiscount[]) => {
         if (!userId) {
           toast.error(TOAST_MESSAGES.LOGIN_REQUIRED);
           return;
@@ -108,7 +127,11 @@ export const useCartStore = create<CartStore>()(
 
         set((state) => {
           const newCart = state.cart.filter((item) => item.userId !== userId);
-          const newCartSummary = calculateCartSummary(newCart, userId);
+          const newCartSummary = calculateCartSummary(
+            newCart,
+            bulkDiscounts,
+            userId,
+          );
           const newUserCartItems = getUserCartItems(newCart, userId);
 
           toast.success(TOAST_MESSAGES.CART_CLEARED);
@@ -125,6 +148,7 @@ export const useCartStore = create<CartStore>()(
         userId: string,
         productId: string,
         newQuantity: number,
+        bulkDiscounts: BulkDiscount[],
       ) => {
         if (!userId) {
           toast.error(TOAST_MESSAGES.LOGIN_REQUIRED);
@@ -132,7 +156,7 @@ export const useCartStore = create<CartStore>()(
         }
 
         if (newQuantity <= 0) {
-          get().removeFromCart(userId, productId);
+          get().removeFromCart(userId, productId, bulkDiscounts);
           return;
         }
 
@@ -150,7 +174,11 @@ export const useCartStore = create<CartStore>()(
                 }
               : item,
           );
-          const newCartSummary = calculateCartSummary(newCart, userId);
+          const newCartSummary = calculateCartSummary(
+            newCart,
+            bulkDiscounts,
+            userId,
+          );
           const newUserCartItems = getUserCartItems(newCart, userId);
 
           toast.success(TOAST_MESSAGES.ITEM_UPDATED);
@@ -172,14 +200,22 @@ export const useCartStore = create<CartStore>()(
         return item?.quantity || 0;
       },
 
-      isInCart: (userId: string, productId: string): boolean => {
-        return get().getItemQuantity(userId, productId) > 0;
+      isInCart: (
+        userId: string,
+        productId: string,
+        bulkDiscounts: BulkDiscount[],
+      ): boolean => {
+        return get().getItemQuantity(userId, productId, bulkDiscounts) > 0;
       },
 
-      setUserId: (userId: string | null) => {
+      setUserId: (userId: string | null, bulkDiscounts: BulkDiscount[]) => {
         const state = get();
         if (userId) {
-          const newCartSummary = calculateCartSummary(state.cart, userId);
+          const newCartSummary = calculateCartSummary(
+            state.cart,
+            bulkDiscounts,
+            userId,
+          );
           const newUserCartItems = getUserCartItems(state.cart, userId);
 
           set({
@@ -191,6 +227,10 @@ export const useCartStore = create<CartStore>()(
             cartSummary: {
               totalItems: 0,
               totalPrice: 0,
+              totalVat: 0,
+              totalDiscount: 0,
+              netPrice: 0,
+              totalPriceWithDiscount: 0,
               uniqueItems: 0,
               isEmpty: true,
             },
@@ -199,10 +239,7 @@ export const useCartStore = create<CartStore>()(
         }
       },
 
-      _hydrate: () => {
-        // This is called after hydration from localStorage
-        // We can update computed values here if needed
-      },
+      _hydrate: () => {},
     }),
     {
       name: CART_STORAGE_KEY,

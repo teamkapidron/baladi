@@ -1,6 +1,7 @@
 'use client';
 
 // Node Modules
+import { useParams } from 'next/navigation';
 import React, { useState, memo, useMemo, useCallback } from 'react';
 import {
   ShoppingCart,
@@ -9,6 +10,8 @@ import {
   Truck,
   Check,
   Bell,
+  Percent,
+  TrendingDown,
 } from '@repo/ui/lib/icons';
 
 // Components
@@ -19,7 +22,7 @@ import { QuantityInput } from '@repo/ui/components/base/quantity-input';
 // Hooks
 import { useAuth } from '@/hooks/useAuth';
 import { useCart } from '@/hooks/useCart';
-import { useParams } from 'next/navigation';
+import { useDiscount } from '@/hooks/useDiscount';
 import { useProductBySlug } from '@/hooks/useProduct';
 
 // Utils
@@ -30,19 +33,22 @@ function ProductInfo() {
 
   const { isAuthenticated } = useAuth();
   const { addToCart, isInCart } = useCart();
+  const { bulkDiscountQuery } = useDiscount();
   const { data: productData, isLoading } = useProductBySlug(slug);
 
   const [quantity, setQuantity] = useState(1);
 
-  const { product, isProductInCart, isOutOfStock } = useMemo(() => {
-    if (!productData?.product) return { product: null, isInCart: false };
+  const { product, isProductInCart, isOutOfStock, bulkDiscounts } =
+    useMemo(() => {
+      if (!productData?.product) return { product: null, isInCart: false };
 
-    return {
-      product: productData?.product,
-      isProductInCart: isInCart(productData?.product?._id),
-      isOutOfStock: productData?.product?.stock <= 0,
-    };
-  }, [isInCart, productData?.product]);
+      return {
+        product: productData?.product,
+        isProductInCart: isInCart(productData?.product?._id),
+        isOutOfStock: productData?.product?.stock <= 0,
+        bulkDiscounts: bulkDiscountQuery.data?.bulkDiscounts || [],
+      };
+    }, [isInCart, productData?.product, bulkDiscountQuery.data]);
 
   const handleAddToCart = useCallback(() => {
     if (!product) return;
@@ -97,6 +103,51 @@ function ProductInfo() {
           Pris inkluderer {product?.vat}% MVA
         </p>
       </div>
+
+      {bulkDiscounts &&
+        bulkDiscounts.length > 0 &&
+        product.hasVolumeDiscount && (
+          <div className="from-[var(--baladi-primary)]/10 to-[var(--baladi-accent)]/10 rounded-lg bg-gradient-to-r p-4">
+            <div className="mb-3 flex items-center gap-3">
+              <TrendingDown
+                size={20}
+                className="text-[var(--baladi-primary)]"
+              />
+              <h4 className="font-[family-name:var(--font-sora)] font-semibold text-[var(--baladi-dark)]">
+                Mengderabatter tilgjengelig!
+              </h4>
+            </div>
+
+            <div className="space-y-2">
+              {bulkDiscounts
+                .sort((a, b) => a.minQuantity - b.minQuantity)
+                .slice(0, 3)
+                .map((discount) => (
+                  <div
+                    key={discount._id}
+                    className="flex items-center justify-between py-1"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Percent
+                        size={14}
+                        className="text-[var(--baladi-primary)]"
+                      />
+                      <span className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-dark)]">
+                        {discount.minQuantity}+ enheter
+                      </span>
+                    </div>
+                    <span className="rounded-full bg-[var(--baladi-accent)] px-2 py-1 font-[family-name:var(--font-sora)] text-xs font-bold text-white">
+                      {discount.discountPercentage}% rabatt
+                    </span>
+                  </div>
+                ))}
+            </div>
+
+            <p className="mt-3 font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
+              Rabattene gjelder automatisk ved kassen
+            </p>
+          </div>
+        )}
 
       <div className="space-y-3">
         <div className="flex items-center gap-3">

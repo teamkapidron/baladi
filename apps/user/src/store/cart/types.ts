@@ -1,4 +1,5 @@
 import { ProductResponse } from '@/hooks/useProduct/types';
+import { BulkDiscount } from '@repo/types/bulkDiscount';
 
 export const CART_STORAGE_KEY = 'baladi-cart';
 
@@ -23,6 +24,10 @@ export interface CartItem {
 export interface CartSummary {
   totalItems: number;
   totalPrice: number;
+  totalVat: number;
+  totalDiscount: number;
+  netPrice: number;
+  totalPriceWithDiscount: number;
   uniqueItems: number;
   isEmpty: boolean;
 }
@@ -38,17 +43,31 @@ export interface CartActions {
     userId: string,
     product: ProductResponse,
     quantity: number,
+    bulkDiscounts: BulkDiscount[],
   ) => void;
-  removeFromCart: (userId: string, productId: string) => void;
-  clearCart: (userId: string) => void;
+  removeFromCart: (
+    userId: string,
+    productId: string,
+    bulkDiscounts: BulkDiscount[],
+  ) => void;
+  clearCart: (userId: string, bulkDiscounts: BulkDiscount[]) => void;
   updateQuantity: (
     userId: string,
     productId: string,
     newQuantity: number,
+    bulkDiscounts: BulkDiscount[],
   ) => void;
-  getItemQuantity: (userId: string, productId: string) => number;
-  isInCart: (userId: string, productId: string) => boolean;
-  setUserId: (userId: string | null) => void;
+  getItemQuantity: (
+    userId: string,
+    productId: string,
+    bulkDiscounts: BulkDiscount[],
+  ) => number;
+  isInCart: (
+    userId: string,
+    productId: string,
+    bulkDiscounts: BulkDiscount[],
+  ) => boolean;
+  setUserId: (userId: string | null, bulkDiscounts: BulkDiscount[]) => void;
   _hydrate: () => void;
 }
 

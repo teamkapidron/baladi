@@ -10,7 +10,7 @@ const noAuthRoutes = [
   '/reset-password',
 ];
 
-const protectedRoutes = ['/cart', '/profile'];
+const protectedRoutes = ['/cart', '/wishlist', '/orders', '/address'];
 
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value;

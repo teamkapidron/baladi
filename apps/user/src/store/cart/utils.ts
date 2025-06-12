@@ -1,5 +1,6 @@
 import { ProductResponse } from '@/hooks/useProduct/types';
 import { CartItem, CartSummary } from './types';
+import { BulkDiscount } from '@repo/types/bulkDiscount';
 
 export function calculateItemTotal(
   quantity: number,
@@ -39,19 +40,40 @@ export function updateCartItem(
 
 export function calculateCartSummary(
   cart: CartItem[],
-  userId?: string,
+  bulkDiscounts: BulkDiscount[],
+  userId: string,
 ): CartSummary {
-  const userCart = userId
-    ? cart.filter((item) => item.userId === userId)
-    : cart;
+  const userCart = cart.filter((item) => item.userId === userId);
 
   const totalItems = userCart.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = userCart.reduce((sum, item) => sum + item.totalPrice, 0);
   const uniqueItems = userCart.length;
 
+  const totalVat = userCart.reduce(
+    (sum, item) => sum + item.totalPrice * item.product.vat,
+    0,
+  );
+
+  const totalDiscount =
+    bulkDiscounts?.reduce((sum, discount) => {
+      const item = userCart.find(
+        (item) =>
+          item.product.hasVolumeDiscount &&
+          item.quantity >= discount.minQuantity,
+      );
+      if (!item) return sum;
+      return sum + (item.totalPrice * discount.discountPercentage) / 100;
+    }, 0) || 0;
+
+  const netPrice = totalPrice - totalDiscount;
+
   return {
     totalItems,
     totalPrice: Math.round(totalPrice * 100) / 100,
+    totalVat,
+    totalDiscount,
+    netPrice,
+    totalPriceWithDiscount: Math.round(totalPrice * 100) / 100,
     uniqueItems,
     isEmpty: userCart.length === 0,
   };
