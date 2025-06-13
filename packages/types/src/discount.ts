@@ -1,10 +1,11 @@
 export interface Discount {
+  _id: string;
   productId: string;
 
   discountValue: number;
 
-  validFrom?: Date;
-  validTo?: Date;
+  validFrom?: string;
+  validTo?: string;
 
   isActive: boolean;
 

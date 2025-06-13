@@ -12,6 +12,7 @@ export interface ProductFilter {
 }
 
 export interface QuickSearchProductAggregateType {
+  _id: string;
   name: string;
   images: string[];
   slug: string;

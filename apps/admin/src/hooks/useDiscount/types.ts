@@ -1,15 +1,22 @@
 import { ApiData } from '@/utils/types.util';
 import { Discount } from '@repo/types/discount';
+import { BulkDiscount } from '@repo/types/bulkDiscount';
+import { Product } from '@repo/types/product';
 
 export type DiscountRequestBody = Omit<
   Discount,
-  'createdAt' | 'updatedAt' | 'isActive'
+  'createdAt' | 'updatedAt' | 'isActive' | '_id'
+>;
+
+export type BulkDiscountRequestBody = Omit<
+  BulkDiscount,
+  'createdAt' | 'updatedAt' | 'isActive' | '_id'
 >;
 
 export type GetDiscountsResponse = ApiData<
   undefined,
   {
-    discounts: Discount[];
+    discounts: (Discount & { productId: Product })[];
   }
 >;
 
@@ -28,4 +35,16 @@ export type MakeDiscountInactiveResponse = ApiData<
     discountId: string;
   },
   undefined
+>;
+
+export type BulkDiscountsResponse = ApiData<
+  undefined,
+  {
+    bulkDiscounts: BulkDiscount[];
+  }
+>;
+
+export type CreateBulkDiscountResponse = ApiData<
+  BulkDiscountRequestBody,
+  BulkDiscount
 >;

@@ -16,7 +16,7 @@ import type {
   CreateDiscountSchema,
   CreateBulkDiscountSchema,
   UpdateDiscountSchema,
-  MakeDiscountInactiveSchema,
+  ToggleDiscountActiveSchema,
 } from '@/validators/discount.validator';
 import type { Request, Response } from 'express';
 
@@ -30,7 +30,8 @@ export const getActiveBulkDiscounts = asyncHandler(
 );
 
 export const getDiscounts = asyncHandler(async (_: Request, res: Response) => {
-  const discounts = await Discount.find();
+  const discounts = await Discount.find().populate('productId', 'name  _id');
+  console.log(discounts);
   sendResponse(res, 200, 'Discounts fetched successfully', {
     discounts,
   });
@@ -103,13 +104,21 @@ export const updateDiscount = asyncHandler(
   },
 );
 
-export const makeDiscountInactive = asyncHandler(
+export const toggleDiscountActive = asyncHandler(
   async (req: Request, res: Response) => {
-    const { discountId } = req.params as MakeDiscountInactiveSchema['params'];
-    await Discount.findByIdAndUpdate(discountId, {
-      isActive: false,
-    });
+    const { discountId } = req.params as ToggleDiscountActiveSchema['params'];
 
-    sendResponse(res, 200, 'Discount made inactive successfully');
+    const response = await Discount.findById(discountId);
+    if (!response) {
+      throw new ErrorHandler(404, 'Discount not found', 'NOT_FOUND');
+    }
+    await Discount.findByIdAndUpdate(discountId, {
+      isActive: !response.isActive,
+    });
+    sendResponse(
+      res,
+      200,
+      `Discount made ${response.isActive ? 'inactive' : 'active'} successfully`,
+    );
   },
 );

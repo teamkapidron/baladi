@@ -122,3 +122,12 @@ export type ProductStatsRequest = ApiData<
     activeCategories: number;
   }
 >;
+
+export type QuickSearchProductsRequest = ApiData<
+  {
+    query: string;
+  },
+  {
+    products: Product[];
+  }
+>;

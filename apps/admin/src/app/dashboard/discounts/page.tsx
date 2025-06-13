@@ -1,9 +1,9 @@
 import { Metadata } from 'next';
-import { Suspense } from 'react';
 
 import DiscountsHeader from '@/components/dashboard/discounts/discounts-header';
 import DiscountsMetrics from '@/components/dashboard/discounts/discounts-metrics';
 import DiscountsTable from '@/components/dashboard/discounts/discounts-table';
+import BulkDiscountsCards from '@/components/dashboard/discounts/bulk-discounts-cards';
 
 export const metadata: Metadata = {
   title: 'Rabatter',
@@ -11,12 +11,11 @@ export const metadata: Metadata = {
 
 export default function DiscountsPage() {
   return (
-    <Suspense>
-      <div className="space-y-6">
-        <DiscountsHeader />
-        <DiscountsMetrics />
-        <DiscountsTable />
-      </div>
-    </Suspense>
+    <div className="space-y-8">
+      <DiscountsHeader />
+      <DiscountsMetrics />
+      <BulkDiscountsCards />
+      <DiscountsTable />
+    </div>
   );
 }
