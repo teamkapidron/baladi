@@ -4,8 +4,8 @@ export interface Discount {
 
   discountValue: number;
 
-  validFrom?: string;
-  validTo?: string;
+  validFrom?: Date;
+  validTo?: Date;
 
   isActive: boolean;
 

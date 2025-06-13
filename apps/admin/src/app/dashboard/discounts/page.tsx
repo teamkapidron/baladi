@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 
 import DiscountsHeader from '@/components/dashboard/discounts/discounts-header';
 import DiscountsMetrics from '@/components/dashboard/discounts/discounts-metrics';
-import DiscountsTable from '@/components/dashboard/discounts/discounts-table';
+import DiscountsTable from '@/components/dashboard/discounts/table/discounts-table';
 import BulkDiscountsCards from '@/components/dashboard/discounts/bulk-discounts-cards';
 
 export const metadata: Metadata = {

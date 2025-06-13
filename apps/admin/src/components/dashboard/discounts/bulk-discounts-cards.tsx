@@ -1,6 +1,12 @@
 'use client';
+
+// Node Modules
 import React, { useState } from 'react';
+import { useForm, zodResolver, z } from '@repo/ui/lib/form';
 import { format, parse } from '@repo/ui/lib/date';
+import { Plus, Percent, Calendar, Hash } from '@repo/ui/lib/icons';
+
+// Components
 import {
   Card,
   CardHeader,
@@ -18,39 +24,72 @@ import {
   DialogTrigger,
   DialogFooter,
 } from '@repo/ui/components/base/dialog';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@repo/ui/components/base/form';
+
+// Hooks
 import { useBulkDiscount } from '@/hooks/useDiscount';
-import { Plus } from '@repo/ui/lib/icons';
+
+const bulkDiscountSchema = z.object({
+  minQuantity: z.number().min(1, 'Minimum antall må være minst 1'),
+  discountPercentage: z
+    .number()
+    .min(1, 'Rabatt prosent må være minst 1')
+    .max(100, 'Rabatt prosent kan ikke være mer enn 100'),
+  validFrom: z.string().optional(),
+  validTo: z.string().optional(),
+});
+
+type BulkDiscountFormValues = z.infer<typeof bulkDiscountSchema>;
 
 function BulkDiscountsCards() {
   const { bulkDiscounts, isLoadingBulkDiscounts, createBulkDiscountMutation } =
     useBulkDiscount();
   const [open, setOpen] = useState(false);
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
 
-    const minQuantity = Number(formData.get('minQuantity'));
-    const discountPercentage = Number(formData.get('discountPercentage'));
-    const validFrom = formData.get('validFrom') as string;
-    const validTo = formData.get('validTo') as string;
+  const form = useForm<BulkDiscountFormValues>({
+    resolver: zodResolver(bulkDiscountSchema),
+    defaultValues: {
+      minQuantity: 1,
+      discountPercentage: 0,
+      validFrom: '',
+      validTo: '',
+    },
+  });
 
-    const parsedValidFrom = validFrom
-      ? parse(validFrom, 'yyyy-MM-dd', new Date())
+  const onSubmit = (data: BulkDiscountFormValues) => {
+    const parsedValidFrom = data.validFrom
+      ? parse(data.validFrom, 'yyyy-MM-dd', new Date())
       : undefined;
 
-    const parsedValidTo = validTo
-      ? parse(validTo, 'yyyy-MM-dd', new Date())
+    const parsedValidTo = data.validTo
+      ? parse(data.validTo, 'yyyy-MM-dd', new Date())
       : undefined;
 
     createBulkDiscountMutation.mutate({
-      minQuantity,
-      discountPercentage,
+      minQuantity: data.minQuantity,
+      discountPercentage: data.discountPercentage,
       validFrom: parsedValidFrom
         ? format(parsedValidFrom, 'yyyy-MM-dd')
         : undefined,
       validTo: parsedValidTo ? format(parsedValidTo, 'yyyy-MM-dd') : undefined,
     });
+
     setOpen(false);
+    form.reset();
+  };
+
+  const handleOpenChange = (newOpen: boolean) => {
+    setOpen(newOpen);
+    if (!newOpen) {
+      form.reset();
+    }
   };
 
   if (isLoadingBulkDiscounts) {
@@ -67,9 +106,9 @@ function BulkDiscountsCards() {
         <h2 className="font-[family-name:var(--font-sora)] text-2xl font-bold text-[var(--baladi-text)]">
           Bulk Rabatter
         </h2>
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={handleOpenChange}>
           <DialogTrigger asChild>
-            <Button className="gap-2">
+            <Button className="hover:bg-[var(--baladi-primary)]/90 h-12 gap-2 rounded-lg bg-[var(--baladi-primary)] font-[family-name:var(--font-sora)] font-semibold">
               <Plus className="h-4 w-4" />
               Legg til Bulk Rabatt
             </Button>
@@ -80,56 +119,130 @@ function BulkDiscountsCards() {
                 Legg til Bulk Rabatt
               </DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="mb-1 block text-sm font-medium text-[var(--baladi-text)]">
-                  Minimum Antall *
-                </label>
-                <Input
+
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-6"
+              >
+                <FormField
+                  control={form.control}
                   name="minQuantity"
-                  type="number"
-                  min={1}
-                  required
-                  placeholder="Skriv inn minimum antall"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-[family-name:var(--font-sora)] font-medium text-[var(--baladi-primary)]">
+                        Minimum Antall *
+                      </FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Hash className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                          <Input
+                            type="number"
+                            min={1}
+                            placeholder="Skriv inn minimum antall"
+                            className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
+                            {...field}
+                            onChange={(e) =>
+                              field.onChange(Number(e.target.value))
+                            }
+                            value={field.value || ''}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium text-[var(--baladi-text)]">
-                  Rabatt Prosent *
-                </label>
-                <Input
+
+                <FormField
+                  control={form.control}
                   name="discountPercentage"
-                  type="number"
-                  min={1}
-                  max={100}
-                  required
-                  placeholder="Skriv inn rabatt prosent"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-[family-name:var(--font-sora)] font-medium text-[var(--baladi-primary)]">
+                        Rabatt Prosent *
+                      </FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Percent className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-success)]" />
+                          <Input
+                            type="number"
+                            min={1}
+                            max={100}
+                            placeholder="Skriv inn rabatt prosent"
+                            className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
+                            {...field}
+                            onChange={(e) =>
+                              field.onChange(Number(e.target.value))
+                            }
+                            value={field.value || ''}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium text-[var(--baladi-text)]">
-                  Gyldig Fra
-                </label>
-                <Input name="validFrom" type="date" />
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium text-[var(--baladi-text)]">
-                  Gyldig Til
-                </label>
-                <Input name="validTo" type="date" />
-              </div>
-              <DialogFooter>
-                <Button
-                  type="submit"
-                  disabled={createBulkDiscountMutation.isPending}
-                  className="w-full"
-                >
-                  {createBulkDiscountMutation.isPending
-                    ? 'Oppretter...'
-                    : 'Opprett Rabatt'}
-                </Button>
-              </DialogFooter>
-            </form>
+
+                <FormField
+                  control={form.control}
+                  name="validFrom"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-[family-name:var(--font-sora)] font-medium text-[var(--baladi-primary)]">
+                        Gyldig Fra
+                      </FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Calendar className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                          <Input
+                            type="date"
+                            className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="validTo"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-[family-name:var(--font-sora)] font-medium text-[var(--baladi-primary)]">
+                        Gyldig Til
+                      </FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Calendar className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                          <Input
+                            type="date"
+                            className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <DialogFooter>
+                  <Button
+                    type="submit"
+                    disabled={createBulkDiscountMutation.isPending}
+                    className="hover:bg-[var(--baladi-primary)]/90 h-12 w-full rounded-lg bg-[var(--baladi-primary)] font-[family-name:var(--font-sora)] font-semibold"
+                  >
+                    {createBulkDiscountMutation.isPending
+                      ? 'Oppretter...'
+                      : 'Opprett Rabatt'}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </Form>
           </DialogContent>
         </Dialog>
       </div>
@@ -188,7 +301,7 @@ function BulkDiscountsCards() {
                     </div>
                   )}
                   {!discount.validFrom && !discount.validTo && (
-                    <div className="text-[var(--baladi-primary)]">
+                    <div className="rounded-full bg-orange-100 px-2 py-1 text-xs font-medium text-[var(--baladi-primary)]">
                       Ingen tidsbegrensning
                     </div>
                   )}

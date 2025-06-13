@@ -5,13 +5,19 @@ import { Product } from '@repo/types/product';
 
 export type DiscountRequestBody = Omit<
   Discount,
-  'createdAt' | 'updatedAt' | 'isActive' | '_id'
->;
+  'createdAt' | 'updatedAt' | 'isActive' | '_id' | 'validFrom' | 'validTo'
+> & {
+  validFrom?: string;
+  validTo?: string;
+};
 
 export type BulkDiscountRequestBody = Omit<
   BulkDiscount,
-  'createdAt' | 'updatedAt' | 'isActive' | '_id'
->;
+  'createdAt' | 'updatedAt' | 'isActive' | '_id' | 'validFrom' | 'validTo'
+> & {
+  validFrom?: string;
+  validTo?: string;
+};
 
 export type GetDiscountsResponse = ApiData<
   undefined,

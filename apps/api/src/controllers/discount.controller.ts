@@ -30,7 +30,10 @@ export const getActiveBulkDiscounts = asyncHandler(
 );
 
 export const getDiscounts = asyncHandler(async (_: Request, res: Response) => {
-  const discounts = await Discount.find().populate('productId', 'name  _id');
+  const discounts = await Discount.find().populate(
+    'productId',
+    'name  _id images shortDescription description sku',
+  );
   console.log(discounts);
   sendResponse(res, 200, 'Discounts fetched successfully', {
     discounts,
