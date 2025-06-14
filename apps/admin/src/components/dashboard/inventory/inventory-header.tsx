@@ -13,6 +13,8 @@ import {
   SelectContent,
   SelectItem,
 } from '@repo/ui/components/base/select';
+import { Button } from '@repo/ui/components/base/button';
+import AddInventoryDialog from './add-inventory-dialog/add-inventory-dialog';
 
 // Hooks
 import { useDatePresets } from '@repo/ui/hooks/useDate/useDatePresets';
@@ -66,10 +68,10 @@ function InventoryHeader() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
           <div className="flex items-center gap-3">
             <Select value={currentPreset} onValueChange={handlePresetChange}>
-              <SelectTrigger className="w-[160px] border-[var(--baladi-border)] bg-white font-[family-name:var(--font-dm-sans)] text-sm hover:border-[var(--baladi-primary)]">
+              <SelectTrigger className="w-[160px] border-white/20 bg-white/10 font-[family-name:var(--font-dm-sans)] text-sm text-white backdrop-blur-sm hover:bg-white/20 focus:border-white/40 focus:ring-white/20">
                 <SelectValue placeholder="Velg periode" />
               </SelectTrigger>
               <SelectContent>
@@ -82,10 +84,16 @@ function InventoryHeader() {
             </Select>
           </div>
 
-          <button className="group flex h-11 items-center gap-2 rounded-lg bg-white px-4 py-2 font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-primary)] shadow-lg transition-all duration-200 hover:scale-105 hover:bg-white/95 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-white/40">
-            <Download className="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
-            <span>Eksporter Lager</span>
-          </button>
+          <div className="flex items-center gap-3">
+            <div className="rounded-lg bg-white/10 p-1 backdrop-blur-sm">
+              <AddInventoryDialog />
+            </div>
+
+            <Button className="group flex h-11 items-center gap-2 rounded-lg bg-white/10 px-4 py-2 font-[family-name:var(--font-dm-sans)] text-sm font-medium text-white backdrop-blur-sm transition-all duration-200 hover:bg-white/20 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-white/40">
+              <Download className="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
+              <span>Eksporter Lager</span>
+            </Button>
+          </div>
         </div>
       </div>
 

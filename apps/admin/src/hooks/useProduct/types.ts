@@ -6,6 +6,20 @@ export type ProductRequestBody = Omit<
   '_id' | 'createdAt' | 'updatedAt'
 >;
 
+export interface QuickSearchProduct {
+  _id: string;
+  name: string;
+  image: string | undefined;
+  slug: string;
+  unitPrice: number;
+  salePrice: number;
+  shortDescription: string;
+  categories: {
+    name: string;
+    slug: string;
+  };
+}
+
 export type ProductResponse = Omit<Product, 'categories'> & {
   categories?: {
     _id: string;
@@ -120,5 +134,14 @@ export type ProductStatsRequest = ApiData<
     totalCategories: number;
     activeProducts: number;
     activeCategories: number;
+  }
+>;
+
+export type QuickSearchProductsRequest = ApiData<
+  {
+    query: string;
+  },
+  {
+    products: QuickSearchProduct[];
   }
 >;
