@@ -133,6 +133,7 @@ export function promotionPosterTemplate(product: {
 </html>
 `;
 }
+
 export function multiProductPromotionTemplate(products: {
   promotionTitle: string;
   tagline: string;

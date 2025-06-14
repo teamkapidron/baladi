@@ -114,6 +114,7 @@ export const previewPromotionPoster = asyncHandler(
       tagline: 'Buy 3 or more and get 10% off',
       promotionTitle: 'Special Offer',
     }));
+
     if (productsData.length > 3) {
       throw new ErrorHandler(
         400,
@@ -122,22 +123,21 @@ export const previewPromotionPoster = asyncHandler(
       );
     }
 
+    let html: string[] = [];
+
     if (productsData.length === 1) {
-      const posters = productsData.map((product) => {
-        const html = promotionPosterTemplate(product);
-        return html;
-      });
-      return sendResponse(
-        res,
-        200,
-        'Promotion poster preview fetched successfully',
-        {
-          html: posters,
-        },
-      );
+      html = [
+        promotionPosterTemplate({
+          name: productsData[0]?.name ?? '',
+          price: productsData[0]?.price ?? 0,
+          image: productsData[0]?.image ?? '',
+          tagline: 'Buy 3 or more and get 10% off',
+          promotionTitle: 'Special Offer',
+        }),
+      ];
     }
 
-    const html = [
+    html = [
       multiProductPromotionTemplate({
         promotionTitle: 'Special Offer',
         tagline: 'Buy 3 or more and get 10% off',
