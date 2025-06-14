@@ -10,7 +10,7 @@ const noAuthRoutes = [
   '/reset-password',
 ];
 
-const protectedRoutes = ['/cart', '/wishlist', '/orders', '/address'];
+const protectedRoutes = ['/cart', '/wishlist', '/order', '/address'];
 
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value;
@@ -48,7 +48,29 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  if (protectedRoutes.includes(request.nextUrl.pathname)) {
+  if (request.nextUrl.pathname === '/wait-for-approval') {
+    if (!token) {
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
+    try {
+      const user = await getUserStatus(token);
+      if (!user) {
+        return NextResponse.redirect(new URL('/login', request.url));
+      }
+
+      if (!user.isApprovedByAdmin) {
+        return NextResponse.redirect(new URL('/', request.url));
+      }
+
+      return NextResponse.next();
+    } catch {
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
+  }
+
+  if (
+    protectedRoutes.some((route) => request.nextUrl.pathname.startsWith(route))
+  ) {
     if (!token) {
       return NextResponse.redirect(new URL('/login', request.url));
     }
