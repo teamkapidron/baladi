@@ -18,7 +18,6 @@ import type {
   LowStockProductsRequest,
   TopProductsRequest,
   ProductStatsRequest,
-  QuickSearchProductsRequest,
 } from './types';
 import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
 
@@ -190,28 +189,4 @@ export function useProduct() {
     updateProductMutation,
     deleteProductMutation,
   };
-}
-
-export function useQuickSearchProduct(query: string) {
-  const api = useRequest();
-
-  const quickSearchProduct = useCallback(
-    async (payload: QuickSearchProductsRequest['payload']) => {
-      const response = await api.get<QuickSearchProductsRequest['response']>(
-        '/product/search/quick',
-        { params: payload },
-      );
-      return response.data.data;
-    },
-    [api],
-  );
-
-  const quickSearchProductQuery = useQuery({
-    queryKey: [ReactQueryKeys.GET_QUICK_SEARCH_PRODUCTS, query],
-    queryFn: () => quickSearchProduct({ query }),
-    enabled: query.length > 0,
-    staleTime: 60 * 1000,
-  });
-
-  return { quickSearchProductQuery };
 }

@@ -1,6 +1,7 @@
 import { isValidObjectId } from 'mongoose';
 import { z } from 'zod';
 import { dateSchema } from './schemas/date.schema';
+
 export const getActiveBulkDiscountsSchema = z.object({});
 
 export const getDiscountsSchema = z.object({});
@@ -22,8 +23,6 @@ export const createBulkDiscountSchema = z.object({
     discountPercentage: z
       .number()
       .min(0, 'Discount percentage must be greater than 0'),
-    validFrom: dateSchema,
-    validTo: dateSchema,
   }),
 });
 

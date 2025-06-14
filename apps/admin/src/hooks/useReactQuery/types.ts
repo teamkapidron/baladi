@@ -8,7 +8,7 @@ export enum ReactQueryKeys {
   GET_LOW_STOCK_PRODUCTS = 'GET::/product/low-stock',
   GET_TOP_PRODUCTS = 'GET::/product/top',
   GET_PRODUCT_STATS = 'GET::/product/stats',
-  GET_QUICK_SEARCH_PRODUCTS = 'GET::/product/search/quick',
+
   // Inventory
   GET_ALL_INVENTORY = 'GET::/inventory',
   GET_PRODUCT_INVENTORY = 'GET::/inventory/product/:productId',

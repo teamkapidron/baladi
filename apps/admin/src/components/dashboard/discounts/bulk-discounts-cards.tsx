@@ -3,8 +3,7 @@
 // Node Modules
 import React, { useState } from 'react';
 import { useForm, zodResolver, z } from '@repo/ui/lib/form';
-import { format, parse } from '@repo/ui/lib/date';
-import { Plus, Percent, Calendar, Hash } from '@repo/ui/lib/icons';
+import { Plus, Percent, Hash } from '@repo/ui/lib/icons';
 
 // Components
 import {
@@ -42,15 +41,13 @@ const bulkDiscountSchema = z.object({
     .number()
     .min(1, 'Rabatt prosent må være minst 1')
     .max(100, 'Rabatt prosent kan ikke være mer enn 100'),
-  validFrom: z.string().optional(),
-  validTo: z.string().optional(),
 });
 
 type BulkDiscountFormValues = z.infer<typeof bulkDiscountSchema>;
 
 function BulkDiscountsCards() {
-  const { bulkDiscounts, isLoadingBulkDiscounts, createBulkDiscountMutation } =
-    useBulkDiscount();
+  const { bulkDiscounts, createBulkDiscountMutation } = useBulkDiscount();
+
   const [open, setOpen] = useState(false);
 
   const form = useForm<BulkDiscountFormValues>({
@@ -58,46 +55,17 @@ function BulkDiscountsCards() {
     defaultValues: {
       minQuantity: 1,
       discountPercentage: 0,
-      validFrom: '',
-      validTo: '',
     },
   });
 
-  const onSubmit = (data: BulkDiscountFormValues) => {
-    const parsedValidFrom = data.validFrom
-      ? parse(data.validFrom, 'yyyy-MM-dd', new Date())
-      : undefined;
-
-    const parsedValidTo = data.validTo
-      ? parse(data.validTo, 'yyyy-MM-dd', new Date())
-      : undefined;
-
+  function onSubmit(data: BulkDiscountFormValues) {
     createBulkDiscountMutation.mutate({
       minQuantity: data.minQuantity,
       discountPercentage: data.discountPercentage,
-      validFrom: parsedValidFrom
-        ? format(parsedValidFrom, 'yyyy-MM-dd')
-        : undefined,
-      validTo: parsedValidTo ? format(parsedValidTo, 'yyyy-MM-dd') : undefined,
     });
 
     setOpen(false);
     form.reset();
-  };
-
-  const handleOpenChange = (newOpen: boolean) => {
-    setOpen(newOpen);
-    if (!newOpen) {
-      form.reset();
-    }
-  };
-
-  if (isLoadingBulkDiscounts) {
-    return (
-      <div className="text-center text-[var(--baladi-gray)]">
-        Laster Bulk rabatter...
-      </div>
-    );
   }
 
   return (
@@ -106,9 +74,9 @@ function BulkDiscountsCards() {
         <h2 className="font-[family-name:var(--font-sora)] text-2xl font-bold text-[var(--baladi-text)]">
           Bulk Rabatter
         </h2>
-        <Dialog open={open} onOpenChange={handleOpenChange}>
+        <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button className="hover:bg-[var(--baladi-primary)]/90 h-12 gap-2 rounded-lg bg-[var(--baladi-primary)] font-[family-name:var(--font-sora)] font-semibold">
+            <Button className="hover:bg-[var(--baladi-primary)]/90 gap-2 rounded-lg bg-[var(--baladi-primary)] font-[family-name:var(--font-sora)]">
               <Plus className="h-4 w-4" />
               Legg til Bulk Rabatt
             </Button>
@@ -184,52 +152,6 @@ function BulkDiscountsCards() {
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="validFrom"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="font-[family-name:var(--font-sora)] font-medium text-[var(--baladi-primary)]">
-                        Gyldig Fra
-                      </FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Calendar className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
-                          <Input
-                            type="date"
-                            className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
-                            {...field}
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="validTo"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="font-[family-name:var(--font-sora)] font-medium text-[var(--baladi-primary)]">
-                        Gyldig Til
-                      </FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Calendar className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
-                          <Input
-                            type="date"
-                            className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
-                            {...field}
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
                 <DialogFooter>
                   <Button
                     type="submit"
@@ -284,38 +206,15 @@ function BulkDiscountsCards() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-1 text-sm text-[var(--baladi-gray)]">
-                  {discount.validFrom && (
-                    <div>
-                      Fra:{' '}
-                      <span className="text-[var(--baladi-text)]">
-                        {format(new Date(discount.validFrom), 'yyyy-MM-dd')}
-                      </span>
-                    </div>
-                  )}
-                  {discount.validTo && (
-                    <div>
-                      Til:{' '}
-                      <span className="text-[var(--baladi-text)]">
-                        {format(new Date(discount.validTo), 'yyyy-MM-dd')}
-                      </span>
-                    </div>
-                  )}
-                  {!discount.validFrom && !discount.validTo && (
-                    <div className="rounded-full bg-orange-100 px-2 py-1 text-xs font-medium text-[var(--baladi-primary)]">
-                      Ingen tidsbegrensning
-                    </div>
-                  )}
-                  <div className="mt-2 border-t border-[var(--baladi-border)] pt-2">
-                    <span
-                      className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-                        discount.isActive
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-gray-100 text-gray-800'
-                      }`}
-                    >
-                      {discount.isActive ? 'Aktiv' : 'Inaktiv'}
-                    </span>
-                  </div>
+                  <span
+                    className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
+                      discount.isActive
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-gray-100 text-gray-800'
+                    }`}
+                  >
+                    {discount.isActive ? 'Aktiv' : 'Inaktiv'}
+                  </span>
                 </div>
               </CardContent>
             </Card>

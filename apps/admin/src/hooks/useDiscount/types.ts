@@ -13,11 +13,8 @@ export type DiscountRequestBody = Omit<
 
 export type BulkDiscountRequestBody = Omit<
   BulkDiscount,
-  'createdAt' | 'updatedAt' | 'isActive' | '_id' | 'validFrom' | 'validTo'
-> & {
-  validFrom?: string;
-  validTo?: string;
-};
+  'createdAt' | 'updatedAt' | 'isActive' | '_id'
+>;
 
 export type GetDiscountsResponse = ApiData<
   undefined,

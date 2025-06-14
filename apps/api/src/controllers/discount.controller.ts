@@ -34,7 +34,7 @@ export const getDiscounts = asyncHandler(async (_: Request, res: Response) => {
     'productId',
     'name  _id images shortDescription description sku',
   );
-  console.log(discounts);
+
   sendResponse(res, 200, 'Discounts fetched successfully', {
     discounts,
   });
@@ -69,14 +69,12 @@ export const createDiscount = asyncHandler(
 
 export const createBulkDiscount = asyncHandler(
   async (req: Request, res: Response) => {
-    const { minQuantity, discountPercentage, validFrom, validTo } =
+    const { minQuantity, discountPercentage } =
       req.body as CreateBulkDiscountSchema['body'];
 
     const bulkDiscount = await BulkDiscount.create({
       minQuantity,
       discountPercentage,
-      validFrom,
-      validTo,
     });
 
     sendResponse(res, 201, 'Bulk discount created successfully', {
