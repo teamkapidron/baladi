@@ -1,7 +1,11 @@
 import express, { Router } from 'express';
 
 import validate from '@/middlewares/validate.middleware';
-import { addUserToRequest, isAdmin } from '@/middlewares/auth.middleware';
+import {
+  addUserToRequest,
+  isAdmin,
+  isSuperAdmin,
+} from '@/middlewares/auth.middleware';
 
 import {
   getProducts,
@@ -37,6 +41,7 @@ import {
   topProductsSchema,
   productStatsSchema,
   updateConfigSchema,
+  createConfigSchema,
 } from '@/validators/product.validator';
 
 const router: Router = express.Router();
@@ -97,6 +102,11 @@ router.put(
   validate(updateConfigSchema),
   updateConfig,
 );
-router.post('/config/create', isAdmin, createConfig);
+router.post(
+  '/config/create',
+  isSuperAdmin,
+  validate(createConfigSchema),
+  createConfig,
+);
 
 export default router;
