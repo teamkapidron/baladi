@@ -9,12 +9,12 @@ import { useRequest } from '@/hooks/useRequest';
 // Types
 import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
 import type {
-  GetDiscountsResponse,
-  CreateDiscountResponse,
-  UpdateDiscountResponse,
-  MakeDiscountInactiveResponse,
-  CreateBulkDiscountResponse,
-  BulkDiscountsResponse,
+  GetDiscountsRequest,
+  CreateDiscountRequest,
+  UpdateDiscountRequest,
+  MakeDiscountInactiveRequest,
+  CreateBulkDiscountRequest,
+  BulkDiscountsRequest,
 } from './types';
 
 export function useDiscount() {
@@ -23,7 +23,7 @@ export function useDiscount() {
 
   const getDiscounts = useCallback(async () => {
     const response =
-      await api.get<GetDiscountsResponse['response']>('/discount/all');
+      await api.get<GetDiscountsRequest['response']>('/discount/all');
     return response.data.data;
   }, [api]);
 
@@ -34,8 +34,8 @@ export function useDiscount() {
   });
 
   const createDiscount = useCallback(
-    async (discount: CreateDiscountResponse['payload']) => {
-      const response = await api.post<CreateDiscountResponse['response']>(
+    async (discount: CreateDiscountRequest['payload']) => {
+      const response = await api.post<CreateDiscountRequest['response']>(
         '/discount',
         discount,
       );
@@ -56,8 +56,8 @@ export function useDiscount() {
   });
 
   const updateDiscount = useCallback(
-    async (discount: UpdateDiscountResponse['payload']) => {
-      const response = await api.put<UpdateDiscountResponse['response']>(
+    async (discount: UpdateDiscountRequest['payload']) => {
+      const response = await api.put<UpdateDiscountRequest['response']>(
         `/discount/${discount.discountId}`,
         discount.discount,
       );
@@ -78,9 +78,9 @@ export function useDiscount() {
   });
 
   const toggleDiscountActive = useCallback(
-    async (discountId: MakeDiscountInactiveResponse['payload']) => {
+    async (discountId: MakeDiscountInactiveRequest['payload']) => {
       const response = await api.delete<
-        MakeDiscountInactiveResponse['response']
+        MakeDiscountInactiveRequest['response']
       >(`/discount/${discountId.discountId}`);
       return response.data.data;
     },
@@ -115,7 +115,7 @@ export function useBulkDiscount() {
 
   const getBulkDiscounts = useCallback(async () => {
     const response =
-      await api.get<BulkDiscountsResponse['response']>('/discount/bulk/all');
+      await api.get<BulkDiscountsRequest['response']>('/discount/bulk/all');
 
     return response.data.data;
   }, [api]);
@@ -127,8 +127,8 @@ export function useBulkDiscount() {
   });
 
   const createBulkDiscount = useCallback(
-    async (discounts: CreateBulkDiscountResponse['payload']) => {
-      const response = await api.post<CreateBulkDiscountResponse['response']>(
+    async (discounts: CreateBulkDiscountRequest['payload']) => {
+      const response = await api.post<CreateBulkDiscountRequest['response']>(
         '/discount/bulk',
         discounts,
       );

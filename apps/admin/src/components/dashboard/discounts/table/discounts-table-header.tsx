@@ -1,7 +1,7 @@
 'use client';
 
 // Node Modules
-import { memo, useState } from 'react';
+import { memo } from 'react';
 import { Plus } from '@repo/ui/lib/icons';
 
 // Components

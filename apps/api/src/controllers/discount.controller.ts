@@ -2,6 +2,7 @@
 
 // Schemas
 import Discount from '@/models/discount.model';
+import Product from '@/models/product.model';
 import BulkDiscount from '@/models/bulkDiscount.model';
 
 // Utils
@@ -54,11 +55,20 @@ export const createDiscount = asyncHandler(
     const { productId, discountValue, validFrom, validTo } =
       req.body as CreateDiscountSchema['body'];
 
+    const product = await Product.findById(productId);
+    if (!product) {
+      throw new ErrorHandler(404, 'Product not found', 'NOT_FOUND');
+    }
+
+    if (product.isActive === false) {
+      throw new ErrorHandler(400, 'Product is not active', 'BAD_REQUEST');
+    }
+
     const discount = await Discount.create({
       productId,
       discountValue,
-      validFrom,
-      validTo,
+      validFrom: validFrom ? new Date(validFrom) : undefined,
+      validTo: validTo ? new Date(validTo) : undefined,
     });
 
     sendResponse(res, 201, 'Discount created successfully', {
@@ -89,18 +99,23 @@ export const updateDiscount = asyncHandler(
     const { discountValue, validFrom, validTo } =
       req.body as UpdateDiscountSchema['body'];
 
-    const discount = await Discount.findByIdAndUpdate(discountId, {
-      discountValue,
-      validFrom,
-      validTo,
-    });
-
+    const discount = await Discount.findById(discountId);
     if (!discount) {
       throw new ErrorHandler(404, 'Discount not found', 'NOT_FOUND');
     }
 
+    if (discount.isActive === false) {
+      throw new ErrorHandler(400, 'Discount is not active', 'BAD_REQUEST');
+    }
+
+    const updatedDiscount = await Discount.findByIdAndUpdate(discountId, {
+      discountValue,
+      validFrom: validFrom ? new Date(validFrom) : undefined,
+      validTo: validTo ? new Date(validTo) : undefined,
+    });
+
     sendResponse(res, 200, 'Discount updated successfully', {
-      discount,
+      discount: updatedDiscount,
     });
   },
 );

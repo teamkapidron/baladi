@@ -1,9 +1,8 @@
 'use client';
 
 // Node Modules
-import React, { useState } from 'react';
+import React, { memo, useState } from 'react';
 import { useForm, zodResolver, z } from '@repo/ui/lib/form';
-import { format, parse } from '@repo/ui/lib/date';
 import { DollarSign, Calendar, Package } from '@repo/ui/lib/icons';
 
 // Components
@@ -30,16 +29,7 @@ import {
 import { useDiscount } from '@/hooks/useDiscount';
 
 // Types
-import type { Discount } from '@repo/types/discount';
-
-interface Product {
-  _id: string;
-  name: string;
-}
-
-type DiscountWithProduct = Omit<Discount, 'productId'> & {
-  productId: Product;
-};
+import type { DiscountResponse } from '@/hooks/useDiscount/types';
 
 const updateDiscountSchema = z.object({
   discountValue: z.number().min(0.01, 'Rabatt beløp må være større enn 0'),
@@ -49,71 +39,43 @@ const updateDiscountSchema = z.object({
 
 type UpdateDiscountFormValues = z.infer<typeof updateDiscountSchema>;
 
-function UpdateDiscountDialog({
-  children,
-  discount,
-}: {
+interface UpdateDiscountDialogProps {
   children: React.ReactNode;
-  discount: DiscountWithProduct;
-}) {
+  discount: DiscountResponse;
+}
+
+function UpdateDiscountDialog(props: UpdateDiscountDialogProps) {
+  const { children, discount } = props;
+
   const [open, setOpen] = useState(false);
   const { updateDiscountMutation } = useDiscount();
-
-  // Format dates for input fields
-  const formatDateForInput = (date: Date | string | undefined) => {
-    if (!date) return '';
-    const dateObj = typeof date === 'string' ? new Date(date) : date;
-    return format(dateObj, 'yyyy-MM-dd');
-  };
 
   const form = useForm<UpdateDiscountFormValues>({
     resolver: zodResolver(updateDiscountSchema),
     defaultValues: {
       discountValue: discount.discountValue,
-      validFrom: formatDateForInput(discount.validFrom),
-      validTo: formatDateForInput(discount.validTo),
+      validFrom: '',
+      validTo: '',
     },
   });
 
   const onSubmit = (data: UpdateDiscountFormValues) => {
-    const parsedValidFrom = data.validFrom
-      ? parse(data.validFrom, 'yyyy-MM-dd', new Date())
-      : undefined;
-
-    const parsedValidTo = data.validTo
-      ? parse(data.validTo, 'yyyy-MM-dd', new Date())
-      : undefined;
-
     updateDiscountMutation.mutate({
       discountId: discount._id,
       discount: {
         productId: discount.productId._id,
         discountValue: data.discountValue,
-        validFrom: parsedValidFrom
-          ? format(parsedValidFrom, 'yyyy-MM-dd')
-          : undefined,
-        validTo: parsedValidTo
-          ? format(parsedValidTo, 'yyyy-MM-dd')
-          : undefined,
+        validFrom: data.validFrom,
+        validTo: data.validTo,
       },
     });
 
     setOpen(false);
-  };
-
-  const handleOpenChange = (newOpen: boolean) => {
-    setOpen(newOpen);
-    if (!newOpen) {
-      form.reset({
-        discountValue: discount.discountValue,
-        validFrom: formatDateForInput(discount.validFrom),
-        validTo: formatDateForInput(discount.validTo),
-      });
-    }
+    form.reset();
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
@@ -230,4 +192,4 @@ function UpdateDiscountDialog({
   );
 }
 
-export default UpdateDiscountDialog;
+export default memo(UpdateDiscountDialog);

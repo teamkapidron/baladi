@@ -1,9 +1,8 @@
 'use client';
 
 // Node Modules
-import React, { memo, useCallback, useMemo } from 'react';
-import Image from 'next/image';
 import { format } from '@repo/ui/lib/date';
+import React, { memo, useCallback, useMemo } from 'react';
 import {
   Calendar,
   Package,
@@ -12,7 +11,6 @@ import {
   ToggleLeft,
   ToggleRight,
   Edit,
-  Eye,
   Barcode,
 } from '@repo/ui/lib/icons';
 
@@ -38,64 +36,7 @@ import UpdateDiscountDialog from './update-discount-dialog';
 import { useDiscount } from '@/hooks/useDiscount';
 
 // Types
-import type { Discount } from '@repo/types/discount';
-
-interface Product {
-  _id: string;
-  name: string;
-  images: string[];
-  shortDescription: string;
-  description: string;
-  sku: string;
-}
-
-type DiscountWithProduct = Omit<Discount, 'productId'> & {
-  productId: Product;
-};
-
-// Product cell component to handle individual product details
-function ProductCell({ discount }: { discount: DiscountWithProduct }) {
-  return (
-    <div className="flex items-start space-x-4">
-      <div className="relative h-16 w-16 overflow-hidden rounded-lg border border-[var(--baladi-border)] bg-[var(--baladi-muted)]">
-        {discount?.productId?.images && discount.productId.images.length > 0 ? (
-          <Image
-            alt={discount.productId.name}
-            src={discount.productId.images[0]!}
-            className="h-full w-full object-cover"
-            width={64}
-            height={64}
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center">
-            <Package className="h-6 w-6 text-[var(--baladi-gray)]" />
-          </div>
-        )}
-      </div>
-      <div className="min-w-0 flex-1">
-        <h3 className="truncate font-[family-name:var(--font-sora)] text-base font-semibold text-[var(--baladi-primary)]">
-          {discount.productId.name}
-        </h3>
-        <p className="mt-1 line-clamp-2 text-sm text-[var(--baladi-gray)]">
-          {discount.productId?.shortDescription ||
-            discount.productId?.description ||
-            'Rabatt tilgjengelig for dette produktet'}
-        </p>
-        <div className="mt-2 flex items-center space-x-2">
-          <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700">
-            ID: {discount.productId._id}
-          </span>
-          {discount.productId?.sku && (
-            <span className="inline-flex items-center rounded-md bg-purple-50 px-2 py-1 text-xs font-medium text-purple-700">
-              <Barcode className="mr-1 h-3 w-3" />
-              {discount.productId.sku}
-            </span>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
+import { DiscountResponse } from '@/hooks/useDiscount/types';
 
 function DiscountsTableContent() {
   const {
@@ -104,37 +45,14 @@ function DiscountsTableContent() {
     updateDiscountMutation,
   } = useDiscount();
 
-  const discounts = useMemo(
-    () => data?.discounts || [],
-    [data?.discounts],
-  ) as DiscountWithProduct[];
+  const discounts = useMemo(() => data?.discounts || [], [data?.discounts]);
 
   const handleToggleActive = useCallback(
-    (discount: DiscountWithProduct) => {
+    (discount: DiscountResponse) => {
       toggleDiscountActiveMutation.mutate({ discountId: discount._id });
     },
     [toggleDiscountActiveMutation],
   );
-
-  const getDiscountStatus = (discount: DiscountWithProduct) => {
-    const now = new Date();
-    const validFrom = discount.validFrom ? new Date(discount.validFrom) : null;
-    const validTo = discount.validTo ? new Date(discount.validTo) : null;
-
-    if (!discount.isActive) {
-      return { label: 'Inaktiv', color: 'bg-red-100 text-red-800' };
-    }
-
-    if (validFrom && now < validFrom) {
-      return { label: 'Planlagt', color: 'bg-yellow-100 text-yellow-800' };
-    }
-
-    if (validTo && now > validTo) {
-      return { label: 'Utløpt', color: 'bg-gray-100 text-gray-800' };
-    }
-
-    return { label: 'Aktiv', color: 'bg-green-100 text-green-800' };
-  };
 
   if (discounts.length === 0) {
     return (
@@ -193,12 +111,37 @@ function DiscountsTableContent() {
                     index % 2 === 0 ? 'bg-white' : 'bg-[var(--baladi-light)]'
                   }`}
                 >
-                  {/* Product Details */}
                   <TableCell className="p-4">
-                    <ProductCell discount={discount} />
+                    <div className="flex items-start space-x-4">
+                      <div className="relative h-16 w-16 overflow-hidden rounded-lg border border-[var(--baladi-border)] bg-[var(--baladi-muted)]">
+                        <div className="flex h-full w-full items-center justify-center">
+                          <Package className="h-6 w-6 text-[var(--baladi-gray)]" />
+                        </div>
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h3 className="truncate font-[family-name:var(--font-sora)] text-base font-semibold text-[var(--baladi-primary)]">
+                          {discount.productId.name}
+                        </h3>
+                        <p className="mt-1 line-clamp-2 text-sm text-[var(--baladi-gray)]">
+                          {discount.productId?.shortDescription ||
+                            discount.productId?.description ||
+                            'Rabatt tilgjengelig for dette produktet'}
+                        </p>
+                        <div className="mt-2 flex items-center space-x-2">
+                          <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700">
+                            ID: {discount.productId._id}
+                          </span>
+                          {discount.productId?.sku && (
+                            <span className="inline-flex items-center rounded-md bg-purple-50 px-2 py-1 text-xs font-medium text-purple-700">
+                              <Barcode className="mr-1 h-3 w-3" />
+                              {discount.productId.sku}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                   </TableCell>
 
-                  {/* Discount Amount */}
                   <TableCell className="p-4">
                     <div className="space-y-2">
                       <div className="flex items-center space-x-2">
@@ -221,7 +164,6 @@ function DiscountsTableContent() {
                     </div>
                   </TableCell>
 
-                  {/* Validity Period */}
                   <TableCell className="p-4">
                     <div className="space-y-3">
                       {discount.validFrom || discount.validTo ? (
@@ -270,7 +212,6 @@ function DiscountsTableContent() {
                     </div>
                   </TableCell>
 
-                  {/* Status */}
                   <TableCell className="p-4">
                     <div className="space-y-2">
                       <span
@@ -285,7 +226,6 @@ function DiscountsTableContent() {
                     </div>
                   </TableCell>
 
-                  {/* Actions */}
                   <TableCell className="p-4">
                     <div className="flex items-center justify-center space-x-2">
                       <DropdownMenu>
@@ -348,3 +288,23 @@ function DiscountsTableContent() {
 }
 
 export default memo(DiscountsTableContent);
+
+function getDiscountStatus(discount: DiscountResponse) {
+  const now = new Date();
+  const validFrom = discount.validFrom ? new Date(discount.validFrom) : null;
+  const validTo = discount.validTo ? new Date(discount.validTo) : null;
+
+  if (!discount.isActive) {
+    return { label: 'Inaktiv', color: 'bg-red-100 text-red-800' };
+  }
+
+  if (validFrom && now < validFrom) {
+    return { label: 'Planlagt', color: 'bg-yellow-100 text-yellow-800' };
+  }
+
+  if (validTo && now > validTo) {
+    return { label: 'Utløpt', color: 'bg-gray-100 text-gray-800' };
+  }
+
+  return { label: 'Aktiv', color: 'bg-green-100 text-green-800' };
+}

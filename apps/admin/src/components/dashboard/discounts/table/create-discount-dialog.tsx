@@ -1,10 +1,9 @@
 'use client';
 
 // Node Modules
-import React, { useState } from 'react';
+import React, { memo, useState } from 'react';
 import { useForm, zodResolver, z } from '@repo/ui/lib/form';
-import { format, parse } from '@repo/ui/lib/date';
-import { DollarSign, Calendar, Package } from '@repo/ui/lib/icons';
+import { Calendar as CalendarIcon } from '@repo/ui/lib/icons';
 
 // Components
 import { Button } from '@repo/ui/components/base/button';
@@ -25,26 +24,13 @@ import {
   FormLabel,
   FormMessage,
 } from '@repo/ui/components/base/form';
-import ProductSearchCombobox from '../product-search-combobox';
+import ProductSearchCombobox from '@/components/common/product-search-combobox';
 
 // Hooks
 import { useDiscount } from '@/hooks/useDiscount';
 
-interface Product {
-  _id: string;
-  name: string;
-}
-
 const createDiscountSchema = z.object({
-  product: z
-    .object({
-      _id: z.string(),
-      name: z.string(),
-    })
-    .nullable()
-    .refine((val: any) => val !== null, {
-      message: 'Produkt er påkrevd',
-    }),
+  productId: z.string().min(1, 'Produkt er påkrevd'),
   discountValue: z.number().min(0.01, 'Rabatt beløp må være større enn 0'),
   validFrom: z.string().optional(),
   validTo: z.string().optional(),
@@ -59,46 +45,26 @@ function CreateDiscountDialog({ children }: { children: React.ReactNode }) {
   const form = useForm<CreateDiscountFormValues>({
     resolver: zodResolver(createDiscountSchema),
     defaultValues: {
-      product: null,
       discountValue: 0,
       validFrom: '',
       validTo: '',
     },
   });
 
-  const onSubmit = (data: CreateDiscountFormValues) => {
-    if (!data.product) return;
-
-    const parsedValidFrom = data.validFrom
-      ? parse(data.validFrom, 'yyyy-MM-dd', new Date())
-      : undefined;
-
-    const parsedValidTo = data.validTo
-      ? parse(data.validTo, 'yyyy-MM-dd', new Date())
-      : undefined;
-
+  function onSubmit(data: CreateDiscountFormValues) {
     createDiscountMutation.mutate({
-      productId: data.product._id,
+      productId: data.productId,
       discountValue: data.discountValue,
-      validFrom: parsedValidFrom
-        ? format(parsedValidFrom, 'yyyy-MM-dd')
-        : undefined,
-      validTo: parsedValidTo ? format(parsedValidTo, 'yyyy-MM-dd') : undefined,
+      validFrom: data.validFrom,
+      validTo: data.validTo,
     });
 
     setOpen(false);
     form.reset();
-  };
-
-  const handleOpenChange = (newOpen: boolean) => {
-    setOpen(newOpen);
-    if (!newOpen) {
-      form.reset();
-    }
-  };
+  }
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
@@ -111,21 +77,18 @@ function CreateDiscountDialog({ children }: { children: React.ReactNode }) {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
-              name="product"
+              name="productId"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="font-[family-name:var(--font-sora)] font-medium text-[var(--baladi-primary)]">
                     Velg Produkt *
                   </FormLabel>
                   <FormControl>
-                    <div className="relative">
-                      <ProductSearchCombobox
-                        value={field.value}
-                        onSelect={field.onChange}
-                        placeholder="Søk og velg et produkt..."
-                        className="pl-10"
-                      />
-                    </div>
+                    <ProductSearchCombobox
+                      onSelect={(productId) => field.onChange(productId)}
+                      placeholder="Søk og velg et produkt..."
+                      className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -141,19 +104,16 @@ function CreateDiscountDialog({ children }: { children: React.ReactNode }) {
                     Rabatt Beløp (kr) *
                   </FormLabel>
                   <FormControl>
-                    <div className="relative">
-                      <DollarSign className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-success)]" />
-                      <Input
-                        type="number"
-                        min={0}
-                        step="0.01"
-                        placeholder="Skriv inn rabatt beløp"
-                        className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                        value={field.value || ''}
-                      />
-                    </div>
+                    <Input
+                      type="number"
+                      min={0}
+                      step="0.01"
+                      placeholder="Skriv inn rabatt beløp"
+                      className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
+                      {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      value={field.value || ''}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -169,14 +129,12 @@ function CreateDiscountDialog({ children }: { children: React.ReactNode }) {
                     Gyldig Fra
                   </FormLabel>
                   <FormControl>
-                    <div className="relative">
-                      <Calendar className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
-                      <Input
-                        type="date"
-                        className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
-                        {...field}
-                      />
-                    </div>
+                    <CalendarIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                    <Input
+                      type="date"
+                      className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -192,14 +150,12 @@ function CreateDiscountDialog({ children }: { children: React.ReactNode }) {
                     Gyldig Til
                   </FormLabel>
                   <FormControl>
-                    <div className="relative">
-                      <Calendar className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
-                      <Input
-                        type="date"
-                        className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
-                        {...field}
-                      />
-                    </div>
+                    <CalendarIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                    <Input
+                      type="date"
+                      className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -224,4 +180,4 @@ function CreateDiscountDialog({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default CreateDiscountDialog;
+export default memo(CreateDiscountDialog);
