@@ -1,7 +1,7 @@
 'use client';
 
 // Node Modules
-import { memo } from 'react';
+import { memo, useState, useEffect } from 'react';
 
 // Components
 import AddressCard from './address-card';

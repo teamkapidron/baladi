@@ -1,7 +1,7 @@
 'use client';
 
 // Node Modules
-import { memo } from 'react';
+import { memo, useState, useEffect } from 'react';
 
 // Components
 import AddressListHeader from './address-list-header';
@@ -22,7 +22,7 @@ function AddressListContent() {
   const addresses = address?.addresses || [];
 
   return (
-    <div className="bg-gradient-to-br from-gray-50 to-gray-100 py-8 rounded-xl">
+    <div className="rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 py-8">
       <div className="container mx-auto max-w-7xl px-4">
         <AddressListHeader count={addresses.length} />
 

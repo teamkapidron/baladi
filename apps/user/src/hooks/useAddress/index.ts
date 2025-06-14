@@ -57,7 +57,7 @@ export function useAddress() {
     async (payload: UpdateAddressRequest['payload']) => {
       const response = await api.put<UpdateAddressRequest['response']>(
         `/address/${payload.addressId}`,
-        payload,
+        payload.address,
       );
       return response.data.data;
     },
