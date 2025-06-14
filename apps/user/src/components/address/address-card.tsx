@@ -1,5 +1,6 @@
 'use client';
 
+// Node Modules
 import { memo, useCallback, useState } from 'react';
 import {
   MapPin,
@@ -13,6 +14,7 @@ import {
   Building,
 } from '@repo/ui/lib/icons';
 
+// Components
 import { Button } from '@repo/ui/components/base/button';
 import { Badge } from '@repo/ui/components/base/badge';
 import {
@@ -32,16 +34,21 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@repo/ui/components/base/alert-dialog';
-
-import { useAddress } from '@/hooks/useAddress';
-import { Address } from '@repo/types/address';
 import UpdateAddressDialog from './update-address-dialog';
+
+// Hooks
+import { useAddress } from '@/hooks/useAddress';
+
+// Types
+import { Address } from '@repo/types/address';
 
 interface AddressCardProps {
   address: Address;
 }
 
-function AddressCard({ address }: AddressCardProps) {
+function AddressCard(props: AddressCardProps) {
+  const { address } = props;
+
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const { deleteAddressMutation, setDefaultAddressMutation } = useAddress();

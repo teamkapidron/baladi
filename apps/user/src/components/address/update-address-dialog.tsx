@@ -1,7 +1,7 @@
 'use client';
 
 // Node Modules
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, memo } from 'react';
 import { useForm, zodResolver, z } from '@repo/ui/lib/form';
 import { MapPin, Phone, Tag, Home, Building } from '@repo/ui/lib/icons';
 
@@ -13,7 +13,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogFooter,
 } from '@repo/ui/components/base/dialog';
 import {
@@ -80,7 +79,6 @@ function UpdateAddressDialog({
     },
   });
 
-  // Reset form values when address changes or dialog opens
   useEffect(() => {
     if (address && isOpen) {
       form.reset({
@@ -109,15 +107,8 @@ function UpdateAddressDialog({
     form.reset();
   };
 
-  const handleOpenChange = (newOpen: boolean) => {
-    onOpenChange(newOpen);
-    if (!newOpen) {
-      form.reset();
-    }
-  };
-
   return (
-    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="font-[family-name:var(--font-sora)] text-[var(--baladi-text)]">
@@ -339,4 +330,4 @@ function UpdateAddressDialog({
   );
 }
 
-export default UpdateAddressDialog;
+export default memo(UpdateAddressDialog);

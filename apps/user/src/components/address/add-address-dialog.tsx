@@ -1,7 +1,7 @@
 'use client';
 
 // Node Modules
-import React, { useState } from 'react';
+import React, { memo, useState } from 'react';
 import { useForm, zodResolver, z } from '@repo/ui/lib/form';
 import { MapPin, Phone, Tag, Home, Building } from '@repo/ui/lib/icons';
 
@@ -77,15 +77,8 @@ function AddAddressDialog({ children }: { children: React.ReactNode }) {
     form.reset();
   };
 
-  const handleOpenChange = (newOpen: boolean) => {
-    setOpen(newOpen);
-    if (!newOpen) {
-      form.reset();
-    }
-  };
-
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
@@ -311,4 +304,4 @@ function AddAddressDialog({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default AddAddressDialog;
+export default memo(AddAddressDialog);

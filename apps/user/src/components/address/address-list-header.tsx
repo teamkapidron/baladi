@@ -1,15 +1,22 @@
 'use client';
 
-import { memo, useEffect, useState } from 'react';
+// Node Modules
+import { memo } from 'react';
 import { MapPin, Plus } from '@repo/ui/lib/icons';
+
+// Components
 import { Button } from '@repo/ui/components/base/button';
+
+// Components
 import AddAddressDialog from './add-address-dialog';
 
 interface AddressListHeaderProps {
   count: number;
 }
 
-function AddressListHeader({ count }: AddressListHeaderProps) {
+function AddressListHeader(props: AddressListHeaderProps) {
+  const { count } = props;
+
   return (
     <div className="mb-8">
       <div className="mb-6 text-center">
@@ -41,12 +48,6 @@ function AddressListHeader({ count }: AddressListHeaderProps) {
           </AddAddressDialog>
         </div>
       </div>
-
-      {count > 0 && (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          {/* Cards here... */}
-        </div>
-      )}
     </div>
   );
 }

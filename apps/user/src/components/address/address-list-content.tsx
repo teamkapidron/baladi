@@ -1,7 +1,7 @@
 'use client';
 
 // Node Modules
-import { memo, useState, useEffect } from 'react';
+import { memo } from 'react';
 
 // Components
 import AddressListHeader from './address-list-header';

@@ -159,7 +159,11 @@ export const setDefaultAddress = asyncHandler(
     }
 
     await Address.updateMany({ userId }, { $set: { isDefault: false } });
-    await Address.findByIdAndUpdate(addressId, { isDefault: true });
+    await Address.findByIdAndUpdate(
+      addressId,
+      { $set: { isDefault: true } },
+      { new: true },
+    );
 
     const updatedAddress = await Address.findById(addressId);
 
