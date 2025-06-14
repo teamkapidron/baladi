@@ -1,6 +1,7 @@
 'use client';
 
 // Node Modules
+import { z } from '@repo/ui/lib/form';
 import { memo, useCallback, useState } from 'react';
 import {
   Upload,
@@ -20,21 +21,27 @@ import { Alert, AlertDescription } from '@repo/ui/components/base/alert';
 // Hooks
 import { useBulk } from '@/hooks/useBulk';
 
+// Types
+import { CsvConfigType } from '@/hooks/useBulk/types';
+
 interface CsvUploadBoxProps {
   title?: string;
   description?: string;
   templateFileName?: string;
-  useBulkHook: () => ReturnType<typeof useBulk>;
+  csvConfig: CsvConfigType;
+  csvSchema: z.ZodType;
 }
 
-function CsvUploadBox({
-  title = 'Last opp CSV-fil',
-  description = 'Last opp en CSV-fil for bulk import',
-  templateFileName = 'template.csv',
-  useBulkHook,
-}: CsvUploadBoxProps) {
+function CsvUploadBox(props: CsvUploadBoxProps) {
   const {
+    title = 'Last opp CSV-fil',
+    description = 'Last opp en CSV-fil for bulk import',
+    templateFileName = 'template.csv',
     csvConfig,
+    csvSchema,
+  } = props;
+
+  const {
     isUploading,
     parseResult,
     fileName,
@@ -45,9 +52,8 @@ function CsvUploadBox({
     downloadTemplate,
     resetUpload,
     handleFileInputChange,
-  } = useBulkHook();
+  } = useBulk(csvConfig, csvSchema);
 
-  // Local UI state
   const [isDragOver, setIsDragOver] = useState(false);
 
   const handleDrop = useCallback(
@@ -76,7 +82,6 @@ function CsvUploadBox({
 
       if (isUploading) return;
 
-      // Only set drag over if it's a file being dragged
       if (e.dataTransfer.types.includes('Files')) {
         setIsDragOver(true);
       }
@@ -88,7 +93,6 @@ function CsvUploadBox({
     e.preventDefault();
     e.stopPropagation();
 
-    // Only set drag leave if we're actually leaving the drop zone
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX;
     const y = e.clientY;
@@ -128,7 +132,6 @@ function CsvUploadBox({
         </div>
       </div>
 
-      {/* Upload Area */}
       {!parseResult && (
         <div className="space-y-4">
           <div
@@ -176,7 +179,7 @@ function CsvUploadBox({
           </div>
 
           <input
-            key={uploadKey} // Force re-render with new key
+            key={uploadKey}
             ref={fileInputRef}
             type="file"
             accept={csvConfig.acceptedFileTypes?.join(',')}
@@ -201,10 +204,8 @@ function CsvUploadBox({
         </div>
       )}
 
-      {/* Results */}
       {parseResult && (
         <div className="space-y-4">
-          {/* Summary */}
           <div
             className={`rounded-lg border p-4 ${
               parseResult.success
@@ -247,7 +248,6 @@ function CsvUploadBox({
             </div>
           </div>
 
-          {/* Missing Columns */}
           {parseResult.missingColumns.length > 0 && (
             <Alert className="border-[var(--baladi-warning)]/20 bg-[var(--baladi-warning)]/5">
               <AlertTriangle className="h-4 w-4 text-[var(--baladi-warning)]" />
@@ -258,7 +258,6 @@ function CsvUploadBox({
             </Alert>
           )}
 
-          {/* Errors */}
           {parseResult.errors.length > 0 && (
             <div className="space-y-3">
               <div className="flex items-center gap-2">
@@ -281,7 +280,7 @@ function CsvUploadBox({
                         </span>
                       </div>
                       <div className="mt-1 text-[var(--baladi-gray)]">
-                        Verdi: "{error.value}"
+                        Verdi: &quot;{error.value}&quot;
                       </div>
                       <div className="mt-1 text-[var(--baladi-dark)]">
                         {error.error}
@@ -298,7 +297,6 @@ function CsvUploadBox({
             </div>
           )}
 
-          {/* Actions */}
           <div className="flex gap-3">
             <Button
               type="button"

@@ -1,75 +1,70 @@
 // Node Modules
-import { useCallback, useState, useRef } from 'react';
-import { toast } from '@repo/ui/lib/sonner';
-import { z } from '@repo/ui/lib/form';
 import Papa from 'papaparse';
+import { z } from '@repo/ui/lib/form';
+import { toast } from '@repo/ui/lib/sonner';
+import { useCallback, useState, useRef } from 'react';
 
-// Hooks
-import { useRequest } from '@/hooks/useRequest';
-
+// Types
 import type {
   CsvConfigType,
   CsvValidationError,
   CsvParseResult,
 } from './types';
 
-export function useBulk(csvConfig: CsvConfigType, csvProductSchema: z.ZodType) {
-  const api = useRequest();
+export function useBulk<T>(csvConfig: CsvConfigType, csvSchema: z.ZodType) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // States
-  const [parsedData, setParsedData] = useState<any[] | null>(null);
+  const [parsedData, setParsedData] = useState<T[] | null>(null);
   const [isImporting, setIsImporting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [parseResult, setParseResult] = useState<CsvParseResult | null>(null);
+  const [parseResult, setParseResult] = useState<CsvParseResult<T> | null>(
+    null,
+  );
   const [fileName, setFileName] = useState<string>('');
   const [uploadKey, setUploadKey] = useState(0);
 
-  // Product-specific CSV validation function
-  function validateProductRow(
-    row: any,
-    rowIndex: number,
-  ): CsvValidationError[] {
-    const errors: CsvValidationError[] = [];
+  const validateRow = useCallback(
+    (row: T, rowIndex: number): CsvValidationError[] => {
+      const errors: CsvValidationError[] = [];
 
-    try {
-      csvProductSchema.parse(row);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        error.errors.forEach((err) => {
+      try {
+        csvSchema.parse(row);
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          error.errors.forEach((err) => {
+            errors.push({
+              row: rowIndex + 1,
+              column: err.path.join('.'),
+              value: String(row[err.path[0] as keyof typeof row]),
+              error: err.message,
+            });
+          });
+        } else {
           errors.push({
             row: rowIndex + 1,
-            column: err.path.join('.') || 'unknown',
-            value: String(row[err.path[0] as keyof typeof row] || ''),
-            error: err.message,
+            column: 'unknown',
+            value: '',
+            error: String(error),
           });
-        });
-      } else {
-        errors.push({
-          row: rowIndex + 1,
-          column: 'unknown',
-          value: '',
-          error: String(error),
-        });
+        }
       }
-    }
 
-    return errors;
-  }
+      return errors;
+    },
+    [csvSchema],
+  );
 
-  // File validation
   const validateFile = useCallback(
     (file: File): string | null => {
-      // Check file type
       const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
+
       if (!csvConfig.acceptedFileTypes?.includes(fileExtension)) {
         return `Kun ${csvConfig.acceptedFileTypes?.join(', ')} filer er tillatt`;
       }
 
-      // Check file size
       const fileSizeMB = file.size / (1024 * 1024);
-      if (fileSizeMB > (csvConfig.maxFileSize || 10)) {
-        return `Filen er for stor. Maksimal størrelse er ${csvConfig.maxFileSize || 10}MB`;
+      if (fileSizeMB > csvConfig.maxFileSize) {
+        return `Filen er for stor. Maksimal størrelse er ${csvConfig.maxFileSize}MB`;
       }
 
       return null;
@@ -77,19 +72,19 @@ export function useBulk(csvConfig: CsvConfigType, csvProductSchema: z.ZodType) {
     [csvConfig.acceptedFileTypes, csvConfig.maxFileSize],
   );
 
-  // CSV parsing and validation
   const parseAndValidateCSV = useCallback(
-    async (file: File): Promise<CsvParseResult> => {
+    async (file: File): Promise<CsvParseResult<T>> => {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
 
         reader.onload = (e) => {
           const csvString = e.target?.result as string;
+
           Papa.parse(csvString, {
             header: true,
             skipEmptyLines: true,
-            complete: (results: Papa.ParseResult<any>) => {
-              const parseResult: CsvParseResult = {
+            complete: (results: Papa.ParseResult<T>) => {
+              const parseResult: CsvParseResult<T> = {
                 success: false,
                 data: [],
                 errors: [],
@@ -98,7 +93,6 @@ export function useBulk(csvConfig: CsvConfigType, csvProductSchema: z.ZodType) {
                 validRows: 0,
               };
 
-              // Check for parsing errors
               if (results.errors && results.errors.length > 0) {
                 parseResult.errors.push({
                   row: 0,
@@ -110,7 +104,6 @@ export function useBulk(csvConfig: CsvConfigType, csvProductSchema: z.ZodType) {
                 return;
               }
 
-              // Check if we have data
               if (!results.data || results.data.length === 0) {
                 parseResult.errors.push({
                   row: 0,
@@ -123,13 +116,12 @@ export function useBulk(csvConfig: CsvConfigType, csvProductSchema: z.ZodType) {
                 return;
               }
 
-              // Get the headers from the first row
               const headers = Object.keys(results.data[0] as object);
 
-              // Check for missing required columns
               const missingRequired = csvConfig.requiredColumns.filter(
                 (col) => !headers.includes(col),
               );
+
               if (missingRequired.length > 0) {
                 parseResult.missingColumns = missingRequired;
                 parseResult.errors.push({
@@ -140,11 +132,10 @@ export function useBulk(csvConfig: CsvConfigType, csvProductSchema: z.ZodType) {
                 });
               }
 
-              // Validate each row if validation function is provided
-              const validatedData: any[] = [];
+              const validatedData: T[] = [];
 
-              results.data.forEach((row: any, index: number) => {
-                const errors = validateProductRow(row, index);
+              results.data.forEach((row: T, index: number) => {
+                const errors = validateRow(row, index);
                 if (errors.length > 0) {
                   parseResult.errors.push(...errors);
                 }
@@ -154,7 +145,6 @@ export function useBulk(csvConfig: CsvConfigType, csvProductSchema: z.ZodType) {
 
               parseResult.data = validatedData;
 
-              // Success criteria
               parseResult.success =
                 parseResult.missingColumns.length === 0 &&
                 parseResult.errors.length === 0 &&
@@ -162,8 +152,12 @@ export function useBulk(csvConfig: CsvConfigType, csvProductSchema: z.ZodType) {
 
               resolve(parseResult);
             },
-            error: (error: any) => {
-              reject(new Error(`CSV parsing error: ${error.message}`));
+            error: (error: unknown) => {
+              if (error instanceof Error) {
+                reject(new Error(`CSV parsing error: ${error.message}`));
+              } else {
+                reject(new Error('CSV parsing error'));
+              }
             },
           });
         };
@@ -175,14 +169,11 @@ export function useBulk(csvConfig: CsvConfigType, csvProductSchema: z.ZodType) {
         reader.readAsText(file, 'UTF-8');
       });
     },
-    [csvConfig],
+    [csvConfig.requiredColumns, validateRow],
   );
 
-  // File upload handler
   const handleFileUpload = useCallback(
     async (file: File) => {
-      if (isUploading) return;
-
       const fileError = validateFile(file);
       if (fileError) {
         setParseResult({
@@ -246,42 +237,40 @@ export function useBulk(csvConfig: CsvConfigType, csvProductSchema: z.ZodType) {
         setIsUploading(false);
       }
     },
-    [isUploading, validateFile, parseAndValidateCSV],
+    [validateFile, parseAndValidateCSV],
   );
 
-  // File input trigger
   const triggerFileInput = useCallback(() => {
     if (fileInputRef.current && !isUploading) {
       fileInputRef.current.click();
     }
   }, [isUploading]);
 
-  // Template download
   const downloadTemplate = useCallback(
     (templateFileName = 'template.csv') => {
       try {
-        // Create CSV template with headers and example data
         const headers =
           csvConfig.allColumns?.join(',') ||
           csvConfig.requiredColumns.join(',');
+
         const exampleValues = (
           csvConfig.allColumns || csvConfig.requiredColumns
         ).map((column) => csvConfig.templateData?.[column] || '');
+
         const exampleRow = exampleValues.join(',');
 
         const csvContent = `${headers}\n${exampleRow}`;
         const blob = new Blob([csvContent], {
           type: 'text/csv;charset=utf-8;',
         });
+
         const url = URL.createObjectURL(blob);
 
-        // Create and trigger download link
         const link = document.createElement('a');
         link.href = url;
         link.download = templateFileName;
         link.click();
 
-        // Clean up the URL object
         setTimeout(() => {
           URL.revokeObjectURL(url);
         }, 100);
@@ -293,7 +282,6 @@ export function useBulk(csvConfig: CsvConfigType, csvProductSchema: z.ZodType) {
     [csvConfig],
   );
 
-  // Reset/cleanup function
   const resetUpload = useCallback(() => {
     setParseResult(null);
     setFileName('');
@@ -302,7 +290,6 @@ export function useBulk(csvConfig: CsvConfigType, csvProductSchema: z.ZodType) {
     setUploadKey((prev) => prev + 1);
   }, []);
 
-  // Handle file input change
   const handleFileInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
@@ -313,8 +300,7 @@ export function useBulk(csvConfig: CsvConfigType, csvProductSchema: z.ZodType) {
     [handleFileUpload, isUploading],
   );
 
-  // Legacy event handlers (for backward compatibility)
-  const handleUploadComplete = useCallback((result: CsvParseResult) => {
+  const handleUploadComplete = useCallback((result: CsvParseResult<T>) => {
     if (result.success && result.data) {
       setParsedData(result.data);
       toast.success(
@@ -338,7 +324,7 @@ export function useBulk(csvConfig: CsvConfigType, csvProductSchema: z.ZodType) {
   }, []);
 
   const handleValidationComplete = useCallback(
-    (result: CsvParseResult, operation: 'add' | 'update') => {
+    (result: CsvParseResult<T>, operation: 'add' | 'update') => {
       if (result.success && result.data) {
         setParsedData(result.data);
         toast.success(
@@ -355,10 +341,6 @@ export function useBulk(csvConfig: CsvConfigType, csvProductSchema: z.ZodType) {
   );
 
   return {
-    // Configuration
-    csvConfig,
-
-    // State
     parsedData,
     isImporting,
     isUploading,
@@ -366,17 +348,14 @@ export function useBulk(csvConfig: CsvConfigType, csvProductSchema: z.ZodType) {
     fileName,
     uploadKey,
 
-    // Refs
     fileInputRef,
 
-    // Core functions
     handleFileUpload,
     triggerFileInput,
     downloadTemplate,
     resetUpload,
     handleFileInputChange,
 
-    // Legacy event handlers (for backward compatibility)
     handleUploadComplete,
     handleUploadStart,
     handleValidationComplete,

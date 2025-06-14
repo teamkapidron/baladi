@@ -1,7 +1,6 @@
 import { z } from '@repo/ui/lib/form';
 import { Visibility } from '@repo/types/product';
 
-// Product-specific CSV validation schema
 export const csvProductSchema = z.object({
   name: z.string().trim().min(1, 'Produktnavn er påkrevd'),
   slug: z.string().trim().min(1, 'Slug er påkrevd'),
@@ -146,7 +145,8 @@ export const csvProductSchema = z.object({
   'supplier.hsCode': z.string().optional().default(''),
 });
 
-// Required columns for CSV
+export type CSVProductSchema = z.infer<typeof csvProductSchema>;
+
 export const REQUIRED_COLUMNS = [
   'name',
   'slug',
@@ -158,7 +158,6 @@ export const REQUIRED_COLUMNS = [
   'visibility',
 ];
 
-// All possible columns (for validation)
 export const ALL_COLUMNS = [
   'name',
   'slug',
@@ -186,7 +185,6 @@ export const ALL_COLUMNS = [
   'supplier.hsCode',
 ];
 
-// Template data for CSV generation
 export const TEMPLATE_DATA: Record<string, string> = {
   name: 'Eksempel Produkt',
   slug: 'eksempel-produkt',

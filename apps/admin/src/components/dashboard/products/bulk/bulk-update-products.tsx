@@ -2,29 +2,20 @@
 
 // Node Modules
 import { useRouter } from 'next/navigation';
-import {
-  Edit,
-  CheckCircle,
-  AlertTriangle,
-  FileText,
-  ArrowLeft,
-} from '@repo/ui/lib/icons';
+import { Edit, FileText, ArrowLeft } from '@repo/ui/lib/icons';
 
 // Components
-import CsvUploadBox from '@/components/csv-upload-box';
+import CsvUploadBox from '@/components/common/csv-upload-box';
 import { Button } from '@repo/ui/components/base/button';
-import { Alert, AlertDescription } from '@repo/ui/components/base/alert';
 
-// Hooks
-import { useBulkProduct } from '@/hooks/useBulk/product';
+// Constants
+import { csvConfig, csvProductSchema } from './schema';
 
 export default function BulkUpdateProducts() {
   const router = useRouter();
-  const { parsedData } = useBulkProduct();
 
   return (
     <div className="space-y-6 p-6">
-      {/* Header */}
       <div className="relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-[var(--baladi-primary)] via-[var(--baladi-primary)] to-[var(--baladi-secondary)] p-6 shadow-lg">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute -right-4 -top-4 h-32 w-32 rounded-full bg-white/20"></div>
@@ -64,7 +55,6 @@ export default function BulkUpdateProducts() {
         <div className="absolute bottom-0 left-0 h-1 w-full bg-gradient-to-r from-[var(--baladi-accent)] via-white/50 to-[var(--baladi-accent)]"></div>
       </div>
 
-      {/* Instructions */}
       <div className="rounded-xl border border-[var(--baladi-border)] bg-white p-6 shadow-sm">
         <div className="mb-4 flex items-center gap-3">
           <div className="bg-[var(--baladi-info)]/10 flex h-8 w-8 items-center justify-center rounded-lg">
@@ -81,7 +71,8 @@ export default function BulkUpdateProducts() {
               1
             </span>
             <span>
-              Last ned CSV-malen ved å klikke på "Last ned mal" knappen nedenfor
+              Last ned CSV-malen ved å klikke på &quot;Last ned mal&quot;
+              knappen nedenfor
             </span>
           </div>
           <div className="flex items-start gap-2">
@@ -111,8 +102,7 @@ export default function BulkUpdateProducts() {
         </div>
       </div>
 
-      {/* Upload Component */}
-      <CsvUploadBox useBulkHook={useBulkProduct} />
+      <CsvUploadBox csvConfig={csvConfig} csvSchema={csvProductSchema} />
     </div>
   );
 }

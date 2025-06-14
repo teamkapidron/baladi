@@ -5,6 +5,7 @@ export interface CsvConfigType {
   maxFileSize: number;
   acceptedFileTypes: string[];
 }
+
 export interface CsvValidationError {
   row: number;
   column: string;
@@ -12,9 +13,9 @@ export interface CsvValidationError {
   error: string;
 }
 
-export interface CsvParseResult {
+export interface CsvParseResult<T = unknown> {
   success: boolean;
-  data?: any[];
+  data?: T[];
   errors: CsvValidationError[];
   missingColumns: string[];
   totalRows: number;
