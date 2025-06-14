@@ -1,11 +1,10 @@
 // Node Modules
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 
 // Hooks
 import { useRequest } from '@/hooks/useRequest';
 import { useUserFilter } from './useUserFilter';
-import { useGetParams } from '@repo/ui/hooks/useParams';
 import { usePagination } from '@repo/ui/hooks/usePagination';
 import { useDateRangeInParams } from '@repo/ui/hooks/useDate/useDateRangeInParams';
 
@@ -18,14 +17,11 @@ import {
   GetUserStatsRequest,
   TopUsersRequest,
 } from './types';
-import { UserSort } from './types';
 import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
 
 export function useUserStats() {
   const api = useRequest();
   const { dateRangeInString } = useDateRangeInParams();
-
-  console.log('🔥 useUserStats: dateRangeInString changed', dateRangeInString);
 
   const getUserStats = useCallback(
     async (payload: GetUserStatsRequest['payload']) => {
@@ -51,9 +47,8 @@ export function useUserStats() {
   return getUserStatsQuery;
 }
 
-export function useUsers(userId?: string) {
+export function useUsers() {
   const api = useRequest();
-  const { getParam } = useGetParams();
   const { page, limit, handlePageSizeChange, handlePageChange } =
     usePagination();
   const { dateRangeInString, setDateRange } = useDateRangeInParams();
@@ -64,25 +59,6 @@ export function useUsers(userId?: string) {
     handleUserEmailFilterChange,
     handleUserNameFilterChange,
   } = useUserFilter();
-
-  const params = useMemo(() => {
-    return {
-      name: userFilter.name,
-      email: userFilter.email,
-      userType: userFilter.userType,
-      status: userFilter.status,
-      page,
-      limit,
-      sort: getParam('sort') as UserSort | undefined,
-    };
-  }, [getParam, page, limit, userFilter]);
-
-  const dateParams = useMemo(() => {
-    return {
-      from: dateRangeInString.from,
-      to: dateRangeInString.to,
-    };
-  }, [dateRangeInString]);
 
   const getAllUsers = useCallback(
     async (payload: GetAllCustomersRequest['payload']) => {
@@ -96,39 +72,26 @@ export function useUsers(userId?: string) {
   );
 
   const { data: users, isLoading } = useQuery({
-    queryKey: [ReactQueryKeys.GET_ALL_USERS, JSON.stringify(params)],
+    queryKey: [
+      ReactQueryKeys.GET_ALL_USERS,
+      userFilter.email,
+      userFilter.name,
+      userFilter.userType,
+      userFilter.status,
+      page,
+      limit,
+    ],
     queryFn: () =>
       getAllUsers({
-        email: params.email,
-        name: params.name,
-        userType: params.userType,
-        page: params.page,
-        limit: params.limit,
-        sort: params.sort,
-        status: params.status,
+        email: userFilter.email,
+        name: userFilter.name,
+        userType: userFilter.userType,
+        page,
+        limit,
+        status: userFilter.status,
       }),
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
-  });
-
-  const getUserDetails = useCallback(
-    async (payload: GetCustomerDetailsRequest['payload']) => {
-      if (!payload.userId) return;
-
-      const response = await api.get<GetCustomerDetailsRequest['response']>(
-        `/user/details/${payload.userId}`,
-      );
-      return response.data.data;
-    },
-    [api],
-  );
-
-  const userDetailsQuery = useQuery({
-    queryKey: [ReactQueryKeys.GET_USER_DETAILS, userId],
-    queryFn: () => getUserDetails({ userId: userId as string }),
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: true,
-    enabled: !!userId,
   });
 
   const approveUser = useCallback(
@@ -159,9 +122,10 @@ export function useUsers(userId?: string) {
   const getUserRegistrationGraphDataQuery = useQuery({
     queryKey: [
       ReactQueryKeys.GET_USER_REGISTRATION_GRAPH_DATA,
-      JSON.stringify(dateParams),
+      dateRangeInString.from,
+      dateRangeInString.to,
     ],
-    queryFn: () => getUserRegistrationGraphData(dateParams),
+    queryFn: () => getUserRegistrationGraphData(dateRangeInString),
   });
 
   const getTopUsers = useCallback(
@@ -175,8 +139,12 @@ export function useUsers(userId?: string) {
   );
 
   const getTopUsersQuery = useQuery({
-    queryKey: [ReactQueryKeys.GET_TOP_USERS, JSON.stringify(dateParams)],
-    queryFn: () => getTopUsers(dateParams),
+    queryKey: [
+      ReactQueryKeys.GET_TOP_USERS,
+      dateRangeInString.from,
+      dateRangeInString.to,
+    ],
+    queryFn: () => getTopUsers(dateRangeInString),
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
   });
@@ -185,7 +153,6 @@ export function useUsers(userId?: string) {
     // Queries
     users,
     isLoading,
-    userDetailsQuery,
     getUserRegistrationGraphDataQuery,
     getTopUsersQuery,
 
@@ -206,5 +173,33 @@ export function useUsers(userId?: string) {
     handleUserTypeFilterChange,
     handleUserEmailFilterChange,
     handleUserNameFilterChange,
+  };
+}
+
+export function useUserDetails(userId: string) {
+  const api = useRequest();
+
+  const getUserDetails = useCallback(
+    async (payload: GetCustomerDetailsRequest['payload']) => {
+      if (!payload.userId) return;
+
+      const response = await api.get<GetCustomerDetailsRequest['response']>(
+        `/user/details/${payload.userId}`,
+      );
+      return response.data.data;
+    },
+    [api],
+  );
+
+  const userDetailsQuery = useQuery({
+    queryKey: [ReactQueryKeys.GET_USER_DETAILS, userId],
+    queryFn: () => getUserDetails({ userId: userId as string }),
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: true,
+    enabled: !!userId,
+  });
+
+  return {
+    userDetailsQuery,
   };
 }

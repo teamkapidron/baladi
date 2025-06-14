@@ -4,23 +4,47 @@ import { isAdmin } from '@/middlewares/auth.middleware';
 import validate from '@/middlewares/validate.middleware';
 
 import {
+  getActiveBulkDiscounts,
   getDiscounts,
+  getBulkDiscounts,
   createDiscount,
+  createBulkDiscount,
   updateDiscount,
-  makeDiscountInactive,
+  toggleDiscountActive,
 } from '@/controllers/discount.controller';
 
 import {
+  getActiveBulkDiscountsSchema,
   getDiscountsSchema,
+  getBulkDiscountsSchema,
   createDiscountSchema,
+  createBulkDiscountSchema,
   updateDiscountSchema,
-  makeDiscountInactiveSchema,
+  toggleDiscountActiveSchema,
 } from '@/validators/discount.validator';
 
 const router: Router = express.Router();
 
+router.get(
+  '/bulk/active',
+  validate(getActiveBulkDiscountsSchema),
+  getActiveBulkDiscounts,
+);
+
 router.get('/all', isAdmin, validate(getDiscountsSchema), getDiscounts);
+router.get(
+  '/bulk/all',
+  isAdmin,
+  validate(getBulkDiscountsSchema),
+  getBulkDiscounts,
+);
 router.post('/', isAdmin, validate(createDiscountSchema), createDiscount);
+router.post(
+  '/bulk',
+  isAdmin,
+  validate(createBulkDiscountSchema),
+  createBulkDiscount,
+);
 router.put(
   '/:discountId',
   isAdmin,
@@ -30,8 +54,8 @@ router.put(
 router.delete(
   '/:discountId',
   isAdmin,
-  validate(makeDiscountInactiveSchema),
-  makeDiscountInactive,
+  validate(toggleDiscountActiveSchema),
+  toggleDiscountActive,
 );
 
 export default router;

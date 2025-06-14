@@ -368,6 +368,7 @@ export const quickSearchProducts = asyncHandler(
       },
       {
         $project: {
+          _id: 1,
           name: 1,
           images: 1,
           slug: 1,
@@ -386,6 +387,7 @@ export const quickSearchProducts = asyncHandler(
     ]);
 
     const formattedProducts: QuickSearchProduct[] = products.map((product) => ({
+      _id: product._id,
       name: product.name,
       image: product.images?.[0],
       slug: product.slug,

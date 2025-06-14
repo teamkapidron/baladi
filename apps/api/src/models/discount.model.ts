@@ -3,7 +3,11 @@ import { IDiscount } from './interfaces/discount.model';
 
 const discountSchema = new Schema<IDiscount>(
   {
-    productId: { type: Schema.Types.ObjectId, required: true },
+    productId: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: 'Product',
+    },
 
     discountValue: { type: Number, required: true },
 

@@ -109,6 +109,9 @@ importers:
       '@types/pdfkit':
         specifier: ^0.13.9
         version: 0.13.9
+      axios:
+        specifier: ^1.9.0
+        version: 1.9.0
       bcryptjs:
         specifier: ^3.0.2
         version: 3.0.2
@@ -161,6 +164,9 @@ importers:
       '@repo/typescript':
         specifier: workspace:*
         version: link:../../packages/typescript
+      '@types/axios':
+        specifier: ^0.14.4
+        version: 0.14.4
       '@types/cookie-parser':
         specifier: ^1.4.8
         version: 1.4.8(@types/express@5.0.2)
@@ -200,12 +206,18 @@ importers:
       '@repo/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@tanstack/query-sync-storage-persister':
+        specifier: ^5.80.7
+        version: 5.80.7
       '@tanstack/react-query':
         specifier: ^5.75.5
         version: 5.80.6(react@19.1.0)
       '@tanstack/react-query-devtools':
         specifier: ^5.75.5
         version: 5.80.6(@tanstack/react-query@5.80.6(react@19.1.0))(react@19.1.0)
+      '@tanstack/react-query-persist-client':
+        specifier: ^5.80.7
+        version: 5.80.7(@tanstack/react-query@5.80.6(react@19.1.0))(react@19.1.0)
       axios:
         specifier: ^1.9.0
         version: 1.9.0
@@ -224,6 +236,9 @@ importers:
       react-dom:
         specifier: ^19.1.0
         version: 19.1.0(react@19.1.0)
+      react-intersection-observer:
+        specifier: ^9.16.0
+        version: 9.16.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       zustand:
         specifier: ^5.0.5
         version: 5.0.5(@types/react@19.1.0)(react@19.1.0)(use-sync-external-store@1.5.0(react@19.1.0))
@@ -1318,13 +1333,28 @@ packages:
   '@tanstack/query-core@5.80.6':
     resolution: {integrity: sha512-nl7YxT/TAU+VTf+e2zTkObGTyY8YZBMnbgeA1ee66lIVqzKlYursAII6z5t0e6rXgwUMJSV4dshBTNacNpZHbQ==}
 
+  '@tanstack/query-core@5.80.7':
+    resolution: {integrity: sha512-s09l5zeUKC8q7DCCCIkVSns8zZrK4ZDT6ryEjxNBFi68G4z2EBobBS7rdOY3r6W1WbUDpc1fe5oY+YO/+2UVUg==}
+
   '@tanstack/query-devtools@5.80.0':
     resolution: {integrity: sha512-D6gH4asyjaoXrCOt5vG5Og/YSj0D/TxwNQgtLJIgWbhbWCC/emu2E92EFoVHh4ppVWg1qT2gKHvKyQBEFZhCuA==}
+
+  '@tanstack/query-persist-client-core@5.80.7':
+    resolution: {integrity: sha512-/V+zw5cGseMzzI9SfI5eem+826gMhnouMi0X7Da41dVC96xNvdyed+FHtIKaSXyCm4YpcPUtyA5eHG4Ng7yU8g==}
+
+  '@tanstack/query-sync-storage-persister@5.80.7':
+    resolution: {integrity: sha512-lIoEkYQsasWmj/ftuH4ntBlEwsetAf1AQ/8kMCVvBH9ERIL9sM5gaopV5ja0KzVUISzqnUVlUnK9VqSL73uzYw==}
 
   '@tanstack/react-query-devtools@5.80.6':
     resolution: {integrity: sha512-y7Es0OJ4RYQxrPYsuuQP0jxjgJ40a03UbEPmJ6vwf/ERVMRoRIMkpjtvPxf1D+n9nwPfWmGdD0jW8Wxd+TxeEw==}
     peerDependencies:
       '@tanstack/react-query': ^5.80.6
+      react: ^18 || ^19
+
+  '@tanstack/react-query-persist-client@5.80.7':
+    resolution: {integrity: sha512-ZRu+rx43hiamk+oz6cY+ecaviavE+0Lt2jFjuM2zOtvl3Q4/PNHCwd3YrHafvDpJESFmhnMCZb8YfQl304S/8w==}
+    peerDependencies:
+      '@tanstack/react-query': ^5.80.7
       react: ^18 || ^19
 
   '@tanstack/react-query@5.80.6':
@@ -1349,6 +1379,10 @@ packages:
 
   '@types/aws-lambda@8.10.149':
     resolution: {integrity: sha512-NXSZIhfJjnXqJgtS7IwutqIF/SOy1Wz5Px4gUY1RWITp3AYTyuJS4xaXr/bIJY1v15XMzrJ5soGnPM+7uigZjA==}
+
+  '@types/axios@0.14.4':
+    resolution: {integrity: sha512-9JgOaunvQdsQ/qW2OPmE5+hCeUB52lQSolecrFrthct55QekhmXEwT203s20RL+UHtCQc15y3VXpby9E7Kkh/g==}
+    deprecated: This is a stub types definition. axios provides its own type definitions, so you do not need this installed.
 
   '@types/body-parser@1.19.5':
     resolution: {integrity: sha512-fB3Zu92ucau0iQ0JMCFQE7b/dv8Ot07NI3KaZIkIUNXq82k4eBAqUaneXfleGY9JWskeS9y+u0nXMyspcuQrCg==}
@@ -3104,6 +3138,15 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18 || ^19
 
+  react-intersection-observer@9.16.0:
+    resolution: {integrity: sha512-w9nJSEp+DrW9KmQmeWHQyfaP6b03v+TdXynaoA964Wxt7mdR3An11z4NNCQgL4gKSK7y1ver2Fq+JKH6CWEzUA==}
+    peerDependencies:
+      react: ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^17.0.0 || ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
+
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
 
@@ -4588,11 +4631,28 @@ snapshots:
 
   '@tanstack/query-core@5.80.6': {}
 
+  '@tanstack/query-core@5.80.7': {}
+
   '@tanstack/query-devtools@5.80.0': {}
+
+  '@tanstack/query-persist-client-core@5.80.7':
+    dependencies:
+      '@tanstack/query-core': 5.80.7
+
+  '@tanstack/query-sync-storage-persister@5.80.7':
+    dependencies:
+      '@tanstack/query-core': 5.80.7
+      '@tanstack/query-persist-client-core': 5.80.7
 
   '@tanstack/react-query-devtools@5.80.6(@tanstack/react-query@5.80.6(react@19.1.0))(react@19.1.0)':
     dependencies:
       '@tanstack/query-devtools': 5.80.0
+      '@tanstack/react-query': 5.80.6(react@19.1.0)
+      react: 19.1.0
+
+  '@tanstack/react-query-persist-client@5.80.7(@tanstack/react-query@5.80.6(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@tanstack/query-persist-client-core': 5.80.7
       '@tanstack/react-query': 5.80.6(react@19.1.0)
       react: 19.1.0
 
@@ -4612,6 +4672,12 @@ snapshots:
   '@tsconfig/node16@1.0.4': {}
 
   '@types/aws-lambda@8.10.149': {}
+
+  '@types/axios@0.14.4':
+    dependencies:
+      axios: 1.9.0
+    transitivePeerDependencies:
+      - debug
 
   '@types/body-parser@1.19.5':
     dependencies:
@@ -6486,6 +6552,12 @@ snapshots:
   react-hook-form@7.57.0(react@19.1.0):
     dependencies:
       react: 19.1.0
+
+  react-intersection-observer@9.16.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+    dependencies:
+      react: 19.1.0
+    optionalDependencies:
+      react-dom: 19.1.0(react@19.1.0)
 
   react-is@16.13.1: {}
 

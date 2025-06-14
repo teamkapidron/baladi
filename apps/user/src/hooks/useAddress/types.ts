@@ -3,14 +3,14 @@ import { Address } from '@repo/types/address';
 
 export interface AddressRequestBody {
   addressLine1: string;
-  addressLine2: string;
+  addressLine2?: string;
   city: string;
   state: string;
   postalCode: string;
   country: string;
   isDefault: boolean;
-  label: string;
-  phoneNumber: string;
+  label?: string;
+  phoneNumber?: string;
 }
 
 export type GetAddressesRequest = ApiData<

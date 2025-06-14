@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import React, { useCallback, memo } from 'react';
 import { Grid3X3, RefreshCw } from '@repo/ui/lib/icons';
 
@@ -11,7 +10,7 @@ import { Slider } from '@repo/ui/components/base/slider';
 import GetCategoryIcon from '@/components/common/get-category-icon';
 
 // Hooks
-import { useCategory } from '@/hooks/useCategory';
+import { useCategoryFlattened } from '@/hooks/useCategory';
 import { useProductFilters } from '@/hooks/useProduct/useProductFilters';
 
 // Types
@@ -19,7 +18,8 @@ import { formatPrice } from '@/utils/price.util';
 import { ProductStock } from '@/hooks/useProduct/types';
 
 function ProductsSidebar() {
-  const { categories, isCategoriesLoading } = useCategory();
+  const { categoriesFlattened, isCategoriesFlattenedLoading } =
+    useCategoryFlattened();
   const {
     category: selectedCategory,
     handleCategoryChange,
@@ -59,7 +59,7 @@ function ProductsSidebar() {
           <h3 className="mb-4 font-[family-name:var(--font-sora)] text-lg font-semibold text-[var(--baladi-dark)]">
             Kategorier
           </h3>
-          {isCategoriesLoading ? (
+          {isCategoriesFlattenedLoading ? (
             <div className="space-y-2">
               {Array.from({ length: 5 }).map((_, i) => (
                 <div
@@ -71,8 +71,9 @@ function ProductsSidebar() {
           ) : (
             <ul className="no-scrollbar max-h-[250px] space-y-1 overflow-y-auto pr-2">
               <li>
-                <Link
-                  href="/"
+                <Button
+                  variant="ghost"
+                  onClick={() => handleCategoryChange('')}
                   className={`flex items-center rounded-lg px-3 py-2 font-[family-name:var(--font-dm-sans)] text-sm transition-all duration-200 ${
                     !selectedCategory
                       ? 'bg-[var(--baladi-light)] font-semibold text-[var(--baladi-primary)]'
@@ -81,12 +82,13 @@ function ProductsSidebar() {
                 >
                   <Grid3X3 size={16} className="mr-2.5" />
                   <span>Alle Produkter</span>
-                </Link>
+                </Button>
               </li>
-              {categories?.categories.map((category) => (
+              {categoriesFlattened?.categories.map((category) => (
                 <li key={category._id}>
-                  <Link
-                    href={`/?category=${category._id}`}
+                  <Button
+                    variant="ghost"
+                    onClick={() => handleCategoryChange(category._id)}
                     className={`flex items-center rounded-lg px-3 py-2 font-[family-name:var(--font-dm-sans)] text-sm transition-all duration-200 ${
                       selectedCategory === category._id
                         ? 'bg-[var(--baladi-light)] font-semibold text-[var(--baladi-primary)]'
@@ -97,7 +99,7 @@ function ProductsSidebar() {
                       <GetCategoryIcon categoryName={category.name} />
                     </span>
                     <span className="truncate">{category.name}</span>
-                  </Link>
+                  </Button>
                 </li>
               ))}
             </ul>

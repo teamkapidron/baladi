@@ -1,7 +1,8 @@
 import { useShallow } from 'zustand/shallow';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 
 import { useAuth } from '@/hooks/useAuth';
+import { useDiscount } from '@/hooks/useDiscount';
 import { useCartStore } from '@/store/cart';
 
 import { ProductResponse } from '../useProduct/types';
@@ -33,54 +34,58 @@ export function useCart() {
       setUserId: state.setUserId,
     })),
   );
+  const { bulkDiscountQuery } = useDiscount();
+  const bulkDiscounts = useMemo(() => {
+    return bulkDiscountQuery.data?.bulkDiscounts || [];
+  }, [bulkDiscountQuery.data]);
 
   useEffect(() => {
-    setUserId(user?._id || null);
-  }, [user?._id, setUserId]);
+    setUserId(user?._id || null, bulkDiscounts);
+  }, [user?._id, setUserId, bulkDiscounts, bulkDiscountQuery.data]);
 
   const addToCart = useCallback(
     (product: ProductResponse, quantity: number) => {
       if (!isAuthenticated || !user) return;
-      addToCartStore(user._id, product, quantity);
+      addToCartStore(user._id, product, quantity, bulkDiscounts);
     },
-    [addToCartStore, user, isAuthenticated],
+    [addToCartStore, user, isAuthenticated, bulkDiscounts],
   );
 
   const removeFromCart = useCallback(
     (productId: string) => {
       if (!isAuthenticated || !user) return;
-      removeFromCartStore(user._id, productId);
+      removeFromCartStore(user._id, productId, bulkDiscounts);
     },
-    [removeFromCartStore, user, isAuthenticated],
+    [removeFromCartStore, user, isAuthenticated, bulkDiscounts],
   );
 
   const clearCart = useCallback(() => {
     if (!isAuthenticated || !user) return;
-    clearCartStore(user._id);
-  }, [clearCartStore, user, isAuthenticated]);
+    clearCartStore(user._id, bulkDiscounts);
+  }, [clearCartStore, user, isAuthenticated, bulkDiscounts]);
 
   const getItemQuantity = useCallback(
     (productId: string): number => {
       if (!user) return 0;
-      return getItemQuantityStore(user._id, productId);
+      return getItemQuantityStore(user._id, productId, bulkDiscounts);
     },
-    [getItemQuantityStore, user],
+    [getItemQuantityStore, user, bulkDiscounts],
   );
 
   const isInCart = useCallback(
     (productId: string): boolean => {
       if (!user) return false;
-      return isInCartStore(user._id, productId);
+      return isInCartStore(user._id, productId, bulkDiscounts);
     },
-    [isInCartStore, user],
+    [isInCartStore, user, bulkDiscounts],
   );
 
   const updateQuantity = useCallback(
     (productId: string, newQuantity: number) => {
       if (!isAuthenticated || !user) return;
-      updateQuantityStore(user._id, productId, newQuantity);
+      updateQuantityStore(user._id, productId, newQuantity, bulkDiscounts);
     },
-    [updateQuantityStore, user, isAuthenticated],
+    [updateQuantityStore, user, isAuthenticated, bulkDiscounts],
   );
 
   return {

@@ -32,7 +32,14 @@ export const getAllInventory = asyncHandler(
     const { page, limit, skip } = getPagination(query.page, query.limit);
 
     const inventory = await Inventory.find()
-      .populate('productId', 'name sku category price')
+      .populate({
+        path: 'productId',
+        select: 'name sku categories salePrice',
+        populate: {
+          path: 'categories',
+          select: 'name _id',
+        },
+      })
       .skip(skip)
       .limit(limit);
 
@@ -56,7 +63,14 @@ export const getProductInventory = asyncHandler(
     const { page, limit, skip } = getPagination(query.page, query.limit);
 
     const inventory = await Inventory.find({ productId })
-      .populate('productId', 'name sku category price')
+      .populate({
+        path: 'productId',
+        select: 'name sku categories salePrice',
+        populate: {
+          path: 'categories',
+          select: 'name _id',
+        },
+      })
       .skip(skip)
       .limit(limit)
       .sort({
@@ -77,8 +91,7 @@ export const getProductInventory = asyncHandler(
 
 export const createInventory = asyncHandler(
   async (req: Request, res: Response) => {
-    const { productId } = req.params as CreateInventorySchema['params'];
-    const { quantity, expirationDate } =
+    const { productId, quantity, expirationDate } =
       req.body as CreateInventorySchema['body'];
 
     const product = await Product.findById(productId);

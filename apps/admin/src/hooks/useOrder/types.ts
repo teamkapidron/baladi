@@ -68,7 +68,7 @@ export type GetOrderDetailsAdminRequest = ApiData<
     orderId: string;
   },
   {
-    order: Order;
+    order: OrderResponse;
   }
 >;
 

@@ -1,6 +1,6 @@
 // Node Modules
 import { useCallback } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 
 // Hooks
 import { useRequest } from '@/hooks/useRequest';
@@ -17,7 +17,7 @@ import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
 
 export function useProducts() {
   const api = useRequest();
-  const { page, limit } = usePagination();
+  const { page, limit } = usePagination(undefined, '12');
   const { search, category } = useProductFilters();
 
   const getProducts = useCallback(
@@ -40,6 +40,39 @@ export function useProducts() {
         search: search ?? undefined,
         category: category ?? undefined,
       }),
+  });
+}
+
+export function useInfiniteProducts() {
+  const api = useRequest();
+  const { search, category } = useProductFilters();
+
+  const getProducts = useCallback(
+    async (payload: GetProductsRequest['payload']) => {
+      const response = await api.get<GetProductsRequest['response']>(
+        '/product/list',
+        { params: payload },
+      );
+      return response.data.data;
+    },
+    [api],
+  );
+
+  return useInfiniteQuery({
+    queryKey: [ReactQueryKeys.GET_PRODUCTS, search, category],
+    queryFn: ({ pageParam = 1 }) =>
+      getProducts({
+        page: pageParam.toString(),
+        limit: '12',
+        search: search ?? undefined,
+        category: category ?? undefined,
+      }),
+    getNextPageParam: (lastPage) => {
+      return lastPage.currentPage < lastPage.totalPages
+        ? lastPage.currentPage + 1
+        : undefined;
+    },
+    initialPageParam: 1,
   });
 }
 

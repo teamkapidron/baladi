@@ -3,7 +3,14 @@
 // Node Modules
 import Link from 'next/link';
 import { memo, useCallback, useMemo } from 'react';
-import { LogIn, User, ChevronDown, Settings, LogOut } from '@repo/ui/lib/icons';
+import {
+  LogIn,
+  ChevronDown,
+  LogOut,
+  Package,
+  Heart,
+  MapPin,
+} from '@repo/ui/lib/icons';
 
 // Components
 import { Button } from '@repo/ui/components/base/button';
@@ -37,7 +44,7 @@ function ProfileSection() {
 
   const displayName = useMemo(
     () => user?.name || user?.email?.split('@')[0] || 'Bruker',
-    [user?.name, user?.email]
+    [user?.name, user?.email],
   );
 
   if (isAuthenticated && user) {
@@ -97,21 +104,31 @@ function ProfileSection() {
 
           <DropdownMenuItem asChild>
             <Link
-              href="/profile"
+              href="/order/list"
               className="flex cursor-pointer items-center gap-3 px-3 py-2 font-[family-name:var(--font-dm-sans)] text-sm transition-colors hover:bg-[var(--baladi-light)] focus:bg-[var(--baladi-light)]"
             >
-              <User size={16} className="text-[var(--baladi-primary)]" />
-              <span>Min profil</span>
+              <Package size={16} className="text-[var(--baladi-primary)]" />
+              <span>Mine bestillinger</span>
             </Link>
           </DropdownMenuItem>
 
           <DropdownMenuItem asChild>
             <Link
-              href="/profile/settings"
+              href="/wishlist"
               className="flex cursor-pointer items-center gap-3 px-3 py-2 font-[family-name:var(--font-dm-sans)] text-sm transition-colors hover:bg-[var(--baladi-light)] focus:bg-[var(--baladi-light)]"
             >
-              <Settings size={16} className="text-[var(--baladi-primary)]" />
-              <span>Innstillinger</span>
+              <Heart size={16} className="text-[var(--baladi-primary)]" />
+              <span>Ønskeliste</span>
+            </Link>
+          </DropdownMenuItem>
+
+          <DropdownMenuItem asChild>
+            <Link
+              href="/address/list"
+              className="flex cursor-pointer items-center gap-3 px-3 py-2 font-[family-name:var(--font-dm-sans)] text-sm transition-colors hover:bg-[var(--baladi-light)] focus:bg-[var(--baladi-light)]"
+            >
+              <MapPin size={16} className="text-[var(--baladi-primary)]" />
+              <span>Adresser</span>
             </Link>
           </DropdownMenuItem>
 

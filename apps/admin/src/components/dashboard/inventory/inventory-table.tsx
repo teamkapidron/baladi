@@ -10,7 +10,6 @@ import {
   Search,
   Filter,
   Eye,
-  MoreHorizontal,
 } from '@repo/ui/lib/icons';
 import { formatDate } from '@repo/ui/lib/date';
 
@@ -31,6 +30,7 @@ import {
   SelectValue,
 } from '@repo/ui/components/base/select';
 import { Input } from '@repo/ui/components/base/input';
+import { Button } from '@repo/ui/components/base/button';
 
 // Hooks
 import { useInventory } from '@/hooks/useInventory';
@@ -145,9 +145,9 @@ function InventoryTable() {
 
                 <TableCell className="px-4 py-6">
                   <span
-                    className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ring-1 ${getCategoryColor(item.productId.category)}`}
+                    className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ring-1 ${getCategoryColor(item.productId.categories[0]?.name ?? '')}`}
                   >
-                    {item.productId.category}
+                    {item.productId.categories[0]?.name ?? 'Ingen kategori'}
                   </span>
                 </TableCell>
 
@@ -164,12 +164,12 @@ function InventoryTable() {
                         <div
                           className={`h-2 rounded-full transition-all duration-300 ${getStockProgressColor(
                             item.quantity,
-                            item.expirationDate,
+                            new Date(item.expirationDate),
                           )}`}
                           style={{
                             width: getStockProgressWidth(
                               item.quantity,
-                              item.expirationDate,
+                              new Date(item.expirationDate),
                             ),
                           }}
                         ></div>
@@ -180,39 +180,40 @@ function InventoryTable() {
 
                 <TableCell className="px-4 py-6">
                   <div className="flex items-center gap-3">
-                    {getStatusIcon(item.quantity, item.expirationDate)}
-                    {getStatusBadge(item.quantity, item.expirationDate)}
+                    {getStatusIcon(
+                      item.quantity,
+                      new Date(item.expirationDate),
+                    )}
+                    {getStatusBadge(
+                      item.quantity,
+                      new Date(item.expirationDate),
+                    )}
                   </div>
                 </TableCell>
 
                 <TableCell className="px-4 py-6">
                   <div className="space-y-1">
                     <div className="text-lg font-bold text-gray-900">
-                      {item.productId.price}kr
+                      {item.productId.salePrice}kr
                     </div>
                   </div>
                 </TableCell>
 
                 <TableCell className="px-4 py-6">
                   <div className="text-sm text-gray-600">
-                    {formatDate(item.expirationDate, 'MMM d, yyyy')}
+                    {formatDate(new Date(item.expirationDate), 'MMM d, yyyy')}
                   </div>
                 </TableCell>
 
                 <TableCell className="px-8 py-6">
                   <div className="flex items-center gap-2">
-                    <button
+                    <Button
+                      variant="outline"
                       className="group/btn rounded-lg p-2 text-gray-400 transition-all hover:bg-green-50 hover:text-green-600"
                       title="Vis Detaljer"
                     >
                       <Eye className="h-4 w-4" />
-                    </button>
-                    <button
-                      className="group/btn rounded-lg p-2 text-gray-400 transition-all hover:bg-gray-100 hover:text-gray-600"
-                      title="Flere Alternativer"
-                    >
-                      <MoreHorizontal className="h-4 w-4" />
-                    </button>
+                    </Button>
                   </div>
                 </TableCell>
               </TableRow>

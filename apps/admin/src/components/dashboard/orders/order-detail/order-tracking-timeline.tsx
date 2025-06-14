@@ -1,4 +1,9 @@
-import React from 'react';
+'use client';
+
+// Node Modules
+import React, { memo } from 'react';
+
+// Icons
 import {
   Clock,
   CheckCircle,
@@ -6,118 +11,166 @@ import {
   PackageIcon,
   XCircle,
 } from '@repo/ui/lib/icons';
-import { OrderStatus } from '@repo/types/order';
+
+// Components
 import { Card } from '@repo/ui/components/base/card';
 import { CardHeader } from '@repo/ui/components/base/card';
 import { CardContent } from '@repo/ui/components/base/card';
 
-// Format date function
-const formatDate = (date: Date) => {
-  return `${date.toLocaleString('default', { month: 'short' })} ${date.getDate()}, ${date.getFullYear()} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
-};
+// Hooks
+import { useOrderDetails } from '@/hooks/useOrder';
 
-// Get status icon
-const getStatusIcon = (status: OrderStatus) => {
-  switch (status) {
-    case OrderStatus.PENDING:
-      return <Clock className="h-5 w-5" />;
-    case OrderStatus.CONFIRMED:
-      return <CheckCircle className="h-5 w-5" />;
-    case OrderStatus.SHIPPED:
-      return <TruckIcon className="h-5 w-5" />;
-    case OrderStatus.DELIVERED:
-      return <PackageIcon className="h-5 w-5" />;
-    case OrderStatus.CANCELLED:
-      return <XCircle className="h-5 w-5" />;
-    default:
-      return null;
-  }
-};
+// Types/Utils
+import { OrderStatus } from '@repo/types/order';
+import { formatDate } from '@repo/ui/lib/date';
 
-export default function OrderTrackingTimeline() {
-  const id = '3489';
+interface OrderTrackingTimelineProps {
+  orderId: string;
+}
 
-  const order = {
-    _id: id,
-    status: OrderStatus.PENDING,
-    createdAt: new Date(),
-  };
+function OrderTrackingTimeline(props: OrderTrackingTimelineProps) {
+  const { orderId } = props;
 
-  // Define order statuses for timeline
+  const { data: orderData } = useOrderDetails(orderId);
+  const order = orderData?.order;
+
   const orderStatuses = [
-    { status: OrderStatus.PENDING, label: 'Order Placed' },
-    { status: OrderStatus.CONFIRMED, label: 'Order Confirmed' },
-    { status: OrderStatus.SHIPPED, label: 'Order Shipped' },
-    { status: OrderStatus.DELIVERED, label: 'Order Delivered' },
+    {
+      status: OrderStatus.PENDING,
+      label: 'Ordre Mottatt',
+      description: 'Ordren er registrert i systemet',
+    },
+    {
+      status: OrderStatus.CONFIRMED,
+      label: 'Ordre Bekreftet',
+      description: 'Ordren er bekreftet og behandles',
+    },
+    {
+      status: OrderStatus.SHIPPED,
+      label: 'Ordre Sendt',
+      description: 'Ordren er sendt fra lageret',
+    },
+    {
+      status: OrderStatus.DELIVERED,
+      label: 'Ordre Levert',
+      description: 'Ordren er levert til kunden',
+    },
   ];
 
-  // Find current status index
   const currentStatusIndex = orderStatuses.findIndex(
-    (s) => s.status === order.status,
+    (s) => s.status === order?.status,
   );
 
   return (
-    <Card>
-      <CardHeader title="Order Tracking" />
+    <Card className="border-[var(--baladi-border)] shadow-lg">
+      <CardHeader className="border-b border-[var(--baladi-border)]">
+        <h2 className="font-[family-name:var(--font-sora)] text-xl font-bold text-[var(--baladi-dark)]">
+          Ordre Sporing
+        </h2>
+        <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
+          Følg fremdriften til din ordre
+        </p>
+      </CardHeader>
 
-      <CardContent className="pt-8">
+      <CardContent className="p-8">
         <div className="relative">
-          {/* Timeline track */}
-          <div className="absolute left-6 top-0 h-full w-0.5 bg-gray-200"></div>
+          <div className="absolute left-8 top-0 h-full w-0.5 bg-gradient-to-b from-[var(--baladi-border)] to-[var(--baladi-muted)]"></div>
 
-          {/* Timeline steps */}
-          <div className="space-y-8">
+          <div className="space-y-10">
             {orderStatuses.map((step, index) => {
               const isActive = currentStatusIndex >= index;
               const isPast = currentStatusIndex > index;
+              const isCurrent = currentStatusIndex === index;
+
               return (
                 <div key={step.status} className="relative flex items-start">
                   <div
-                    className={`z-10 flex h-12 w-12 items-center justify-center ${
+                    className={`relative z-10 flex h-16 w-16 items-center justify-center rounded-full border-4 transition-all duration-300 ${
                       isActive
                         ? isPast
-                          ? 'bg-green-100 text-green-600 outline-4 outline-green-50'
-                          : 'bg-primary/10 text-primary outline-primary/5 outline-4'
-                        : 'bg-gray-100 text-gray-400'
+                          ? 'border-green-200 bg-gradient-to-br from-green-400 to-green-600 text-white shadow-lg shadow-green-200'
+                          : 'border-[var(--baladi-primary)]/30 shadow-[var(--baladi-primary)]/30 bg-gradient-to-br from-[var(--baladi-primary)] to-[var(--baladi-secondary)] text-white shadow-lg'
+                        : 'border-[var(--baladi-border)] bg-[var(--baladi-muted)] text-[var(--baladi-gray)]'
                     }`}
                   >
                     {getStatusIcon(step.status)}
-                  </div>
-                  <div className="ml-6 pt-1">
-                    <h3
-                      className={`text-base font-medium ${isActive ? 'text-gray-900' : 'text-gray-500'}`}
-                    >
-                      {step.label}
-                    </h3>
-                    {isActive && (
-                      <p className="mt-1 text-sm text-gray-500">
-                        {index === currentStatusIndex
-                          ? `Updated on ${formatDate(new Date(order.createdAt))}`
-                          : `Completed`}
-                      </p>
+
+                    {isCurrent && (
+                      <div className="absolute inset-0 animate-pulse rounded-full border-4 border-[var(--baladi-primary)] opacity-75"></div>
                     )}
+                  </div>
+
+                  <div className="ml-8 min-w-0 flex-1 pb-8">
+                    <div
+                      className={`rounded-lg p-4 transition-all duration-300 ${
+                        isActive
+                          ? 'from-[var(--baladi-primary)]/5 to-[var(--baladi-secondary)]/5 bg-gradient-to-r'
+                          : 'bg-[var(--baladi-muted)]/50'
+                      }`}
+                    >
+                      <h3
+                        className={`font-[family-name:var(--font-sora)] text-lg font-bold transition-colors duration-300 ${
+                          isActive
+                            ? 'text-[var(--baladi-dark)]'
+                            : 'text-[var(--baladi-gray)]'
+                        }`}
+                      >
+                        {step.label}
+                      </h3>
+
+                      <p
+                        className={`mt-1 font-[family-name:var(--font-dm-sans)] text-sm transition-colors duration-300 ${
+                          isActive
+                            ? 'text-[var(--baladi-gray)]'
+                            : 'text-[var(--baladi-gray)]/70'
+                        }`}
+                      >
+                        {step.description}
+                      </p>
+
+                      {isActive && order?.createdAt && (
+                        <div className="mt-3 flex items-center gap-2">
+                          <div className="h-2 w-2 rounded-full bg-[var(--baladi-primary)]"></div>
+                          <p className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-primary)]">
+                            {isCurrent
+                              ? `Oppdatert ${formatDate(new Date(order.createdAt), "MMM d, yyyy 'kl.' HH:mm")}`
+                              : 'Fullført'}
+                          </p>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               );
             })}
 
-            {order.status === OrderStatus.CANCELLED && (
+            {order?.status === OrderStatus.CANCELLED && (
               <div className="relative flex items-start">
-                <div className="z-10 flex h-12 w-12 items-center justify-center bg-red-100 text-red-600 outline-4 outline-red-50">
-                  <XCircle className="h-5 w-5" />
+                <div className="relative z-10 flex h-16 w-16 items-center justify-center rounded-full border-4 border-red-200 bg-gradient-to-br from-red-400 to-red-600 text-white shadow-lg shadow-red-200">
+                  <XCircle className="h-6 w-6" />
                 </div>
-                <div className="ml-6 pt-1">
-                  <h3 className="text-base font-medium text-red-600">
-                    Order Cancelled
-                  </h3>
-                  <p className="mt-1 text-sm text-gray-500">
-                    Cancelled on {formatDate(new Date(order.createdAt))}
-                  </p>
-                  {/* {order.cancellationReason && (
-                    <p className="mt-1 bg-red-50 px-3 py-1.5 text-sm text-red-600">
-                      Reason: {order.cancellationReason}
+
+                <div className="ml-8 min-w-0 flex-1">
+                  <div className="rounded-lg bg-gradient-to-r from-red-50 to-red-100 p-4">
+                    <h3 className="font-[family-name:var(--font-sora)] text-lg font-bold text-red-800">
+                      Ordre Kansellert
+                    </h3>
+                    <p className="mt-1 font-[family-name:var(--font-dm-sans)] text-sm text-red-600">
+                      Ordren ble kansellert av kunde eller admin
                     </p>
-                  )} */}
+                    {order?.createdAt && (
+                      <div className="mt-3 flex items-center gap-2">
+                        <div className="h-2 w-2 rounded-full bg-red-500"></div>
+                        <p className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-red-600">
+                          Kansellert{' '}
+                          {formatDate(
+                            new Date(order.createdAt),
+                            "MMM d, yyyy 'kl.' HH:mm",
+                          )}
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
@@ -126,4 +179,23 @@ export default function OrderTrackingTimeline() {
       </CardContent>
     </Card>
   );
+}
+
+export default memo(OrderTrackingTimeline);
+
+function getStatusIcon(status: OrderStatus) {
+  switch (status) {
+    case OrderStatus.PENDING:
+      return <Clock className="h-6 w-6" />;
+    case OrderStatus.CONFIRMED:
+      return <CheckCircle className="h-6 w-6" />;
+    case OrderStatus.SHIPPED:
+      return <TruckIcon className="h-6 w-6" />;
+    case OrderStatus.DELIVERED:
+      return <PackageIcon className="h-6 w-6" />;
+    case OrderStatus.CANCELLED:
+      return <XCircle className="h-6 w-6" />;
+    default:
+      return null;
+  }
 }

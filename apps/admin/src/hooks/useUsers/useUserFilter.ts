@@ -1,6 +1,6 @@
 import debounce from 'lodash.debounce';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { useGetParams, useUpdateParams } from '@repo/ui/hooks/useParams';
+import { parseAsString, useQueryState, parseAsStringEnum } from 'nuqs';
+import { useCallback, useEffect, useRef } from 'react';
 
 import { UserType } from '@repo/types/user';
 import { UserStatusFilter } from './types';
@@ -13,27 +13,28 @@ export enum UserFilter {
 }
 
 export function useUserFilter(debounceDelay = 400) {
-  const { getParam } = useGetParams();
-  const updateParams = useUpdateParams();
-
-  const userFilter = useMemo(() => {
-    return {
-      name: getParam('name') ?? undefined,
-      email: getParam('email') ?? undefined,
-      userType: (getParam('userType') as UserType) ?? undefined,
-      status: (getParam('status') as UserStatusFilter) ?? UserStatusFilter.ALL,
-    };
-  }, [getParam]);
+  const [name, setName] = useQueryState('name', parseAsString);
+  const [email, setEmail] = useQueryState('email', parseAsString);
+  const [userType, setUserType] = useQueryState(
+    'userType',
+    parseAsStringEnum<UserType>(Object.values(UserType)),
+  );
+  const [status, setStatus] = useQueryState(
+    'status',
+    parseAsStringEnum<UserStatusFilter>(
+      Object.values(UserStatusFilter),
+    ).withDefault(UserStatusFilter.ALL),
+  );
 
   const debouncedNameUpdateRef = useRef(
     debounce((name: string) => {
-      updateParams({ name });
+      setName(name);
     }, debounceDelay),
   );
 
   const debouncedEmailUpdateRef = useRef(
     debounce((email: string) => {
-      updateParams({ email });
+      setEmail(email);
     }, debounceDelay),
   );
 
@@ -53,11 +54,13 @@ export function useUserFilter(debounceDelay = 400) {
         debouncedNameUpdateRef.current(value);
       } else if (filter === UserFilter.EMAIL) {
         debouncedEmailUpdateRef.current(value);
-      } else {
-        updateParams({ [filter]: value });
+      } else if (filter === UserFilter.USER_TYPE) {
+        setUserType(value as UserType);
+      } else if (filter === UserFilter.STATUS) {
+        setStatus(value as UserStatusFilter);
       }
     },
-    [updateParams],
+    [setUserType, setStatus],
   );
 
   const handleUserStatusFilterChange = useCallback(
@@ -89,7 +92,12 @@ export function useUserFilter(debounceDelay = 400) {
   );
 
   return {
-    userFilter,
+    userFilter: {
+      name: name ?? undefined,
+      email: email ?? undefined,
+      userType: userType ?? undefined,
+      status,
+    },
 
     handleUserStatusFilterChange,
     handleUserTypeFilterChange,

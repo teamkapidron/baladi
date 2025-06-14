@@ -3,15 +3,14 @@
 // Node Modules
 import Link from 'next/link';
 import Image from 'next/image';
-import { memo, useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { cn } from '@repo/ui/lib/utils';
-import { Heart, ShoppingCart } from '@repo/ui/lib/icons';
+import { Check, Heart, ShoppingCart } from '@repo/ui/lib/icons';
 
 // Components
 import { QuantityInput } from '@repo/ui/components/base/quantity-input';
 
 // Hooks
-import { useAuth } from '@/hooks/useAuth';
 import { useCart } from '@/hooks/useCart';
 
 // Types/Utils
@@ -25,27 +24,24 @@ interface ProductCardProps {
 
 function ProductCard(props: ProductCardProps) {
   const { product, className } = props;
-  const { isAuthenticated } = useAuth();
   const { addToCart, isInCart, getItemQuantity } = useCart();
 
   const [quantity, setQuantity] = useState(1);
-  const [isAddingToCart, setIsAddingToCart] = useState(false);
 
-  const isInCartState = isInCart(product._id);
-  const cartQuantity = getItemQuantity(product._id);
-  const isOutOfStock = product.stock <= 0;
-  const stockCount = product.stock;
+  const { isInCartState, cartQuantity, isOutOfStock, stockCount } =
+    useMemo(() => {
+      return {
+        isInCartState: isInCart(product._id),
+        cartQuantity: getItemQuantity(product._id),
+        isOutOfStock: product.stock <= 0,
+        stockCount: product.stock,
+      };
+    }, [isInCart, getItemQuantity, product._id, product.stock]);
 
-  const handleAddToCart = async () => {
-    if (!isAuthenticated || isOutOfStock) return;
-
-    setIsAddingToCart(true);
-    try {
-      addToCart(product, quantity);
-    } finally {
-      setIsAddingToCart(false);
-    }
-  };
+  const handleAddToCart = useCallback(() => {
+    if (isOutOfStock) return;
+    addToCart(product, quantity);
+  }, [addToCart, isOutOfStock, product, quantity]);
 
   const productImage = product.images?.[0] || '';
 
@@ -62,6 +58,7 @@ function ProductCard(props: ProductCardProps) {
         <div className="absolute inset-0">
           <div className="relative h-full w-full">
             <Link
+              scroll={false}
               href={`/product/${product.slug}?category=${product.categories[0]?._id || ''}`}
               className="block h-full w-full"
             >
@@ -104,7 +101,6 @@ function ProductCard(props: ProductCardProps) {
         )}
       </div>
 
-      {/* Product Details */}
       <div className="relative z-10 bg-white p-4">
         <div className="mb-2">
           <span className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-primary)]">
@@ -121,39 +117,24 @@ function ProductCard(props: ProductCardProps) {
           </Link>
         </h3>
 
-        {isAuthenticated ? (
-          <div className="mb-3 flex items-baseline justify-between">
-            <div className="flex items-baseline">
-              <span className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-primary)]">
-                {formatPrice(product.salePrice)} kr
-              </span>
-              <span className="ml-2 font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)] line-through">
-                {formatPrice(product.salePrice)} kr
-              </span>
-            </div>
-            <span className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
-              {product.vat}% Inkl. mva
+        <div className="mb-3 flex items-baseline justify-between">
+          <div className="flex items-baseline">
+            <span className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-primary)]">
+              {formatPrice(product.salePrice)} kr
             </span>
           </div>
-        ) : (
-          <div className="mb-3 flex items-center">
-            <Link
-              href="/login"
-              className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-primary)] transition-colors hover:text-[var(--baladi-primary-dark)]"
-            >
-              Logg inn for å se pris
-            </Link>
-          </div>
-        )}
+          <span className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
+            {product.vat}% Inkl. mva
+          </span>
+        </div>
 
-        {isAuthenticated && !isInCartState && !isOutOfStock && (
+        {!isInCartState && !isOutOfStock && (
           <div className="transition-opacity duration-200">
             <div className="flex items-center justify-between space-x-2">
               <div className="max-w-[100px] flex-grow">
                 <QuantityInput
                   value={quantity}
                   onChange={setQuantity}
-                  disabled={isAddingToCart}
                   min={1}
                   max={Math.min(99, stockCount)}
                   size="sm"
@@ -162,58 +143,41 @@ function ProductCard(props: ProductCardProps) {
 
               <button
                 onClick={handleAddToCart}
-                disabled={isOutOfStock || isAddingToCart}
+                disabled={isOutOfStock}
                 className={cn(
                   'flex items-center justify-center rounded-lg p-2.5 text-white transition-all duration-300',
-                  isAddingToCart
-                    ? 'bg-[var(--baladi-primary)]/60'
-                    : 'bg-gradient-to-r from-[var(--baladi-secondary)] to-[var(--baladi-accent)] shadow-md hover:from-[var(--baladi-secondary-dark)] hover:to-[var(--baladi-accent-dark)] hover:shadow-lg',
+                  'bg-gradient-to-r from-[var(--baladi-secondary)] to-[var(--baladi-accent)] shadow-md hover:from-[var(--baladi-secondary-dark)] hover:to-[var(--baladi-accent-dark)] hover:shadow-lg',
                 )}
               >
-                {isAddingToCart ? (
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                ) : (
-                  <ShoppingCart size={16} />
-                )}
+                <ShoppingCart size={16} />
               </button>
             </div>
           </div>
         )}
 
-        {isAuthenticated && (isInCartState || isOutOfStock) && (
-          <div>
-            <button
-              className={cn(
-                'flex w-full items-center justify-center rounded-lg px-3 py-2.5 font-[family-name:var(--font-dm-sans)] text-sm font-medium transition-colors',
-                isInCartState
-                  ? 'border border-green-200 bg-green-50 text-green-700 hover:bg-green-100'
-                  : 'border border-[var(--baladi-border)] bg-[var(--baladi-muted)] text-[var(--baladi-gray)]',
-              )}
-              disabled={true}
-            >
-              {isInCartState ? (
-                <>
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="mr-2"
-                  >
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                  I handlekurven ({cartQuantity})
-                </>
-              ) : (
-                'Utsolgt'
-              )}
-            </button>
-          </div>
-        )}
+        {isInCartState ||
+          (isOutOfStock && (
+            <div>
+              <button
+                className={cn(
+                  'flex w-full items-center justify-center rounded-lg px-3 py-2.5 font-[family-name:var(--font-dm-sans)] text-sm font-medium transition-colors',
+                  isInCartState
+                    ? 'border border-green-200 bg-green-50 text-green-700 hover:bg-green-100'
+                    : 'border border-[var(--baladi-border)] bg-[var(--baladi-muted)] text-[var(--baladi-gray)]',
+                )}
+                disabled={true}
+              >
+                {isInCartState ? (
+                  <>
+                    <Check className="mr-2 h-4 w-4" />I handlekurven (
+                    {cartQuantity})
+                  </>
+                ) : (
+                  'Utsolgt'
+                )}
+              </button>
+            </div>
+          ))}
       </div>
     </div>
   );

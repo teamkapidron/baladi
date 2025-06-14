@@ -1,3 +1,5 @@
+'use client';
+
 // Node Modules
 import { memo } from 'react';
 
@@ -7,9 +9,21 @@ import SearchSection from './search-section';
 import CartSection from './cart-section';
 import ProfileSection from './profile-section';
 
+// Hooks
+import { useScrollDirection } from '@repo/ui/hooks/useScrollDirection';
+
 function Header() {
+  const { isVisible } = useScrollDirection({
+    hideThreshold: 500,
+    showAtTopThreshold: 10,
+  });
+
   return (
-    <div className="sticky top-0 z-50 w-full border-b border-[var(--baladi-border)] bg-white/95 shadow-sm backdrop-blur-md">
+    <div
+      className={`sticky top-0 z-50 w-full border-b border-[var(--baladi-border)] bg-white/95 shadow-sm backdrop-blur-md transition-transform duration-300 ease-in-out ${
+        isVisible ? 'translate-y-0' : '-translate-y-full'
+      }`}
+    >
       <header className="w-full">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between lg:h-20">
