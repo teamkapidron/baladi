@@ -19,12 +19,11 @@ export const getProductInventorySchema = z.object({
 });
 
 export const createInventorySchema = z.object({
-  params: z.object({
-    productId: z.string().min(1, 'Product ID is required'),
-  }),
+  params: z.object({}),
   body: z.object({
+    productId: z.string().min(1, 'Product ID is required'),
     quantity: z.number().min(1, 'Quantity must be greater than 0'),
-    expirationDate: dateSchema.unwrap(),
+    expirationDate: z.string().min(1, 'Expiration date is required'),
   }),
 });
 

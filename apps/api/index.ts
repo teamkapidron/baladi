@@ -27,7 +27,9 @@ import marketingRoute from '@/routes/marketing.route';
 const app = express();
 
 dotenv.config({ path: '.env.local' });
-connectToMongo();
+(async () => {
+  await connectToMongo();
+})();
 
 app.use(
   cors({

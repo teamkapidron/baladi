@@ -26,6 +26,7 @@ export interface QuickSearchProductAggregateType {
 }
 
 export interface QuickSearchProduct {
+  _id: string;
   name: string;
   image: string | undefined;
   slug: string;

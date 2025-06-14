@@ -6,8 +6,11 @@ export type InventoryResponse = Omit<Inventory, 'productId'> & {
     _id: string;
     name: string;
     sku: string;
-    category: string;
-    price: number;
+    categories: {
+      _id: string;
+      name: string;
+    }[];
+    salePrice: number;
   };
 };
 
@@ -43,10 +46,8 @@ export type GetProductInventoryRequest = ApiData<
 export type CreateInventoryRequest = ApiData<
   {
     productId: string;
-    inventory: {
-      quantity: number;
-      expirationDate: string;
-    };
+    quantity: number;
+    expirationDate: string;
   },
   {
     inventory: Inventory;
