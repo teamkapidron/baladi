@@ -29,7 +29,10 @@ import type {
   GetUserRegistrationGraphDataSchema,
   GetUserStatsSchema,
   TopUsersSchema,
+  UpdateAdminPasswordSchema,
 } from '@/validators/user.validator';
+import Admin from '@/models/admin.model';
+import { comparePassword, encryptPassword } from '@/utils/common/password.util';
 
 export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
   const query = req.query as GetAllUsersSchema['query'];
@@ -246,3 +249,49 @@ export const getTopUsers = asyncHandler(async (req: Request, res: Response) => {
     topUsers,
   });
 });
+
+export const getAllAdmins = asyncHandler(
+  async (req: Request, res: Response) => {
+    const data = await Admin.find();
+
+    const admins = data.map((admin) => {
+      return {
+        _id: admin._id,
+        name: admin.name,
+        email: admin.email,
+        createdAt: admin.createdAt,
+      };
+    });
+
+    sendResponse(res, 200, 'Admins fetched successfully', {
+      admins,
+    });
+  },
+);
+
+export const updateAdminPassword = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { currentPassword, newPassword, confirmNewPassword } =
+      req.body as UpdateAdminPasswordSchema['body'];
+
+    const admin = await Admin.findById(req.admin?._id);
+
+    if (!admin) {
+      throw new ErrorHandler(404, 'Admin not found', 'NOT_FOUND');
+    }
+    const verifyPassword = await comparePassword(
+      currentPassword,
+      admin.password,
+    );
+    if (!verifyPassword) {
+      throw new ErrorHandler(400, 'Invalid password', 'BAD_REQUEST');
+    }
+    if (newPassword !== confirmNewPassword) {
+      throw new ErrorHandler(400, 'Passwords do not match', 'BAD_REQUEST');
+    }
+    const hashedPassword = await encryptPassword(newPassword);
+    admin.password = hashedPassword;
+    await admin.save();
+    sendResponse(res, 200, 'Admin password updated successfully');
+  },
+);

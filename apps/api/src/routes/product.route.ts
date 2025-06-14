@@ -17,6 +17,9 @@ import {
   lowStockProducts,
   topProducts,
   productStats,
+  getConfig,
+  updateConfig,
+  createConfig,
 } from '@/controllers/product.controller';
 
 import {
@@ -33,6 +36,7 @@ import {
   lowStockProductsSchema,
   topProductsSchema,
   productStatsSchema,
+  updateConfigSchema,
 } from '@/validators/product.validator';
 
 const router: Router = express.Router();
@@ -85,5 +89,14 @@ router.get(
 );
 router.get('/top', isAdmin, validate(topProductsSchema), topProducts);
 router.get('/stats', isAdmin, validate(productStatsSchema), productStats);
+
+router.get('/config', getConfig);
+router.put(
+  '/update/config',
+  isAdmin,
+  validate(updateConfigSchema),
+  updateConfig,
+);
+router.post('/config/create', isAdmin, createConfig);
 
 export default router;

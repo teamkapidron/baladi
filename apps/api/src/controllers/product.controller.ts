@@ -3,6 +3,7 @@ import { PipelineStage, Types } from 'mongoose';
 
 // Schemas
 import Order from '@/models/order.model';
+import Config from '@/models/config.model';
 import Product from '@/models/product.model';
 import Category from '@/models/category.model';
 
@@ -38,6 +39,7 @@ import type {
   UpdateProductSchema,
   LowStockProductsSchema,
   TopProductsSchema,
+  UpdateConfigSchema,
 } from '@/validators/product.validator';
 import {
   QuickSearchProduct,
@@ -827,3 +829,32 @@ export const productStats = asyncHandler(async (_: Request, res: Response) => {
     activeCategories,
   });
 });
+
+export const getConfig = asyncHandler(async (_: Request, res: Response) => {
+  const config = await Config.find();
+
+  sendResponse(res, 200, 'Config fetched successfully', {
+    config,
+  });
+});
+
+export const updateConfig = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { showPalette } = req.body as UpdateConfigSchema['body'];
+
+    const config = await Config.findByIdAndUpdate(
+      { _id: '684d4839e4bbf48d63c0f4b2' },
+      { showPalette },
+    );
+
+    sendResponse(res, 200, 'Config updated successfully', { config });
+  },
+);
+
+export const createConfig = asyncHandler(
+  async (req: Request, res: Response) => {
+    const config = await Config.create({ showPalette: true });
+
+    sendResponse(res, 201, 'Config created successfully', { config });
+  },
+);

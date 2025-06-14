@@ -143,6 +143,12 @@ export const topProductsSchema = z.object({
     }),
 });
 
+export const updateConfigSchema = z.object({
+  body: z.object({
+    showPalette: z.boolean(),
+  }),
+});
+
 export const productStatsSchema = z.object({});
 
 export type GetAllProductsSchema = z.infer<typeof getAllProductsSchema>;
@@ -155,4 +161,5 @@ export type DeleteProductSchema = z.infer<typeof deleteProductSchema>;
 export type LowStockProductsSchema = z.infer<typeof lowStockProductsSchema>;
 export type TopProductsSchema = z.infer<typeof topProductsSchema>;
 export type ProductStatsSchema = z.infer<typeof productStatsSchema>;
+export type UpdateConfigSchema = z.infer<typeof updateConfigSchema>;
 /******************* END: Admin Validators *******************/
