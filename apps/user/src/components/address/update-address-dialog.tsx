@@ -1,7 +1,7 @@
 'use client';
 
 // Node Modules
-import React, { useEffect, memo } from 'react';
+import { memo } from 'react';
 import { useForm, zodResolver, z } from '@repo/ui/lib/form';
 import { MapPin, Phone, Tag, Home, Building } from '@repo/ui/lib/icons';
 
@@ -67,45 +67,27 @@ function UpdateAddressDialog({
   const form = useForm<UpdateAddressFormValues>({
     resolver: zodResolver(updateAddressSchema),
     defaultValues: {
-      addressLine1: '',
-      addressLine2: '',
-      city: '',
-      state: '',
-      postalCode: '',
-      country: '',
-      phoneNumber: '',
-      label: 'home',
-      isDefault: false,
+      addressLine1: address.addressLine1,
+      addressLine2: address.addressLine2,
+      city: address.city,
+      state: address.state,
+      postalCode: address.postalCode,
+      country: address.country,
+      phoneNumber: address.phoneNumber,
+      label: address.label as 'home' | 'work' | 'other' | undefined,
+      isDefault: address.isDefault,
     },
   });
 
-  useEffect(() => {
-    if (address && isOpen) {
-      form.reset({
-        addressLine1: address.addressLine1 || '',
-        addressLine2: address.addressLine2 || '',
-        city: address.city || '',
-        state: address.state || '',
-        postalCode: address.postalCode || '',
-        country: address.country || '',
-        phoneNumber: address.phoneNumber || '',
-        label: address.label as 'home' | 'work' | 'other' | undefined,
-        isDefault: address.isDefault || false,
-      });
-    }
-  }, [address, isOpen, form]);
-
-  const onSubmit = (data: UpdateAddressFormValues) => {
-    if (!address) {
-      return;
-    }
+  function onSubmit(data: UpdateAddressFormValues) {
     updateAddressMutation.mutate({
       addressId: address._id,
       address: data,
     });
+
     onOpenChange(false);
     form.reset();
-  };
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>

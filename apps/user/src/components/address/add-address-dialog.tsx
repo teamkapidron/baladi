@@ -68,14 +68,11 @@ function AddAddressDialog({ children }: { children: React.ReactNode }) {
     },
   });
 
-  const onSubmit = (data: AddAddressFormValues) => {
-    if (!data) {
-      return;
-    }
+  function onSubmit(data: AddAddressFormValues) {
     addAddressMutation.mutate(data);
     setOpen(false);
     form.reset();
-  };
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

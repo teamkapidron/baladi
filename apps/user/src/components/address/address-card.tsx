@@ -1,7 +1,7 @@
 'use client';
 
 // Node Modules
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import {
   MapPin,
   Edit2,
@@ -49,9 +49,10 @@ interface AddressCardProps {
 function AddressCard(props: AddressCardProps) {
   const { address } = props;
 
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const { deleteAddressMutation, setDefaultAddressMutation } = useAddress();
+
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const handleSetDefault = useCallback(() => {
     if (!address.isDefault) {
@@ -64,16 +65,20 @@ function AddressCard(props: AddressCardProps) {
     setIsDeleteDialogOpen(false);
   }, [address._id, deleteAddressMutation]);
 
-  const fullAddress = [
-    address.addressLine1,
-    address.addressLine2,
-    address.city,
-    address.state,
-    address.postalCode,
-    address.country,
-  ]
-    .filter(Boolean)
-    .join(', ');
+  const fullAddress = useMemo(
+    () =>
+      [
+        address.addressLine1,
+        address.addressLine2,
+        address.city,
+        address.state,
+        address.postalCode,
+        address.country,
+      ]
+        .filter(Boolean)
+        .join(', '),
+    [address],
+  );
 
   const labelConfig = {
     home: {
