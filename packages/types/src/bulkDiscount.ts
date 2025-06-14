@@ -4,9 +4,6 @@ export interface BulkDiscount {
   minQuantity: number;
   discountPercentage: number;
 
-  validFrom?: Date;
-  validTo?: Date;
-
   isActive: boolean;
 
   createdAt: Date;

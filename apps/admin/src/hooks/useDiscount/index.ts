@@ -9,10 +9,12 @@ import { useRequest } from '@/hooks/useRequest';
 // Types
 import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
 import type {
-  GetDiscountsResponse,
-  CreateDiscountResponse,
-  UpdateDiscountResponse,
-  MakeDiscountInactiveResponse,
+  GetDiscountsRequest,
+  CreateDiscountRequest,
+  UpdateDiscountRequest,
+  MakeDiscountInactiveRequest,
+  CreateBulkDiscountRequest,
+  BulkDiscountsRequest,
 } from './types';
 
 export function useDiscount() {
@@ -21,8 +23,7 @@ export function useDiscount() {
 
   const getDiscounts = useCallback(async () => {
     const response =
-      await api.get<GetDiscountsResponse['response']>('/discount/all');
-
+      await api.get<GetDiscountsRequest['response']>('/discount/all');
     return response.data.data;
   }, [api]);
 
@@ -33,8 +34,8 @@ export function useDiscount() {
   });
 
   const createDiscount = useCallback(
-    async (discount: CreateDiscountResponse['payload']) => {
-      const response = await api.post<CreateDiscountResponse['response']>(
+    async (discount: CreateDiscountRequest['payload']) => {
+      const response = await api.post<CreateDiscountRequest['response']>(
         '/discount',
         discount,
       );
@@ -50,13 +51,13 @@ export function useDiscount() {
       queryClient.invalidateQueries({
         queryKey: [ReactQueryKeys.GET_DISCOUNTS],
       });
-      toast.success('Discount created successfully');
+      toast.success('Rabatt opprettet vellykket');
     },
   });
 
   const updateDiscount = useCallback(
-    async (discount: UpdateDiscountResponse['payload']) => {
-      const response = await api.put<UpdateDiscountResponse['response']>(
+    async (discount: UpdateDiscountRequest['payload']) => {
+      const response = await api.put<UpdateDiscountRequest['response']>(
         `/discount/${discount.discountId}`,
         discount.discount,
       );
@@ -72,28 +73,27 @@ export function useDiscount() {
       queryClient.invalidateQueries({
         queryKey: [ReactQueryKeys.GET_DISCOUNTS],
       });
-      toast.success('Discount updated successfully');
+      toast.success('Rabatt oppdatert vellykket');
     },
   });
 
-  const makeDiscountInactive = useCallback(
-    async (discountId: MakeDiscountInactiveResponse['payload']) => {
+  const toggleDiscountActive = useCallback(
+    async (discountId: MakeDiscountInactiveRequest['payload']) => {
       const response = await api.delete<
-        MakeDiscountInactiveResponse['response']
-      >(`/discount/${discountId}`);
-
+        MakeDiscountInactiveRequest['response']
+      >(`/discount/${discountId.discountId}`);
       return response.data.data;
     },
     [api],
   );
 
-  const makeDiscountInactiveMutation = useMutation({
-    mutationFn: makeDiscountInactive,
+  const toggleDiscountActiveMutation = useMutation({
+    mutationFn: toggleDiscountActive,
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [ReactQueryKeys.GET_DISCOUNTS],
       });
-      toast.success('Discount made inactive successfully');
+      toast.success('Rabatt status oppdatert vellykket');
     },
   });
 
@@ -105,6 +105,55 @@ export function useDiscount() {
     // Mutations
     createDiscountMutation,
     updateDiscountMutation,
-    makeDiscountInactiveMutation,
+    toggleDiscountActiveMutation,
+  };
+}
+
+export function useBulkDiscount() {
+  const api = useRequest();
+  const queryClient = useQueryClient();
+
+  const getBulkDiscounts = useCallback(async () => {
+    const response =
+      await api.get<BulkDiscountsRequest['response']>('/discount/bulk/all');
+
+    return response.data.data;
+  }, [api]);
+
+  const { data: bulkDiscounts, isLoading: isLoadingBulkDiscounts } = useQuery({
+    queryKey: [ReactQueryKeys.GET_BULK_DISCOUNTS],
+    queryFn: getBulkDiscounts,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const createBulkDiscount = useCallback(
+    async (discounts: CreateBulkDiscountRequest['payload']) => {
+      const response = await api.post<CreateBulkDiscountRequest['response']>(
+        '/discount/bulk',
+        discounts,
+      );
+
+      return response.data.data;
+    },
+    [api],
+  );
+
+  const createBulkDiscountMutation = useMutation({
+    mutationFn: createBulkDiscount,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [ReactQueryKeys.GET_BULK_DISCOUNTS],
+      });
+      toast.success('Bulk rabatt opprettet vellykket');
+    },
+  });
+
+  return {
+    // Queries
+    bulkDiscounts,
+    isLoadingBulkDiscounts,
+
+    // Mutations
+    createBulkDiscountMutation,
   };
 }

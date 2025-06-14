@@ -10,7 +10,7 @@ import {
   createDiscount,
   createBulkDiscount,
   updateDiscount,
-  makeDiscountInactive,
+  toggleDiscountActive,
 } from '@/controllers/discount.controller';
 
 import {
@@ -20,7 +20,7 @@ import {
   createDiscountSchema,
   createBulkDiscountSchema,
   updateDiscountSchema,
-  makeDiscountInactiveSchema,
+  toggleDiscountActiveSchema,
 } from '@/validators/discount.validator';
 
 const router: Router = express.Router();
@@ -54,8 +54,8 @@ router.put(
 router.delete(
   '/:discountId',
   isAdmin,
-  validate(makeDiscountInactiveSchema),
-  makeDiscountInactive,
+  validate(toggleDiscountActiveSchema),
+  toggleDiscountActive,
 );
 
 export default router;

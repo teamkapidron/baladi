@@ -2,6 +2,7 @@
 
 // Schemas
 import Discount from '@/models/discount.model';
+import Product from '@/models/product.model';
 import BulkDiscount from '@/models/bulkDiscount.model';
 
 // Utils
@@ -16,7 +17,7 @@ import type {
   CreateDiscountSchema,
   CreateBulkDiscountSchema,
   UpdateDiscountSchema,
-  MakeDiscountInactiveSchema,
+  ToggleDiscountActiveSchema,
 } from '@/validators/discount.validator';
 import type { Request, Response } from 'express';
 
@@ -30,7 +31,11 @@ export const getActiveBulkDiscounts = asyncHandler(
 );
 
 export const getDiscounts = asyncHandler(async (_: Request, res: Response) => {
-  const discounts = await Discount.find();
+  const discounts = await Discount.find().populate(
+    'productId',
+    'name  _id images shortDescription description sku',
+  );
+
   sendResponse(res, 200, 'Discounts fetched successfully', {
     discounts,
   });
@@ -50,11 +55,20 @@ export const createDiscount = asyncHandler(
     const { productId, discountValue, validFrom, validTo } =
       req.body as CreateDiscountSchema['body'];
 
+    const product = await Product.findById(productId);
+    if (!product) {
+      throw new ErrorHandler(404, 'Product not found', 'NOT_FOUND');
+    }
+
+    if (product.isActive === false) {
+      throw new ErrorHandler(400, 'Product is not active', 'BAD_REQUEST');
+    }
+
     const discount = await Discount.create({
       productId,
       discountValue,
-      validFrom,
-      validTo,
+      validFrom: validFrom ? new Date(validFrom) : undefined,
+      validTo: validTo ? new Date(validTo) : undefined,
     });
 
     sendResponse(res, 201, 'Discount created successfully', {
@@ -65,14 +79,12 @@ export const createDiscount = asyncHandler(
 
 export const createBulkDiscount = asyncHandler(
   async (req: Request, res: Response) => {
-    const { minQuantity, discountPercentage, validFrom, validTo } =
+    const { minQuantity, discountPercentage } =
       req.body as CreateBulkDiscountSchema['body'];
 
     const bulkDiscount = await BulkDiscount.create({
       minQuantity,
       discountPercentage,
-      validFrom,
-      validTo,
     });
 
     sendResponse(res, 201, 'Bulk discount created successfully', {
@@ -87,29 +99,42 @@ export const updateDiscount = asyncHandler(
     const { discountValue, validFrom, validTo } =
       req.body as UpdateDiscountSchema['body'];
 
-    const discount = await Discount.findByIdAndUpdate(discountId, {
-      discountValue,
-      validFrom,
-      validTo,
-    });
-
+    const discount = await Discount.findById(discountId);
     if (!discount) {
       throw new ErrorHandler(404, 'Discount not found', 'NOT_FOUND');
     }
 
+    if (discount.isActive === false) {
+      throw new ErrorHandler(400, 'Discount is not active', 'BAD_REQUEST');
+    }
+
+    const updatedDiscount = await Discount.findByIdAndUpdate(discountId, {
+      discountValue,
+      validFrom: validFrom ? new Date(validFrom) : undefined,
+      validTo: validTo ? new Date(validTo) : undefined,
+    });
+
     sendResponse(res, 200, 'Discount updated successfully', {
-      discount,
+      discount: updatedDiscount,
     });
   },
 );
 
-export const makeDiscountInactive = asyncHandler(
+export const toggleDiscountActive = asyncHandler(
   async (req: Request, res: Response) => {
-    const { discountId } = req.params as MakeDiscountInactiveSchema['params'];
-    await Discount.findByIdAndUpdate(discountId, {
-      isActive: false,
-    });
+    const { discountId } = req.params as ToggleDiscountActiveSchema['params'];
 
-    sendResponse(res, 200, 'Discount made inactive successfully');
+    const response = await Discount.findById(discountId);
+    if (!response) {
+      throw new ErrorHandler(404, 'Discount not found', 'NOT_FOUND');
+    }
+    await Discount.findByIdAndUpdate(discountId, {
+      isActive: !response.isActive,
+    });
+    sendResponse(
+      res,
+      200,
+      `Discount made ${response.isActive ? 'inactive' : 'active'} successfully`,
+    );
   },
 );
