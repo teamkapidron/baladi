@@ -1,13 +1,15 @@
 'use client';
 
+// Node Modules
+import { memo } from 'react';
+
 // Components
 import { Skeleton } from '@repo/ui/components/base/skeleton';
 
-export default function LoadingAddressList() {
+function LoadingAddressList() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
       <div className="container mx-auto max-w-7xl px-4">
-        {/* Header Skeleton */}
         <div className="mb-8">
           <div className="mb-6 text-center">
             <div className="mb-4 flex items-center justify-center gap-3">
@@ -22,7 +24,6 @@ export default function LoadingAddressList() {
             </div>
           </div>
 
-          {/* Info Cards Skeleton */}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             {Array.from({ length: 3 }).map((_, index) => (
               <div
@@ -41,7 +42,6 @@ export default function LoadingAddressList() {
           </div>
         </div>
 
-        {/* Grid Skeleton */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, index) => (
             <div
@@ -49,7 +49,6 @@ export default function LoadingAddressList() {
               className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm"
             >
               <div className="space-y-4 p-6">
-                {/* Header Skeleton */}
                 <div className="flex items-start justify-between">
                   <div className="flex flex-1 items-center space-x-3">
                     <Skeleton className="h-12 w-12 rounded-xl" />
@@ -61,7 +60,6 @@ export default function LoadingAddressList() {
                   <Skeleton className="h-8 w-8 rounded" />
                 </div>
 
-                {/* Address Details Skeleton */}
                 <div className="space-y-3">
                   <div className="flex items-start space-x-2">
                     <Skeleton className="mt-1 h-4 w-4 flex-shrink-0" />
@@ -76,7 +74,6 @@ export default function LoadingAddressList() {
                   </div>
                 </div>
 
-                {/* Action Buttons Skeleton */}
                 <div className="flex space-x-2 border-t border-gray-100 pt-4">
                   <Skeleton className="h-8 flex-1 rounded" />
                   <Skeleton className="h-8 flex-1 rounded" />
@@ -89,3 +86,5 @@ export default function LoadingAddressList() {
     </div>
   );
 }
+
+export default memo(LoadingAddressList);
