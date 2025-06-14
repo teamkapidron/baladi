@@ -29,9 +29,11 @@ function AddressListHeader(props: AddressListHeaderProps) {
               Mine adresser
             </h1>
             <p className="font-[family-name:var(--font-dm-sans)] text-gray-600">
-              {count > 0
-                ? `${count} adresser registrert`
-                : 'Ingen adresser registrert'}
+              {count === 0
+                ? 'Ingen adresser registrert'
+                : count === 1
+                  ? '1 adresse registrert'
+                  : `${count} adresser registrert`}
             </p>
           </div>
         </div>

@@ -80,13 +80,18 @@ function UpdateAddressDialog({
   });
 
   function onSubmit(data: UpdateAddressFormValues) {
-    updateAddressMutation.mutate({
-      addressId: address._id,
-      address: data,
-    });
-
-    onOpenChange(false);
-    form.reset();
+    updateAddressMutation.mutate(
+      {
+        addressId: address._id,
+        address: data,
+      },
+      {
+        onSettled: function () {
+          onOpenChange(false);
+          form.reset();
+        },
+      },
+    );
   }
 
   return (

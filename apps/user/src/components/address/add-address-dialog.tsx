@@ -69,9 +69,12 @@ function AddAddressDialog({ children }: { children: React.ReactNode }) {
   });
 
   function onSubmit(data: AddAddressFormValues) {
-    addAddressMutation.mutate(data);
-    setOpen(false);
-    form.reset();
+    addAddressMutation.mutate(data, {
+      onSettled: function () {
+        setOpen(false);
+        form.reset();
+      },
+    });
   }
 
   return (
