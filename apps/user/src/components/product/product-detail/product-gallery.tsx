@@ -3,6 +3,7 @@
 // Node Modules
 import Image from 'next/image';
 import { cn } from '@repo/ui/lib/utils';
+import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import React, { useState, memo, useMemo, useCallback } from 'react';
@@ -13,6 +14,7 @@ import { Badge } from '@repo/ui/components/base/badge';
 import { Button } from '@repo/ui/components/base/button';
 
 // Hooks
+import { useAuth } from '@/hooks/useAuth';
 import { useFavourite } from '@/hooks/useFavourite';
 import { useProductBySlug } from '@/hooks/useProduct';
 
@@ -22,7 +24,9 @@ import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
 function ProductGallery() {
   const { slug } = useParams<{ slug: string }>();
 
+  const router = useRouter();
   const queryClient = useQueryClient();
+  const { isAuthenticated } = useAuth();
   const { addToFavoritesMutation, removeFromFavoritesMutation } =
     useFavourite();
   const { data: productData, isLoading } = useProductBySlug(slug);
@@ -58,6 +62,11 @@ function ProductGallery() {
   }, []);
 
   const toggleFavorite = useCallback(() => {
+    if (!isAuthenticated) {
+      router.push('/login');
+      return;
+    }
+
     if (product?._id) {
       if (isFavorite) {
         removeFromFavoritesMutation.mutate(
@@ -88,12 +97,14 @@ function ProductGallery() {
       }
     }
   }, [
-    isFavorite,
+    isAuthenticated,
     product?._id,
-    addToFavoritesMutation,
+    router,
+    isFavorite,
     removeFromFavoritesMutation,
-    slug,
     queryClient,
+    slug,
+    addToFavoritesMutation,
   ]);
 
   const toggleZoom = useCallback(() => {

@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { cn } from '@repo/ui/lib/utils';
 import { useRouter } from 'next/navigation';
 import { memo, useCallback, useMemo, useState } from 'react';
-import { Check, Heart, ShoppingCart } from '@repo/ui/lib/icons';
+import { Check, Heart, ShoppingCart, BarChart3 } from '@repo/ui/lib/icons';
 
 // Components
 import { Button } from '@repo/ui/components/base/button';
@@ -72,7 +72,7 @@ function ProductCard(props: ProductCardProps) {
           <div className="relative h-full w-full">
             <Link
               scroll={false}
-              href={`/product/${product.slug}?category=${product.categories[0]?._id || ''}`}
+              href={`/product/${product.slug}`}
               className="block h-full w-full"
             >
               <Image
@@ -86,15 +86,25 @@ function ProductCard(props: ProductCardProps) {
               />
             </Link>
 
-            <button
-              className={cn(
-                'absolute right-3 top-3 z-20 rounded-full p-2 transition-all duration-300',
-                'hover:scale-110 hover:shadow-md active:scale-95',
-                'bg-white/90 text-[var(--baladi-gray)] hover:bg-white hover:text-red-500',
-              )}
-            >
-              <Heart size={16} className="transition-all duration-300" />
-            </button>
+            {isAuthenticated && (
+              <Button
+                variant="ghost"
+                className={cn(
+                  'absolute right-3 top-3 z-20 rounded-full p-2 transition-all duration-300',
+                  'hover:scale-110 hover:shadow-md active:scale-95',
+                  'bg-white/90 text-[var(--baladi-gray)] hover:bg-white hover:text-red-500',
+                )}
+              >
+                <Heart size={16} className="transition-all duration-300" />
+              </Button>
+            )}
+
+            {product.hasVolumeDiscount && (
+              <div className="absolute left-3 top-3 z-20 rounded-full bg-gradient-to-r from-[var(--baladi-secondary)] to-[var(--baladi-accent)] px-2 py-1 text-xs font-medium text-white shadow-sm">
+                <BarChart3 size={12} className="mr-1 inline-block" />
+                Volum rabatt
+              </div>
+            )}
           </div>
         </div>
 
@@ -130,16 +140,18 @@ function ProductCard(props: ProductCardProps) {
           </Link>
         </h3>
 
-        <div className="mb-3 flex items-baseline justify-between">
-          <div className="flex items-baseline">
-            <span className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-primary)]">
-              {formatPrice(product.salePrice)} kr
+        {isAuthenticated && (
+          <div className="mb-3 flex items-baseline justify-between">
+            <div className="flex items-baseline">
+              <span className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-primary)]">
+                {formatPrice(product.salePrice)} kr
+              </span>
+            </div>
+            <span className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
+              {product.vat}% Inkl. mva
             </span>
           </div>
-          <span className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
-            {product.vat}% Inkl. mva
-          </span>
-        </div>
+        )}
 
         {!isInCartState && !isOutOfStock && (
           <div className="transition-opacity duration-200">

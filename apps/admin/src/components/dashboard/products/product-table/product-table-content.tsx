@@ -172,13 +172,11 @@ function ProductTableContent() {
                       </div>
                       <div className="space-y-1">
                         <div className="text-sm text-[var(--baladi-gray)]">
-                          Enheter: {product.noOfUnits || 1}
+                          Enheter: {product.noOfUnits}
                         </div>
-                        {product.weight && (
-                          <div className="text-xs text-[var(--baladi-gray)]">
-                            Vekt: {product.weight}kg
-                          </div>
-                        )}
+                        <div className="text-xs text-[var(--baladi-gray)]">
+                          Vekt: {product.weight}kg
+                        </div>
                         {product.dimensions && (
                           <div className="text-xs text-[var(--baladi-gray)]">
                             Dimensjoner: {product.dimensions.length}×

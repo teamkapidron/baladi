@@ -6,9 +6,6 @@ import { useParams } from 'next/navigation';
 import {
   Info,
   Package2,
-  Truck,
-  RotateCcw,
-  Calendar,
   Scale,
   Ruler,
   Percent,
@@ -67,7 +64,7 @@ function ProductSpecifications() {
   return (
     <div className="mt-12 rounded-lg p-4 shadow-md">
       <Tabs defaultValue="details" className="w-full">
-        <TabsList className="bg-[var(--baladi-light)]/50 grid w-full grid-cols-4">
+        <TabsList className="bg-[var(--baladi-light)]/50 grid w-full grid-cols-2">
           <TabsTrigger
             value="details"
             className="font-[family-name:var(--font-dm-sans)] data-[state=active]:bg-white data-[state=active]:text-[var(--baladi-primary)]"
@@ -82,18 +79,6 @@ function ProductSpecifications() {
               Mengderabatter
             </TabsTrigger>
           )}
-          <TabsTrigger
-            value="delivery"
-            className="font-[family-name:var(--font-dm-sans)] data-[state=active]:bg-white data-[state=active]:text-[var(--baladi-primary)]"
-          >
-            Leveringsinformasjon
-          </TabsTrigger>
-          <TabsTrigger
-            value="returns"
-            className="font-[family-name:var(--font-dm-sans)] data-[state=active]:bg-white data-[state=active]:text-[var(--baladi-primary)]"
-          >
-            Retur & Garanti
-          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="details" className="mt-6 space-y-6">
@@ -266,107 +251,6 @@ function ProductSpecifications() {
             </div>
           </TabsContent>
         )}
-
-        <TabsContent value="delivery" className="mt-6 space-y-6">
-          <div className="space-y-4">
-            <h3 className="font-[family-name:var(--font-sora)] text-lg font-semibold text-[var(--baladi-dark)]">
-              Leveringsinformasjon
-            </h3>
-
-            <div className="space-y-4">
-              <div className="bg-[var(--baladi-light)]/50 flex items-start gap-4 rounded-lg p-4">
-                <Truck
-                  size={24}
-                  className="mt-1 text-[var(--baladi-primary)]"
-                />
-                <div className="space-y-2">
-                  <h4 className="font-[family-name:var(--font-dm-sans)] font-semibold text-[var(--baladi-dark)]">
-                    Standard Levering
-                  </h4>
-                  <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-                    3-5 virkedager • Gratis for bestillinger over 1.000 kr
-                  </p>
-                </div>
-              </div>
-
-              <div className="bg-[var(--baladi-accent)]/10 flex items-start gap-4 rounded-lg p-4">
-                <Calendar
-                  size={24}
-                  className="mt-1 text-[var(--baladi-primary)]"
-                />
-                <div className="space-y-2">
-                  <h4 className="font-[family-name:var(--font-dm-sans)] font-semibold text-[var(--baladi-dark)]">
-                    Neste-Dag Levering
-                  </h4>
-                  <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-                    Bestill før kl. 15:00 for levering neste virkedag • 199 kr
-                    ekstra
-                  </p>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <h4 className="font-[family-name:var(--font-dm-sans)] font-semibold text-[var(--baladi-dark)]">
-                  Leveringsområder
-                </h4>
-                <ul className="space-y-2 font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-                  <li>• Oslo og Akershus: Neste-dag levering tilgjengelig</li>
-                  <li>• Bergen, Trondheim, Stavanger: 2-3 virkedager</li>
-                  <li>• Øvrige Norge: 3-5 virkedager</li>
-                  <li>• Spesielle leveringsavtaler for store bestillinger</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="returns" className="mt-6 space-y-6">
-          <div className="space-y-4">
-            <h3 className="font-[family-name:var(--font-sora)] text-lg font-semibold text-[var(--baladi-dark)]">
-              Retur & Garanti
-            </h3>
-
-            <div className="space-y-4">
-              <div className="bg-[var(--baladi-light)]/50 flex items-start gap-4 rounded-lg p-4">
-                <RotateCcw
-                  size={24}
-                  className="mt-1 text-[var(--baladi-primary)]"
-                />
-                <div className="space-y-2">
-                  <h4 className="font-[family-name:var(--font-dm-sans)] font-semibold text-[var(--baladi-dark)]">
-                    30-dagers returrett
-                  </h4>
-                  <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-                    Returner ubrukte varer i original emballasje innen 30 dager
-                  </p>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <h4 className="font-[family-name:var(--font-dm-sans)] font-semibold text-[var(--baladi-dark)]">
-                  Returvilkår
-                </h4>
-                <ul className="space-y-2 font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-                  <li>• Varer må være i original tilstand og emballasje</li>
-                  <li>• Ferske varer kan ikke returneres</li>
-                  <li>• Returfrakt bekostes av kunde</li>
-                  <li>• Refusjon behandles innen 5-7 virkedager</li>
-                </ul>
-              </div>
-
-              <div className="space-y-3">
-                <h4 className="font-[family-name:var(--font-dm-sans)] font-semibold text-[var(--baladi-dark)]">
-                  Kvalitetsgaranti
-                </h4>
-                <p className="font-[family-name:var(--font-dm-sans)] text-sm leading-relaxed text-[var(--baladi-gray)]">
-                  Vi garanterer høy kvalitet på alle våre produkter. Skulle du
-                  motta defekte eller skadede varer, kontakt oss innen 48 timer
-                  for full refusjon eller erstatning.
-                </p>
-              </div>
-            </div>
-          </div>
-        </TabsContent>
       </Tabs>
     </div>
   );

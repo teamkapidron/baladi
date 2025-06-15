@@ -1,17 +1,19 @@
 'use client';
 
 // Node Modules
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import React, { useState, memo, useMemo, useCallback } from 'react';
 import {
   ShoppingCart,
   Package2,
-  Shield,
   Truck,
   Check,
   Bell,
   Percent,
   TrendingDown,
+  Scale,
+  Ruler,
+  Barcode,
 } from '@repo/ui/lib/icons';
 
 // Components
@@ -23,6 +25,7 @@ import { QuantityInput } from '@repo/ui/components/base/quantity-input';
 import { useAuth } from '@/hooks/useAuth';
 import { useCart } from '@/hooks/useCart';
 import { useDiscount } from '@/hooks/useDiscount';
+import { useFavourite } from '@/hooks/useFavourite';
 import { useProductBySlug } from '@/hooks/useProduct';
 
 // Utils
@@ -31,14 +34,16 @@ import { formatPrice } from '@/utils/price.util';
 function ProductInfo() {
   const { slug } = useParams<{ slug: string }>();
 
+  const router = useRouter();
   const { isAuthenticated } = useAuth();
   const { addToCart, isInCart } = useCart();
+  const { addToFavoritesMutation } = useFavourite();
   const { bulkDiscountQuery } = useDiscount();
   const { data: productData, isLoading } = useProductBySlug(slug);
 
   const [quantity, setQuantity] = useState(1);
 
-  const { product, isProductInCart, isOutOfStock, bulkDiscounts } =
+  const { product, isProductInCart, isOutOfStock, bulkDiscounts, volume } =
     useMemo(() => {
       if (!productData?.product) return { product: null, isInCart: false };
 
@@ -47,6 +52,10 @@ function ProductInfo() {
         isProductInCart: isInCart(productData?.product?._id),
         isOutOfStock: productData?.product?.stock <= 0,
         bulkDiscounts: bulkDiscountQuery.data?.bulkDiscounts || [],
+        volume:
+          (productData?.product?.dimensions?.length ?? 0) *
+          (productData?.product?.dimensions?.width ?? 0) *
+          (productData?.product?.dimensions?.height ?? 0),
       };
     }, [isInCart, productData?.product, bulkDiscountQuery.data]);
 
@@ -54,7 +63,20 @@ function ProductInfo() {
     if (!product) return;
 
     addToCart(product, quantity);
-  }, [addToCart, product, quantity]);
+  }, [product, quantity, addToCart]);
+
+  const handleAddToWishlist = useCallback(() => {
+    if (!isAuthenticated) {
+      router.push('/login');
+      return;
+    }
+
+    if (product?._id) {
+      addToFavoritesMutation.mutate({
+        productId: product?._id,
+      });
+    }
+  }, [isAuthenticated, router, product?._id, addToFavoritesMutation]);
 
   if (isLoading) {
     return (
@@ -93,16 +115,18 @@ function ProductInfo() {
         </p>
       </div>
 
-      <div className="bg-[var(--baladi-light)]/50 space-y-4 rounded-lg p-4">
-        <div className="flex items-baseline gap-2">
-          <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-primary)]">
-            {formatPrice(product?.salePrice ?? 0)} kr
-          </span>
+      {isAuthenticated && (
+        <div className="bg-[var(--baladi-light)]/50 space-y-4 rounded-lg p-4">
+          <div className="flex items-baseline gap-2">
+            <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-primary)]">
+              {formatPrice(product?.salePrice ?? 0)} kr
+            </span>
+          </div>
+          <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
+            Pris inkluderer {product?.vat}% MVA
+          </p>
         </div>
-        <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-          Pris inkluderer {product?.vat}% MVA
-        </p>
-      </div>
+      )}
 
       {bulkDiscounts &&
         bulkDiscounts.length > 0 &&
@@ -158,18 +182,37 @@ function ProductInfo() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Shield size={18} className="text-[var(--baladi-primary)]" />
+          <Scale size={18} className="text-[var(--baladi-primary)]" />
           <span className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-dark)]">
-            Sikker B2B Bestilling
+            <strong>Vekt:</strong> {product?.weight} kg
           </span>
         </div>
 
         <div className="flex items-center gap-3">
-          <Truck size={18} className="text-[var(--baladi-primary)]" />
+          <Ruler size={18} className="text-[var(--baladi-primary)]" />
           <span className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-dark)]">
-            Tilgjengelig for Neste-Dag Levering
+            <strong>Volum:</strong> {volume} m³
           </span>
         </div>
+
+        {product?.barcode && (
+          <div className="flex items-center gap-3">
+            <Barcode size={18} className="text-[var(--baladi-primary)]" />
+            <span className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-dark)]">
+              <strong>Barcode:</strong> {product?.barcode}
+            </span>
+          </div>
+        )}
+
+        {product?.supplier?.countryOfOrigin && (
+          <div className="flex items-center gap-3">
+            <Truck size={18} className="text-[var(--baladi-primary)]" />
+            <span className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-dark)]">
+              <strong>Opprinnelsesland:</strong>{' '}
+              {product?.supplier?.countryOfOrigin}
+            </span>
+          </div>
+        )}
       </div>
 
       <Separator />
@@ -226,6 +269,7 @@ function ProductInfo() {
           ) : (
             <Button
               size="lg"
+              onClick={() => router.push('/login')}
               className="flex-1 font-[family-name:var(--font-dm-sans)] font-medium"
             >
               Logg inn for å bestille
@@ -237,6 +281,7 @@ function ProductInfo() {
           size="lg"
           variant="outline"
           className="w-full font-[family-name:var(--font-dm-sans)] font-medium"
+          onClick={handleAddToWishlist}
         >
           Legg til i ønskeliste
         </Button>

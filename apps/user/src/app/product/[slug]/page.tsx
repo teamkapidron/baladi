@@ -2,11 +2,11 @@ import { Suspense } from 'react';
 import { Metadata } from 'next';
 
 import Header from '@/components/common/header/header';
+import ScrollToTop from '@/components/common/scroll-to-top';
 import ProductBreadcrumb from '@/components/product/product-detail/product-breadcrumb';
 import ProductGallery from '@/components/product/product-detail/product-gallery';
 import ProductInfo from '@/components/product/product-detail/product-info';
 import ProductSpecifications from '@/components/product/product-detail/product-specifications';
-import RelatedProducts from '@/components/product/product-detail/related-products';
 import Footer from '@/components/common/footer/footer';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -22,6 +22,8 @@ export default function ProductDetailPage() {
     <div className="min-h-screen">
       <Header />
 
+      <ScrollToTop />
+
       <Suspense>
         <main className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
           <div className="space-y-8">
@@ -31,7 +33,6 @@ export default function ProductDetailPage() {
               <ProductInfo />
             </div>
             <ProductSpecifications />
-            <RelatedProducts />
           </div>
         </main>
       </Suspense>
