@@ -1,10 +1,5 @@
 import debounce from 'lodash.debounce';
-import {
-  useQueryState,
-  parseAsString,
-  parseAsStringEnum,
-  parseAsInteger,
-} from 'nuqs';
+import { useQueryState, parseAsString, parseAsStringEnum } from 'nuqs';
 import { useRef, useEffect, useCallback } from 'react';
 
 import { ProductSort, ProductStock } from './types';
@@ -26,11 +21,11 @@ export function useProductFilters() {
   );
   const [minPrice, setMinPrice] = useQueryState(
     'minPrice',
-    parseAsInteger.withDefault(0),
+    parseAsString.withDefault('0'),
   );
   const [maxPrice, setMaxPrice] = useQueryState(
     'maxPrice',
-    parseAsInteger.withDefault(0),
+    parseAsString.withDefault('0'),
   );
 
   const debouncedSearchUpdateRef = useRef(
@@ -92,7 +87,7 @@ export function useProductFilters() {
       if (minPrice === 0) {
         setMinPrice(null);
       } else {
-        setMinPrice(minPrice);
+        setMinPrice(minPrice.toString());
       }
     },
     [setMinPrice],
@@ -103,7 +98,7 @@ export function useProductFilters() {
       if (maxPrice === 0) {
         setMaxPrice(null);
       } else {
-        setMaxPrice(maxPrice);
+        setMaxPrice(maxPrice.toString());
       }
     },
     [setMaxPrice],

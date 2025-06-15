@@ -1,6 +1,9 @@
 // Node Modules
+import axios from 'axios';
 import { useCallback } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
+import { toast } from '@repo/ui/lib/sonner';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 // Hooks
 import { useRequest } from '@/hooks/useRequest';
@@ -12,6 +15,8 @@ import { useDateRangeInParams } from '@repo/ui/hooks/useDate/useDateRangeInParam
 import type {
   GetAllProductsRequest,
   GetProductByIdRequest,
+  GetProductBySlugRequest,
+  GetProductImageUploadUrlRequest,
   CreateProductRequest,
   UpdateProductRequest,
   DeleteProductRequest,
@@ -58,6 +63,27 @@ export function useProductDetails(productId: string) {
   });
 
   return productDetailsQuery;
+}
+
+export function useProductBySlug(slug: string) {
+  const api = useRequest();
+
+  const getProductBySlug = useCallback(
+    async (payload: GetProductBySlugRequest['payload']) => {
+      const response = await api.get<GetProductBySlugRequest['response']>(
+        `/product/slug/${payload.slug}`,
+      );
+      return response.data.data;
+    },
+    [api],
+  );
+
+  const productBySlugQuery = useQuery({
+    queryKey: [ReactQueryKeys.GET_PRODUCT_BY_SLUG, slug],
+    queryFn: () => getProductBySlug({ slug }),
+  });
+
+  return productBySlugQuery;
 }
 
 export function useProductDashboard() {
@@ -109,6 +135,8 @@ export function useProductDashboard() {
 
 export function useProduct() {
   const api = useRequest();
+  const router = useRouter();
+  const queryClient = useQueryClient();
   const { page, limit } = usePagination();
   const { search, category } = useProductFilters();
 
@@ -138,9 +166,45 @@ export function useProduct() {
 
   const createProduct = useCallback(
     async (payload: CreateProductRequest['payload']) => {
+      if (payload.images?.length && payload.images.length > 0) {
+        const imageUploadUrlResponse = await api.post<
+          GetProductImageUploadUrlRequest['response']
+        >('/product/image-upload-url', {
+          slug: payload.slug,
+          names: payload.images.map((image) => image.name),
+          imageCount: payload.images.length,
+        });
+
+        const imageUploadUrls = imageUploadUrlResponse.data.data.urls;
+
+        await Promise.all(
+          imageUploadUrls.map((url, index) => {
+            const formData = new FormData();
+            Object.entries(url.fields).forEach(([key, value]) => {
+              formData.append(key, value);
+            });
+
+            const file = payload.images?.[index];
+            if (file) {
+              formData.append('file', file);
+            }
+
+            return axios.post(url.url, formData);
+          }),
+        );
+      }
+
+      const images = payload.images?.map(
+        (image) =>
+          `https://baladi-prod-baladibucket-snxbbhrn.s3.eu-central-1.amazonaws.com/products/${payload.slug}/images/${image.name}`,
+      );
+
       const response = await api.post<CreateProductRequest['response']>(
         '/product',
-        payload,
+        {
+          ...payload,
+          images,
+        },
       );
       return response.data.data;
     },
@@ -149,6 +213,13 @@ export function useProduct() {
 
   const createProductMutation = useMutation({
     mutationFn: createProduct,
+    onSuccess: () => {
+      toast.success('Produkt opprettet');
+      queryClient.invalidateQueries({
+        queryKey: [ReactQueryKeys.GET_ALL_PRODUCTS],
+      });
+      router.push('/dashboard/products');
+    },
   });
 
   const updateProduct = useCallback(

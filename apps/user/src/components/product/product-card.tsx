@@ -3,15 +3,18 @@
 // Node Modules
 import Link from 'next/link';
 import Image from 'next/image';
-import { memo, useCallback, useMemo, useState } from 'react';
 import { cn } from '@repo/ui/lib/utils';
+import { useRouter } from 'next/navigation';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { Check, Heart, ShoppingCart } from '@repo/ui/lib/icons';
 
 // Components
+import { Button } from '@repo/ui/components/base/button';
 import { QuantityInput } from '@repo/ui/components/base/quantity-input';
 
 // Hooks
 import { useCart } from '@/hooks/useCart';
+import { useAuth } from '@/hooks/useAuth';
 
 // Types/Utils
 import { formatPrice } from '@/utils/price.util';
@@ -24,6 +27,10 @@ interface ProductCardProps {
 
 function ProductCard(props: ProductCardProps) {
   const { product, className } = props;
+
+  const router = useRouter();
+
+  const { isAuthenticated } = useAuth();
   const { addToCart, isInCart, getItemQuantity } = useCart();
 
   const [quantity, setQuantity] = useState(1);
@@ -40,8 +47,14 @@ function ProductCard(props: ProductCardProps) {
 
   const handleAddToCart = useCallback(() => {
     if (isOutOfStock) return;
+
+    if (!isAuthenticated) {
+      router.push('/login');
+      return;
+    }
+
     addToCart(product, quantity);
-  }, [addToCart, isOutOfStock, product, quantity]);
+  }, [addToCart, isAuthenticated, isOutOfStock, product, quantity, router]);
 
   const productImage = product.images?.[0] || '';
 
@@ -141,7 +154,7 @@ function ProductCard(props: ProductCardProps) {
                 />
               </div>
 
-              <button
+              <Button
                 onClick={handleAddToCart}
                 disabled={isOutOfStock}
                 className={cn(
@@ -150,7 +163,7 @@ function ProductCard(props: ProductCardProps) {
                 )}
               >
                 <ShoppingCart size={16} />
-              </button>
+              </Button>
             </div>
           </div>
         )}
@@ -158,7 +171,7 @@ function ProductCard(props: ProductCardProps) {
         {isInCartState ||
           (isOutOfStock && (
             <div>
-              <button
+              <Button
                 className={cn(
                   'flex w-full items-center justify-center rounded-lg px-3 py-2.5 font-[family-name:var(--font-dm-sans)] text-sm font-medium transition-colors',
                   isInCartState
@@ -175,7 +188,7 @@ function ProductCard(props: ProductCardProps) {
                 ) : (
                   'Utsolgt'
                 )}
-              </button>
+              </Button>
             </div>
           ))}
       </div>

@@ -1,6 +1,6 @@
 import debounce from 'lodash.debounce';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { useGetParams, useUpdateParams } from '@repo/ui/hooks/useParams';
+import { useCallback, useEffect, useRef } from 'react';
+import { parseAsString, parseAsStringEnum, useQueryState } from 'nuqs';
 
 export enum InventoryFilter {
   PRODUCT_NAME = 'productName',
@@ -15,20 +15,21 @@ export enum InventoryStatus {
 }
 
 export function useInventoryFilters(debounceDelay = 400) {
-  const { getParam } = useGetParams();
-  const updateParams = useUpdateParams();
-
-  const search = useMemo(() => {
-    return getParam('search') ?? undefined;
-  }, [getParam]);
-
-  const status = useMemo(() => {
-    return (getParam('status') as InventoryStatus) ?? InventoryStatus.ALL;
-  }, [getParam]);
+  const [search, setSearch] = useQueryState('search', parseAsString);
+  const [status, setStatus] = useQueryState(
+    'status',
+    parseAsStringEnum<InventoryStatus>(
+      Object.values(InventoryStatus),
+    ).withDefault(InventoryStatus.ALL),
+  );
 
   const debouncedSearchUpdateRef = useRef(
     debounce((search: string) => {
-      updateParams({ search });
+      if (search === '') {
+        setSearch(null);
+      } else {
+        setSearch(search);
+      }
     }, debounceDelay),
   );
 
@@ -46,9 +47,13 @@ export function useInventoryFilters(debounceDelay = 400) {
 
   const handleStatusFilterChange = useCallback(
     (status: InventoryStatus) => {
-      updateParams({ status });
+      if (status === InventoryStatus.ALL) {
+        setStatus(null);
+      } else {
+        setStatus(status);
+      }
     },
-    [updateParams],
+    [setStatus],
   );
 
   return { search, status, handleSearchFilterChange, handleStatusFilterChange };

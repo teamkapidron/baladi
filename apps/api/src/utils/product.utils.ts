@@ -1,8 +1,52 @@
 import { PipelineStage, Types } from 'mongoose';
 import { Visibility } from '@repo/types/product';
 
-import type { ProductFilter } from '@/types/product.types';
-import type { GetAllProductsSchema } from '@/validators/product.validator';
+import { ProductFilter, UserProductFilter } from '@/types/product.types';
+import type {
+  GetAllProductsSchema,
+  GetProductsSchema,
+} from '@/validators/product.validator';
+
+export function getUserProductFilterFromQuery(
+  query: GetProductsSchema['query'],
+) {
+  const { search, page, limit, category, minPrice, maxPrice } = query;
+
+  const perPage = parseInt(limit ?? '10', 10);
+  const currentPage = parseInt(page ?? '1', 10);
+
+  const queryObject: UserProductFilter = {};
+
+  if (search) {
+    queryObject.$or = [
+      { name: new RegExp(search, 'i') },
+      { slug: new RegExp(search, 'i') },
+      { description: new RegExp(search, 'i') },
+    ];
+  }
+
+  if (category) {
+    queryObject.categories = { $in: [new Types.ObjectId(category)] };
+  }
+
+  if (minPrice || maxPrice) {
+    queryObject.salePrice = {};
+
+    if (minPrice) {
+      queryObject.salePrice.$gte = parseInt(minPrice, 10);
+    }
+
+    if (maxPrice && parseInt(maxPrice, 10) !== 0) {
+      queryObject.salePrice.$lte = parseInt(maxPrice, 10);
+    }
+  }
+
+  return {
+    queryObject,
+    perPage,
+    currentPage,
+  };
+}
 
 export function getProductFilterFromQuery(
   query: GetAllProductsSchema['query'],

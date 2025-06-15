@@ -2,6 +2,7 @@
 
 // Node Modules
 import { memo } from 'react';
+import { cn } from '@repo/ui/lib/utils';
 
 // Components
 import LogoSection from './logo-section';
@@ -14,15 +15,16 @@ import { useScrollDirection } from '@repo/ui/hooks/useScrollDirection';
 
 function Header() {
   const { isVisible } = useScrollDirection({
-    hideThreshold: 500,
+    hideThreshold: 200,
     showAtTopThreshold: 10,
   });
 
   return (
     <div
-      className={`sticky top-0 z-50 w-full border-b border-[var(--baladi-border)] bg-white/95 shadow-sm backdrop-blur-md transition-transform duration-300 ease-in-out ${
-        isVisible ? 'translate-y-0' : '-translate-y-full'
-      }`}
+      className={cn(
+        'sticky top-0 z-50 w-full border-b border-[var(--baladi-border)] bg-white/95 shadow-sm backdrop-blur-md transition-transform duration-300 ease-in-out',
+        isVisible ? 'translate-y-0' : '-translate-y-full',
+      )}
     >
       <header className="w-full">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

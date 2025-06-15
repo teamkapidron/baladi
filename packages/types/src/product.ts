@@ -27,7 +27,7 @@ export interface Product {
   isActive: boolean;
   visibility: Visibility;
 
-  hasVolumeDiscount?: boolean;
+  hasVolumeDiscount: boolean;
 
   dimensions?: {
     length: number;
@@ -37,11 +37,11 @@ export interface Product {
   weight?: number;
 
   supplier?: {
-    number: string;
-    name: string;
-    location: string;
-    countryOfOrigin: string;
-    hsCode: string;
+    number?: string;
+    name?: string;
+    location?: string;
+    countryOfOrigin?: string;
+    hsCode?: string;
   };
 
   createdAt: Date;

@@ -4,14 +4,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { memo, useMemo } from 'react';
-import {
-  Eye,
-  EditIcon,
-  Package,
-  DollarSign,
-  Barcode,
-  Tag,
-} from '@repo/ui/lib/icons';
+import { Eye, EditIcon, Package, Tag } from '@repo/ui/lib/icons';
 
 // Components
 import {
@@ -105,7 +98,6 @@ function ProductTableContent() {
                     index % 2 === 0 ? 'bg-white' : 'bg-[var(--baladi-light)]'
                   }`}
                 >
-                  {/* Product Details */}
                   <TableCell className="p-4">
                     <div className="flex items-start space-x-4">
                       <div className="relative h-16 w-16 overflow-hidden rounded-lg border border-[var(--baladi-border)] bg-[var(--baladi-muted)]">
@@ -138,7 +130,7 @@ function ProductTableContent() {
                           </span>
                           {product.sku && (
                             <span className="inline-flex items-center rounded-md bg-purple-50 px-2 py-1 text-xs font-medium text-purple-700">
-                              <Barcode className="mr-1 h-3 w-3" />
+                              <Tag className="mr-1 h-3 w-3" />
                               {product.sku}
                             </span>
                           )}
@@ -147,11 +139,9 @@ function ProductTableContent() {
                     </div>
                   </TableCell>
 
-                  {/* Pricing & SKU */}
                   <TableCell className="p-4">
                     <div className="space-y-2">
                       <div className="flex items-center space-x-2">
-                        <DollarSign className="h-4 w-4 text-[var(--baladi-success)]" />
                         <span className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-primary)]">
                           {product.salePrice?.toFixed(2) || '0.00'} kr
                         </span>
@@ -172,7 +162,6 @@ function ProductTableContent() {
                     </div>
                   </TableCell>
 
-                  {/* Inventory */}
                   <TableCell className="p-4">
                     <div className="space-y-3">
                       <div
@@ -201,7 +190,6 @@ function ProductTableContent() {
                     </div>
                   </TableCell>
 
-                  {/* Categories */}
                   <TableCell className="p-4">
                     <div className="space-y-2">
                       {product.categories && product.categories.length > 0 ? (
@@ -231,7 +219,6 @@ function ProductTableContent() {
                     </div>
                   </TableCell>
 
-                  {/* Status */}
                   <TableCell className="p-4">
                     <div className="space-y-2">
                       <span
@@ -258,11 +245,10 @@ function ProductTableContent() {
                     </div>
                   </TableCell>
 
-                  {/* Actions */}
                   <TableCell className="p-4">
                     <div className="flex items-center justify-center space-x-2">
                       <Link
-                        href={`/dashboard/products/${product.slug}`}
+                        href={`/dashboard/products/edit/${product.slug}`}
                         className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition-colors hover:bg-blue-100"
                         title="Se Produkt"
                       >

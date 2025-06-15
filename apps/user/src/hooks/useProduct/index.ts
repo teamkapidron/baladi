@@ -18,7 +18,7 @@ import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
 export function useProducts() {
   const api = useRequest();
   const { page, limit } = usePagination(undefined, '12');
-  const { search, category } = useProductFilters();
+  const { search, category, minPrice, maxPrice, stock } = useProductFilters();
 
   const getProducts = useCallback(
     async (payload: GetProductsRequest['payload']) => {
@@ -32,20 +32,30 @@ export function useProducts() {
   );
 
   return useQuery({
-    queryKey: [ReactQueryKeys.GET_PRODUCTS, search, category, page, limit],
+    queryKey: [
+      ReactQueryKeys.GET_PRODUCTS,
+      search,
+      category,
+      minPrice,
+      maxPrice,
+      stock,
+    ],
     queryFn: () =>
       getProducts({
         page,
         limit,
         search: search ?? undefined,
         category: category ?? undefined,
+        minPrice,
+        maxPrice,
+        stock,
       }),
   });
 }
 
 export function useInfiniteProducts() {
   const api = useRequest();
-  const { search, category } = useProductFilters();
+  const { search, category, minPrice, maxPrice, stock } = useProductFilters();
 
   const getProducts = useCallback(
     async (payload: GetProductsRequest['payload']) => {
@@ -59,13 +69,24 @@ export function useInfiniteProducts() {
   );
 
   return useInfiniteQuery({
-    queryKey: [ReactQueryKeys.GET_PRODUCTS, search, category],
+    queryKey: [
+      ReactQueryKeys.GET_PRODUCTS,
+      'infinite',
+      search,
+      category,
+      minPrice,
+      maxPrice,
+      stock,
+    ],
     queryFn: ({ pageParam = 1 }) =>
       getProducts({
         page: pageParam.toString(),
         limit: '12',
         search: search ?? undefined,
         category: category ?? undefined,
+        minPrice,
+        maxPrice,
+        stock,
       }),
     getNextPageParam: (lastPage) => {
       return lastPage.currentPage < lastPage.totalPages

@@ -31,26 +31,72 @@ export const getAllInventory = asyncHandler(
 
     const { page, limit, skip } = getPagination(query.page, query.limit);
 
-    const inventory = await Inventory.find()
-      .populate({
-        path: 'productId',
-        select: 'name sku categories salePrice',
-        populate: {
-          path: 'categories',
-          select: 'name _id',
+    const inventory = await Inventory.aggregate([
+      {
+        $group: {
+          _id: '$productId',
+          quantity: { $sum: '$quantity' },
+          expirationDate: { $min: '$expirationDate' },
         },
-      })
-      .skip(skip)
-      .limit(limit);
+      },
+      {
+        $sort: { expirationDate: 1 },
+      },
+      {
+        $lookup: {
+          from: 'products',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'product',
+        },
+      },
+      {
+        $unwind: '$product',
+      },
+      {
+        $lookup: {
+          from: 'categories',
+          localField: 'product.categories',
+          foreignField: '_id',
+          as: 'product.categories',
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          productId: '$_id',
+          quantity: 1,
+          expirationDate: 1,
+          product: {
+            _id: 1,
+            name: 1,
+            sku: 1,
+            salePrice: 1,
+            categories: { _id: 1, name: 1 },
+          },
+        },
+      },
+      { $skip: skip },
+      { $limit: limit },
+    ]);
 
-    const totalInventory = await Inventory.countDocuments();
+    const [totalInventory] = await Inventory.aggregate([
+      {
+        $group: {
+          _id: '$productId',
+        },
+      },
+      {
+        $count: 'total',
+      },
+    ]);
 
     sendResponse(res, 200, 'Inventory fetched successfully', {
       inventory,
-      totalInventory,
+      totalInventory: totalInventory.total ?? 0,
       currentPage: page,
       perPage: limit,
-      totalPages: Math.ceil(totalInventory / limit),
+      totalPages: Math.ceil((totalInventory?.total ?? 0) / limit),
     });
   },
 );

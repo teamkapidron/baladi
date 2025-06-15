@@ -3,8 +3,10 @@ import type { Product, Visibility } from '@repo/types/product';
 
 export type ProductRequestBody = Omit<
   Product,
-  '_id' | 'createdAt' | 'updatedAt'
->;
+  '_id' | 'createdAt' | 'updatedAt' | 'images'
+> & {
+  images?: File[];
+};
 
 export interface QuickSearchProduct {
   _id: string;
@@ -53,6 +55,37 @@ export type GetProductByIdRequest = ApiData<
   },
   {
     product: ProductResponse;
+  }
+>;
+
+export type GetProductBySlugRequest = ApiData<
+  {
+    slug: string;
+  },
+  {
+    product: ProductResponse;
+  }
+>;
+
+export type GetProductImageUploadUrlRequest = ApiData<
+  {
+    slug: string;
+    names: string[];
+    imageCount: number;
+  },
+  {
+    urls: {
+      url: string;
+      fields: {
+        key: string;
+        bucket: string;
+        'X-Amz-Algorithm': string;
+        'X-Amz-Credential': string;
+        'X-Amz-Date': string;
+        Policy: string;
+        'X-Amz-Signature': string;
+      };
+    }[];
   }
 >;
 

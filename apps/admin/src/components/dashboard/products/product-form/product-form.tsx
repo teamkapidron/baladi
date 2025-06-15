@@ -2,7 +2,7 @@
 
 // Node Modules
 import Image from 'next/image';
-import { memo, useMemo, useState, useRef } from 'react';
+import { memo, useMemo, useRef, useCallback, useEffect } from 'react';
 import { useForm, zodResolver } from '@repo/ui/lib/form';
 import {
   Loader2,
@@ -64,11 +64,18 @@ import { useCategory } from '@/hooks/useCategory';
 // Types
 import { Visibility } from '@repo/types/product';
 
-function ProductForm() {
-  const { categoriesFlattened } = useCategory();
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+interface ProductFormProps {
+  isPending: boolean;
+  defaultValues?: ProductFormValues;
+  onSubmit: (data: ProductFormValues) => void;
+}
 
+function ProductForm(props: ProductFormProps) {
+  const { onSubmit, isPending, defaultValues } = props;
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const { categoriesFlattened } = useCategory();
   const categoryOptions = useMemo(
     () =>
       categoriesFlattened?.categories?.map((category) => ({
@@ -113,57 +120,45 @@ function ProductForm() {
     },
   });
 
-  function onSubmit(data: ProductFormValues) {
-    console.log('Form data:', data);
-  }
-
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (!files) return;
-
-    const newImages: string[] = [];
-    const currentImages = form.getValues('images') || [];
-
-    Array.from(files).forEach((file) => {
-      if (file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const result = e.target?.result as string;
-          newImages.push(result);
-          setUploadedImages((prev) => [...prev, result]);
-
-          // Update form with new images
-          const updatedImages = [...currentImages, ...newImages];
-          form.setValue('images', updatedImages);
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-
-    // Reset file input
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+  useEffect(() => {
+    if (defaultValues) {
+      form.reset(defaultValues);
     }
-  };
+  }, [defaultValues, form]);
 
-  const handleRemoveImage = (indexToRemove: number) => {
-    const currentImages = form.getValues('images') || [];
-    const updatedImages = currentImages.filter(
-      (_, index) => index !== indexToRemove,
-    );
-    form.setValue('images', updatedImages);
-    setUploadedImages((prev) =>
-      prev.filter((_, index) => index !== indexToRemove),
-    );
-  };
+  const handleImageUpload = useCallback(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      const files = event.target.files;
+      if (!files) return;
 
-  const triggerFileInput = () => {
+      Array.from({ length: files.length }).forEach(async (_, index) => {
+        const file = files.item(index);
+        if (!file) return;
+
+        form.setValue('images', [...(form.getValues('images') || []), file]);
+      });
+    },
+    [form],
+  );
+
+  const handleRemoveImage = useCallback(
+    (indexToRemove: number) => {
+      form.setValue(
+        'images',
+        (form.getValues('images') || []).filter(
+          (_, index) => index !== indexToRemove,
+        ),
+      );
+    },
+    [form],
+  );
+
+  const triggerFileInput = useCallback(() => {
     fileInputRef.current?.click();
-  };
+  }, []);
 
   return (
     <div className="mx-auto max-w-7xl space-y-8">
-      {/* Header */}
       <div className="rounded-xl border border-[var(--baladi-border)] bg-gradient-to-r from-[var(--baladi-primary)] to-[var(--baladi-secondary)] p-6 shadow-lg">
         <h1 className="font-[family-name:var(--font-sora)] text-2xl font-bold text-white">
           Opprett Nytt Produkt
@@ -177,9 +172,7 @@ function ProductForm() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-            {/* Left Column - Basic Information */}
             <div className="space-y-6 lg:col-span-2">
-              {/* Basic Information Card */}
               <div className="rounded-xl border border-[var(--baladi-border)] bg-white p-6 shadow-sm">
                 <div className="mb-6 flex items-center space-x-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100">
@@ -295,7 +288,6 @@ function ProductForm() {
                 </div>
               </div>
 
-              {/* Categories Card */}
               <div className="rounded-xl border border-[var(--baladi-border)] bg-white p-6 shadow-sm">
                 <div className="mb-6 flex items-center space-x-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100">
@@ -336,7 +328,6 @@ function ProductForm() {
                 />
               </div>
 
-              {/* Product Images Card */}
               <div className="rounded-xl border border-[var(--baladi-border)] bg-white p-6 shadow-sm">
                 <div className="mb-6 flex items-center space-x-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-pink-100">
@@ -357,7 +348,6 @@ function ProductForm() {
                       </FormLabel>
                       <FormControl>
                         <div className="space-y-4">
-                          {/* Upload Area */}
                           <div
                             onClick={triggerFileInput}
                             className="hover:bg-[var(--baladi-primary)]/5 flex h-32 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-[var(--baladi-border)] bg-gray-50 transition-colors hover:border-[var(--baladi-primary)]"
@@ -373,7 +363,6 @@ function ProductForm() {
                             </div>
                           </div>
 
-                          {/* Hidden File Input */}
                           <input
                             ref={fileInputRef}
                             type="file"
@@ -383,12 +372,12 @@ function ProductForm() {
                             className="hidden"
                           />
 
-                          {/* Image Previews */}
-                          {uploadedImages.length > 0 && (
+                          {(form.getValues('images')?.length ?? 0) > 0 && (
                             <div className="space-y-3">
                               <div className="flex items-center justify-between">
                                 <p className="text-sm font-medium text-[var(--baladi-primary)]">
-                                  Opplastede Bilder ({uploadedImages.length})
+                                  Opplastede Bilder (
+                                  {form.getValues('images')?.length ?? 0})
                                 </p>
                                 <Button
                                   type="button"
@@ -403,34 +392,38 @@ function ProductForm() {
                               </div>
 
                               <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-                                {uploadedImages.map((image, index) => (
-                                  <div
-                                    key={index}
-                                    className="group relative aspect-square overflow-hidden rounded-lg border border-[var(--baladi-border)] bg-gray-100"
-                                  >
-                                    <Image
-                                      src={image}
-                                      width={100}
-                                      height={100}
-                                      alt={`Product image ${index + 1}`}
-                                      className="h-full w-full object-cover transition-transform group-hover:scale-105"
-                                    />
-                                    <div className="absolute inset-0 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
-                                      <button
-                                        type="button"
-                                        onClick={() => handleRemoveImage(index)}
-                                        className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white transition-colors hover:bg-red-600"
-                                      >
-                                        <X className="h-3 w-3" />
-                                      </button>
+                                {(form.getValues('images') || []).map(
+                                  (image, index) => (
+                                    <div
+                                      key={index}
+                                      className="group relative aspect-square overflow-hidden rounded-lg border border-[var(--baladi-border)] bg-gray-100"
+                                    >
+                                      <Image
+                                        src={URL.createObjectURL(image)}
+                                        width={100}
+                                        height={100}
+                                        alt={`Product image ${index + 1}`}
+                                        className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                                      />
+                                      <div className="absolute inset-0 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
+                                        <button
+                                          type="button"
+                                          onClick={() =>
+                                            handleRemoveImage(index)
+                                          }
+                                          className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white transition-colors hover:bg-red-600"
+                                        >
+                                          <X className="h-3 w-3" />
+                                        </button>
+                                      </div>
+                                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2">
+                                        <p className="text-xs font-medium text-white">
+                                          Bilde {index + 1}
+                                        </p>
+                                      </div>
                                     </div>
-                                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2">
-                                      <p className="text-xs font-medium text-white">
-                                        Bilde {index + 1}
-                                      </p>
-                                    </div>
-                                  </div>
-                                ))}
+                                  ),
+                                )}
                               </div>
                             </div>
                           )}
@@ -446,7 +439,6 @@ function ProductForm() {
                 />
               </div>
 
-              {/* Pricing Card */}
               <div className="rounded-xl border border-[var(--baladi-border)] bg-white p-6 shadow-sm">
                 <div className="mb-6 flex items-center space-x-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-100">
@@ -584,7 +576,6 @@ function ProductForm() {
                 </div>
               </div>
 
-              {/* Product Identifiers Card */}
               <div className="rounded-xl border border-[var(--baladi-border)] bg-white p-6 shadow-sm">
                 <div className="mb-6 flex items-center space-x-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-100">
@@ -677,7 +668,6 @@ function ProductForm() {
                 </div>
               </div>
 
-              {/* Dimensions Card */}
               <div className="rounded-xl border border-[var(--baladi-border)] bg-white p-6 shadow-sm">
                 <div className="mb-6 flex items-center space-x-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-100">
@@ -779,9 +769,7 @@ function ProductForm() {
               </div>
             </div>
 
-            {/* Right Column - Settings & Supplier */}
             <div className="space-y-6">
-              {/* Settings Card */}
               <div className="rounded-xl border border-[var(--baladi-border)] bg-white p-6 shadow-sm">
                 <div className="mb-6 flex items-center space-x-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100">
@@ -877,7 +865,6 @@ function ProductForm() {
                 </div>
               </div>
 
-              {/* Supplier Card */}
               <div className="rounded-xl border border-[var(--baladi-border)] bg-white p-6 shadow-sm">
                 <div className="mb-6 flex items-center space-x-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100">
@@ -1013,15 +1000,14 @@ function ProductForm() {
             </div>
           </div>
 
-          {/* Submit Button */}
           <div className="flex justify-end">
             <Button
               type="submit"
               size="lg"
               className="hover:bg-[var(--baladi-primary)]/90 focus:ring-[var(--baladi-primary)]/20 h-12 rounded-lg bg-[var(--baladi-primary)] px-8 font-[family-name:var(--font-sora)] font-semibold text-white shadow-lg transition-all hover:shadow-xl focus:ring-2"
-              disabled={form.formState.isSubmitting}
+              disabled={isPending}
             >
-              {form.formState.isSubmitting ? (
+              {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                   Oppretter Produkt...

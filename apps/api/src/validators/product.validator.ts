@@ -2,15 +2,31 @@ import { z } from 'zod';
 import { isValidObjectId } from 'mongoose';
 import { dateSchema } from './schemas/date.schema';
 import { productSchema } from './schemas/product.schema';
+import { ProductStock } from '@/types/product.types';
 
 /******************* START: User Validators *******************/
 export const getProductsSchema = z.object({
-  query: z.object({
-    search: z.string().optional(),
-    page: z.string().optional(),
-    limit: z.string().optional(),
-    category: z.string().optional(),
-  }),
+  query: z
+    .object({
+      search: z.string().optional(),
+      page: z.string().optional(),
+      limit: z.string().optional(),
+      category: z.string().optional(),
+      minPrice: z.string().optional(),
+      maxPrice: z.string().optional(),
+      stock: z.nativeEnum(ProductStock).optional(),
+    })
+    .superRefine((data, ctx) => {
+      if (data.minPrice && data.maxPrice) {
+        if (parseInt(data.minPrice, 10) > parseInt(data.maxPrice, 10)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Min price cannot be greater than max price',
+            path: ['minPrice'],
+          });
+        }
+      }
+    }),
 });
 
 export const getProductByIdSchema = z.object({
@@ -61,6 +77,14 @@ export const getAllProductsSchema = z.object({
     category: z.string().optional(),
     isActive: z.enum(['true', 'false']).optional(),
     visibility: z.string().optional(),
+  }),
+});
+
+export const getProductImageUploadUrlSchema = z.object({
+  body: z.object({
+    slug: z.string().min(1, 'Product slug is required'),
+    names: z.array(z.string()).min(1, 'Names are required'),
+    imageCount: z.number().min(1, 'Image count is required'),
   }),
 });
 
@@ -122,6 +146,9 @@ export const topProductsSchema = z.object({
 export const productStatsSchema = z.object({});
 
 export type GetAllProductsSchema = z.infer<typeof getAllProductsSchema>;
+export type GetProductImageUploadUrlSchema = z.infer<
+  typeof getProductImageUploadUrlSchema
+>;
 export type CreateProductSchema = z.infer<typeof createProductSchema>;
 export type UpdateProductSchema = z.infer<typeof updateProductSchema>;
 export type DeleteProductSchema = z.infer<typeof deleteProductSchema>;

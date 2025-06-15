@@ -81,7 +81,7 @@ const QuantityInput = React.forwardRef<HTMLDivElement, QuantityInputProps>(
           onClick={handleDecrement}
           disabled={value <= min || disabled}
           className={cn(
-            'group relative flex h-full items-center justify-center border-r border-[var(--baladi-border)] bg-gradient-to-b from-[var(--baladi-muted)] to-white transition-all duration-200',
+            'group relative flex h-full cursor-pointer items-center justify-center border-r border-[var(--baladi-border)] bg-gradient-to-b from-[var(--baladi-muted)] to-white transition-all duration-200',
             'hover:from-[var(--baladi-primary)]/10 hover:to-[var(--baladi-primary)]/5 hover:border-[var(--baladi-primary)]/30',
             'active:from-[var(--baladi-primary)]/20 active:to-[var(--baladi-primary)]/10 active:scale-95',
             'disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:from-[var(--baladi-muted)] disabled:hover:to-white',
@@ -115,7 +115,7 @@ const QuantityInput = React.forwardRef<HTMLDivElement, QuantityInputProps>(
           onClick={handleIncrement}
           disabled={value >= max || disabled}
           className={cn(
-            'group relative flex h-full items-center justify-center border-l border-[var(--baladi-border)] bg-gradient-to-b from-[var(--baladi-muted)] to-white transition-all duration-200',
+            'group relative flex h-full cursor-pointer items-center justify-center border-l border-[var(--baladi-border)] bg-gradient-to-b from-[var(--baladi-muted)] to-white transition-all duration-200',
             'hover:from-[var(--baladi-primary)]/10 hover:to-[var(--baladi-primary)]/5 hover:border-[var(--baladi-primary)]/30',
             'active:from-[var(--baladi-primary)]/20 active:to-[var(--baladi-primary)]/10 active:scale-95',
             'disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:from-[var(--baladi-muted)] disabled:hover:to-white',

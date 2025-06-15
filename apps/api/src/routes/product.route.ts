@@ -10,6 +10,7 @@ import {
   quickSearchProducts,
   fullSearchProducts,
   getAllProducts,
+  getProductImageUploadUrl,
   createProduct,
   updateProduct,
   deleteProduct,
@@ -25,6 +26,7 @@ import {
   quickSearchProductsSchema,
   fullSearchProductsSchema,
   getAllProductsSchema,
+  getProductImageUploadUrlSchema,
   createProductSchema,
   updateProductSchema,
   deleteProductSchema,
@@ -56,6 +58,12 @@ router.get(
 router.get('/search', validate(fullSearchProductsSchema), fullSearchProducts);
 
 router.get('/all', isAdmin, validate(getAllProductsSchema), getAllProducts);
+router.post(
+  '/image-upload-url',
+  isAdmin,
+  validate(getProductImageUploadUrlSchema),
+  getProductImageUploadUrl,
+);
 router.post('/', isAdmin, validate(createProductSchema), createProduct);
 router.put(
   '/:productId',

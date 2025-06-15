@@ -3,7 +3,7 @@ import { Visibility } from '@repo/types/product';
 
 export const productFormSchema = z.object({
   name: z.string().min(1, 'Produktnavn er påkrevd'),
-  slug: z.string().optional(),
+  slug: z.string(),
   description: z.string().optional(),
   shortDescription: z.string().optional(),
 
@@ -18,7 +18,7 @@ export const productFormSchema = z.object({
 
   categories: z.array(z.string()).min(1, 'Minst én kategori er påkrevd'),
 
-  images: z.array(z.string()).optional(),
+  images: z.array(z.instanceof(File)).optional(),
 
   isActive: z.boolean().default(true),
   visibility: z.nativeEnum(Visibility).default(Visibility.BOTH),

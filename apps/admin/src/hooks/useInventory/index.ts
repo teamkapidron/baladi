@@ -6,6 +6,7 @@ import { toast } from '@repo/ui/lib/sonner';
 // Hooks
 import { useRequest } from '@/hooks/useRequest';
 import { usePagination } from '@repo/ui/hooks/usePagination';
+import { useInventoryFilters } from './useInventoryFilters';
 import { useDateRangeInParams } from '@repo/ui/hooks/useDate/useDateRangeInParams';
 
 // Types
@@ -71,6 +72,7 @@ export function useInventory() {
   const api = useRequest();
   const queryClient = useQueryClient();
   const { page, limit } = usePagination();
+  const { search, status } = useInventoryFilters();
 
   const getAllInventory = useCallback(
     async (payload: GetAllInventoryRequest['payload']) => {
@@ -84,7 +86,7 @@ export function useInventory() {
   );
 
   const inventoryQuery = useQuery({
-    queryKey: [ReactQueryKeys.GET_ALL_INVENTORY, page, limit],
+    queryKey: [ReactQueryKeys.GET_ALL_INVENTORY, page, limit, search, status],
     queryFn: () => getAllInventory({ page, limit }),
   });
 

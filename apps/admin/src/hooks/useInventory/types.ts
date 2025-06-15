@@ -2,7 +2,7 @@ import { ApiData } from '@/utils/types.util';
 import { Inventory } from '@repo/types/inventory';
 
 export type InventoryResponse = Omit<Inventory, 'productId'> & {
-  productId: {
+  product: {
     _id: string;
     name: string;
     sku: string;

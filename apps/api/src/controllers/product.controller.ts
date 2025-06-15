@@ -7,6 +7,7 @@ import Product from '@/models/product.model';
 import Category from '@/models/category.model';
 
 // Utils
+import { getPresignedPostUrl } from '@/lib/s3';
 import { generateSlug } from '@/utils/common/string.util';
 import { sendResponse } from '@/utils/common/response.util';
 import { getDateMatchStage } from '@/utils/common/date.util';
@@ -14,6 +15,7 @@ import {
   buildStockPipeline,
   buildStockCountPipeline,
   getProductFilterFromQuery,
+  getUserProductFilterFromQuery,
 } from '@/utils/product.utils';
 
 // Handlers
@@ -30,15 +32,17 @@ import type {
   QuickSearchProductsSchema,
   FullSearchProductsSchema,
   GetAllProductsSchema,
+  GetProductImageUploadUrlSchema,
   CreateProductSchema,
   DeleteProductSchema,
   UpdateProductSchema,
   LowStockProductsSchema,
   TopProductsSchema,
 } from '@/validators/product.validator';
-import type {
+import {
   QuickSearchProduct,
   QuickSearchProductAggregateType,
+  ProductStock,
 } from '@/types/product.types';
 
 export const getProducts = asyncHandler(async (req: Request, res: Response) => {
@@ -46,7 +50,9 @@ export const getProducts = asyncHandler(async (req: Request, res: Response) => {
   const query = req.query as GetProductsSchema['query'];
 
   const { queryObject, perPage, currentPage } =
-    getProductFilterFromQuery(query);
+    getUserProductFilterFromQuery(query);
+
+  console.log(queryObject);
 
   const pipeline: PipelineStage[] = [
     {
@@ -83,7 +89,15 @@ export const getProducts = asyncHandler(async (req: Request, res: Response) => {
     },
     {
       $addFields: {
-        stock: { $ifNull: ['$inventory.quantity', 0] },
+        stock: {
+          $sum: {
+            $map: {
+              input: '$inventory',
+              as: 'inv',
+              in: { $ifNull: ['$$inv.quantity', 0] }
+            }
+          }
+        },
         bestBeforeDate: { $min: '$inventory.expirationDate' },
       },
     },
@@ -93,6 +107,20 @@ export const getProducts = asyncHandler(async (req: Request, res: Response) => {
       },
     },
   ];
+
+  if (query.stock === ProductStock.IN_STOCK) {
+    pipeline.push({
+      $match: {
+        stock: { $gt: 0 },
+      },
+    });
+  } else if (query.stock === ProductStock.OUT_OF_STOCK) {
+    pipeline.push({
+      $match: {
+        $or: [{ stock: { $eq: 0 } }, { stock: { $exists: false } }],
+      },
+    });
+  }
 
   if (userId) {
     pipeline.push(
@@ -501,6 +529,23 @@ export const getAllProducts = asyncHandler(
       currentPage,
       perPage,
       totalPages: Math.ceil(totalProducts / perPage),
+    });
+  },
+);
+
+export const getProductImageUploadUrl = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { slug, names, imageCount } =
+      req.body as GetProductImageUploadUrlSchema['body'];
+
+    const urls = await Promise.all(
+      Array.from({ length: imageCount }).map((_, index) =>
+        getPresignedPostUrl(`products/${slug}/images/${names[index]}`),
+      ),
+    );
+
+    sendResponse(res, 200, 'Product image upload URL fetched successfully', {
+      urls,
     });
   },
 );

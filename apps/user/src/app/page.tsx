@@ -2,13 +2,10 @@ import { Metadata } from 'next';
 import { Suspense } from 'react';
 
 import Header from '@/components/common/header/header';
-import Carousel from '@/components/common/carousel';
-import Footer from '@/components/common/footer/footer';
 import ProductsSidebar from '@/components/home/filter-sidebar';
 import ProductsSortBar from '@/components/home/sort-bar';
 import ProductGrid from '@/components/home/product-grid';
-
-import { carouselSlides } from '@/constants/slides';
+import Footer from '@/components/common/footer/footer';
 
 export const metadata: Metadata = {
   title: 'Hjem | Baladi Engros',
@@ -21,11 +18,6 @@ export default function Home() {
     <Suspense>
       <div className="min-h-screen bg-[var(--baladi-background)]">
         <Header />
-        <Carousel
-          slides={carouselSlides}
-          showControls={true}
-          showIndicators={true}
-        />
 
         <main className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
           <div className="mb-8 text-center">

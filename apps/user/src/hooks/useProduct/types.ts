@@ -30,6 +30,9 @@ export type GetProductsRequest = ApiData<
     limit: string;
     search?: string;
     category?: string;
+    minPrice?: string;
+    maxPrice?: string;
+    stock?: ProductStock;
   },
   {
     products: ProductResponse[];

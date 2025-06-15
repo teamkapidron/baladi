@@ -132,11 +132,11 @@ function InventoryTable() {
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="truncate font-semibold text-gray-900">
-                        {item.productId.name}
+                        {item.product.name}
                       </div>
                       <div className="mt-1 flex items-center gap-2">
                         <span className="text-xs font-medium text-gray-500">
-                          SKU: {item.productId.sku}
+                          SKU: {item.product.sku}
                         </span>
                       </div>
                     </div>
@@ -145,9 +145,9 @@ function InventoryTable() {
 
                 <TableCell className="px-4 py-6">
                   <span
-                    className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ring-1 ${getCategoryColor(item.productId.categories[0]?.name ?? '')}`}
+                    className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ring-1 ${getCategoryColor(item.product.categories[0]?.name ?? '')}`}
                   >
-                    {item.productId.categories[0]?.name ?? 'Ingen kategori'}
+                    {item.product.categories[0]?.name ?? 'Ingen kategori'}
                   </span>
                 </TableCell>
 
@@ -194,7 +194,7 @@ function InventoryTable() {
                 <TableCell className="px-4 py-6">
                   <div className="space-y-1">
                     <div className="text-lg font-bold text-gray-900">
-                      {item.productId.salePrice}kr
+                      {item.product.salePrice}kr
                     </div>
                   </div>
                 </TableCell>

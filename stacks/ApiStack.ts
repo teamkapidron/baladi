@@ -1,6 +1,8 @@
 /// <reference path="../apps/api/env.d.ts" />
 /// <reference path="../.sst/platform/config.d.ts" />
 
+import { bucket } from './StorageStack';
+
 export const api = new sst.aws.ApiGatewayV2('BaladiApi', {
   domain: {
     name: 'api.baladi.kapidron.live',
@@ -26,6 +28,7 @@ export const api = new sst.aws.ApiGatewayV2('BaladiApi', {
       'X-Amz-Security-Token',
     ],
   },
+  link: [bucket],
 });
 
 api.route('ANY /{proxy+}', {
