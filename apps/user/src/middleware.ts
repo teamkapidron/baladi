@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-import { getUser, getUserStatus } from './functions/auth.functions';
+import { getUser } from './functions/auth.functions';
+
+import { User } from '@repo/types/user';
 
 const noAuthRoutes = [
   '/login',
@@ -12,15 +14,35 @@ const noAuthRoutes = [
 
 const protectedRoutes = ['/cart', '/wishlist', '/order', '/address'];
 
+function isOnboardingCompleted(user: User) {
+  return (
+    !!user.companyName &&
+    !!user.organizationNumber &&
+    !!user.address &&
+    !!user.phoneNumber
+  );
+}
+
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value;
 
-  if (noAuthRoutes.includes(request.nextUrl.pathname)) {
+  if (
+    noAuthRoutes.some((route) => request.nextUrl.pathname.startsWith(route))
+  ) {
     if (token) {
       try {
         const user = await getUser(token);
+
         if (user) {
-          return NextResponse.redirect(new URL('/', request.url));
+          if (!isOnboardingCompleted(user)) {
+            return NextResponse.redirect(new URL('/onboarding', request.url));
+          } else if (!user.isApprovedByAdmin) {
+            return NextResponse.redirect(
+              new URL('/wait-for-approval', request.url),
+            );
+          } else {
+            return NextResponse.redirect(new URL('/', request.url));
+          }
         }
       } catch {
         return NextResponse.next();
@@ -33,13 +55,19 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/login', request.url));
     }
     try {
-      const user = await getUserStatus(token);
+      const user = await getUser(token);
       if (!user) {
         return NextResponse.redirect(new URL('/login', request.url));
       }
 
-      if (user.isApprovedByAdmin) {
-        return NextResponse.redirect(new URL('/', request.url));
+      if (isOnboardingCompleted(user)) {
+        if (!user.isApprovedByAdmin) {
+          return NextResponse.redirect(
+            new URL('/wait-for-approval', request.url),
+          );
+        } else {
+          return NextResponse.redirect(new URL('/', request.url));
+        }
       }
 
       return NextResponse.next();
@@ -52,13 +80,14 @@ export async function middleware(request: NextRequest) {
     if (!token) {
       return NextResponse.redirect(new URL('/login', request.url));
     }
+
     try {
-      const user = await getUserStatus(token);
+      const user = await getUser(token);
       if (!user) {
         return NextResponse.redirect(new URL('/login', request.url));
       }
 
-      if (!user.isApprovedByAdmin) {
+      if (isOnboardingCompleted(user) && user.isApprovedByAdmin) {
         return NextResponse.redirect(new URL('/', request.url));
       }
 
@@ -74,11 +103,24 @@ export async function middleware(request: NextRequest) {
     if (!token) {
       return NextResponse.redirect(new URL('/login', request.url));
     }
+
     try {
       const user = await getUser(token);
       if (!user) {
         return NextResponse.redirect(new URL('/login', request.url));
       }
+
+      if (!user.isApprovedByAdmin) {
+        return NextResponse.redirect(
+          new URL('/wait-for-approval', request.url),
+        );
+      }
+
+      if (!isOnboardingCompleted(user)) {
+        return NextResponse.redirect(new URL('/onboarding', request.url));
+      }
+
+      return NextResponse.next();
     } catch {
       return NextResponse.redirect(new URL('/login', request.url));
     }

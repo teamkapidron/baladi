@@ -10,7 +10,6 @@ import {
   MapPin,
   ArrowRight,
   Loader2,
-  Shield,
 } from '@repo/ui/lib/icons';
 
 // Components
@@ -139,26 +138,6 @@ function OnboardingForm() {
             )}
           />
 
-          {/* Information box */}
-          <div className="rounded-lg border border-[var(--baladi-border)] bg-[var(--baladi-muted)] p-4">
-            <div className="flex items-start space-x-3">
-              <div className="bg-[var(--baladi-info)]/10 flex h-6 w-6 items-center justify-center rounded-full">
-                <Shield className="h-3 w-3 text-[var(--baladi-info)]" />
-              </div>
-              <div>
-                <p className="font-[family-name:var(--font-dm-sans)] text-xs leading-relaxed text-[var(--baladi-gray)]">
-                  <strong className="text-[var(--baladi-dark)]">
-                    Sikkerhet:
-                  </strong>{' '}
-                  All informasjon blir behandlet konfidensielt og i henhold til
-                  GDPR. Vi bruker denne informasjonen kun for å verifisere
-                  bedriften din.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Required fields notice */}
           <div className="flex items-center justify-center">
             <p className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
               <span className="text-[var(--baladi-error)]">*</span> Alle felt er
@@ -171,7 +150,6 @@ function OnboardingForm() {
             disabled={onboardingMutation.isPending}
             className="focus:ring-[var(--baladi-primary)]/30 group relative w-full overflow-hidden rounded-lg bg-[var(--baladi-primary)] px-6 py-4 font-[family-name:var(--font-dm-sans)] text-base font-semibold text-white shadow-md transition-all duration-200 hover:bg-[var(--baladi-secondary)] hover:shadow-lg focus:outline-none focus:ring-4 disabled:cursor-not-allowed disabled:opacity-70"
           >
-            {/* Gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100"></div>
 
             <div className="relative flex items-center justify-center space-x-2">

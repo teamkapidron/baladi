@@ -25,7 +25,7 @@ import type { Request, Response } from 'express';
 import type {
   GetAllUsersSchema,
   GetUserDetailsSchema,
-  ApproveUserSchema,
+  UpdateUserSchema,
   GetUserRegistrationGraphDataSchema,
   GetUserStatsSchema,
   TopUsersSchema,
@@ -70,8 +70,9 @@ export const getUserDetails = asyncHandler(
   },
 );
 
-export const approveUser = asyncHandler(async (req: Request, res: Response) => {
-  const { userId, userType } = req.body as ApproveUserSchema['body'];
+export const updateUser = asyncHandler(async (req: Request, res: Response) => {
+  const { userId, userType, isApprovedByAdmin } =
+    req.body as UpdateUserSchema['body'];
 
   const user = await User.findById(userId);
   if (!user) {
@@ -79,10 +80,10 @@ export const approveUser = asyncHandler(async (req: Request, res: Response) => {
   }
 
   user.userType = userType;
-  user.isApprovedByAdmin = true;
+  user.isApprovedByAdmin = isApprovedByAdmin ?? true;
   await user.save();
 
-  sendResponse(res, 200, 'User approved successfully');
+  sendResponse(res, 200, 'User updated successfully');
 });
 
 export const getUserRegistrationGraphData = asyncHandler(

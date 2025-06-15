@@ -1,17 +1,33 @@
 'use client';
 
 // Node Modules
-import React, { memo } from 'react';
-import { Building, Hash, MapPin, FileText } from '@repo/ui/lib/icons';
+import React, { memo, useState, useCallback, useEffect } from 'react';
+import {
+  Building,
+  Hash,
+  MapPin,
+  FileText,
+  CheckCircle,
+  Settings,
+} from '@repo/ui/lib/icons';
+import { toast } from '@repo/ui/lib/sonner';
 
 // Components
 import { Card } from '@repo/ui/components/base/card';
-import { Input } from '@repo/ui/components/base/input';
+import { Button } from '@repo/ui/components/base/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@repo/ui/components/base/select';
 
 // Hooks
-import { useUserDetails } from '@/hooks/useUsers';
+import { useUserDetails, useUsers } from '@/hooks/useUsers';
 
 // Types/Utils
+import { UserType } from '@repo/types/user';
 import { formatDate } from '@repo/ui/lib/date';
 
 interface CustomerCompanyInfoProps {
@@ -21,8 +37,58 @@ interface CustomerCompanyInfoProps {
 function CustomerCompanyInfo(props: CustomerCompanyInfoProps) {
   const { customerId } = props;
 
+  const { updateUserMutation } = useUsers();
   const { userDetailsQuery } = useUserDetails(customerId);
   const user = userDetailsQuery.data?.user;
+
+  const [selectedUserType, setSelectedUserType] = useState<
+    UserType | undefined
+  >(user?.userType);
+
+  useEffect(() => {
+    if (user?.userType) {
+      setSelectedUserType(user.userType);
+    }
+  }, [user?.userType]);
+
+  const handleApproveUser = useCallback(() => {
+    if (!user?._id || !selectedUserType) return;
+
+    updateUserMutation.mutate(
+      {
+        userId: user._id,
+        isApprovedByAdmin: true,
+        userType: selectedUserType,
+      },
+      {
+        onSuccess: () => {
+          userDetailsQuery.refetch();
+          toast.success('Bruker godkjent', {
+            description: 'Bruker er nå godkjent',
+          });
+        },
+      },
+    );
+  }, [user?._id, selectedUserType, updateUserMutation, userDetailsQuery]);
+
+  const handleUpdateUserType = useCallback(() => {
+    if (!user?._id || !selectedUserType) return;
+
+    updateUserMutation.mutate(
+      {
+        userId: user._id,
+        userType: selectedUserType,
+      },
+      {
+        onSuccess: () => {
+          userDetailsQuery.refetch();
+          toast.success('Kontotype oppdatert', {
+            description: 'Kontotype er nå oppdatert',
+          });
+        },
+      },
+    );
+  }, [user?._id, selectedUserType, updateUserMutation, userDetailsQuery]);
 
   if (userDetailsQuery.isLoading) {
     return <CompanyInfoSkeleton />;
@@ -89,7 +155,11 @@ function CustomerCompanyInfo(props: CustomerCompanyInfoProps) {
                     Kontotype:
                   </span>
                   <p className="font-[family-name:var(--font-dm-sans)] text-[var(--baladi-dark)]">
-                    {user?.userType || 'Ukjent'}
+                    {user?.userType === UserType.INTERNAL
+                      ? 'Intern'
+                      : user?.userType === UserType.EXTERNAL
+                        ? 'Ekstern'
+                        : 'Ikke oppgitt'}
                   </p>
                 </div>
                 {user?.createdAt && (
@@ -100,6 +170,100 @@ function CustomerCompanyInfo(props: CustomerCompanyInfoProps) {
                     <p className="font-[family-name:var(--font-dm-sans)] text-[var(--baladi-dark)]">
                       {formatDate(new Date(user.createdAt), 'MMM d, yyyy')}
                     </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="md:col-span-2">
+            <div className="border-[var(--baladi-border)]/30 mt-4 rounded-xl border bg-gradient-to-r from-[var(--baladi-light)] to-white p-4">
+              <div className="mb-3 flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[var(--baladi-accent)] to-orange-600 shadow-sm">
+                  <Settings className="h-4 w-4 text-white" />
+                </div>
+                <h3 className="font-[family-name:var(--font-sora)] text-sm font-semibold text-[var(--baladi-dark)]">
+                  Adminhandlinger
+                </h3>
+              </div>
+
+              <div className="space-y-4">
+                <div className="mt-4 flex flex-col gap-2">
+                  <label className="ml-1 font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-gray)]">
+                    Velg kontotype:
+                  </label>
+                  <Select
+                    value={selectedUserType}
+                    onValueChange={(value) =>
+                      setSelectedUserType(value as UserType)
+                    }
+                    disabled={updateUserMutation.isPending}
+                  >
+                    <SelectTrigger className="w-full sm:w-48">
+                      <SelectValue placeholder="Velg kontotype" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={UserType.INTERNAL}>
+                        <div className="flex items-center gap-2">
+                          <div className="h-2 w-2 rounded-full bg-[var(--baladi-primary)]"></div>
+                          Intern
+                        </div>
+                      </SelectItem>
+                      <SelectItem value={UserType.EXTERNAL}>
+                        <div className="flex items-center gap-2">
+                          <div className="h-2 w-2 rounded-full bg-[var(--baladi-secondary)]"></div>
+                          Ekstern
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex flex-wrap gap-3">
+                  {!user?.isApprovedByAdmin ? (
+                    <Button
+                      onClick={handleApproveUser}
+                      disabled={
+                        !selectedUserType || updateUserMutation.isPending
+                      }
+                      isLoading={updateUserMutation.isPending}
+                      className="hover:bg-[var(--baladi-success)]/90 bg-[var(--baladi-success)] text-white"
+                      iconLeft={<CheckCircle className="h-4 w-4" />}
+                    >
+                      Godkjenn bruker
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={handleUpdateUserType}
+                      disabled={
+                        !selectedUserType ||
+                        selectedUserType === user?.userType ||
+                        updateUserMutation.isPending
+                      }
+                      isLoading={updateUserMutation.isPending}
+                      className="hover:bg-[var(--baladi-primary)]/90 bg-[var(--baladi-primary)] text-white"
+                      iconLeft={<Settings className="h-4 w-4" />}
+                    >
+                      Oppdater kontotype
+                    </Button>
+                  )}
+                </div>
+
+                {user && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <div
+                      className={`h-2 w-2 rounded-full ${
+                        user.isApprovedByAdmin
+                          ? 'bg-[var(--baladi-success)]'
+                          : 'bg-[var(--baladi-warning)]'
+                      }`}
+                    ></div>
+                    <span className="font-[family-name:var(--font-dm-sans)] text-[var(--baladi-gray)]">
+                      Status:{' '}
+                      {user.isApprovedByAdmin
+                        ? 'Godkjent'
+                        : 'Venter på godkjenning'}
+                    </span>
                   </div>
                 )}
               </div>
@@ -136,12 +300,6 @@ function CompanyInfoField({
           {label}
         </label>
       </div>
-
-      <Input
-        type="text"
-        defaultValue={value}
-        className={`focus:ring-[var(--baladi-accent)]/20 border-[var(--baladi-border)] bg-white/80 font-[family-name:var(--font-dm-sans)] text-[var(--baladi-dark)] backdrop-blur-sm transition-all duration-200 focus:border-[var(--baladi-accent)] focus:bg-white focus:shadow-lg ${className.includes('font-mono') ? 'font-mono' : ''}`}
-      />
 
       <div className="border-[var(--baladi-border)]/50 group relative overflow-hidden rounded-lg border bg-gradient-to-r from-white to-[var(--baladi-light)] p-3 transition-all duration-200 hover:border-[var(--baladi-border)] hover:shadow-md">
         <div className="from-[var(--baladi-accent)]/5 absolute inset-0 bg-gradient-to-r to-orange-500/5 opacity-0 transition-opacity duration-200 group-hover:opacity-100"></div>

@@ -40,14 +40,12 @@ export function useAuth() {
   } = useQuery({
     queryKey: [ReactQueryKeys.GET_USER_DATA],
     queryFn: getUserData,
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: true,
   });
 
   const signup = useCallback(
     async (payload: SignUpRequest['payload']) => {
       const response = await api.post<SignUpRequest['response']>(
-        '/auth/register',
+        '/auth/signup',
         payload,
       );
       return response.data;

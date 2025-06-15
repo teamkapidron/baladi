@@ -3,7 +3,7 @@
 // Node Modules
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React, { memo, useCallback, useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
 import {
   Eye,
   MapPin,
@@ -36,23 +36,14 @@ import { UserType } from '@repo/types/user';
 import { formatDate } from '@repo/ui/lib/date';
 
 function CustomerTableContent() {
-  const { users, approveUserMutation } = useUsers();
   const router = useRouter();
+
+  const { users } = useUsers();
   const { currentPageData } = useMemo(
     () => ({
       currentPageData: users?.users ?? [],
     }),
     [users],
-  );
-
-  const handleApproveCustomer = useCallback(
-    (customerId: string) => {
-      approveUserMutation.mutate({
-        userId: customerId,
-        userType: UserType.EXTERNAL,
-      });
-    },
-    [approveUserMutation],
   );
 
   return (
@@ -227,35 +218,16 @@ function CustomerTableContent() {
                   </div>
                 </TableCell>
 
-                <TableCell className="px-8 py-6">
-                  <div className="flex items-center gap-2">
-                    <Button
-                      asChild
-                      variant="outline"
-                      className="group/btn hover:bg-[var(--baladi-primary)]/10 rounded-lg p-2 text-[var(--baladi-gray)] transition-all hover:text-[var(--baladi-primary)]"
-                      title="Se kundedetaljer"
-                    >
-                      <Link href={`/dashboard/customers/${customer._id}`}>
-                        <Eye className="h-4 w-4" />
-                      </Link>
-                    </Button>
-
-                    {!customer.isApprovedByAdmin && (
-                      <Button
-                        variant="outline"
-                        onClick={() => handleApproveCustomer(customer._id)}
-                        disabled={approveUserMutation.isPending}
-                        className="group/btn hover:bg-[var(--baladi-success)]/10 rounded-lg p-2 text-[var(--baladi-success)] transition-all hover:text-[var(--baladi-success)] disabled:opacity-50"
-                        title="Godkjenn kunde"
-                      >
-                        {approveUserMutation.isPending ? (
-                          <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                        ) : (
-                          <CheckCircle className="h-4 w-4" />
-                        )}
-                      </Button>
-                    )}
-                  </div>
+                <TableCell className="px-4">
+                  <Button
+                    variant="outline"
+                    className="group/btn hover:bg-[var(--baladi-primary)]/10 flex h-full w-full items-center justify-center rounded-lg p-2 text-[var(--baladi-gray)] transition-all hover:text-[var(--baladi-primary)]"
+                    title="Se kundedetaljer"
+                  >
+                    <Link href={`/dashboard/customers/${customer._id}`}>
+                      <Eye className="h-4 w-4" />
+                    </Link>
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}

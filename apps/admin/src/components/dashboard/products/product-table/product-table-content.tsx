@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { memo, useMemo } from 'react';
-import { Eye, EditIcon, Package, Tag } from '@repo/ui/lib/icons';
+import { EditIcon, Package, Tag } from '@repo/ui/lib/icons';
 
 // Components
 import {
@@ -247,13 +247,6 @@ function ProductTableContent() {
 
                   <TableCell className="p-4">
                     <div className="flex items-center justify-center space-x-2">
-                      <Link
-                        href={`/dashboard/products/edit/${product.slug}`}
-                        className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition-colors hover:bg-blue-100"
-                        title="Se Produkt"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Link>
                       <Link
                         href={`/dashboard/products/edit/${product.slug}`}
                         className="bg-[var(--baladi-primary)]/10 hover:bg-[var(--baladi-primary)]/20 flex h-8 w-8 items-center justify-center rounded-lg text-[var(--baladi-primary)] transition-colors"

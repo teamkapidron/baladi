@@ -52,8 +52,6 @@ export const getProducts = asyncHandler(async (req: Request, res: Response) => {
   const { queryObject, perPage, currentPage } =
     getUserProductFilterFromQuery(query);
 
-  console.log(queryObject);
-
   const pipeline: PipelineStage[] = [
     {
       $match: {
@@ -94,9 +92,9 @@ export const getProducts = asyncHandler(async (req: Request, res: Response) => {
             $map: {
               input: '$inventory',
               as: 'inv',
-              in: { $ifNull: ['$$inv.quantity', 0] }
-            }
-          }
+              in: { $ifNull: ['$$inv.quantity', 0] },
+            },
+          },
         },
         bestBeforeDate: { $min: '$inventory.expirationDate' },
       },

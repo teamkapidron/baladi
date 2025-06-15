@@ -58,7 +58,7 @@ export const signup = asyncHandler(async (req: Request, res: Response) => {
   const { name, email, password } = req.body as SignupSchema['body'];
 
   const existingUser = await User.findOne({ email });
-  if (existingUser) {
+  if (existingUser && existingUser.isEmailVerified) {
     throw new ErrorHandler(
       400,
       'User already exists with this email',
@@ -70,15 +70,20 @@ export const signup = asyncHandler(async (req: Request, res: Response) => {
   const otp = generateOTP(6).toString();
   const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
 
-  const user = await User.create({
-    name,
-    email,
-    password: hashedPassword,
-    otp,
-    otpExpiry,
-    isEmailVerified: false,
-    isApprovedByAdmin: false,
-  });
+  const user = await User.findOneAndUpdate(
+    { email },
+    {
+      $set: {
+        name,
+        password: hashedPassword,
+        otp,
+        otpExpiry,
+        isEmailVerified: false,
+        isApprovedByAdmin: false,
+      },
+    },
+    { new: true, upsert: true },
+  );
 
   await sendMail({
     to: email,

@@ -11,6 +11,7 @@ import { Card } from '@repo/ui/components/base/card';
 import { useUserDetails } from '@/hooks/useUsers';
 
 // Types/Utils
+import { UserType } from '@repo/types/user';
 import { formatDate } from '@repo/ui/lib/date';
 
 interface CustomerInfoProps {
@@ -73,7 +74,13 @@ function CustomerInfo(props: CustomerInfoProps) {
           <InfoField
             icon={Tag}
             label="Kundetype"
-            value={user?.userType || 'Ikke oppgitt'}
+            value={
+              user?.userType === UserType.INTERNAL
+                ? 'Intern'
+                : user?.userType === UserType.EXTERNAL
+                  ? 'Ekstern'
+                  : 'Ikke oppgitt'
+            }
           />
 
           {user?.createdAt && (

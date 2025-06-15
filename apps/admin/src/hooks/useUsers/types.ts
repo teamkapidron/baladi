@@ -41,10 +41,11 @@ export type GetCustomerDetailsRequest = ApiData<
   }
 >;
 
-export type ApproveCustomerRequest = ApiData<
+export type UpdateUserRequest = ApiData<
   {
     userId: string;
-    userType: UserType;
+    isApprovedByAdmin?: boolean;
+    userType?: UserType;
   },
   undefined
 >;

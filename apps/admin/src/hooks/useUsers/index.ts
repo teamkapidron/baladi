@@ -12,7 +12,7 @@ import { useDateRangeInParams } from '@repo/ui/hooks/useDate/useDateRangeInParam
 import {
   GetAllCustomersRequest,
   GetCustomerDetailsRequest,
-  ApproveCustomerRequest,
+  UpdateUserRequest,
   GetUserRegistrationGraphDataRequest,
   GetUserStatsRequest,
   TopUsersRequest,
@@ -94,10 +94,10 @@ export function useUsers() {
     refetchOnWindowFocus: true,
   });
 
-  const approveUser = useCallback(
-    async (payload: ApproveCustomerRequest['payload']) => {
-      const response = await api.put<ApproveCustomerRequest['response']>(
-        `/user/approve`,
+  const updateUser = useCallback(
+    async (payload: UpdateUserRequest['payload']) => {
+      const response = await api.put<UpdateUserRequest['response']>(
+        `/user/update`,
         payload,
       );
       return response.data.data;
@@ -105,8 +105,8 @@ export function useUsers() {
     [api],
   );
 
-  const approveUserMutation = useMutation({
-    mutationFn: approveUser,
+  const updateUserMutation = useMutation({
+    mutationFn: updateUser,
   });
 
   const getUserRegistrationGraphData = useCallback(
@@ -157,7 +157,7 @@ export function useUsers() {
     getTopUsersQuery,
 
     // Mutations
-    approveUserMutation,
+    updateUserMutation,
 
     // Actions
     page,

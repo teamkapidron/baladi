@@ -32,7 +32,7 @@ export const getUserDetailsSchema = z.object({
   }),
 });
 
-export const approveUserSchema = z.object({
+export const updateUserSchema = z.object({
   body: z.object({
     userId: z
       .string()
@@ -40,6 +40,7 @@ export const approveUserSchema = z.object({
       .refine((val) => isValidObjectId(val), {
         message: 'Invalid user ID format',
       }),
+    isApprovedByAdmin: z.boolean().optional(),
     userType: z.nativeEnum(UserType),
   }),
 });
@@ -93,7 +94,7 @@ export const topUsersSchema = z.object({
 
 export type GetAllUsersSchema = z.infer<typeof getAllUsersSchema>;
 export type GetUserDetailsSchema = z.infer<typeof getUserDetailsSchema>;
-export type ApproveUserSchema = z.infer<typeof approveUserSchema>;
+export type UpdateUserSchema = z.infer<typeof updateUserSchema>;
 export type GetUserRegistrationGraphDataSchema = z.infer<
   typeof getUserRegistrationGraphDataSchema
 >;

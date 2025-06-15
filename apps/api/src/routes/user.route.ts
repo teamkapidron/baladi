@@ -6,7 +6,7 @@ import validate from '@/middlewares/validate.middleware';
 import {
   getAllUsers,
   getUserDetails,
-  approveUser,
+  updateUser,
   getUserRegistrationGraphData,
   getUserStats,
   getTopUsers,
@@ -15,7 +15,7 @@ import {
 import {
   getAllUsersSchema,
   getUserDetailsSchema,
-  approveUserSchema,
+  updateUserSchema,
   getUserRegistrationGraphDataSchema,
   getUserStatsSchema,
   topUsersSchema,
@@ -30,7 +30,7 @@ router.get(
   validate(getUserDetailsSchema),
   getUserDetails,
 );
-router.put('/approve', isAdmin, validate(approveUserSchema), approveUser);
+router.put('/update', isAdmin, validate(updateUserSchema), updateUser);
 router.get(
   '/graph/registration',
   isAdmin,

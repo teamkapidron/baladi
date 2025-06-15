@@ -37,7 +37,7 @@ import {
 
 const router: Router = express.Router();
 
-router.get('/me', isAuthenticated, getUserData);
+router.get('/me', isVerified, getUserData);
 router.get('/me/status', isVerified, getUserStatus);
 
 router.post('/signup', validate(signupSchema), signup);

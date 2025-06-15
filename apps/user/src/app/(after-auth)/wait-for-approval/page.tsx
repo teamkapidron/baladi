@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Metadata } from 'next';
 import {
   Clock,
@@ -6,6 +7,7 @@ import {
   Mail,
   CheckCircle,
 } from '@repo/ui/lib/icons';
+import Image from 'next/image';
 
 export const metadata: Metadata = {
   title: 'Venter på godkjenning',
@@ -13,18 +15,44 @@ export const metadata: Metadata = {
 
 export default function WaitForApprovalPage() {
   return (
-    <div className="flex min-h-screen w-full items-center justify-center bg-[var(--baladi-light)] p-8 sm:p-12 lg:w-1/2">
+    <div className="flex min-h-screen w-full items-center justify-center bg-[var(--baladi-light)] p-8 sm:p-12">
       <div className="w-full max-w-lg">
         <div className="mb-10 text-center">
           <div className="mb-8">
-            <div className="relative inline-flex items-center justify-center">
-              <div className="bg-[var(--baladi-primary)]/20 absolute inset-0 animate-pulse rounded-full blur-2xl"></div>
-              <div className="from-[var(--baladi-primary)]/10 to-[var(--baladi-secondary)]/10 absolute -inset-4 rounded-full bg-gradient-to-r blur-xl"></div>
-              <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-[var(--baladi-primary)] to-[var(--baladi-secondary)] shadow-lg">
-                <Clock className="h-10 w-10 animate-pulse text-white" />
+            <div className="relative mb-6 inline-flex items-center justify-center">
+              <div className="bg-[var(--baladi-primary)]/10 absolute inset-0 animate-pulse rounded-2xl blur-2xl"></div>
+              <div className="from-[var(--baladi-primary)]/5 to-[var(--baladi-secondary)]/5 absolute -inset-6 rounded-2xl bg-gradient-to-r blur-xl"></div>
+              <div className="ring-[var(--baladi-primary)]/10 relative overflow-hidden rounded-2xl bg-white p-4 shadow-2xl ring-1">
+                <Image
+                  width={96}
+                  height={96}
+                  src="/images/brand/logo.png"
+                  alt="Baladi Engros"
+                  className="h-24 w-auto object-contain"
+                />
               </div>
             </div>
-            <h2 className="mt-6 font-[family-name:var(--font-sora)] text-4xl font-bold tracking-tight text-[var(--baladi-dark)]">
+
+            <div className="mb-6">
+              <div className="mb-3 flex items-center justify-center gap-2">
+                <div className="h-1 w-8 rounded-full bg-[var(--baladi-accent)]"></div>
+                <h1 className="font-[family-name:var(--font-sora)] text-2xl font-bold text-[var(--baladi-primary)]">
+                  BALADI ENGROS
+                </h1>
+                <div className="h-1 w-8 rounded-full bg-[var(--baladi-accent)]"></div>
+              </div>
+              <p className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-secondary)]">
+                Din pålitelige grossistpartner
+              </p>
+            </div>
+
+            <div className="mb-4 flex items-center justify-center">
+              <div className="relative flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-[var(--baladi-warning)] to-amber-500 shadow-lg">
+                <Clock className="h-8 w-8 animate-pulse text-white" />
+              </div>
+            </div>
+
+            <h2 className="font-[family-name:var(--font-sora)] text-4xl font-bold tracking-tight text-[var(--baladi-dark)]">
               Venter på godkjenning
             </h2>
             <div className="mt-3 flex items-center justify-center">
@@ -45,7 +73,7 @@ export default function WaitForApprovalPage() {
                 </h3>
                 <p className="font-[family-name:var(--font-dm-sans)] leading-relaxed text-[var(--baladi-gray)]">
                   Vi gjennomgår for øyeblikket din registrering og verifiserer
-                  bedriftsinformasjonen din. Dette tar vanligvis 1-2 virkedager.
+                  bedriftsinformasjonen din.
                 </p>
               </div>
 
@@ -115,12 +143,12 @@ export default function WaitForApprovalPage() {
                   Har du spørsmål om registreringen din?
                 </p>
                 <p className="mt-1 text-center font-[family-name:var(--font-dm-sans)] text-sm">
-                  <a
-                    href="mailto:support@baladiengros.no"
+                  <Link
+                    href="/contact"
                     className="font-medium text-[var(--baladi-primary)] transition-colors duration-200 hover:text-[var(--baladi-secondary)]"
                   >
                     Kontakt oss
-                  </a>
+                  </Link>
                 </p>
               </div>
             </div>
@@ -128,16 +156,29 @@ export default function WaitForApprovalPage() {
         </div>
 
         <div className="mt-8 text-center">
-          <div className="inline-flex items-center space-x-1 text-xs text-[var(--baladi-gray)]">
-            <span className="font-[family-name:var(--font-dm-sans)]">
-              © {new Date().getFullYear()}
-            </span>
-            <span className="font-[family-name:var(--font-sora)] font-semibold text-[var(--baladi-primary)]">
-              Baladi Engros
-            </span>
-            <span className="font-[family-name:var(--font-dm-sans)]">
-              • Alle rettigheter forbeholdt
-            </span>
+          <div className="bg-[var(--baladi-primary)]/5 rounded-lg px-6 py-4">
+            <div className="mb-2 flex items-center justify-center">
+              <Image
+                width={32}
+                height={32}
+                src="/images/brand/logo.png"
+                alt="Baladi Engros"
+                className="h-8 w-auto object-contain opacity-80"
+              />
+            </div>
+            <div className="space-y-1">
+              <div className="flex items-center justify-center space-x-2 text-xs text-[var(--baladi-gray)]">
+                <span className="font-[family-name:var(--font-dm-sans)]">
+                  © {new Date().getFullYear()}
+                </span>
+                <span className="font-[family-name:var(--font-sora)] font-bold text-[var(--baladi-primary)]">
+                  BALADI ENGROS
+                </span>
+              </div>
+              <p className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
+                Alle rettigheter forbeholdt • Din pålitelige grossistpartner
+              </p>
+            </div>
           </div>
         </div>
       </div>
