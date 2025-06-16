@@ -12,14 +12,7 @@ interface AdminApprovalTemplate {
     name: string;
     email: string;
     userId: string;
-  };
-}
-
-interface WelcomeTemplate {
-  type: 'welcome';
-  data: {
-    name: string;
-    userType: string;
+    createdAt: string;
   };
 }
 
@@ -39,13 +32,11 @@ interface AdminCredentialsTemplate {
   };
 }
 
-interface WarehouseNotificationTemplate {
-  type: 'warehouseNotification';
+interface UserApprovalConfirmationTemplate {
+  type: 'userApprovalConfirmation';
   data: {
-    orderNumber: string;
-    productName: string;
-    quantity: number;
-    customerName: string;
+    name: string;
+    email: string;
   };
 }
 
@@ -63,8 +54,8 @@ interface InventoryAlertTemplate {
 export type MailTemplate =
   | VerifyEmailTemplate
   | AdminApprovalTemplate
-  | WelcomeTemplate
   | PasswordResetTemplate
   | AdminCredentialsTemplate
   | WarehouseNotificationTemplate
-  | InventoryAlertTemplate;
+  | InventoryAlertTemplate
+  | UserApprovalConfirmationTemplate;

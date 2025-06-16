@@ -16,6 +16,8 @@ declare module 'global' {
         SMTP_PASSWORD: string;
         ADMIN_API_KEY: string;
         WAREHOUSE_EMAIL: string;
+        ADMIN_URL: string;
+        USER_URL: string;
       }
     }
   }
