@@ -28,49 +28,24 @@ export const getUserFavorites = asyncHandler(
     const perPage = parseInt(limit ?? '10', 10);
     const currentPage = parseInt(page ?? '1', 10);
 
-    const favorites = await Favorite.aggregate<FavoriteAggregateType>([
-      { $match: { userId } },
-      {
-        $lookup: {
-          from: 'products',
-          localField: 'productID',
-          foreignField: '_id',
-          as: 'productID',
+    const result = await Favorite.find({ userId })
+      .populate({
+        path: 'productId',
+        populate: {
+          path: 'categories',
         },
-      },
-      { $unwind: '$productID' },
-      {
-        $lookup: {
-          from: 'categories',
-          localField: 'productID.categories',
-          foreignField: '_id',
-          as: 'productID.categories',
-        },
-      },
-      {
-        $project: {
-          _id: 1,
-          createdAt: 1,
-          product: {
-            _id: 1,
-            name: 1,
-            salePrice: 1,
-            unitPrice: 1,
-            slug: 1,
-            images: 1,
-            shortDescription: 1,
-            categories: {
-              _id: 1,
-              name: 1,
-              slug: 1,
-            },
-          },
-        },
-      },
-      { $sort: { createdAt: -1 } },
-      { $skip: perPage * (currentPage - 1) },
-      { $limit: perPage },
-    ]);
+      })
+      .select('-__v -updatedAt')
+      .sort({ createdAt: -1 })
+      .skip((currentPage - 1) * perPage)
+      .limit(perPage);
+
+    const favorites = result.map((favorite) => {
+      const product = favorite.productId;
+      return {
+        product: product,
+      };
+    });
 
     sendResponse(res, 200, 'Favorites fetched successfully', {
       favorites,

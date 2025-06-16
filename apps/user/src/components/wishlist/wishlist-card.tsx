@@ -1,9 +1,10 @@
 'use client';
-
 // Node Modules
 import { memo, useCallback, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+
+// Icons
 import { ShoppingCart, ExternalLink, Trash2 } from '@repo/ui/lib/icons';
 
 // Components
@@ -16,17 +17,17 @@ import { useFavourite } from '@/hooks/useFavourite';
 // Types
 import { Favorite } from '@/hooks/useFavourite/types';
 
+// Props
 interface WishlistCardProps {
   favorite: Favorite;
 }
 
 function WishlistCard(props: WishlistCardProps) {
   const { favorite } = props;
-
   const [imageError, setImageError] = useState(false);
   const { removeFromFavoritesMutation } = useFavourite();
-
   const { product } = favorite;
+
   const hasDiscount = product.salePrice < product.unitPrice;
   const discountPercent = hasDiscount
     ? Math.round(
@@ -39,14 +40,14 @@ function WishlistCard(props: WishlistCardProps) {
   }, [product._id, removeFromFavoritesMutation]);
 
   return (
-    <div className="group overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-      <div className="relative aspect-square overflow-hidden bg-gray-100">
+    <div className="group flex h-full flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow transition-transform duration-300 hover:-translate-y-1">
+      <div className="relative h-64 w-full overflow-hidden">
         {!imageError && product.images.length > 0 ? (
           <Image
             src={product.images[0] || ''}
             alt={product.name}
             fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            className="object-contain p-4 transition-transform duration-300 group-hover:scale-105"
             onError={() => setImageError(true)}
           />
         ) : (
@@ -72,50 +73,51 @@ function WishlistCard(props: WishlistCardProps) {
         </Button>
       </div>
 
-      <div className="space-y-3 p-4">
-        <h3 className="line-clamp-2 font-[family-name:var(--font-sora)] text-lg font-semibold leading-tight text-gray-900">
-          {product.name}
-        </h3>
+      <div className="flex flex-1 flex-col justify-between p-4">
+        <div className="space-y-2">
+          <h3 className="line-clamp-2 text-lg font-semibold text-gray-900">
+            {product.name}
+          </h3>
+          <p className="line-clamp-2 text-sm text-gray-600">
+            {product.shortDescription}
+          </p>
 
-        <p className="line-clamp-2 font-[family-name:var(--font-dm-sans)] text-sm text-gray-600">
-          {product.shortDescription}
-        </p>
+          {product.categories.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {product.categories.slice(0, 2).map((category) => (
+                <Badge
+                  key={category._id}
+                  variant="secondary"
+                  className="text-xs"
+                >
+                  {category.name}
+                </Badge>
+              ))}
+              {product.categories.length > 2 && (
+                <Badge variant="secondary" className="text-xs">
+                  +{product.categories.length - 2}
+                </Badge>
+              )}
+            </div>
+          )}
+        </div>
 
-        {product.categories.length > 0 && (
-          <div className="flex flex-wrap gap-1">
-            {product.categories.slice(0, 2).map((category) => (
-              <Badge
-                key={category._id}
-                variant="secondary"
-                className="font-[family-name:var(--font-dm-sans)] text-xs"
-              >
-                {category.name}
-              </Badge>
-            ))}
-            {product.categories.length > 2 && (
-              <Badge variant="secondary" className="text-xs">
-                +{product.categories.length - 2}
-              </Badge>
-            )}
-          </div>
-        )}
-
-        <div className="flex items-center justify-between border-t border-gray-100 pt-2">
-          <div className="space-y-1">
+        <div className="mt-4 flex items-center justify-between border-t border-gray-300 pt-3">
+          <div>
             {hasDiscount && (
-              <p className="font-[family-name:var(--font-dm-sans)] text-xs text-gray-500 line-through">
+              <p className="text-xs text-gray-500 line-through">
                 {product.unitPrice.toLocaleString('nb-NO')} kr
               </p>
             )}
-            <p className="text-baladi-primary font-[family-name:var(--font-sora)] text-lg font-bold">
+            <p className="text-baladi-primary text-lg font-bold">
               {product.salePrice.toLocaleString('nb-NO')} kr
             </p>
           </div>
 
-          <Link href={`/product/${product.slug}`}>
+          <Link href={`/product/${product.slug}`} target="_blank">
             <Button
               size="sm"
-              className="from-baladi-primary to-baladi-secondary hover:from-baladi-primary/90 hover:to-baladi-secondary/90 group/link bg-gradient-to-r font-[family-name:var(--font-dm-sans)] text-white shadow-md transition-all duration-300 hover:shadow-lg"
+              className="group/link bg-gradient-to-r from-[var(--baladi-primary)] to-[var(--baladi-secondary)] text-white hover:shadow-lg"
             >
               <ExternalLink className="mr-1.5 h-4 w-4 transition-transform group-hover/link:translate-x-0.5" />
               Se produkt

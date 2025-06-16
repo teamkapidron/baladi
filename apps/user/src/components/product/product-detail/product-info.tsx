@@ -215,6 +215,7 @@ const QuantitySelector = memo(
 );
 
 interface ProductActionsProps {
+  isInWishlist: boolean;
   isAuthenticated: boolean;
   isOutOfStock: boolean;
   cartQuantity: number;
@@ -224,10 +225,12 @@ interface ProductActionsProps {
   onAddToWishlist: () => void;
   onGoToCart: () => void;
   onGoToLogin: () => void;
+  handleRemoveFromWishlist: () => void;
 }
 
 const ProductActions = memo(
   ({
+    isInWishlist,
     isAuthenticated,
     isOutOfStock,
     cartQuantity,
@@ -237,6 +240,7 @@ const ProductActions = memo(
     onAddToWishlist,
     onGoToCart,
     onGoToLogin,
+    handleRemoveFromWishlist,
   }: ProductActionsProps) => (
     <div className="flex gap-3">
       {isAuthenticated ? (
@@ -289,9 +293,14 @@ const ProductActions = memo(
         size="lg"
         variant="outline"
         className="font-[family-name:var(--font-dm-sans)] font-medium"
-        onClick={onAddToWishlist}
+        onClick={isInWishlist ? handleRemoveFromWishlist : onAddToWishlist}
       >
-        <Heart size={18} />
+        <Heart
+          size={18}
+          className={
+            isInWishlist ? 'fill-red-500 stroke-red-500 text-white' : ''
+          }
+        />
       </Button>
     </div>
   ),
@@ -301,7 +310,8 @@ function useProductInfo(slug: string) {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
   const { addToCart, getItemQuantity } = useCart();
-  const { addToFavoritesMutation } = useFavourite();
+  const { addToFavoritesMutation, favorites, removeFromFavoritesMutation } =
+    useFavourite();
   const { bulkDiscountQuery } = useDiscount();
   const { data: productData, isLoading } = useProductBySlug(slug);
 
@@ -323,11 +333,15 @@ function useProductInfo(slug: string) {
       volume,
       price,
       cartQuantity,
+      isInWishlist:
+        favorites?.favorites.some((f) => f.product._id === product._id) ??
+        false,
     };
   }, [
     productData?.product,
     bulkDiscountQuery.data?.bulkDiscounts,
     getItemQuantity,
+    favorites?.favorites,
   ]);
 
   const [quantity, setQuantity] = useState(1);
@@ -366,6 +380,25 @@ function useProductInfo(slug: string) {
     addToFavoritesMutation,
   ]);
 
+  const handleRemoveFromWishlist = useCallback(() => {
+    if (!isAuthenticated) {
+      router.push('/login');
+      return;
+    }
+
+    if (productDetails?.product?._id && productDetails.isInWishlist) {
+      removeFromFavoritesMutation.mutate({
+        productId: productDetails.product._id,
+      });
+    }
+  }, [
+    isAuthenticated,
+    router,
+    productDetails?.product?._id,
+    productDetails?.isInWishlist,
+    removeFromFavoritesMutation,
+  ]);
+
   const handleGoToCart = useCallback(() => {
     router.push('/cart');
   }, [router]);
@@ -384,6 +417,7 @@ function useProductInfo(slug: string) {
     handleAddToWishlist,
     handleGoToCart,
     handleGoToLogin,
+    handleRemoveFromWishlist,
   };
 }
 
@@ -427,6 +461,8 @@ function ProductInfo() {
     handleAddToWishlist,
     handleGoToCart,
     handleGoToLogin,
+    isInWishlist,
+    handleRemoveFromWishlist,
   } = useProductInfo(slug);
 
   if (isLoading) {
@@ -479,6 +515,7 @@ function ProductInfo() {
         )}
 
         <ProductActions
+          isInWishlist={isInWishlist ?? false}
           isAuthenticated={isAuthenticated}
           isOutOfStock={isOutOfStock ?? false}
           cartQuantity={cartQuantity ?? 0}
@@ -488,6 +525,7 @@ function ProductInfo() {
           onAddToWishlist={handleAddToWishlist}
           onGoToCart={handleGoToCart}
           onGoToLogin={handleGoToLogin}
+          handleRemoveFromWishlist={handleRemoveFromWishlist}
         />
       </div>
     </div>

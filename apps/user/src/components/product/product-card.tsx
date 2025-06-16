@@ -25,6 +25,7 @@ import { useAuth } from '@/hooks/useAuth';
 // Types/Utils
 import { formatPrice } from '@/utils/price.util';
 import { ProductResponse } from '@/hooks/useProduct/types';
+import { useFavourite } from '@/hooks/useFavourite';
 
 interface ProductCardProps {
   product: ProductResponse;
@@ -34,57 +35,79 @@ interface ProductCardProps {
 interface ProductImageProps {
   product: ProductResponse;
   isAuthenticated: boolean;
+  isInWishlist: boolean;
+  handleAddToWishlist: () => void;
+  handleRemoveFromWishlist: () => void;
 }
 
-const ProductImage = memo(({ product, isAuthenticated }: ProductImageProps) => {
-  const productImage = product.images?.[0] || '';
+const ProductImage = memo(
+  ({
+    product,
+    isAuthenticated,
+    isInWishlist,
+    handleAddToWishlist,
+    handleRemoveFromWishlist,
+  }: ProductImageProps) => {
+    const productImage = product.images?.[0] || '';
 
-  return (
-    <div className="bg-[var(--baladi-light)]/30 relative flex aspect-square items-center justify-center overflow-hidden">
-      <div className="absolute inset-0">
-        <div className="relative h-full w-full">
-          <Link
-            scroll={false}
-            href={`/product/${product.slug}`}
-            className="block h-full w-full"
-          >
-            <Image
-              width={400}
-              height={400}
-              src={productImage}
-              alt={product.name}
-              className="h-full w-full object-contain p-4 transition-transform duration-500 group-hover:scale-105"
-              priority={false}
-              quality={85}
-            />
-          </Link>
-
-          {isAuthenticated && (
-            <Button
-              variant="ghost"
-              className={cn(
-                'absolute right-3 top-3 z-20 rounded-full p-2 transition-all duration-300',
-                'hover:scale-110 hover:shadow-md active:scale-95',
-                'bg-white/90 text-[var(--baladi-gray)] hover:bg-white hover:text-red-500',
-              )}
+    return (
+      <div className="bg-[var(--baladi-light)]/30 relative flex aspect-square items-center justify-center overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="relative h-full w-full">
+            <Link
+              scroll={false}
+              href={`/product/${product.slug}`}
+              className="block h-full w-full"
             >
-              <Heart size={16} className="transition-all duration-300" />
-            </Button>
-          )}
+              <Image
+                width={400}
+                height={400}
+                src={productImage}
+                alt={product.name}
+                className="h-full w-full object-contain p-4 transition-transform duration-500 group-hover:scale-105"
+                priority={false}
+                quality={85}
+              />
+            </Link>
 
-          {product.hasVolumeDiscount && (
-            <div className="absolute left-3 top-3 z-20 rounded-full bg-gradient-to-r from-[var(--baladi-secondary)] to-[var(--baladi-accent)] px-2 py-1 text-xs font-medium text-white shadow-sm">
-              <BarChart3 size={12} className="mr-1 inline-block" />
-              Volum rabatt
-            </div>
-          )}
+            {isAuthenticated && (
+              <Button
+                variant="ghost"
+                className={cn(
+                  'absolute right-3 top-3 z-20 rounded-full p-2 transition-all duration-300',
+                  'hover:scale-110 hover:shadow-md active:scale-95',
+                  'bg-white/90 text-[var(--baladi-gray)] hover:bg-white hover:text-red-500',
+                )}
+                onClick={
+                  isInWishlist ? handleRemoveFromWishlist : handleAddToWishlist
+                }
+              >
+                <Heart
+                  size={16}
+                  className={cn(
+                    'transition-all duration-300',
+                    isInWishlist
+                      ? 'fill-red-500 stroke-red-500 text-white'
+                      : '',
+                  )}
+                />
+              </Button>
+            )}
+
+            {product.hasVolumeDiscount && (
+              <div className="absolute left-3 top-3 z-20 rounded-full bg-gradient-to-r from-[var(--baladi-secondary)] to-[var(--baladi-accent)] px-2 py-1 text-xs font-medium text-white shadow-sm">
+                <BarChart3 size={12} className="mr-1 inline-block" />
+                Volum rabatt
+              </div>
+            )}
+          </div>
         </div>
-      </div>
 
-      <ProductStockBadge stock={product.stock} />
-    </div>
-  );
-});
+        <ProductStockBadge stock={product.stock} />
+      </div>
+    );
+  },
+);
 
 interface ProductStockBadgeProps {
   stock: number;
@@ -246,7 +269,8 @@ function ProductCard(props: ProductCardProps) {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
   const { addToCart, isInCart, getItemQuantity } = useCart();
-
+  const { addToFavoritesMutation, favorites, removeFromFavoritesMutation } =
+    useFavourite();
   const [quantity, setQuantity] = useState(1);
 
   const { isInCartState, cartQuantity, isOutOfStock, stockCount, price } =
@@ -282,6 +306,26 @@ function ProductCard(props: ProductCardProps) {
     router.push('/login');
   }, [router]);
 
+  const handleAddToWishlist = useCallback(() => {
+    if (!isAuthenticated) return;
+    addToFavoritesMutation.mutate({
+      productId: product._id,
+    });
+  }, [addToFavoritesMutation, isAuthenticated, product._id]);
+
+  const handleRemoveFromWishlist = useCallback(() => {
+    if (!isAuthenticated) return;
+    removeFromFavoritesMutation.mutate({
+      productId: product._id,
+    });
+  }, [removeFromFavoritesMutation, isAuthenticated, product._id]);
+
+  const isInWishlist = useMemo(() => {
+    return (
+      favorites?.favorites.some((f) => f.product._id === product._id) ?? false
+    );
+  }, [favorites, product._id]);
+
   return (
     <div
       className={cn(
@@ -291,7 +335,13 @@ function ProductCard(props: ProductCardProps) {
         className,
       )}
     >
-      <ProductImage product={product} isAuthenticated={isAuthenticated} />
+      <ProductImage
+        product={product}
+        isAuthenticated={isAuthenticated}
+        isInWishlist={isInWishlist}
+        handleAddToWishlist={handleAddToWishlist}
+        handleRemoveFromWishlist={handleRemoveFromWishlist}
+      />
 
       <div className="relative z-10 bg-white p-4">
         <ProductInfoSection

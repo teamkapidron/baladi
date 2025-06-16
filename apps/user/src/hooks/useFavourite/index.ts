@@ -11,6 +11,7 @@ import type {
   GetFavoritesRequest,
   AddToFavoritesRequest,
   RemoveFromFavoritesRequest,
+  Favorite,
 } from './types';
 import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
 
@@ -34,17 +35,41 @@ export function useFavourite() {
       const response = await api.post<AddToFavoritesRequest['response']>(
         `/favorite/${payload.productId}`,
       );
-      return response.data.data;
+      return payload;
     },
     [api],
   );
 
   const addToFavoritesMutation = useMutation({
     mutationFn: addToFavorites,
-    onSuccess: function () {
-      queryClient.invalidateQueries({
-        queryKey: [ReactQueryKeys.GET_FAVORITES],
-      });
+    onSuccess: function (newFavorite) {
+      queryClient.setQueryData(
+        [ReactQueryKeys.GET_FAVORITES],
+        (old: { favorites: Favorite[] } | undefined) => {
+          if (!old)
+            return {
+              data: {
+                favorites: [
+                  {
+                    product: { _id: newFavorite.productId },
+                  },
+                ],
+              },
+            };
+
+          const newData = {
+            ...old,
+            favorites: [
+              ...old.favorites,
+              { product: { _id: newFavorite.productId } },
+            ],
+          };
+
+          return {
+            ...newData,
+          };
+        },
+      );
       toast.success('Product added to favorites');
     },
   });
@@ -54,17 +79,27 @@ export function useFavourite() {
       const response = await api.delete<RemoveFromFavoritesRequest['response']>(
         `/favorite/${payload.productId}`,
       );
-      return response.data.data;
+      return payload;
     },
     [api],
   );
 
   const removeFromFavoritesMutation = useMutation({
     mutationFn: removeFromFavorites,
-    onSuccess: function () {
-      queryClient.invalidateQueries({
-        queryKey: [ReactQueryKeys.GET_FAVORITES],
-      });
+    onSuccess: function (payload) {
+      queryClient.setQueryData(
+        [ReactQueryKeys.GET_FAVORITES],
+        (old: { favorites: Favorite[] } | undefined) => {
+          if (!old) return { favorites: [] };
+
+          return {
+            ...old,
+            favorites: old.favorites.filter(
+              (f: Favorite) => f.product._id !== payload?.productId,
+            ),
+          };
+        },
+      );
       toast.success('Product removed from favorites');
     },
   });
