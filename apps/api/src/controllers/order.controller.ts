@@ -6,6 +6,7 @@ import Order from '@/models/order.model';
 import Product from '@/models/product.model';
 import Address from '@/models/address.model';
 import Inventory from '@/models/inventory.model';
+import BulkDiscount from '@/models/bulkDiscount.model';
 
 // Utils
 import { formatDate } from '@/utils/common/date.util';
@@ -29,10 +30,13 @@ import type {
   GetUserOrdersSchema,
   GetUserOrderDetailsSchema,
   CancelOrderSchema,
+
+  // Admin
   GetAllOrdersSchema,
   GetOrderDetailsAdminSchema,
-  DeleteOrderSchema,
+  UpdateOrderStatusSchema,
   UpdateOrderDetailsSchema,
+  DeleteOrderSchema,
   GetOrderStatsSchema,
   GetOrderRevenueStatsSchema,
   GetOrderStatusGraphDataSchema,
@@ -52,7 +56,13 @@ import { IInventory } from '@/models/interfaces/inventory.model';
 /*********************** START: User Controllers ***********************/
 export const placeOrder = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user!._id;
-  const { items, shippingAddressId } = req.body as PlaceOrderSchema['body'];
+  const {
+    items,
+    shippingAddressId,
+    palletType,
+    desiredDeliveryDate,
+    customerComment,
+  } = req.body as PlaceOrderSchema['body'];
 
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -77,6 +87,9 @@ export const placeOrder = asyncHandler(async (req: Request, res: Response) => {
     })
       .sort({ expirationDate: 1 }) // FIFO - use items expiring first
       .session(session);
+    const bulkDiscounts = await BulkDiscount.find({
+      isActive: true,
+    }).session(session);
 
     let totalAmount = 0;
     const orderItems: OrderItem[] = [];
@@ -117,16 +130,36 @@ export const placeOrder = asyncHandler(async (req: Request, res: Response) => {
         );
       }
 
-      const itemTotal = product.salePrice * item.quantity;
+      const price = product.salePrice;
+
+      const vatAmount = (product.vat * price) / 100;
+
+      const priceWithVat = price + vatAmount;
+
+      const discount = 0;
+
+      const bulkDiscountPercentage = bulkDiscounts.find(
+        (bd) => bd.minQuantity <= item.quantity,
+      )?.discountPercentage;
+      const bulkDiscount =
+        product.hasVolumeDiscount && bulkDiscountPercentage
+          ? price * (bulkDiscountPercentage / 100)
+          : 0;
+
+      const itemTotal = priceWithVat - bulkDiscount - discount;
 
       orderItems.push({
         productId: product._id.toString(),
         quantity: item.quantity,
-        price: product.salePrice,
+        price,
+        vatAmount,
+        priceWithVat,
+        discount,
+        bulkDiscount,
         totalPrice: itemTotal,
       });
 
-      totalAmount += itemTotal;
+      totalAmount += itemTotal * item.quantity;
 
       // Deduct quantity from inventory using FIFO
       let remainingToDeduct = item.quantity;
@@ -162,6 +195,9 @@ export const placeOrder = asyncHandler(async (req: Request, res: Response) => {
           items: orderItems,
           totalAmount,
           shippingAddress: shippingAddress._id,
+          notes: customerComment,
+          desiredDeliveryDate,
+          palletType,
         },
       ],
       { session },
@@ -182,7 +218,16 @@ export const placeOrder = asyncHandler(async (req: Request, res: Response) => {
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
-    throw new ErrorHandler(500, 'Failed to place order', 'INTERNAL_SERVER');
+
+    if (error instanceof ErrorHandler) {
+      throw error;
+    }
+
+    throw new ErrorHandler(
+      500,
+      'Failed to place order. Please try again later.',
+      'INTERNAL_SERVER',
+    );
   }
 });
 
@@ -234,7 +279,14 @@ export const getOrderDetails = asyncHandler(
     }
 
     await order.populate([
-      { path: 'items.productId', select: 'name images categories salePrice' },
+      {
+        path: 'items.productId',
+        select: 'name images categories salePrice slug',
+        populate: {
+          path: 'categories',
+          select: 'name',
+        },
+      },
       { path: 'userId', select: 'name email' },
       { path: 'shippingAddress' },
     ]);
@@ -388,10 +440,14 @@ export const getOrderDetailsAdmin = asyncHandler(
     const { orderId } = req.params as GetOrderDetailsAdminSchema['params'];
 
     const order = await Order.findById(orderId)
-      .populate('userId', 'name email phone userType')
+      .populate('userId', 'name email userType')
       .populate({
         path: 'items.productId',
-        select: 'name category images description',
+        select: 'name categories images',
+        populate: {
+          path: 'categories',
+          select: 'name',
+        },
       })
       .populate('shippingAddress');
 
@@ -400,6 +456,23 @@ export const getOrderDetailsAdmin = asyncHandler(
     }
 
     sendResponse(res, 200, 'Order details fetched successfully', { order });
+  },
+);
+
+export const updateOrderStatus = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { orderId } = req.params as UpdateOrderStatusSchema['params'];
+    const { status } = req.body as UpdateOrderStatusSchema['body'];
+
+    const order = await Order.findById(orderId);
+    if (!order) {
+      throw new ErrorHandler(404, 'Order not found', 'NOT_FOUND');
+    }
+
+    order.status = status;
+    await order.save();
+
+    sendResponse(res, 200, 'Order status updated successfully');
   },
 );
 

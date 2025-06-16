@@ -184,7 +184,7 @@ export function useAuth() {
   const logoutMutation = useMutation({
     mutationFn: logout,
     onSuccess: async function () {
-      await queryClient.invalidateQueries({
+      await queryClient.resetQueries({
         queryKey: [ReactQueryKeys.GET_USER_DATA],
       });
       router.push('/login');

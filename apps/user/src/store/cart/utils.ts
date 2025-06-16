@@ -6,7 +6,7 @@ export function calculateItemTotal(
   quantity: number,
   unitPrice: number,
 ): number {
-  return Math.round(quantity * unitPrice * 100) / 100;
+  return quantity * unitPrice;
 }
 
 export function createCartItem(
@@ -14,11 +14,13 @@ export function createCartItem(
   product: ProductResponse,
   quantity: number,
 ): CartItem {
+  const price = product.salePrice * (1 + product.vat / 100);
+
   return {
     userId,
     product,
     quantity,
-    totalPrice: calculateItemTotal(quantity, product.salePrice),
+    totalPrice: calculateItemTotal(quantity, price),
     addedAt: new Date(),
     updatedAt: new Date(),
   };
@@ -49,8 +51,13 @@ export function calculateCartSummary(
   const totalPrice = userCart.reduce((sum, item) => sum + item.totalPrice, 0);
   const uniqueItems = userCart.length;
 
+  const totalPriceWithoutVat = userCart.reduce(
+    (sum, item) => sum + item.product.salePrice * item.quantity,
+    0,
+  );
   const totalVat = userCart.reduce(
-    (sum, item) => sum + item.totalPrice * item.product.vat,
+    (sum, item) =>
+      sum + (item.product.salePrice * item.quantity * item.product.vat) / 100,
     0,
   );
 
@@ -65,11 +72,12 @@ export function calculateCartSummary(
       return sum + (item.totalPrice * discount.discountPercentage) / 100;
     }, 0) || 0;
 
-  const netPrice = totalPrice - totalDiscount;
+  const netPrice = totalPrice + totalVat - totalDiscount;
 
   return {
     totalItems,
     totalPrice: Math.round(totalPrice * 100) / 100,
+    totalPriceWithoutVat,
     totalVat,
     totalDiscount,
     netPrice,

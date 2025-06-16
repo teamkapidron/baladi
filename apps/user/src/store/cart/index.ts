@@ -21,6 +21,7 @@ export const useCartStore = create<CartStore>()(
       cartSummary: {
         totalItems: 0,
         totalPrice: 0,
+        totalPriceWithoutVat: 0,
         totalVat: 0,
         totalDiscount: 0,
         netPrice: 0,
@@ -36,7 +37,7 @@ export const useCartStore = create<CartStore>()(
         quantity: number,
         bulkDiscounts: BulkDiscount[],
       ) => {
-        if (!quantity || quantity <= 0) {
+        if (quantity <= 0) {
           toast.error(TOAST_MESSAGES.INVALID_QUANTITY);
           return;
         }
@@ -227,6 +228,7 @@ export const useCartStore = create<CartStore>()(
             cartSummary: {
               totalItems: 0,
               totalPrice: 0,
+              totalPriceWithoutVat: 0,
               totalVat: 0,
               totalDiscount: 0,
               netPrice: 0,

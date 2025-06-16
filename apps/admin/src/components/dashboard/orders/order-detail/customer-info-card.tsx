@@ -7,7 +7,7 @@ import { Mail, Hash } from '@repo/ui/lib/icons';
 
 // Components
 import { Button } from '@repo/ui/components/base/button';
-import { Card, CardHeader, CardContent } from '@repo/ui/components/base/card';
+import { Card, CardContent } from '@repo/ui/components/base/card';
 
 // Hooks
 import { useOrderDetails } from '@/hooks/useOrder';
@@ -29,8 +29,6 @@ function CustomerInfoCard(props: CustomerInfoCardProps) {
 
   return (
     <Card>
-      <CardHeader title="Customer Information" />
-
       <CardContent className="space-y-6">
         <div className="flex items-center gap-4">
           <div className="bg-primary/10 text-primary flex h-12 w-12 items-center justify-center">

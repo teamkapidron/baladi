@@ -1,7 +1,7 @@
 'use client';
 
 // Node Modules
-import React, { memo, useMemo } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import {
   Calendar,
   CreditCard,
@@ -32,6 +32,10 @@ function OrderHeader(props: OrderHeaderProps) {
   const { order } = props;
 
   const statusInfo = useMemo(() => getStatusInfo(order.status), [order.status]);
+
+  const handleCancelOrder = useCallback(() => {
+    console.log('cancel order');
+  }, []);
 
   return (
     <div className="rounded-lg bg-white p-6 shadow-sm lg:p-8">
@@ -93,7 +97,7 @@ function OrderHeader(props: OrderHeaderProps) {
                   Antall varer
                 </p>
                 <p className="font-[family-name:var(--font-dm-sans)] font-medium text-[var(--baladi-dark)]">
-                  {order.items?.length || 0} varer
+                  {order.items.length} varer
                 </p>
               </div>
             </div>
@@ -115,17 +119,11 @@ function OrderHeader(props: OrderHeaderProps) {
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
-          {order.status === 'pending' && (
-            <Button variant="outline" size="sm">
+          {order.status === OrderStatus.PENDING && (
+            <Button variant="destructive" size="sm" onClick={handleCancelOrder}>
               Kanseller bestilling
             </Button>
           )}
-          <Button variant="outline" size="sm">
-            Last ned kvittering
-          </Button>
-          <Button variant="outline" size="sm">
-            Kontakt kundeservice
-          </Button>
         </div>
       </div>
     </div>

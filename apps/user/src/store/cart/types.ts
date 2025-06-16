@@ -24,6 +24,7 @@ export interface CartItem {
 export interface CartSummary {
   totalItems: number;
   totalPrice: number;
+  totalPriceWithoutVat: number;
   totalVat: number;
   totalDiscount: number;
   netPrice: number;

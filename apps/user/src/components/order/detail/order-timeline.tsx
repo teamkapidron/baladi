@@ -191,24 +191,6 @@ function OrderTimeline({ order }: OrderTimelineProps) {
           </div>
         ))}
       </div>
-
-      {!['delivered', 'cancelled'].includes(order.status.toLowerCase()) && (
-        <div className="from-[var(--baladi-primary)]/5 to-[var(--baladi-secondary)]/5 mt-6 rounded-lg bg-gradient-to-r p-4">
-          <div className="flex items-center gap-3">
-            <div className="bg-[var(--baladi-primary)]/10 flex h-8 w-8 items-center justify-center rounded-full">
-              <Clock size={16} className="text-[var(--baladi-primary)]" />
-            </div>
-            <div>
-              <p className="font-[family-name:var(--font-dm-sans)] font-medium text-[var(--baladi-dark)]">
-                Forventet levering
-              </p>
-              <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-                3-5 virkedager fra bestilling
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

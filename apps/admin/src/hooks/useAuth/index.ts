@@ -63,7 +63,7 @@ export function useAuth() {
   const logoutMutation = useMutation({
     mutationFn: logout,
     onSuccess: function () {
-      queryClient.invalidateQueries({
+      queryClient.resetQueries({
         queryKey: [ReactQueryKeys.GET_ADMIN_DATA],
       });
       router.push('/login');

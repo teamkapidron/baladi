@@ -15,11 +15,9 @@ export default function OrderListPage() {
     <Suspense>
       <div className="min-h-screen bg-[var(--baladi-background)]">
         <Header />
-
         <main className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
           <OrderListContent />
         </main>
-
         <Footer />
       </div>
     </Suspense>

@@ -121,9 +121,7 @@ function AddInventoryForm(props: AddInventoryFormProps) {
                     type="number"
                     min="1"
                     placeholder="Skriv inn antall enheter"
-                    onChange={(e) =>
-                      field.onChange(parseInt(e.target.value) || 0)
-                    }
+                    onChange={(e) => field.onChange(parseInt(e.target.value))}
                     className="focus:ring-[var(--baladi-primary)]/20 w-full rounded-lg border border-[var(--baladi-border)] bg-[var(--baladi-muted)] px-4 py-3 font-[family-name:var(--font-dm-sans)] transition-all duration-200 focus:border-[var(--baladi-primary)] focus:bg-white focus:ring-2"
                   />
                 </FormControl>

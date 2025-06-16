@@ -35,9 +35,18 @@ export type OrderResponse = Omit<
       _id: string;
       name: string;
       images: string[];
+      categories: {
+        _id: string;
+        name: string;
+      }[];
     };
     quantity: number;
     price: number;
+    vatAmount: number;
+    priceWithVat: number;
+    discount: number;
+    bulkDiscount: number;
+    totalPrice: number;
   }[];
 };
 
@@ -70,6 +79,14 @@ export type GetOrderDetailsAdminRequest = ApiData<
   {
     order: OrderResponse;
   }
+>;
+
+export type UpdateOrderStatusRequest = ApiData<
+  {
+    orderId: string;
+    status: OrderStatus;
+  },
+  undefined
 >;
 
 export type GetOrderStatsRequest = ApiData<

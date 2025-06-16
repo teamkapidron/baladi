@@ -108,7 +108,6 @@ function InventoryTable() {
               <TableHead className="px-4 py-4 text-left text-gray-700">
                 Status
               </TableHead>
-              <TableHead className="px-4 py-4 text-left">Pris</TableHead>
               <TableHead className="px-4 py-4 text-left text-gray-700">
                 Utløpsdato
               </TableHead>
@@ -188,14 +187,6 @@ function InventoryTable() {
                       item.quantity,
                       new Date(item.expirationDate),
                     )}
-                  </div>
-                </TableCell>
-
-                <TableCell className="px-4 py-6">
-                  <div className="space-y-1">
-                    <div className="text-lg font-bold text-gray-900">
-                      {item.product.salePrice}kr
-                    </div>
                   </div>
                 </TableCell>
 

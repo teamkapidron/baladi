@@ -4,12 +4,16 @@ import { isAdmin, isAuthenticated } from '@/middlewares/auth.middleware';
 import validate from '@/middlewares/validate.middleware';
 
 import {
+  // User
   placeOrder,
   getUserOrders,
   getOrderDetails,
   cancelOrder,
+
+  // Admin
   getAllOrders,
   getOrderDetailsAdmin,
+  updateOrderStatus,
   getOrderStats,
   getOrderRevenueStats,
   getOrderStatusGraphData,
@@ -20,12 +24,16 @@ import {
 } from '@/controllers/order.controller';
 
 import {
+  // User
   placeOrderSchema,
   getUserOrdersSchema,
   getUserOrderDetailsSchema,
   cancelOrderSchema,
+
+  // Admin
   getAllOrdersSchema,
   getOrderDetailsAdminSchema,
+  updateOrderStatusSchema,
   getOrderStatsSchema,
   getOrderRevenueStatsSchema,
   getOrderStatusGraphDataSchema,
@@ -63,6 +71,12 @@ router.get(
   isAdmin,
   validate(getOrderDetailsAdminSchema),
   getOrderDetailsAdmin,
+);
+router.patch(
+  '/status/:orderId',
+  isAdmin,
+  validate(updateOrderStatusSchema),
+  updateOrderStatus,
 );
 router.get('/stats', isAdmin, validate(getOrderStatsSchema), getOrderStats);
 router.get(

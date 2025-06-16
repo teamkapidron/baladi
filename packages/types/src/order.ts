@@ -16,8 +16,12 @@ export enum OrderCancellationReason {
 export interface OrderItem {
   productId: string;
   quantity: number;
-  price: number;
-  totalPrice: number;
+  price: number; // Sale Price per quantity
+  vatAmount: number; // VAT Amount per quantity
+  priceWithVat: number; // Price with VAT per quantity
+  discount?: number; // Discount per quantity
+  bulkDiscount?: number; // Bulk Discount per quantity
+  totalPrice: number; // Total Price per quantity (priceWithVat - bulkDiscount - discount)
 }
 
 export interface Order {
@@ -29,6 +33,8 @@ export interface Order {
   shippingAddress?: string;
   cancellationReason?: OrderCancellationReason;
   notes?: string;
+  desiredDeliveryDate: string;
+  palletType?: string;
   createdAt: Date;
   updatedAt: Date;
 }

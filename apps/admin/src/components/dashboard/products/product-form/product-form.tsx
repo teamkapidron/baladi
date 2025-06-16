@@ -63,6 +63,7 @@ import { useCategory } from '@/hooks/useCategory';
 
 // Types
 import { Visibility } from '@repo/types/product';
+import { formatPrice } from '@/utils/price.util';
 
 interface ProductFormProps {
   isPending: boolean;
@@ -474,6 +475,12 @@ function ProductForm(props: ProductFormProps) {
                             />
                           </div>
                         </FormControl>
+                        <p className="text-xs text-[var(--baladi-gray)]">
+                          {`Pris per enhet: ${formatPrice(
+                            (field.value || 0) /
+                              (form.watch('noOfUnits') || 1),
+                          )}`}
+                        </p>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -500,6 +507,66 @@ function ProductForm(props: ProductFormProps) {
                                 field.onChange(Number(e.target.value))
                               }
                               value={field.value || ''}
+                            />
+                          </div>
+                        </FormControl>
+                        <p className="text-xs text-[var(--baladi-gray)]">
+                          {`Pris per enhet: ${formatPrice(
+                            (field.value || 0) /
+                              (form.watch('noOfUnits') || 1),
+                          )}`}
+                        </p>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="costPrice"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="font-[family-name:var(--font-sora)] font-medium text-[var(--baladi-primary)]">
+                          Kostpris inkl. MVA (kr)
+                        </FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Landmark className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                            <Input
+                              type="number"
+                              disabled
+                              value={(
+                                (field.value || 0) *
+                                (1 + form.watch('vat') / 100)
+                              ).toFixed(2)}
+                              className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="salePrice"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="font-[family-name:var(--font-sora)] font-medium text-[var(--baladi-primary)]">
+                          Salgspris inkl. MVA (kr)
+                        </FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Landmark className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-success)]" />
+                            <Input
+                              type="number"
+                              disabled
+                              value={(
+                                (field.value || 0) *
+                                (1 + form.watch('vat') / 100)
+                              ).toFixed(2)}
+                              className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
                             />
                           </div>
                         </FormControl>
@@ -562,9 +629,9 @@ function ProductForm(props: ProductFormProps) {
                               placeholder="10"
                               className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
                               {...field}
-                              onChange={(e) =>
-                                field.onChange(Number(e.target.value))
-                              }
+                              onChange={(e) => {
+                                field.onChange(Number(e.target.value));
+                              }}
                               value={field.value || ''}
                             />
                           </div>

@@ -20,11 +20,20 @@ export type OrderResponse = Omit<
       _id: string;
       name: string;
       images: string[];
-      categories: string[];
+      categories: {
+        _id: string;
+        name: string;
+      }[];
       salePrice: number;
+      slug: string;
     };
     quantity: number;
     price: number;
+    vatAmount: number;
+    priceWithVat: number;
+    discount: number;
+    bulkDiscount: number;
+    totalPrice: number;
   }[];
 };
 
@@ -35,6 +44,9 @@ export type PlaceOrderRequest = ApiData<
       quantity: number;
     }[];
     shippingAddressId?: string;
+    palletType: 'EUR' | 'Large';
+    desiredDeliveryDate: string;
+    customerComment?: string;
   },
   {
     order: OrderResponse;
@@ -43,8 +55,8 @@ export type PlaceOrderRequest = ApiData<
 
 export type GetUserOrdersRequest = ApiData<
   {
-    page: number;
-    limit: number;
+    page: string;
+    limit: string;
   },
   {
     orders: OrderResponse[];

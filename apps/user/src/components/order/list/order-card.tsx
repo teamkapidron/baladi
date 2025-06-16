@@ -11,8 +11,6 @@ import {
   Package,
   MapPin,
   ArrowRight,
-  Eye,
-  MoreHorizontal,
 } from '@repo/ui/lib/icons';
 
 // Components
@@ -50,10 +48,6 @@ function OrderCard({ order }: OrderCardProps) {
             {statusInfo.text}
           </Badge>
         </div>
-
-        <Button variant="ghost" size="sm">
-          <MoreHorizontal size={16} />
-        </Button>
       </div>
 
       <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -147,21 +141,9 @@ function OrderCard({ order }: OrderCardProps) {
         </div>
       </div>
 
-      <div className="flex items-center justify-between border-t border-[var(--baladi-border)] pt-4">
+      <div className="flex items-center justify-end border-t border-[var(--baladi-border)] pt-4">
         <div className="flex items-center gap-2">
-          {order.status === 'pending' && (
-            <Button variant="outline" size="sm">
-              Kanseller
-            </Button>
-          )}
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
-            <Eye size={14} className="mr-2" />
-            Se detaljer
-          </Button>
-          <Button asChild>
+          <Button>
             <Link
               href={`/order/${order._id}`}
               className="flex items-center gap-2"

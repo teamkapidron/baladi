@@ -4,7 +4,14 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { memo, useMemo } from 'react';
-import { EditIcon, Package, Tag } from '@repo/ui/lib/icons';
+import {
+  EditIcon,
+  Package,
+  Tag,
+  Building2,
+  MapPin,
+  Globe,
+} from '@repo/ui/lib/icons';
 
 // Components
 import {
@@ -19,8 +26,9 @@ import {
 // Hooks
 import { useProduct } from '@/hooks/useProduct';
 
-// Types
+// Types/Utils
 import { Visibility } from '@repo/types/product';
+import { formatPrice } from '@/utils/price.util';
 
 function ProductTableContent() {
   const { products: productsData } = useProduct();
@@ -78,6 +86,9 @@ function ProductTableContent() {
                 Lager
               </TableHead>
               <TableHead className="sticky top-0 z-50 bg-[var(--baladi-light)] p-4 text-left font-[family-name:var(--font-sora)] text-sm font-semibold text-[var(--baladi-primary)]">
+                Leverandør
+              </TableHead>
+              <TableHead className="sticky top-0 z-50 bg-[var(--baladi-light)] p-4 text-left font-[family-name:var(--font-sora)] text-sm font-semibold text-[var(--baladi-primary)]">
                 Kategorier
               </TableHead>
               <TableHead className="sticky top-0 z-50 bg-[var(--baladi-light)] p-4 text-left font-[family-name:var(--font-sora)] text-sm font-semibold text-[var(--baladi-primary)]">
@@ -91,6 +102,11 @@ function ProductTableContent() {
           <TableBody>
             {products.map((product, index) => {
               const stockStatus = getStockStatus(product.stock);
+              const priceWithVat =
+                product.salePrice + (product.vat * product.salePrice) / 100;
+              const costPriceWithVat =
+                product.costPrice + (product.vat * product.costPrice) / 100;
+
               return (
                 <TableRow
                   key={product._id}
@@ -140,25 +156,67 @@ function ProductTableContent() {
                   </TableCell>
 
                   <TableCell className="p-4">
-                    <div className="space-y-2">
-                      <div className="flex items-center space-x-2">
-                        <span className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-primary)]">
-                          {product.salePrice?.toFixed(2) || '0.00'} kr
-                        </span>
-                      </div>
-                      <div className="text-sm text-[var(--baladi-gray)]">
-                        Kostnad: {product.costPrice?.toFixed(2) || '0.00'} kr
-                      </div>
-                      {product.vat > 0 && (
-                        <span className="inline-flex items-center rounded-md bg-orange-50 px-2 py-1 text-xs font-medium text-orange-700">
-                          +{product.vat}% VAT
-                        </span>
-                      )}
-                      {product.barcode && (
-                        <div className="text-xs text-[var(--baladi-gray)]">
-                          Barcode: {product.barcode}
+                    <div className="space-y-3">
+                      <div className="rounded-lg bg-green-50 p-3">
+                        <p className="mb-1 text-xs font-medium text-green-600">
+                          SALGSPRIS
+                        </p>
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-gray-600">
+                              Med MVA:
+                            </span>
+                            <span className="font-[family-name:var(--font-sora)] text-base font-semibold text-[var(--baladi-primary)]">
+                              {formatPrice(priceWithVat)} kr
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-gray-600">
+                              Uten MVA:
+                            </span>
+                            <span className="font-[family-name:var(--font-sora)] text-sm font-semibold text-gray-700">
+                              {formatPrice(priceWithVat)} kr
+                            </span>
+                          </div>
                         </div>
-                      )}
+                      </div>
+
+                      <div className="rounded-lg bg-orange-50 p-3">
+                        <p className="mb-1 text-xs font-medium text-orange-600">
+                          KOSTPRIS
+                        </p>
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-gray-600">
+                              Med MVA:
+                            </span>
+                            <span className="text-sm font-semibold text-gray-700">
+                              {formatPrice(costPriceWithVat)} kr
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-gray-600">
+                              Uten MVA:
+                            </span>
+                            <span className="text-sm font-semibold text-gray-600">
+                              {formatPrice(costPriceWithVat)} kr
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap gap-2">
+                        {product.vat > 0 && (
+                          <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700">
+                            {product.vat}% MVA
+                          </span>
+                        )}
+                        {product.barcode && (
+                          <span className="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-700">
+                            {product.barcode}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </TableCell>
 
@@ -185,6 +243,90 @@ function ProductTableContent() {
                           </div>
                         )}
                       </div>
+                    </div>
+                  </TableCell>
+
+                  <TableCell className="p-4">
+                    <div className="space-y-3">
+                      {product.supplier ? (
+                        <div className="rounded-lg bg-blue-50 p-3">
+                          <div className="space-y-2">
+                            {product.supplier.name && (
+                              <div className="flex items-center space-x-2">
+                                <Building2 className="h-4 w-4 text-blue-600" />
+                                <div>
+                                  <p className="text-xs font-medium text-blue-600">
+                                    NAVN
+                                  </p>
+                                  <p className="text-sm font-semibold text-gray-700">
+                                    {product.supplier.name}
+                                  </p>
+                                </div>
+                              </div>
+                            )}
+
+                            {product.supplier.number && (
+                              <div className="flex items-center space-x-2">
+                                <Tag className="h-4 w-4 text-blue-600" />
+                                <div>
+                                  <p className="text-xs font-medium text-blue-600">
+                                    NUMMER
+                                  </p>
+                                  <p className="text-sm text-gray-700">
+                                    {product.supplier.number}
+                                  </p>
+                                </div>
+                              </div>
+                            )}
+
+                            {product.supplier.location && (
+                              <div className="flex items-center space-x-2">
+                                <MapPin className="h-4 w-4 text-blue-600" />
+                                <div>
+                                  <p className="text-xs font-medium text-blue-600">
+                                    LOKASJON
+                                  </p>
+                                  <p className="text-sm text-gray-700">
+                                    {product.supplier.location}
+                                  </p>
+                                </div>
+                              </div>
+                            )}
+
+                            {product.supplier.countryOfOrigin && (
+                              <div className="flex items-center space-x-2">
+                                <Globe className="h-4 w-4 text-blue-600" />
+                                <div>
+                                  <p className="text-xs font-medium text-blue-600">
+                                    OPPRINNELSESLAND
+                                  </p>
+                                  <p className="text-sm text-gray-700">
+                                    {product.supplier.countryOfOrigin}
+                                  </p>
+                                </div>
+                              </div>
+                            )}
+
+                            {product.supplier.hsCode && (
+                              <div className="mt-2 border-t border-blue-200 pt-2">
+                                <p className="text-xs font-medium text-blue-600">
+                                  HS-KODE
+                                </p>
+                                <p className="font-mono text-sm text-gray-700">
+                                  {product.supplier.hsCode}
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="rounded-lg bg-gray-50 p-3 text-center">
+                          <Building2 className="mx-auto mb-2 h-8 w-8 text-gray-400" />
+                          <p className="text-sm text-gray-500">
+                            Ingen leverandør registrert
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </TableCell>
 

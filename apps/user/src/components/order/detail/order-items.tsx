@@ -4,10 +4,9 @@
 import React, { memo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Package, ShoppingCart, ExternalLink } from '@repo/ui/lib/icons';
+import { Package, ExternalLink } from '@repo/ui/lib/icons';
 
 // Components
-import { Button } from '@repo/ui/components/base/button';
 import { Separator } from '@repo/ui/components/base/separator';
 
 // Types/Utils
@@ -66,17 +65,16 @@ function OrderItems({ items }: OrderItemsProps) {
                       {item.productId.name}
                     </h3>
                     <div className="mt-1 flex flex-wrap items-center gap-4 text-sm text-[var(--baladi-gray)]">
-                      <span>
-                        SKU: {item.productId._id.slice(-8).toUpperCase()}
-                      </span>
                       {item.productId.categories?.[0] && (
-                        <span>Kategori: {item.productId.categories[0]}</span>
+                        <span>
+                          Kategori: {item.productId.categories[0].name}
+                        </span>
                       )}
                     </div>
                   </div>
 
                   <Link
-                    href={`/product/${item.productId._id}`}
+                    href={`/product/${item.productId.slug}`}
                     className="flex items-center gap-1 text-xs text-[var(--baladi-primary)] transition-colors hover:text-[var(--baladi-primary-dark)]"
                   >
                     <ExternalLink size={12} />
@@ -84,7 +82,7 @@ function OrderItems({ items }: OrderItemsProps) {
                   </Link>
                 </div>
 
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
                       <span className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
@@ -94,22 +92,80 @@ function OrderItems({ items }: OrderItemsProps) {
                         {item.quantity}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-                        Pris per stk:
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div className="flex items-center justify-between">
+                      <span className="font-[family-name:var(--font-dm-sans)] text-[var(--baladi-gray)]">
+                        Pris (eks. mva):
                       </span>
-                      <span className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-dark)]">
+                      <span className="font-[family-name:var(--font-dm-sans)] font-medium text-[var(--baladi-dark)]">
                         {formatPrice(item.price)} kr
                       </span>
                     </div>
+                    <div className="flex items-center justify-between">
+                      <span className="font-[family-name:var(--font-dm-sans)] text-[var(--baladi-gray)]">
+                        MVA:
+                      </span>
+                      <span className="font-[family-name:var(--font-dm-sans)] font-medium text-[var(--baladi-dark)]">
+                        {formatPrice(item.vatAmount)} kr
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="font-[family-name:var(--font-dm-sans)] text-[var(--baladi-gray)]">
+                        Pris (inkl. mva):
+                      </span>
+                      <span className="font-[family-name:var(--font-dm-sans)] font-medium text-[var(--baladi-dark)]">
+                        {formatPrice(item.priceWithVat)} kr
+                      </span>
+                    </div>
+                    {item.discount > 0 && (
+                      <div className="flex items-center justify-between">
+                        <span className="font-[family-name:var(--font-dm-sans)] text-[var(--baladi-gray)]">
+                          Rabatt:
+                        </span>
+                        <span className="font-[family-name:var(--font-dm-sans)] font-medium text-[var(--baladi-dark)]">
+                          -{formatPrice(item.discount)} kr
+                        </span>
+                      </div>
+                    )}
+                    {item.bulkDiscount > 0 && (
+                      <div className="flex items-center justify-between">
+                        <span className="font-[family-name:var(--font-dm-sans)] text-[var(--baladi-gray)]">
+                          Mengderabatt:
+                        </span>
+                        <span className="font-[family-name:var(--font-dm-sans)] font-medium text-[var(--baladi-dark)]">
+                          -{formatPrice(item.bulkDiscount)} kr
+                        </span>
+                      </div>
+                    )}
                   </div>
 
-                  <div className="text-right">
-                    <div className="font-[family-name:var(--font-sora)] font-bold text-[var(--baladi-primary)]">
-                      {formatPrice(item.price * item.quantity)} kr
+                  <div className="flex items-center justify-between border-t pt-2">
+                    <span className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
+                      Totalt per vare:
+                    </span>
+                    <div className="text-right">
+                      <div className="font-[family-name:var(--font-sora)] font-bold text-[var(--baladi-primary)]">
+                        {formatPrice(item.totalPrice)} kr
+                      </div>
+                      <div className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
+                        Inkl. mva
+                      </div>
                     </div>
-                    <div className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
-                      Inkl. mva
+                  </div>
+
+                  <div className="flex items-center justify-between border-t pt-2">
+                    <span className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
+                      Totalt for {item.quantity} stk:
+                    </span>
+                    <div className="text-right">
+                      <div className="font-[family-name:var(--font-sora)] font-bold text-[var(--baladi-primary)]">
+                        {formatPrice(item.totalPrice * item.quantity)} kr
+                      </div>
+                      <div className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
+                        Inkl. mva
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -119,30 +175,6 @@ function OrderItems({ items }: OrderItemsProps) {
             {index < items.length - 1 && <Separator className="mt-4" />}
           </div>
         ))}
-      </div>
-
-      <div className="from-[var(--baladi-light)]/50 to-[var(--baladi-primary)]/5 mt-6 rounded-lg bg-gradient-to-r p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="bg-[var(--baladi-primary)]/10 flex h-8 w-8 items-center justify-center rounded-full">
-              <ShoppingCart
-                size={16}
-                className="text-[var(--baladi-primary)]"
-              />
-            </div>
-            <div>
-              <p className="font-[family-name:var(--font-dm-sans)] font-medium text-[var(--baladi-dark)]">
-                Fornøyd med bestillingen?
-              </p>
-              <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-                Bestill de samme varene igjen med ett klikk
-              </p>
-            </div>
-          </div>
-          <Button variant="outline" size="sm">
-            Bestill igjen
-          </Button>
-        </div>
       </div>
     </div>
   );

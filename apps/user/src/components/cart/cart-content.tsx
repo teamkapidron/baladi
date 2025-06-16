@@ -7,19 +7,16 @@ import React, { memo, useCallback } from 'react';
 import { Trash2, ShoppingBag } from '@repo/ui/lib/icons';
 
 // Components
-import { Badge } from '@repo/ui/components/base/badge';
 import { Button } from '@repo/ui/components/base/button';
 import { QuantityInput } from '@repo/ui/components/base/quantity-input';
 
 // Hooks
 import { useCart } from '@/hooks/useCart';
-import { useAuth } from '@/hooks/useAuth';
 
 // Utils
 import { formatPrice } from '@/utils/price.util';
 
 function CartContent() {
-  const { isAuthenticated } = useAuth();
   const { userCartItems, removeFromCart, updateQuantity, clearCart } =
     useCart();
 
@@ -40,27 +37,6 @@ function CartContent() {
   const handleClearCart = useCallback(() => {
     clearCart();
   }, [clearCart]);
-
-  if (!isAuthenticated) {
-    return (
-      <div className="rounded-lg bg-white p-8 shadow-sm">
-        <div className="text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--baladi-light)]">
-            <ShoppingBag size={32} className="text-[var(--baladi-primary)]" />
-          </div>
-          <h3 className="font-[family-name:var(--font-sora)] text-lg font-semibold text-[var(--baladi-dark)]">
-            Logg inn for å se handlekurven
-          </h3>
-          <p className="mt-2 font-[family-name:var(--font-dm-sans)] text-[var(--baladi-gray)]">
-            Du må være logget inn for å handle hos Baladi Engros
-          </p>
-          <Button className="mt-4">
-            <Link href="/login">Logg inn</Link>
-          </Button>
-        </div>
-      </div>
-    );
-  }
 
   if (!userCartItems || userCartItems.length === 0) {
     return (
@@ -116,9 +92,6 @@ function CartContent() {
       <div className="space-y-4">
         {userCartItems.map((item) => {
           const product = item.product;
-          const imageUrl =
-            product.images?.[0] ||
-            'https://images.unsplash.com/photo-1594736797933-d0501ba2fe65?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80';
 
           return (
             <div
@@ -131,7 +104,7 @@ function CartContent() {
                   className="bg-[var(--baladi-light)]/30 group relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg"
                 >
                   <Image
-                    src={imageUrl}
+                    src={product.images?.[0] || ''}
                     alt={product.name}
                     fill
                     className="object-cover transition-transform group-hover:scale-105"
@@ -165,19 +138,9 @@ function CartContent() {
                   </div>
 
                   <div className="flex flex-wrap items-center gap-4">
-                    {product.sku && (
-                      <Badge
-                        variant="secondary"
-                        className="font-[family-name:var(--font-dm-sans)]"
-                      >
-                        SKU: {product.sku}
-                      </Badge>
-                    )}
-                    {product.noOfUnits && (
-                      <span className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-                        {product.noOfUnits} enheter per kartong
-                      </span>
-                    )}
+                    <span className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
+                      {product.noOfUnits} enheter per kartong
+                    </span>
                   </div>
 
                   <div className="flex items-center justify-between">
@@ -191,7 +154,7 @@ function CartContent() {
                           handleQuantityChange(product._id, newQuantity)
                         }
                         min={1}
-                        max={99}
+                        max={product.stock || 99}
                         size="sm"
                       />
                     </div>
@@ -201,7 +164,10 @@ function CartContent() {
                         {formatPrice(item.totalPrice)} kr
                       </div>
                       <div className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-                        {formatPrice(product.salePrice)} kr per stk
+                        {formatPrice(
+                          product.salePrice * (1 + product.vat / 100),
+                        )}{' '}
+                        kr per stk
                       </div>
                     </div>
                   </div>
@@ -221,7 +187,7 @@ function CartContent() {
             Utforsk vårt komplette utvalg av asiatiske og orientalske
             ingredienser
           </p>
-          <Button asChild variant="outline" className="mt-4">
+          <Button variant="outline" className="mt-4">
             <Link href="/">Fortsett å handle</Link>
           </Button>
         </div>

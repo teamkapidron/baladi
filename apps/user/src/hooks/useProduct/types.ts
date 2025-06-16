@@ -22,6 +22,7 @@ export interface ProductResponse extends Omit<Product, 'categories'> {
     slug: string;
   }[];
   stock: number;
+  bestBeforeDate: string;
 }
 
 export type GetProductsRequest = ApiData<

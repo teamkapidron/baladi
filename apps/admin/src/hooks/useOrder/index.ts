@@ -1,5 +1,6 @@
 // Node Modules
 import { useCallback, useMemo } from 'react';
+import { toast } from '@repo/ui/lib/sonner';
 import { useMutation, useQuery } from '@tanstack/react-query';
 
 // Hooks
@@ -11,6 +12,7 @@ import { useDateRangeInParams } from '@repo/ui/hooks/useDate/useDateRangeInParam
 import type {
   GetAllOrdersRequest,
   GetOrderDetailsAdminRequest,
+  UpdateOrderStatusRequest,
   GetOrderStatsRequest,
   GetOrderRevenueStatsRequest,
   GetOrderStatusGraphDataRequest,
@@ -172,6 +174,30 @@ export function useOrderDetails(orderId: string) {
   });
 
   return orderDetailsQuery;
+}
+
+export function useUpdateOrderStatus() {
+  const api = useRequest();
+
+  const updateOrderStatus = useCallback(
+    async (payload: UpdateOrderStatusRequest['payload']) => {
+      const response = await api.patch<UpdateOrderStatusRequest['response']>(
+        `/order/status/${payload.orderId}`,
+        payload,
+      );
+      return response.data.data;
+    },
+    [api],
+  );
+
+  const updateOrderStatusMutation = useMutation({
+    mutationFn: updateOrderStatus,
+    onSuccess: function (_, { status }) {
+      toast.success(`Ordre status oppdatert til ${status}`);
+    },
+  });
+
+  return updateOrderStatusMutation;
 }
 
 export function useOrder() {

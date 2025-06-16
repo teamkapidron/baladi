@@ -3,43 +3,32 @@
 // Node Modules
 import Image from 'next/image';
 import { cn } from '@repo/ui/lib/utils';
-import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
-import { useQueryClient } from '@tanstack/react-query';
 import React, { useState, memo, useMemo, useCallback } from 'react';
-import { ChevronLeft, ChevronRight, Heart, ZoomIn } from '@repo/ui/lib/icons';
+import { ChevronLeft, ChevronRight, ZoomIn } from '@repo/ui/lib/icons';
 
 // Components
 import { Badge } from '@repo/ui/components/base/badge';
 import { Button } from '@repo/ui/components/base/button';
 
 // Hooks
-import { useAuth } from '@/hooks/useAuth';
-import { useFavourite } from '@/hooks/useFavourite';
 import { useProductBySlug } from '@/hooks/useProduct';
 
 // Types
-import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
 
 function ProductGallery() {
   const { slug } = useParams<{ slug: string }>();
 
-  const router = useRouter();
-  const queryClient = useQueryClient();
-  const { isAuthenticated } = useAuth();
-  const { addToFavoritesMutation, removeFromFavoritesMutation } =
-    useFavourite();
   const { data: productData, isLoading } = useProductBySlug(slug);
 
   const [isZoomed, setIsZoomed] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
-  const { product, images, categories, isFavorite } = useMemo(() => {
+  const { product, images, categories } = useMemo(() => {
     return {
       product: productData?.product,
       images: productData?.product?.images || [],
       categories: productData?.product?.categories || [],
-      isFavorite: productData?.product?.isFavorite || false,
     };
   }, [productData]);
 
@@ -60,52 +49,6 @@ function ProductGallery() {
   const handleThumbnailClick = useCallback((index: number) => {
     setSelectedImageIndex(index);
   }, []);
-
-  const toggleFavorite = useCallback(() => {
-    if (!isAuthenticated) {
-      router.push('/login');
-      return;
-    }
-
-    if (product?._id) {
-      if (isFavorite) {
-        removeFromFavoritesMutation.mutate(
-          {
-            productId: product._id,
-          },
-          {
-            onSuccess: function () {
-              queryClient.invalidateQueries({
-                queryKey: [ReactQueryKeys.GET_PRODUCT_BY_SLUG, slug],
-              });
-            },
-          },
-        );
-      } else {
-        addToFavoritesMutation.mutate(
-          {
-            productId: product._id,
-          },
-          {
-            onSuccess: function () {
-              queryClient.invalidateQueries({
-                queryKey: [ReactQueryKeys.GET_PRODUCT_BY_SLUG, slug],
-              });
-            },
-          },
-        );
-      }
-    }
-  }, [
-    isAuthenticated,
-    product?._id,
-    router,
-    isFavorite,
-    removeFromFavoritesMutation,
-    queryClient,
-    slug,
-    addToFavoritesMutation,
-  ]);
 
   const toggleZoom = useCallback(() => {
     setIsZoomed(!isZoomed);
@@ -140,22 +83,6 @@ function ProductGallery() {
             </Badge>
           ))}
         </div>
-
-        <Button
-          variant="ghost"
-          onClick={toggleFavorite}
-          className="absolute right-4 top-4 z-10 rounded-full bg-white/90 p-2 shadow-md transition-all duration-200 hover:scale-105 hover:bg-white"
-        >
-          <Heart
-            size={20}
-            className={cn(
-              'transition-colors',
-              isFavorite
-                ? 'fill-red-500 text-red-500'
-                : 'text-[var(--baladi-gray)]',
-            )}
-          />
-        </Button>
 
         <div className="relative h-full w-full">
           <Image

@@ -31,6 +31,11 @@ export const placeOrderSchema = z.object({
         message: 'Invalid address ID format',
       })
       .optional(),
+    palletType: z.enum(['EUR', 'Large'], {
+      required_error: 'Pallet type is required',
+    }),
+    desiredDeliveryDate: z.string(),
+    customerComment: z.string().optional(),
   }),
 });
 
@@ -118,6 +123,17 @@ export const getOrderDetailsAdminSchema = z.object({
   }),
 });
 
+export const updateOrderStatusSchema = z.object({
+  params: z.object({
+    orderId: z.string().refine((val) => isValidObjectId(val), {
+      message: 'Invalid order ID format',
+    }),
+  }),
+  body: z.object({
+    status: z.nativeEnum(OrderStatus),
+  }),
+});
+
 export const updateOrderDetailsSchema = z.object({
   params: z.object({
     orderId: z
@@ -193,6 +209,7 @@ export type GetAllOrdersSchema = z.infer<typeof getAllOrdersSchema>;
 export type GetOrderDetailsAdminSchema = z.infer<
   typeof getOrderDetailsAdminSchema
 >;
+export type UpdateOrderStatusSchema = z.infer<typeof updateOrderStatusSchema>;
 export type UpdateOrderDetailsSchema = z.infer<typeof updateOrderDetailsSchema>;
 export type DeleteOrderSchema = z.infer<typeof deleteOrderSchema>;
 export type GetOrderStatsSchema = z.infer<typeof getOrderStatsSchema>;

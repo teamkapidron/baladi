@@ -17,6 +17,22 @@ const orderItemSchema = new Schema({
     type: Number,
     required: true,
   },
+  vatAmount: {
+    type: Number,
+    required: true,
+  },
+  priceWithVat: {
+    type: Number,
+    required: true,
+  },
+  discount: {
+    type: Number,
+    default: 0,
+  },
+  bulkDiscount: {
+    type: Number,
+    default: 0,
+  },
   totalPrice: {
     type: Number,
     required: true,
@@ -53,6 +69,13 @@ const orderSchema = new Schema<IOrder>(
       enum: Object.values(OrderCancellationReason),
     },
     notes: {
+      type: String,
+    },
+    desiredDeliveryDate: {
+      type: String,
+      required: true,
+    },
+    palletType: {
       type: String,
     },
   },

@@ -99,6 +99,7 @@ function LoginForm() {
                   </FormLabel>
                   <Link href="/forgot-password">
                     <Button
+                      type="button"
                       variant="ghost"
                       size="sm"
                       className="h-auto p-0 font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-primary)] hover:bg-transparent hover:text-[var(--baladi-secondary)]"

@@ -5,6 +5,7 @@ import { toast } from '@repo/ui/lib/sonner';
 
 // Hooks
 import { useRequest } from '@/hooks/useRequest';
+import { usePagination } from '@repo/ui/hooks/usePagination';
 
 // Types
 import type {
@@ -18,6 +19,7 @@ import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
 export function useOrder() {
   const api = useRequest();
   const queryClient = useQueryClient();
+  const { page, limit } = usePagination();
 
   const placeOrder = useCallback(
     async (payload: PlaceOrderRequest['payload']) => {
@@ -52,8 +54,8 @@ export function useOrder() {
   );
 
   const { data: myOrders, isLoading: isMyOrdersLoading } = useQuery({
-    queryKey: [ReactQueryKeys.GET_MY_ORDERS],
-    queryFn: () => getMyOrders({ page: 1, limit: 10 }),
+    queryKey: [ReactQueryKeys.GET_MY_ORDERS, page, limit],
+    queryFn: () => getMyOrders({ page, limit }),
   });
 
   const cancelOrder = useCallback(
@@ -93,7 +95,7 @@ export function useOrderDetails(orderId: string) {
 
   const getOrderDetails = useCallback(async () => {
     const response = await api.get<GetUserOrderDetailsRequest['response']>(
-      `/order/${orderId}`,
+      `/order/details/${orderId}`,
     );
     return response.data.data;
   }, [api, orderId]);

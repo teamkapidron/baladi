@@ -35,13 +35,13 @@ function CartSection() {
               className="text-[var(--baladi-dark)] transition-all duration-300 group-hover:scale-110 group-hover:text-[var(--baladi-primary)]"
             />
 
-            {cartSummary.totalItems > 0 && (
+            {cartSummary.uniqueItems > 0 && (
               <Badge className="absolute -right-1 -top-1 h-6 w-6 rounded-full border-2 border-white bg-gradient-to-r from-[var(--baladi-accent)] to-[var(--baladi-secondary)] p-0 text-xs font-bold text-white shadow-lg">
-                {cartSummary.totalItems > 99 ? '99+' : cartSummary.totalItems}
+                {cartSummary.uniqueItems > 99 ? '99+' : cartSummary.uniqueItems}
               </Badge>
             )}
 
-            {cartSummary.totalItems > 0 && (
+            {cartSummary.uniqueItems > 0 && (
               <div className="bg-[var(--baladi-accent)]/30 absolute -right-1 -top-1 h-6 w-6 animate-ping rounded-full" />
             )}
 
@@ -53,30 +53,9 @@ function CartSection() {
           side="bottom"
           align="end"
           className="w-80 border-[var(--baladi-border)] bg-white p-0 shadow-xl"
-          sideOffset={8}
         >
           {cartSummary.isEmpty ? (
-            <div className="p-6 text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--baladi-light)]">
-                <ShoppingCart size={24} className="text-[var(--baladi-gray)]" />
-              </div>
-              <h3 className="mb-2 font-[family-name:var(--font-sora)] text-lg font-semibold text-[var(--baladi-dark)]">
-                Handlekurven er tom
-              </h3>
-              <p className="mb-4 font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-                Legg til produkter for å komme i gang med handlingen din.
-              </p>
-              <Button
-                asChild
-                size="sm"
-                className="bg-gradient-to-r from-[var(--baladi-primary)] to-[var(--baladi-secondary)] font-[family-name:var(--font-dm-sans)] font-medium hover:from-[var(--baladi-primary-dark)] hover:to-[var(--baladi-secondary-dark)]"
-              >
-                <Link href="/search">
-                  <Plus size={16} className="mr-2" />
-                  Start shopping
-                </Link>
-              </Button>
-            </div>
+            <EmptyCart />
           ) : (
             <div>
               <div className="border-b border-[var(--baladi-border)] bg-gradient-to-r from-[var(--baladi-light)] to-white px-4 py-3">
@@ -165,3 +144,27 @@ function CartSection() {
 }
 
 export default memo(CartSection);
+
+const EmptyCart = memo(() => (
+  <div className="p-6 text-center">
+    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--baladi-light)]">
+      <ShoppingCart size={24} className="text-[var(--baladi-gray)]" />
+    </div>
+    <h3 className="mb-2 font-[family-name:var(--font-sora)] text-lg font-semibold text-[var(--baladi-dark)]">
+      Handlekurven er tom
+    </h3>
+    <p className="mb-4 font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
+      Legg til produkter for å komme i gang med handlingen din.
+    </p>
+    <Button
+      asChild
+      size="sm"
+      className="bg-gradient-to-r from-[var(--baladi-primary)] to-[var(--baladi-secondary)] font-[family-name:var(--font-dm-sans)] font-medium hover:from-[var(--baladi-primary-dark)] hover:to-[var(--baladi-secondary-dark)]"
+    >
+      <Link href="/search">
+        <Plus size={16} className="mr-2" />
+        Start shopping
+      </Link>
+    </Button>
+  </div>
+));
