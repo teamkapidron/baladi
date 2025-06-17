@@ -12,7 +12,8 @@
     "add:api": "pnpm --filter api add",
     "add:user": "pnpm --filter user add",
     "add:cron": "pnpm --filter cron add",
-    "deploy:prod": "sst deploy --stage prod"
+    "deploy:prod": "sst deploy --stage prod",
+    "remove:prod": "sst remove --stage prod"
   },
   "devDependencies": {
     "@types/aws-lambda": "8.10.149",
