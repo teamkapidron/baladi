@@ -69,26 +69,10 @@ jobs:
         run: pnpm install -g vercel
 
       - name: Deploy Admin to Vercel
-        run: vercel deploy \
-          --cwd apps/admin \
-          --prod \
-          --token ${{ secrets.VERCEL_TOKEN }} \
-          --scope ${{ vars.VERCEL_ORG_ID }} \
-          --build-env NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL }} \
-          --build-env NEXT_PUBLIC_USER_URL=${{ vars.NEXT_PUBLIC_USER_URL }} \
-          --build-env NEXT_PUBLIC_ADMIN_URL=${{ vars.NEXT_PUBLIC_ADMIN_URL }} \
-          --yes
+        run: vercel deploy --cwd apps/admin --prod --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ vars.VERCEL_ORG_ID }} --yes
 
       - name: Deploy User to Vercel
-        run: vercel deploy \
-          --cwd apps/user \
-          --prod \
-          --token ${{ secrets.VERCEL_TOKEN }} \
-          --scope ${{ vars.VERCEL_ORG_ID }} \
-          --build-env NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL }} \
-          --build-env NEXT_PUBLIC_USER_URL=${{ vars.NEXT_PUBLIC_USER_URL }} \
-          --build-env NEXT_PUBLIC_ADMIN_URL=${{ vars.NEXT_PUBLIC_ADMIN_URL }} \
-          --yes
+        run: vercel deploy --cwd apps/user --prod --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ vars.VERCEL_ORG_ID }} --yes
 
       - name: Deploy SST to AWS (API, Cron, S3 Storage)
         run: npx sst deploy --stage prod
