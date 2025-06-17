@@ -66,7 +66,7 @@ jobs:
           echo "CLOUDFLARE_DEFAULT_ACCOUNT_ID=${{ secrets.CLOUDFLARE_DEFAULT_ACCOUNT_ID }}" >> $GITHUB_ENV
 
       - name: Install Vercel CLI
-        run: pnpm install -g vercel
+        run: pnpm install -g vercel@32.2.0
 
       - name: Pull Vercel Admin App Environment Information
         run: |
