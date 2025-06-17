@@ -3,7 +3,7 @@
 // Node Modules
 import Link from 'next/link';
 import { memo, useMemo } from 'react';
-import { Package, ArrowRight, TrendingUp } from '@repo/ui/lib/icons';
+import { Package, ArrowRight } from '@repo/ui/lib/icons';
 
 // Hooks
 import { useProductDashboard } from '@/hooks/useProduct';
@@ -70,7 +70,6 @@ function TopProducts() {
                     </div>
                   </div>
 
-                  {/* Product Info */}
                   <div className="min-w-0 flex-1">
                     <div className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-dark)]">
                       {product.product.name}
@@ -80,19 +79,6 @@ function TopProducts() {
                       <span>•</span>
                       <span>{product.totalQuantity} enheter solgt</span>
                     </div>
-                  </div>
-                </div>
-
-                {/* Revenue */}
-                <div className="text-right">
-                  <div className="flex items-center gap-1">
-                    <TrendingUp className="h-3 w-3 text-[var(--baladi-success)]" />
-                    <span className="font-[family-name:var(--font-sora)] text-sm font-bold text-[var(--baladi-dark)]">
-                      {product.product.unitPrice?.toFixed(2) || '0.00'} kr
-                    </span>
-                  </div>
-                  <div className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
-                    Enhetspris
                   </div>
                 </div>
               </div>

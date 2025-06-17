@@ -10,7 +10,7 @@ import {
 } from '@repo/ui/lib/icons';
 
 // Components
-import { Switch } from '@repo/ui/components/base/switch';
+// import { Switch } from '@repo/ui/components/base/switch';
 
 // Hooks
 import { useProductFilters } from '@/hooks/useProduct/useProductFilters';
@@ -80,13 +80,13 @@ function CategoryNode(props: CategoryNodeProps) {
           </span>
         </div>
 
-        <div className="flex items-center gap-2">
+        {/* <div className="flex items-center gap-2">
           <Switch
             checked={category.isActive}
             className="opacity-0 transition-opacity group-hover:opacity-100"
             onClick={(e) => e.stopPropagation()}
           />
-        </div>
+        </div> */}
       </div>
 
       {isExpanded && hasChildren && (

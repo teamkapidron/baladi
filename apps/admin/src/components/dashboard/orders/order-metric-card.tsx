@@ -11,7 +11,6 @@ import {
   XCircle,
   DollarSign,
   TrendingUp,
-  PieChart,
 } from '@repo/ui/lib/icons';
 
 // Components
@@ -28,6 +27,7 @@ function OrderMetricCards() {
     const pendingOrders = orderStatsQuery.data?.pendingOrders ?? 0;
     const confirmedOrders = orderStatsQuery.data?.confirmedOrders ?? 0;
     const shippedOrders = orderStatsQuery.data?.shippedOrders ?? 0;
+    const deliveredOrders = orderStatsQuery.data?.deliveredOrders ?? 0;
     const cancelledOrders = orderStatsQuery.data?.cancelledOrders ?? 0;
 
     const pendingPercent =
@@ -36,6 +36,8 @@ function OrderMetricCards() {
       totalOrders > 0 ? Math.round((confirmedOrders / totalOrders) * 100) : 0;
     const shippedPercent =
       totalOrders > 0 ? Math.round((shippedOrders / totalOrders) * 100) : 0;
+    const deliveredPercent =
+      totalOrders > 0 ? Math.round((deliveredOrders / totalOrders) * 100) : 0;
     const cancelledPercent =
       totalOrders > 0 ? Math.round((cancelledOrders / totalOrders) * 100) : 0;
 
@@ -44,10 +46,12 @@ function OrderMetricCards() {
       pendingOrders,
       confirmedOrders,
       shippedOrders,
+      deliveredOrders,
       cancelledOrders,
       pendingPercent,
       confirmedPercent,
       shippedPercent,
+      deliveredPercent,
       cancelledPercent,
     };
   }, [orderStatsQuery.data]);
@@ -224,7 +228,46 @@ function OrderMetricCards() {
           <div className="flex items-center justify-between text-sm">
             <span className="text-[var(--baladi-text-muted)]">På Vei</span>
             <span className="font-medium text-[var(--baladi-success)]">
-              {statusStats.shippedOrders} bestillinger
+              {statusStats.shippedPercent} bestillinger
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="to-[var(--baladi-info)]/5 hover:shadow-[var(--baladi-info)]/20 group relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-white p-6 shadow-md transition-all duration-300 hover:shadow-lg">
+        <div className="bg-[var(--baladi-info)]/10 absolute -right-8 -top-8 h-24 w-24 rounded-full transition-transform duration-300 group-hover:scale-110"></div>
+
+        <div className="relative flex items-start justify-between">
+          <div className="space-y-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--baladi-info)] shadow-lg">
+              <CheckCircle className="h-6 w-6 text-white" />
+            </div>
+
+            <div>
+              <h3 className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-text-muted)]">
+                Leverte Bestillinger
+              </h3>
+              <div className="mt-2 flex items-baseline gap-2">
+                <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-text)]">
+                  <AnimatedCounter value={statusStats.deliveredOrders} />
+                </span>
+                <div className="bg-[var(--baladi-info)]/10 flex items-center gap-1 rounded-full px-2 py-1">
+                  <span className="text-xs font-medium text-[var(--baladi-info)]">
+                    {statusStats.deliveredPercent}%
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="relative mt-4 border-t border-[var(--baladi-border)] pt-4">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-[var(--baladi-text-muted)]">
+              Fullført Levering
+            </span>
+            <span className="font-medium text-[var(--baladi-info)]">
+              {statusStats.deliveredOrders} bestillinger
             </span>
           </div>
         </div>
@@ -324,7 +367,7 @@ function OrderMetricCards() {
 
             <div>
               <h3 className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-text-muted)]">
-                Total Fortjeneste
+                Bruttofortjeneste
               </h3>
               <div className="mt-2 flex items-baseline gap-2">
                 <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-text)]">
@@ -350,46 +393,6 @@ function OrderMetricCards() {
             </span>
             <span className="font-medium text-[var(--baladi-accent)]">
               {revenueStats.profitMargin.toFixed(1)}%
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <div className="to-[var(--baladi-secondary)]/5 hover:shadow-[var(--baladi-secondary)]/20 group relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-white p-6 shadow-md transition-all duration-300 hover:shadow-lg">
-        <div className="bg-[var(--baladi-secondary)]/10 absolute -right-8 -top-8 h-24 w-24 rounded-full transition-transform duration-300 group-hover:scale-110"></div>
-
-        <div className="relative flex items-start justify-between">
-          <div className="space-y-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--baladi-secondary)] shadow-lg">
-              <PieChart className="h-6 w-6 text-white" />
-            </div>
-
-            <div>
-              <h3 className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-text-muted)]">
-                Gj.snitt Bestillingsverdi
-              </h3>
-              <div className="mt-2 flex items-baseline gap-2">
-                <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-text)]">
-                  <AnimatedCounter value={revenueStats.avgOrderValue} />
-                  kr
-                </span>
-                {revenueStats.avgOrderValue > 0 && (
-                  <div className="bg-[var(--baladi-secondary)]/10 flex items-center gap-1 rounded-full px-2 py-1">
-                    <span className="text-xs font-medium text-[var(--baladi-secondary)]">
-                      GBV
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="relative mt-4 border-t border-[var(--baladi-border)] pt-4">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-[var(--baladi-text-muted)]">Per Kunde</span>
-            <span className="font-medium text-[var(--baladi-secondary)]">
-              {revenueStats.avgOrderValue.toFixed(2)}kr
             </span>
           </div>
         </div>

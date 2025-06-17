@@ -2,6 +2,7 @@
 
 // Node Modules
 import { memo, useCallback, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Package,
   AlertTriangle,
@@ -37,6 +38,7 @@ import { useInventory } from '@/hooks/useInventory';
 import { useInventoryFilters } from '@/hooks/useInventory/useInventoryFilters';
 
 function InventoryTable() {
+  const router = useRouter();
   const { inventoryQuery } = useInventory();
   const { search, status, handleSearchFilterChange, handleStatusFilterChange } =
     useInventoryFilters();
@@ -197,15 +199,16 @@ function InventoryTable() {
                 </TableCell>
 
                 <TableCell className="px-8 py-6">
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      className="group/btn rounded-lg p-2 text-gray-400 transition-all hover:bg-green-50 hover:text-green-600"
-                      title="Vis Detaljer"
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                  </div>
+                  <Button
+                    variant="outline"
+                    className="group/btn w-full rounded-lg text-gray-400 transition-all hover:bg-green-50 hover:text-green-600"
+                    title="Vis Detaljer"
+                    onClick={() =>
+                      router.push(`/dashboard/inventory/${item._id}`)
+                    }
+                  >
+                    <Eye className="h-4 w-4" />
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}

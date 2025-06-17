@@ -540,18 +540,34 @@ export const getOrderRevenueStats = asyncHandler(
         $unwind: '$productInfo',
       },
       {
-        $addFields: {
-          revenue: {
-            $multiply: ['$items.price', '$items.quantity'],
-          },
-          cost: {
-            $multiply: ['$productInfo.costPrice', '$items.quantity'],
-          },
+        $lookup: {
+          from: 'bulkdiscounts',
+          pipeline: [
+            { $match: { isActive: true } },
+            { $sort: { minQuantity: -1 } },
+          ],
+          as: 'bulkDiscounts',
         },
       },
       {
         $addFields: {
-          profit: { $subtract: ['$revenue', '$cost'] },
+          revenue: '$totalAmount',
+          cost: {
+            $multiply: ['$productInfo.costPrice', '$items.quantity'],
+          },
+          profit: {
+            $multiply: [
+              {
+                $subtract: [
+                  {
+                    $subtract: ['$items.price', '$productInfo.costPrice'],
+                  },
+                  '$items.bulkDiscount',
+                ],
+              },
+              '$items.quantity',
+            ],
+          },
         },
       },
       {
@@ -672,9 +688,16 @@ export const getOrderRevenueGraphData = asyncHandler(
             $multiply: ['$productInfo.costPrice', '$items.quantity'],
           },
           profit: {
-            $subtract: [
-              { $multiply: ['$items.price', '$items.quantity'] },
-              { $multiply: ['$productInfo.costPrice', '$items.quantity'] },
+            $multiply: [
+              {
+                $subtract: [
+                  {
+                    $subtract: ['$items.price', '$productInfo.costPrice'],
+                  },
+                  '$items.bulkDiscount',
+                ],
+              },
+              '$items.quantity',
             ],
           },
         },
@@ -770,7 +793,10 @@ export const previewPickingList = asyncHandler(
 
     const order = await Order.findById(orderId)
       .populate([
-        { path: 'items.productId', select: 'name sku barcode' },
+        {
+          path: 'items.productId',
+          select: 'name sku barcode weight dimensions',
+        },
         { path: 'userId', select: 'name email' },
         {
           path: 'shippingAddress',
@@ -795,7 +821,10 @@ export const previewFreightLabel = asyncHandler(
 
     const order = await Order.findById(orderId)
       .populate([
-        { path: 'items.productId', select: 'name' },
+        {
+          path: 'items.productId',
+          select: 'name sku barcode weight dimensions',
+        },
         { path: 'userId', select: 'name email' },
         {
           path: 'shippingAddress',

@@ -72,12 +72,12 @@ export function getDateMatchStage(
     const dateCondition: DateMatchStage[keyof DateMatchStage] = {};
 
     if (from) {
-      const fromDate = parse(from, 'yyyy-MM-dd', new Date());
+      const fromDate = startOfDay(parse(from, 'yyyy-MM-dd', new Date()));
       dateCondition.$gte = fromDate;
     }
 
     if (to) {
-      const toDate = parse(to, 'yyyy-MM-dd', new Date());
+      const toDate = endOfDay(parse(to, 'yyyy-MM-dd', new Date()));
       dateCondition.$lte = toDate;
     }
 

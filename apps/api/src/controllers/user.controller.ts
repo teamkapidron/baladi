@@ -234,8 +234,8 @@ export const getTopUsers = asyncHandler(async (req: Request, res: Response) => {
         _id: 0,
         user: {
           _id: '$user._id',
-          userName: '$user.userName',
-          userEmail: '$user.userEmail',
+          userName: '$user.name',
+          userEmail: '$user.email',
         },
         totalAmount: 1,
         totalOrders: 1,

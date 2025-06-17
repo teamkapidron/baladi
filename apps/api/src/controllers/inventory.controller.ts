@@ -1,5 +1,5 @@
 // Node Modules
-import { PipelineStage } from 'mongoose';
+import { PipelineStage, Types } from 'mongoose';
 
 // Schemas
 import Product from '@/models/product.model';
@@ -63,7 +63,7 @@ export const getAllInventory = asyncHandler(
       },
       {
         $project: {
-          _id: 0,
+          _id: 1,
           productId: '$_id',
           quantity: 1,
           expirationDate: 1,
@@ -103,34 +103,110 @@ export const getAllInventory = asyncHandler(
 
 export const getProductInventory = asyncHandler(
   async (req: Request, res: Response) => {
-    const query = req.query as GetProductInventorySchema['query'];
     const { productId } = req.params as GetProductInventorySchema['params'];
 
-    const { page, limit, skip } = getPagination(query.page, query.limit);
-
-    const inventory = await Inventory.find({ productId })
-      .populate({
-        path: 'productId',
-        select: 'name sku categories salePrice',
-        populate: {
-          path: 'categories',
-          select: 'name _id',
+    const inventory = await Inventory.aggregate([
+      {
+        $match: { productId: new Types.ObjectId(productId) },
+      },
+      {
+        $lookup: {
+          from: 'products',
+          localField: 'productId',
+          foreignField: '_id',
+          as: 'product',
         },
-      })
-      .skip(skip)
-      .limit(limit)
-      .sort({
-        expirationDate: 1,
-      });
+      },
+      {
+        $unwind: '$product',
+      },
+      {
+        $lookup: {
+          from: 'categories',
+          localField: 'product.categories',
+          foreignField: '_id',
+          as: 'product.categories',
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          quantity: 1,
+          inputQuantity: 1,
+          expirationDate: 1,
+          product: {
+            _id: '$product._id',
+            name: '$product.name',
+            sku: '$product.sku',
+            salePrice: '$product.salePrice',
+            categories: { _id: 1, name: 1 },
+          },
+        },
+      },
+      { $sort: { expirationDate: 1 } },
+      { $limit: 10 },
+    ]);
 
-    const totalInventory = await Inventory.countDocuments({ productId });
+    const [totalQuantity] = await Inventory.aggregate([
+      {
+        $match: { productId: new Types.ObjectId(productId) },
+      },
+      { $group: { _id: null, total: { $sum: '$quantity' } } },
+      { $project: { _id: 0, total: 1 } },
+    ]);
+
+    const [activeLots] = await Inventory.aggregate([
+      {
+        $match: {
+          productId: new Types.ObjectId(productId),
+          quantity: { $gt: 0 },
+        },
+      },
+      { $group: { _id: null, activeLots: { $sum: 1 } } },
+      { $project: { _id: 0, activeLots: 1 } },
+    ]);
+
+    const [totalValue] = await Inventory.aggregate([
+      {
+        $match: { productId: new Types.ObjectId(productId) },
+      },
+      {
+        $lookup: {
+          from: 'products',
+          localField: 'productId',
+          foreignField: '_id',
+          as: 'product',
+        },
+      },
+      {
+        $unwind: '$product',
+      },
+      {
+        $addFields: {
+          costPriceWithVat: {
+            $multiply: [
+              '$product.costPrice',
+              { $add: [1, { $divide: ['$product.vat', 100] }] },
+            ],
+          },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalValue: {
+            $sum: { $multiply: ['$quantity', '$costPriceWithVat'] },
+          },
+        },
+      },
+      { $project: { _id: 0, totalValue: 1 } },
+    ]);
 
     sendResponse(res, 200, 'Inventory fetched successfully', {
       inventory,
-      totalInventory,
-      currentPage: page,
-      perPage: limit,
-      totalPages: Math.ceil(totalInventory / limit),
+      totalQuantity: totalQuantity?.total ?? 0,
+      activeLots: activeLots?.activeLots ?? 0,
+      totalValue: totalValue?.totalValue ?? 0,
     });
   },
 );
@@ -151,6 +227,7 @@ export const createInventory = asyncHandler(
     const inventory = await Inventory.create({
       productId,
       quantity,
+      inputQuantity: quantity,
       expirationDate: expiryDate,
     });
 
@@ -171,9 +248,32 @@ export const getInventoryStats = asyncHandler(
         $match: matchStage,
       },
       {
+        $lookup: {
+          from: 'products',
+          localField: 'productId',
+          foreignField: '_id',
+          as: 'product',
+        },
+      },
+      {
+        $unwind: '$product',
+      },
+      {
+        $addFields: {
+          costPriceWithVat: {
+            $multiply: [
+              '$product.costPrice',
+              { $add: [1, { $divide: ['$product.vat', 100] }] },
+            ],
+          },
+        },
+      },
+      {
         $group: {
           _id: null,
-          totalValue: { $sum: { $multiply: ['$quantity', '$price'] } },
+          totalValue: {
+            $sum: { $multiply: ['$quantity', '$costPriceWithVat'] },
+          },
         },
       },
     ];

@@ -40,18 +40,28 @@ interface ProductPriceDisplayProps {
   price: number;
   vat: number;
   isAuthenticated: boolean;
+  noOfUnits: number;
 }
 
 const ProductPriceDisplay = memo(
-  ({ price, vat, isAuthenticated }: ProductPriceDisplayProps) => {
+  ({ price, vat, isAuthenticated, noOfUnits }: ProductPriceDisplayProps) => {
     if (!isAuthenticated) return null;
+
+    const perUnitPrice = price / noOfUnits;
 
     return (
       <div className="bg-[var(--baladi-light)]/50 space-y-4 rounded-lg p-4">
-        <div className="flex items-baseline gap-2">
-          <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-primary)]">
-            {formatPrice(price)} kr
-          </span>
+        <div className="flex flex-col gap-1">
+          <div className="flex items-baseline gap-2">
+            <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-primary)]">
+              {formatPrice(price)} kr
+            </span>
+          </div>
+          <div className="flex items-baseline gap-2">
+            <span className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
+              {formatPrice(perUnitPrice)} kr per enhet
+            </span>
+          </div>
         </div>
         <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
           Pris inkluderer {vat}% MVA
@@ -452,6 +462,7 @@ function ProductInfo() {
         price={price ?? 0}
         vat={product.vat}
         isAuthenticated={isAuthenticated}
+        noOfUnits={product.noOfUnits}
       />
 
       <ProductSpecifications

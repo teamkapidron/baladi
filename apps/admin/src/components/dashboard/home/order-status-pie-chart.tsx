@@ -137,7 +137,6 @@ function OrderStatusPieChart() {
                 cy="50%"
                 outerRadius={65}
                 innerRadius={0}
-                paddingAngle={2}
                 dataKey="count"
               >
                 {orderData.map((entry, index) => (

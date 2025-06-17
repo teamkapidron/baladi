@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { Package } from '@repo/ui/lib/icons';
 
 // Components
-import { Switch } from '@repo/ui/components/base/switch';
+// import { Switch } from '@repo/ui/components/base/switch';
 
 // Types
 import { ProductResponse } from '@/hooks/useProduct/types';
@@ -20,7 +20,7 @@ interface ProductCardProps {
 }
 
 function ProductCard(props: ProductCardProps) {
-  const { product, onToggleActive } = props;
+  const { product } = props;
 
   return (
     <div className="flex items-center gap-4 rounded-lg border border-[var(--baladi-border)] bg-gray-50/50 p-4 transition-all hover:shadow-md">
@@ -43,12 +43,12 @@ function ProductCard(props: ProductCardProps) {
           <h3 className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-dark)]">
             {product.name}
           </h3>
-          <Switch
+          {/* <Switch
             checked={product.isActive}
             onCheckedChange={(checked) =>
               onToggleActive?.(product._id, checked)
             }
-          />
+          /> */}
         </div>
 
         <div className="flex items-center gap-4 text-xs text-[var(--baladi-gray)]">

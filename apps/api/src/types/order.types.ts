@@ -50,8 +50,19 @@ export type OrderResponse = Omit<
       name: string;
       sku: string;
       barcode: string;
+      weight: number;
+      dimensions: {
+        length: number;
+        width: number;
+        height: number;
+      };
     };
     quantity: number;
     price: number;
+    vatAmount: number;
+    priceWithVat: number;
+    discount: number;
+    bulkDiscount: number;
+    totalPrice: number;
   }[];
 };

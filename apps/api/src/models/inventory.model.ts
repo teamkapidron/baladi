@@ -8,7 +8,12 @@ const inventorySchema = new Schema<IInventory>(
       required: true,
       type: Schema.Types.ObjectId,
     },
+    
     quantity: {
+      type: Number,
+      required: true,
+    },
+    inputQuantity: {
       type: Number,
       required: true,
     },

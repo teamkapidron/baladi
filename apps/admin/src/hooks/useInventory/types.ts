@@ -36,10 +36,9 @@ export type GetProductInventoryRequest = ApiData<
   },
   {
     inventory: InventoryResponse[];
-    totalInventory: number;
-    currentPage: number;
-    perPage: number;
-    totalPages: number;
+    totalQuantity: number;
+    activeLots: number;
+    totalValue: number;
   }
 >;
 

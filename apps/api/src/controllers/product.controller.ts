@@ -645,7 +645,7 @@ export const topProducts = asyncHandler(async (req: Request, res: Response) => {
     },
     {
       $group: {
-        _id: '$items.product',
+        _id: '$items.productId',
         totalQuantity: { $sum: '$items.quantity' },
         totalOrders: { $sum: 1 },
       },
@@ -675,7 +675,6 @@ export const topProducts = asyncHandler(async (req: Request, res: Response) => {
           name: '$productDetails.name',
           image: '$productDetails.images',
           slug: '$productDetails.slug',
-          unitPrice: '$productDetails.unitPrice',
         },
         totalQuantity: 1,
         totalOrders: 1,

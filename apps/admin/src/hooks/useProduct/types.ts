@@ -152,7 +152,6 @@ export type TopProductsRequest = ApiData<
         name: string;
         image: string;
         slug: string;
-        unitPrice: number;
       };
       totalQuantity: number;
       totalOrders: number;

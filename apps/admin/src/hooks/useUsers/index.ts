@@ -90,8 +90,6 @@ export function useUsers() {
         limit,
         status: userFilter.status,
       }),
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: true,
   });
 
   const updateUser = useCallback(
@@ -145,8 +143,6 @@ export function useUsers() {
       dateRangeInString.to,
     ],
     queryFn: () => getTopUsers(dateRangeInString),
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
   });
 
   return {
