@@ -74,9 +74,7 @@ jobs:
           vercel pull --yes --environment=production --token ${{ secrets.VERCEL_TOKEN }}
 
       - name: Build Admin App
-        run: |
-          cd apps/admin
-          vercel build --prod --token ${{ secrets.VERCEL_TOKEN }}
+        run: vercel build --prod --cwd apps/admin --token ${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy Admin to Vercel
         run: |
@@ -98,9 +96,7 @@ jobs:
           vercel pull --yes --environment=production --token ${{ secrets.VERCEL_TOKEN }}
 
       - name: Build User App
-        run: |
-          cd apps/user
-          vercel build --prod --token ${{ secrets.VERCEL_TOKEN }}
+        run: vercel build --prod --cwd apps/user --token ${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy User to Vercel
         run: |
