@@ -23,6 +23,7 @@ import categoryRoute from '@/routes/category.route';
 import discountRoute from '@/routes/discount.route';
 import inventoryRoute from '@/routes/inventory.route';
 import marketingRoute from '@/routes/marketing.route';
+import exportRoute from '@/routes/export.route';
 
 const app = express();
 
@@ -52,7 +53,7 @@ app.use('/api/favorite', favoriteRoute);
 app.use('/api/discount', discountRoute);
 app.use('/api/inventory', inventoryRoute);
 app.use('/api/marketing', marketingRoute);
-
+app.use('/api/export', exportRoute);
 app.use(errorMiddleware);
 
 app.listen(5000, () => {

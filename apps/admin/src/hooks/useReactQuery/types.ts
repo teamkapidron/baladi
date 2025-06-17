@@ -48,4 +48,9 @@ export enum ReactQueryKeys {
   // Discounts
   GET_DISCOUNTS = 'GET::/discount/all',
   GET_BULK_DISCOUNTS = 'GET::/discount/bulk/all',
+
+  // Export
+  EXPORT_ORDERS = 'GET::/export/orders',
+  EXPORT_PRODUCTS = 'GET::/export/products',
+  EXPORT_USERS = 'GET::/export/users',
 }
