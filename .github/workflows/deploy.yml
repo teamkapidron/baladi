@@ -71,25 +71,27 @@ jobs:
         run: |
           vercel deploy \
             --cwd apps/admin \
+            --name baladi-admin \
             --prod \
             --token ${{ secrets.VERCEL_TOKEN }} \
             --scope ${{ vars.VERCEL_ORG_ID }} \
-            --env NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL }} \
-            --env NEXT_PUBLIC_USER_URL=${{ vars.NEXT_PUBLIC_USER_URL }} \
-            --env NEXT_PUBLIC_ADMIN_URL=${{ vars.NEXT_PUBLIC_ADMIN_URL }} \
+            --build-env NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL }} \
+            --build-env NEXT_PUBLIC_USER_URL=${{ vars.NEXT_PUBLIC_USER_URL }} \
+            --build-env NEXT_PUBLIC_ADMIN_URL=${{ vars.NEXT_PUBLIC_ADMIN_URL }} \
             --confirm
 
       - name: Deploy User to Vercel
         run: |
           vercel deploy \
             --cwd apps/user \
+            --name baladi-user \
             --prod \
             --token ${{ secrets.VERCEL_TOKEN }} \
             --scope ${{ vars.VERCEL_ORG_ID }} \
-            --env NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL }} \
-            --env NEXT_PUBLIC_USER_URL=${{ vars.NEXT_PUBLIC_USER_URL }} \
-            --env NEXT_PUBLIC_ADMIN_URL=${{ vars.NEXT_PUBLIC_ADMIN_URL }} \
-            --confirm
+            --build-env NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL }} \
+            --build-env NEXT_PUBLIC_USER_URL=${{ vars.NEXT_PUBLIC_USER_URL }} \
+            --build-env NEXT_PUBLIC_ADMIN_URL=${{ vars.NEXT_PUBLIC_ADMIN_URL }} \
+            --yes
 
       - name: Deploy SST to AWS (API, Cron, S3 Storage)
         run: npx sst deploy --stage prod
