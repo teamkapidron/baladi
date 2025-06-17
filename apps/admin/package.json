@@ -22,15 +22,16 @@
     "nuqs": "^2.4.3",
     "papaparse": "^5.5.3",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "styled-jsx": "^5.1.7"
   },
   "devDependencies": {
     "@repo/eslint": "workspace:*",
-    "@types/papaparse": "^5.3.16",
     "@repo/types": "workspace:*",
     "@repo/typescript": "workspace:*",
     "@types/lodash.debounce": "^4.0.9",
     "@types/node": "^22.15.3",
+    "@types/papaparse": "^5.3.16",
     "@types/react": "19.1.0",
     "@types/react-dom": "19.1.1",
     "eslint": "^9.26.0",
