@@ -68,17 +68,9 @@ jobs:
       - name: Install Vercel CLI
         run: pnpm install -g vercel
 
-      - name: Pull Vercel Admin App Environment Information
-        run: vercel pull --yes --cwd apps/admin --environment=production --token ${{ secrets.VERCEL_TOKEN }}
-
-      - name: Build Admin App
-        run: vercel build --prod --cwd apps/admin --token ${{ secrets.VERCEL_TOKEN }}
-
       - name: Deploy Admin to Vercel
         run: vercel deploy \
           --cwd apps/admin \
-          --prebuilt \
-          --name baladi-admin \
           --prod \
           --token ${{ secrets.VERCEL_TOKEN }} \
           --scope ${{ vars.VERCEL_ORG_ID }} \
@@ -87,17 +79,9 @@ jobs:
           --build-env NEXT_PUBLIC_ADMIN_URL=${{ vars.NEXT_PUBLIC_ADMIN_URL }} \
           --yes
 
-      - name: Pull Vercel User App Environment Information
-        run: vercel pull --yes --cwd apps/user --environment=production --token ${{ secrets.VERCEL_TOKEN }}
-
-      - name: Build User App
-        run: vercel build --prod --cwd apps/user --token ${{ secrets.VERCEL_TOKEN }}
-
       - name: Deploy User to Vercel
         run: vercel deploy \
           --cwd apps/user \
-          --prebuilt \
-          --name baladi-user \
           --prod \
           --token ${{ secrets.VERCEL_TOKEN }} \
           --scope ${{ vars.VERCEL_ORG_ID }} \
