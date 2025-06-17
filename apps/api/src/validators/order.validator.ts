@@ -76,26 +76,10 @@ export const getAllOrdersSchema = z.object({
     .object({
       page: z.string().optional(),
       limit: z.string().optional(),
-      userId: z
-        .string()
-        .refine((val) => !val || isValidObjectId(val), {
-          message: 'Invalid user ID format',
-        })
-        .optional(),
-      productId: z
-        .string()
-        .refine((val) => !val || isValidObjectId(val), {
-          message: 'Invalid product ID format',
-        })
-        .optional(),
       status: z.nativeEnum(OrderStatus).optional(),
       search: z.string().optional(),
       from: dateSchema,
       to: dateSchema,
-      sortBy: z
-        .enum(['createdAt', 'totalPrice', 'status', 'quantity'])
-        .optional(),
-      sortOrder: z.enum(['asc', 'desc']).optional(),
     })
     .superRefine((data, ctx) => {
       if (data.from && data.to) {

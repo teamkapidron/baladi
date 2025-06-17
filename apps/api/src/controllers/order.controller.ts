@@ -406,22 +406,108 @@ export const getAllOrders = asyncHandler(
   async (req: Request, res: Response) => {
     const query = req.query as GetAllOrdersSchema['query'];
 
-    const { queryObject, sortObject, perPage, currentPage, skip } =
+    const { queryObject, perPage, currentPage, skip } =
       await getOrderFiltersFromQuery(query);
 
-    const orders = await Order.find(queryObject)
-      .populate('userId', 'name email userType')
-      .populate({
-        path: 'items.productId',
-        select: 'name category images',
-      })
-      .populate({
-        path: 'shippingAddress',
-        select: 'addressLine1 addressLine2 city state postalCode country',
-      })
-      .sort(sortObject)
-      .skip(skip)
-      .limit(perPage);
+    const orders = await Order.aggregate([
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'userId',
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                name: 1,
+                email: 1,
+                userType: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $lookup: {
+          from: 'addresses',
+          localField: 'shippingAddress',
+          foreignField: '_id',
+          as: 'shippingAddress',
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                addressLine1: 1,
+                addressLine2: 1,
+                city: 1,
+                state: 1,
+                postalCode: 1,
+                country: 1,
+              },
+            },
+          ],
+        },
+      },
+      { $unwind: '$userId' },
+      { $unwind: '$shippingAddress' },
+      { $unwind: '$items' },
+
+      {
+        $lookup: {
+          from: 'products',
+          localField: 'items.productId',
+          foreignField: '_id',
+          as: 'product',
+          pipeline: [
+            {
+              $lookup: {
+                from: 'categories',
+                localField: 'categories',
+                foreignField: '_id',
+                as: 'categories',
+                pipeline: [{ $project: { _id: 1, name: 1 } }],
+              },
+            },
+            {
+              $project: {
+                _id: 1,
+                name: 1,
+                images: 1,
+                categories: 1,
+              },
+            },
+          ],
+        },
+      },
+      { $unwind: { path: '$product', preserveNullAndEmptyArrays: true } },
+      {
+        $set: {
+          'items.productId': '$product',
+        },
+      },
+
+      {
+        $group: {
+          _id: '$_id',
+          userId: { $first: '$userId' },
+          shippingAddress: { $first: '$shippingAddress' },
+          totalAmount: { $first: '$totalAmount' },
+          status: { $first: '$status' },
+          desiredDeliveryDate: { $first: '$desiredDeliveryDate' },
+          palletType: { $first: '$palletType' },
+          notes: { $first: '$notes' },
+          createdAt: { $first: '$createdAt' },
+          updatedAt: { $first: '$updatedAt' },
+          cancellationReason: { $first: '$cancellationReason' },
+          items: { $push: '$items' },
+        },
+      },
+
+      { $match: queryObject },
+      { $skip: skip },
+      { $limit: perPage },
+    ]);
 
     const totalOrders = await Order.countDocuments(queryObject);
 

@@ -6,18 +6,11 @@ import { dateSchema } from '@/validators/schemas/date.schema';
 
 export const getAllUsersSchema = z.object({
   query: z.object({
-    name: z.string().optional(),
-    email: z
-      .string()
-      .optional()
-      .refine((val) => !val || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val), {
-        message: 'Invalid email address',
-      }),
+    search: z.string().optional(),
     userType: z.nativeEnum(UserType).optional(),
     status: z.nativeEnum(UserStatusFilter).optional(),
     page: z.string().optional(),
     limit: z.string().optional(),
-    sort: z.enum(['asc', 'desc']).optional(),
   }),
 });
 

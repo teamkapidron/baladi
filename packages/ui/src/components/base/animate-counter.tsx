@@ -1,37 +1,62 @@
 import { memo, useEffect, useState } from 'react';
 
 interface AnimatedCounterProps {
-  value?: number;
+  value?: number | string;
   className?: string;
 }
 
-function AnimatedCounter(props: AnimatedCounterProps) {
-  const { value, className } = props;
-
-  const [count, setCount] = useState(0);
+function AnimatedCounter({ value, className }: AnimatedCounterProps) {
+  const [display, setDisplay] = useState<string | number>(0);
 
   useEffect(() => {
-    if (!value) return;
+    if (value === undefined || value === null) return;
 
-    let start = 0;
-    const end = value;
+    const parseValue = (val: string | number): number => {
+      if (typeof val === 'number') return val;
+
+      const cleaned = val
+        .replace(/[^0-9,.\\-]+/g, '')
+        .replace(/\s/g, '')
+        .replace(',', '.');
+
+      const parsed = parseFloat(cleaned);
+      return isNaN(parsed) ? 0 : parsed;
+    };
+
+    const formatValue = (val: number): string => {
+      if (typeof value === 'string') {
+        return (
+          new Intl.NumberFormat('nb-NO', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }).format(val) + (value.match(/[^\d\s,.-]+$/)?.[0] ?? '')
+        );
+      }
+      return val.toFixed(0);
+    };
+
+    const target = parseValue(value);
+    const current = 0;
     const duration = 1000;
-    const step = Math.max(1, Math.floor(end / 30));
+    const steps = 30;
+    const stepSize = (target - current) / steps;
+    let step = 0;
 
     const timer = setInterval(() => {
-      start += step;
-      if (start >= end) {
-        setCount(end);
+      step++;
+      const next = current + stepSize * step;
+      if (step >= steps || next >= target) {
+        setDisplay(formatValue(target));
         clearInterval(timer);
       } else {
-        setCount(start);
+        setDisplay(formatValue(next));
       }
-    }, duration / 30);
+    }, duration / steps);
 
     return () => clearInterval(timer);
   }, [value]);
 
-  return <span className={className}>{count}</span>;
+  return <span className={className}>{display}</span>;
 }
 
 export default memo(AnimatedCounter);

@@ -49,16 +49,9 @@ export function useUserStats() {
 
 export function useUsers() {
   const api = useRequest();
-  const { page, limit, handlePageSizeChange, handlePageChange } =
-    usePagination();
-  const { dateRangeInString, setDateRange } = useDateRangeInParams();
-  const {
-    userFilter,
-    handleUserStatusFilterChange,
-    handleUserTypeFilterChange,
-    handleUserEmailFilterChange,
-    handleUserNameFilterChange,
-  } = useUserFilter();
+  const { page, limit } = usePagination();
+  const { dateRangeInString } = useDateRangeInParams();
+  const { search, userType, status } = useUserFilter();
 
   const getAllUsers = useCallback(
     async (payload: GetAllCustomersRequest['payload']) => {
@@ -74,21 +67,19 @@ export function useUsers() {
   const { data: users, isLoading } = useQuery({
     queryKey: [
       ReactQueryKeys.GET_ALL_USERS,
-      userFilter.email,
-      userFilter.name,
-      userFilter.userType,
-      userFilter.status,
+      search,
+      userType,
+      status,
       page,
       limit,
     ],
     queryFn: () =>
       getAllUsers({
-        email: userFilter.email,
-        name: userFilter.name,
-        userType: userFilter.userType,
+        search,
+        userType: userType ?? undefined,
+        status,
         page,
         limit,
-        status: userFilter.status,
       }),
   });
 
@@ -154,21 +145,6 @@ export function useUsers() {
 
     // Mutations
     updateUserMutation,
-
-    // Actions
-    page,
-    limit,
-    handlePageSizeChange,
-    handlePageChange,
-
-    dateRangeInString,
-    setDateRange,
-
-    userFilter,
-    handleUserStatusFilterChange,
-    handleUserTypeFilterChange,
-    handleUserEmailFilterChange,
-    handleUserNameFilterChange,
   };
 }
 

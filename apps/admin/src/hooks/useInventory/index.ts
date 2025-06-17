@@ -87,7 +87,8 @@ export function useInventory() {
 
   const inventoryQuery = useQuery({
     queryKey: [ReactQueryKeys.GET_ALL_INVENTORY, page, limit, search, status],
-    queryFn: () => getAllInventory({ page, limit }),
+    queryFn: () =>
+      getAllInventory({ page, limit, search: search ?? undefined, status }),
   });
 
   const createInventory = useCallback(

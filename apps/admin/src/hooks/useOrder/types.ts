@@ -54,14 +54,10 @@ export type GetAllOrdersRequest = ApiData<
   {
     page?: string;
     limit?: string;
-    userId?: string;
-    productId?: string;
     status?: OrderStatus;
     search?: string;
     from?: string;
     to?: string;
-    sortBy?: 'createdAt' | 'totalPrice' | 'status' | 'quantity';
-    sortOrder?: 'asc' | 'desc';
   },
   {
     orders: OrderResponse[];

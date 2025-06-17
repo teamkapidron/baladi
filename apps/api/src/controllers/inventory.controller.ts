@@ -6,11 +6,12 @@ import Product from '@/models/product.model';
 import Inventory from '@/models/inventory.model';
 
 // Utils
-import { getDurationInMs } from '@/utils/common/date.util';
 import { sendResponse } from '@/utils/common/response.util';
 import { getDateMatchStage } from '@/utils/common/date.util';
-import { getPagination } from '@/utils/common/pagination.utils';
-import { buildStockCountPipeline } from '@/utils/inventory.utils';
+import {
+  buildStockCountPipeline,
+  getInventoryFilterFromQuery,
+} from '@/utils/inventory.utils';
 
 // Handlers
 import { asyncHandler } from '@/handlers/async.handler';
@@ -29,7 +30,8 @@ export const getAllInventory = asyncHandler(
   async (req: Request, res: Response) => {
     const query = req.query as GetAllInventorySchema['query'];
 
-    const { page, limit, skip } = getPagination(query.page, query.limit);
+    const { queryObject, page, limit, skip } =
+      getInventoryFilterFromQuery(query);
 
     const inventory = await Inventory.aggregate([
       {
@@ -60,6 +62,9 @@ export const getAllInventory = asyncHandler(
           foreignField: '_id',
           as: 'product.categories',
         },
+      },
+      {
+        $match: queryObject,
       },
       {
         $project: {

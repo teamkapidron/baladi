@@ -1,6 +1,13 @@
 import { ApiData } from '@/utils/types.util';
 import { Inventory } from '@repo/types/inventory';
 
+export enum InventoryStatus {
+  ALL = 'all',
+  IN_STOCK = 'in-stock',
+  LOW_STOCK = 'low-stock',
+  OUT_OF_STOCK = 'out-of-stock',
+}
+
 export type InventoryResponse = Omit<Inventory, 'productId'> & {
   product: {
     _id: string;
@@ -18,6 +25,8 @@ export type GetAllInventoryRequest = ApiData<
   {
     page: string;
     limit: string;
+    search?: string;
+    status: InventoryStatus;
   },
   {
     inventory: InventoryResponse[];

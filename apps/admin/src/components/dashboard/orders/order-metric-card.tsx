@@ -19,6 +19,9 @@ import AnimatedCounter from '@repo/ui/components/base/animate-counter';
 // Hooks
 import { useOrderStats } from '@/hooks/useOrder';
 
+// Types/Utils
+import { formatPrice } from '@/utils/price.util';
+
 function OrderMetricCards() {
   const { orderStatsQuery, orderRevenueStatsQuery } = useOrderStats();
 
@@ -112,7 +115,7 @@ function OrderMetricCards() {
               Omsetning Generert
             </span>
             <span className="font-medium text-[var(--baladi-text)]">
-              <AnimatedCounter value={revenueStats.totalRevenue} />
+              <AnimatedCounter value={formatPrice(revenueStats.totalRevenue)} />
               kr
             </span>
           </div>
@@ -327,8 +330,9 @@ function OrderMetricCards() {
               </h3>
               <div className="mt-2 flex items-baseline gap-2">
                 <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-text)]">
-                  <AnimatedCounter value={revenueStats.totalRevenue} />
-                  kr
+                  <AnimatedCounter
+                    value={formatPrice(revenueStats.totalRevenue)}
+                  />
                 </span>
                 {revenueStats.totalRevenue > 0 && (
                   <div className="bg-[var(--baladi-success)]/10 flex items-center gap-1 rounded-full px-2 py-1">
@@ -349,7 +353,7 @@ function OrderMetricCards() {
               Total Kostnad
             </span>
             <span className="font-medium text-[var(--baladi-text)]">
-              <AnimatedCounter value={revenueStats.totalCost} />
+              <AnimatedCounter value={formatPrice(revenueStats.totalCost)} />
               kr
             </span>
           </div>
@@ -371,7 +375,9 @@ function OrderMetricCards() {
               </h3>
               <div className="mt-2 flex items-baseline gap-2">
                 <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-text)]">
-                  <AnimatedCounter value={revenueStats.totalProfit} />
+                  <AnimatedCounter
+                    value={formatPrice(revenueStats.totalProfit)}
+                  />
                   kr
                 </span>
                 {revenueStats.profitMargin > 0 && (

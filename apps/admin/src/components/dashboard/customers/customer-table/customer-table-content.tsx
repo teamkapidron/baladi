@@ -38,12 +38,12 @@ import { formatDate } from '@repo/ui/lib/date';
 function CustomerTableContent() {
   const router = useRouter();
 
-  const { users } = useUsers();
-  const { currentPageData } = useMemo(
+  const { users: usersData } = useUsers();
+  const { users } = useMemo(
     () => ({
-      currentPageData: users?.users ?? [],
+      users: usersData?.users ?? [],
     }),
-    [users],
+    [usersData],
   );
 
   return (
@@ -86,7 +86,7 @@ function CustomerTableContent() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {users?.users.map((customer) => (
+            {users.map((customer) => (
               <TableRow
                 key={customer._id}
                 onClick={() =>
@@ -232,20 +232,20 @@ function CustomerTableContent() {
               </TableRow>
             ))}
 
-            {currentPageData.length === 0 && (
+            {users.length === 0 && (
               <TableRow>
                 <TableCell colSpan={6} className="h-32 text-center">
-                  <div className="flex flex-col items-center justify-center space-y-3">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[var(--baladi-light)]">
-                      <User className="h-8 w-8 text-[var(--baladi-gray)]" />
+                  <div className="flex flex-col items-center justify-center space-y-3 py-8">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
+                      <User className="h-8 w-8 text-gray-400" />
                     </div>
                     <div>
-                      <div className="font-[family-name:var(--font-sora)] text-sm font-semibold text-[var(--baladi-dark)]">
-                        Ingen kunder funnet
-                      </div>
-                      <div className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
-                        Prøv å justere søkekriteriene dine
-                      </div>
+                      <p className="mb-1 text-lg font-medium text-gray-900">
+                        Ingen bestillinger funnet
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        Bestillinger vil vises her når kunder legger dem inn
+                      </p>
                     </div>
                   </div>
                 </TableCell>
