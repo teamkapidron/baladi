@@ -41,7 +41,7 @@ jobs:
             build-cache-
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --shamefully-hoist
 
       - name: Set up environment variables
         run: |
