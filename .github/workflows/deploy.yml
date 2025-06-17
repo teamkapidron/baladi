@@ -74,7 +74,6 @@ jobs:
             --prod \
             --token ${{ secrets.VERCEL_TOKEN }} \
             --scope ${{ vars.VERCEL_ORG_ID }} \
-            --project ${{ vars.VERCEL_PROJECT_ID_ADMIN }} \
             --env NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL }} \
             --env NEXT_PUBLIC_USER_URL=${{ vars.NEXT_PUBLIC_USER_URL }} \
             --env NEXT_PUBLIC_ADMIN_URL=${{ vars.NEXT_PUBLIC_ADMIN_URL }} \
@@ -87,7 +86,6 @@ jobs:
             --prod \
             --token ${{ secrets.VERCEL_TOKEN }} \
             --scope ${{ vars.VERCEL_ORG_ID }} \
-            --project ${{ vars.VERCEL_PROJECT_ID_USER }} \
             --env NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL }} \
             --env NEXT_PUBLIC_USER_URL=${{ vars.NEXT_PUBLIC_USER_URL }} \
             --env NEXT_PUBLIC_ADMIN_URL=${{ vars.NEXT_PUBLIC_ADMIN_URL }} \
