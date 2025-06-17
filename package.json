@@ -11,6 +11,7 @@
     "add:admin": "pnpm --filter admin add",
     "add:api": "pnpm --filter api add",
     "add:user": "pnpm --filter user add",
+    "add:cron": "pnpm --filter cron add",
     "deploy:prod": "sst deploy --stage prod"
   },
   "devDependencies": {

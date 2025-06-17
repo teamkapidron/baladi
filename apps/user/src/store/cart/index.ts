@@ -209,6 +209,28 @@ export const useCartStore = create<CartStore>()(
         return get().getItemQuantity(userId, productId, bulkDiscounts) > 0;
       },
 
+      getBulkDiscountAmountForProduct: (
+        userId: string,
+        productId: string,
+        bulkDiscounts: BulkDiscount[],
+      ): number => {
+        const userCart = get().cart.filter((item) => item.userId === userId);
+        const product = userCart.find((item) => item.product._id === productId);
+        if (!product || !product.product.hasVolumeDiscount) return 0;
+
+        const bulkDiscount = bulkDiscounts
+          .filter((d) => d.isActive && d.minQuantity <= product.quantity)
+          .sort((a, b) => b.discountPercentage - a.discountPercentage)[0];
+
+        if (!bulkDiscount) return 0;
+        return (
+          (product.product.salePrice *
+            product.quantity *
+            bulkDiscount.discountPercentage) /
+          100
+        );
+      },
+
       setUserId: (userId: string | null, bulkDiscounts: BulkDiscount[]) => {
         const state = get();
         if (userId) {

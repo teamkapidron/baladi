@@ -48,7 +48,10 @@ export function calculateCartSummary(
   const userCart = cart.filter((item) => item.userId === userId);
 
   const totalItems = userCart.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = userCart.reduce((sum, item) => sum + item.totalPrice, 0);
+  const totalPrice = userCart.reduce(
+    (sum, item) => sum + item.product.salePrice,
+    0,
+  );
   const uniqueItems = userCart.length;
 
   const totalPriceWithoutVat = userCart.reduce(
@@ -61,18 +64,24 @@ export function calculateCartSummary(
     0,
   );
 
-  const totalDiscount =
-    bulkDiscounts?.reduce((sum, discount) => {
-      const item = userCart.find(
-        (item) =>
-          item.product.hasVolumeDiscount &&
-          item.quantity >= discount.minQuantity,
-      );
-      if (!item) return sum;
-      return sum + (item.totalPrice * discount.discountPercentage) / 100;
-    }, 0) || 0;
+  const totalDiscount = userCart.reduce((sum, item) => {
+    const bulkDiscount = bulkDiscounts
+      .filter((d) => d.isActive && d.minQuantity <= item.quantity)
+      .sort((a, b) => b.discountPercentage - a.discountPercentage)[0];
 
-  const netPrice = totalPrice + totalVat - totalDiscount;
+    if (bulkDiscount && item.product.hasVolumeDiscount) {
+      return (
+        sum +
+        (item.product.salePrice *
+          item.quantity *
+          bulkDiscount.discountPercentage) /
+          100
+      );
+    }
+    return sum;
+  }, 0);
+
+  const netPrice = totalPriceWithoutVat + totalVat - totalDiscount;
 
   return {
     totalItems,
