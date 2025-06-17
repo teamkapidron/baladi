@@ -78,7 +78,7 @@ jobs:
             --build-env NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL }} \
             --build-env NEXT_PUBLIC_USER_URL=${{ vars.NEXT_PUBLIC_USER_URL }} \
             --build-env NEXT_PUBLIC_ADMIN_URL=${{ vars.NEXT_PUBLIC_ADMIN_URL }} \
-            --confirm
+            --yes
 
       - name: Deploy User to Vercel
         run: |
