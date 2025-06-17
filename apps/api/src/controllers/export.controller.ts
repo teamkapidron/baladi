@@ -1,53 +1,22 @@
 // Node Modules
 import ExcelJS from 'exceljs';
-import { Request, Response } from 'express';
 
 // Handlers
 import { asyncHandler } from '@/handlers/async.handler';
-import { ErrorHandler } from '@/handlers/error.handler';
 
 // Models
 import User from '@/models/user.model';
-import { UserType } from '@repo/types/user';
 import Product from '@/models/product.model';
-import { Product as ProductType, Visibility } from '@repo/types/product';
-import { Category } from '@repo/types/category';
 import Order from '@/models/order.model';
-import { OrderStatus, Order as OrderType } from '@repo/types/order';
 
-type PopulatedProduct = Omit<ProductType, 'categories'> & {
-  categories: Pick<Category, 'name'>[];
-};
+// Types
+import { UserType } from '@repo/types/user';
+import { Visibility } from '@repo/types/product';
+import { OrderStatus } from '@repo/types/order';
+import { PopulatedProduct, PopulatedOrder } from '@/types/export.types';
 
-type PopulatedOrder = Omit<
-  OrderType,
-  'userId' | 'items' | 'shippingAddress'
-> & {
-  userId: {
-    name: string;
-    email: string;
-    phoneNumber: string;
-    address: string;
-  };
-} & {
-  items: {
-    productId: { name: string };
-    quantity: number;
-    price: number;
-    vatAmount: number;
-    totalPrice: number;
-    discount?: number;
-    bulkDiscount?: number;
-  }[];
-  shippingAddress: {
-    addressLine1: string;
-    addressLine2: string;
-    city: string;
-    state: string;
-    postalCode: string;
-    country: string;
-  };
-};
+// Types
+import type { Request, Response } from 'express';
 
 export const exportUsers = asyncHandler(async (req: Request, res: Response) => {
   const users = await User.find({});
@@ -116,10 +85,10 @@ export const exportUsers = asyncHandler(async (req: Request, res: Response) => {
 
 export const exportProducts = asyncHandler(
   async (req: Request, res: Response) => {
-    const products = (await Product.find({}).populate(
+    const products = await Product.find<PopulatedProduct>({}).populate(
       'categories',
       'name',
-    )) as unknown as PopulatedProduct[];
+    );
 
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Products');
@@ -217,13 +186,13 @@ export const exportProducts = asyncHandler(
 
 export const exportOrders = asyncHandler(
   async (req: Request, res: Response) => {
-    const orders = (await Order.find({})
+    const orders = await Order.find<PopulatedOrder>({})
       .populate('items.productId', 'name')
       .populate('userId', 'name email phoneNumber address')
       .populate(
         'shippingAddress',
         'addressLine1 addressLine2 city state postalCode country',
-      )) as unknown as PopulatedOrder[];
+      );
 
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Orders');

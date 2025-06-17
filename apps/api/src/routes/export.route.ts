@@ -7,10 +7,11 @@ import {
   exportProducts,
   exportUsers,
 } from '@/controllers/export.controller';
+import { isAdmin } from '@/middlewares/auth.middleware';
 
 const router: Router = Router();
 
-router.get('/users', exportUsers);
-router.get('/products', exportProducts);
-router.get('/orders', exportOrders);
+router.get('/users', isAdmin, exportUsers);
+router.get('/products', isAdmin, exportProducts);
+router.get('/orders', isAdmin, exportOrders);
 export default router;
