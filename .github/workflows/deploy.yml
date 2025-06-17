@@ -24,7 +24,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            ${{ github.workspace }}/node_modules
+            /home/runner/setup-pnpm/node_modules/.bin
           key: |
             node_modules-${{ hashFiles('pnpm-lock.yaml') }}
 
@@ -67,11 +67,18 @@ jobs:
       - name: Install Vercel CLI
         run: pnpm install -g vercel
 
+      - name: Build Admin App
+        run: |
+            cd apps/admin
+            vercel build \
+              --prod \
+              --yes
+
       - name: Deploy Admin to Vercel
         run: |
+          cd apps/admin
           vercel deploy \
             --prebuilt \
-            --cwd apps/admin \
             --name baladi-admin \
             --prod \
             --token ${{ secrets.VERCEL_TOKEN }} \
@@ -81,11 +88,18 @@ jobs:
             --build-env NEXT_PUBLIC_ADMIN_URL=${{ vars.NEXT_PUBLIC_ADMIN_URL }} \
             --yes
 
+      - name: Build User App
+        run: |
+          cd apps/user
+          vercel build \
+            --prod \
+            --yes
+
       - name: Deploy User to Vercel
         run: |
+          cd apps/user
           vercel deploy \
             --prebuilt \
-            --cwd apps/user \
             --name baladi-user \
             --prod \
             --token ${{ secrets.VERCEL_TOKEN }} \
