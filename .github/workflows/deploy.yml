@@ -70,6 +70,7 @@ jobs:
       - name: Deploy Admin to Vercel
         run: |
           vercel deploy \
+            --prebuilt \
             --cwd apps/admin \
             --name baladi-admin \
             --prod \
@@ -83,6 +84,7 @@ jobs:
       - name: Deploy User to Vercel
         run: |
           vercel deploy \
+            --prebuilt \
             --cwd apps/user \
             --name baladi-user \
             --prod \
