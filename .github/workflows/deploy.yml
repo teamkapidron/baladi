@@ -71,7 +71,9 @@ jobs:
         run: |
             cd apps/admin
             vercel build \
-              --prod \
+              --prod
+              --token ${{ secrets.VERCEL_TOKEN }} \
+              --scope ${{ vars.VERCEL_ORG_ID }} \
               --yes
 
       - name: Deploy Admin to Vercel
@@ -93,6 +95,8 @@ jobs:
           cd apps/user
           vercel build \
             --prod \
+            --token ${{ secrets.VERCEL_TOKEN }} \
+            --scope ${{ vars.VERCEL_ORG_ID }} \
             --yes
 
       - name: Deploy User to Vercel
