@@ -15,8 +15,6 @@ export default $config({
   },
   async run() {
     await import('./stacks/ApiStack');
-    await import('./stacks/AdminStack');
-    await import('./stacks/UserStack');
     await import('./stacks/CronStack');
     await import('./stacks/StorageStack');
   },
