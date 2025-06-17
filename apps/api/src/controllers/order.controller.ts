@@ -406,22 +406,108 @@ export const getAllOrders = asyncHandler(
   async (req: Request, res: Response) => {
     const query = req.query as GetAllOrdersSchema['query'];
 
-    const { queryObject, sortObject, perPage, currentPage, skip } =
+    const { queryObject, perPage, currentPage, skip } =
       await getOrderFiltersFromQuery(query);
 
-    const orders = await Order.find(queryObject)
-      .populate('userId', 'name email userType')
-      .populate({
-        path: 'items.productId',
-        select: 'name category images',
-      })
-      .populate({
-        path: 'shippingAddress',
-        select: 'addressLine1 addressLine2 city state postalCode country',
-      })
-      .sort(sortObject)
-      .skip(skip)
-      .limit(perPage);
+    const orders = await Order.aggregate([
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'userId',
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                name: 1,
+                email: 1,
+                userType: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $lookup: {
+          from: 'addresses',
+          localField: 'shippingAddress',
+          foreignField: '_id',
+          as: 'shippingAddress',
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                addressLine1: 1,
+                addressLine2: 1,
+                city: 1,
+                state: 1,
+                postalCode: 1,
+                country: 1,
+              },
+            },
+          ],
+        },
+      },
+      { $unwind: '$userId' },
+      { $unwind: '$shippingAddress' },
+      { $unwind: '$items' },
+
+      {
+        $lookup: {
+          from: 'products',
+          localField: 'items.productId',
+          foreignField: '_id',
+          as: 'product',
+          pipeline: [
+            {
+              $lookup: {
+                from: 'categories',
+                localField: 'categories',
+                foreignField: '_id',
+                as: 'categories',
+                pipeline: [{ $project: { _id: 1, name: 1 } }],
+              },
+            },
+            {
+              $project: {
+                _id: 1,
+                name: 1,
+                images: 1,
+                categories: 1,
+              },
+            },
+          ],
+        },
+      },
+      { $unwind: { path: '$product', preserveNullAndEmptyArrays: true } },
+      {
+        $set: {
+          'items.productId': '$product',
+        },
+      },
+
+      {
+        $group: {
+          _id: '$_id',
+          userId: { $first: '$userId' },
+          shippingAddress: { $first: '$shippingAddress' },
+          totalAmount: { $first: '$totalAmount' },
+          status: { $first: '$status' },
+          desiredDeliveryDate: { $first: '$desiredDeliveryDate' },
+          palletType: { $first: '$palletType' },
+          notes: { $first: '$notes' },
+          createdAt: { $first: '$createdAt' },
+          updatedAt: { $first: '$updatedAt' },
+          cancellationReason: { $first: '$cancellationReason' },
+          items: { $push: '$items' },
+        },
+      },
+
+      { $match: queryObject },
+      { $skip: skip },
+      { $limit: perPage },
+    ]);
 
     const totalOrders = await Order.countDocuments(queryObject);
 
@@ -540,18 +626,34 @@ export const getOrderRevenueStats = asyncHandler(
         $unwind: '$productInfo',
       },
       {
-        $addFields: {
-          revenue: {
-            $multiply: ['$items.price', '$items.quantity'],
-          },
-          cost: {
-            $multiply: ['$productInfo.costPrice', '$items.quantity'],
-          },
+        $lookup: {
+          from: 'bulkdiscounts',
+          pipeline: [
+            { $match: { isActive: true } },
+            { $sort: { minQuantity: -1 } },
+          ],
+          as: 'bulkDiscounts',
         },
       },
       {
         $addFields: {
-          profit: { $subtract: ['$revenue', '$cost'] },
+          revenue: '$totalAmount',
+          cost: {
+            $multiply: ['$productInfo.costPrice', '$items.quantity'],
+          },
+          profit: {
+            $multiply: [
+              {
+                $subtract: [
+                  {
+                    $subtract: ['$items.price', '$productInfo.costPrice'],
+                  },
+                  '$items.bulkDiscount',
+                ],
+              },
+              '$items.quantity',
+            ],
+          },
         },
       },
       {
@@ -672,9 +774,16 @@ export const getOrderRevenueGraphData = asyncHandler(
             $multiply: ['$productInfo.costPrice', '$items.quantity'],
           },
           profit: {
-            $subtract: [
-              { $multiply: ['$items.price', '$items.quantity'] },
-              { $multiply: ['$productInfo.costPrice', '$items.quantity'] },
+            $multiply: [
+              {
+                $subtract: [
+                  {
+                    $subtract: ['$items.price', '$productInfo.costPrice'],
+                  },
+                  '$items.bulkDiscount',
+                ],
+              },
+              '$items.quantity',
             ],
           },
         },
@@ -770,7 +879,10 @@ export const previewPickingList = asyncHandler(
 
     const order = await Order.findById(orderId)
       .populate([
-        { path: 'items.productId', select: 'name sku barcode' },
+        {
+          path: 'items.productId',
+          select: 'name sku barcode weight dimensions',
+        },
         { path: 'userId', select: 'name email' },
         {
           path: 'shippingAddress',
@@ -795,7 +907,10 @@ export const previewFreightLabel = asyncHandler(
 
     const order = await Order.findById(orderId)
       .populate([
-        { path: 'items.productId', select: 'name' },
+        {
+          path: 'items.productId',
+          select: 'name sku barcode weight dimensions',
+        },
         { path: 'userId', select: 'name email' },
         {
           path: 'shippingAddress',

@@ -1,10 +1,14 @@
 import { z } from 'zod';
 import { dateSchema } from './schemas/date.schema';
 
+import { InventoryStatus } from '@/types/inventory.types';
+
 export const getAllInventorySchema = z.object({
   query: z.object({
     page: z.string().optional(),
     limit: z.string().optional(),
+    search: z.string().optional(),
+    status: z.nativeEnum(InventoryStatus).optional(),
   }),
 });
 

@@ -68,6 +68,11 @@ export interface CartActions {
     productId: string,
     bulkDiscounts: BulkDiscount[],
   ) => boolean;
+  getBulkDiscountAmountForProduct: (
+    userId: string,
+    productId: string,
+    bulkDiscounts: BulkDiscount[],
+  ) => number;
   setUserId: (userId: string | null, bulkDiscounts: BulkDiscount[]) => void;
   _hydrate: () => void;
 }

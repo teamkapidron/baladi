@@ -1,11 +1,27 @@
 import { OrderResponse } from '@/types/order.types';
 
 export function pickingListTemplate(order: OrderResponse) {
+  const totalWeight = order.items.reduce(
+    (total, item) => total + item.productId.weight * item.quantity,
+    0,
+  );
+  const totalVolume = order.items.reduce(
+    (total, item) =>
+      total +
+      item.productId.dimensions.length *
+        item.productId.dimensions.width *
+        item.productId.dimensions.height,
+    0,
+  );
+
+  const palletPreference = order.palletType;
+  const customerNotes = order.notes;
+
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="no">
 <head>
   <meta charset="UTF-8" />
-  <title>Picking List</title>
+  <title>Plukkeliste</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -35,6 +51,18 @@ export function pickingListTemplate(order: OrderResponse) {
     .summary {
       font-weight: bold;
       margin-bottom: 20px;
+    }
+
+    .details-box {
+      background-color: #f8f8f8;
+      padding: 15px;
+      border: 1px solid #ddd;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+
+    .details-box p {
+      margin: 5px 0;
     }
 
     table {
@@ -82,31 +110,39 @@ export function pickingListTemplate(order: OrderResponse) {
   <div class="sheet">
     <div class="top-info">
       <div>
-        <h1>Pick List</h1>
+        <h1>Plukkeliste</h1>
         <div><strong>Baladi Engros</strong></div>
       </div>
       <div style="text-align: right;">
-        <strong>Date:</strong> ${new Date().toLocaleDateString()}
+        <strong>Dato:</strong> ${new Date().toLocaleDateString()}
       </div>
     </div>
 
     <div class="summary">
-      You are picking for ${order.items.length} shipment:
-      &nbsp;&nbsp;&nbsp; Total Items: ${order.items.length} &nbsp;&nbsp;&nbsp; Total Quantity: ${order.items.reduce((total, item) => total + item.quantity, 0)}
+      Du plukker for ${order.items.length} forsendelse:
+      &nbsp;&nbsp;&nbsp; Totalt antall varer: ${order.items.length} &nbsp;&nbsp;&nbsp; Total mengde: ${order.items.reduce((total, item) => total + item.quantity, 0)}
+    </div>
+
+    <div class="details-box">
+      <p><strong>Total vekt:</strong> ${totalWeight.toFixed(2)} kg</p>
+      <p><strong>Total volum:</strong> ${totalVolume.toFixed(2)} m³</p>
+      ${palletPreference ? `<p><strong>Palletype:</strong> ${palletPreference}</p>` : ''}
+      ${customerNotes ? `<p><strong>Kundenotater:</strong> ${customerNotes}</p>` : ''}
     </div>
 
     <div class="order-header">
-      Order #${order._id.toString()} <span>Attn: ${order.userId.name}</span>
+      Ordre #${order._id.toString()} <span>Navn: ${order.userId.name}</span>
     </div>
 
     <table>
       <thead>
         <tr>
-          <th>Product Name</th>
-          <th>Qty</th>
+          <th>Produktnavn</th>
+          <th>Antall</th>
           <th>SKU</th>
-          <th>Barcode</th>
-          <th>Picked</th>
+          <th>Strekkode</th>
+          <th>Plukket</th>
+          <th>Ikke plukket</th>
         </tr>
       </thead>
       <tbody>
@@ -117,6 +153,7 @@ export function pickingListTemplate(order: OrderResponse) {
             <td>${item.quantity ?? 'N/A'}</td>
             <td>${item.productId.sku ?? 'N/A'}</td>
             <td>${item.productId.barcode ?? 'N/A'}</td>
+            <td class="checkbox">☐</td>
             <td class="checkbox">☐</td>
           </tr>
         `,
@@ -131,8 +168,23 @@ export function pickingListTemplate(order: OrderResponse) {
 }
 
 export function freightLabelTemplate(order: OrderResponse) {
+  const totalWeight = order.items.reduce(
+    (total, item) => total + item.productId.weight * item.quantity,
+    0,
+  );
+  const totalVolume = order.items.reduce(
+    (total, item) =>
+      total +
+      item.productId.dimensions.length *
+        item.productId.dimensions.width *
+        item.productId.dimensions.height,
+    0,
+  );
+
+  const palletPreference = order.palletType;
+
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="no">
 <head>
   <meta charset="UTF-8" />
   <style>
@@ -192,21 +244,43 @@ export function freightLabelTemplate(order: OrderResponse) {
       color: #555;
       margin-top: 20px;
     }
+
+    .signature-section {
+      margin-top: 40px;
+      border-top: 1px solid #000;
+      padding-top: 20px;
+    }
+
+    .signature-box {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+
+    .signature-field {
+      width: 45%;
+    }
+
+    .signature-line {
+      border-top: 1px solid #000;
+      margin-top: 50px;
+      padding-top: 5px;
+    }
   </style>
 </head>
 <body>
 
   <div class="label">
     <div class="section">
-      <h2>Shipping From</h2>
+      <h2>Frakt Fra</h2>
       <div><strong>Baladi Engros</strong></div>
       <div>Andersrudveien 1</div>
       <div>1914 Ytre Enebakk</div>
-      <div>Norway</div>
+      <div>Norge</div>
     </div>
 
     <div class="section">
-      <h2>Shipping To</h2>
+      <h2>Frakt Til</h2>
       <div><strong>${order.userId.name}</strong></div>
       <div>${order.shippingAddress.addressLine1}</div>
       <div>${order.shippingAddress.addressLine2}</div>
@@ -218,18 +292,28 @@ export function freightLabelTemplate(order: OrderResponse) {
     </div>
 
     <div class="section">
-      <h2>Order Info</h2>
-      <div><strong>Order Date:</strong> ${new Date(order.createdAt).toLocaleDateString()}</div>
-      <div><strong>Total Items:</strong> ${order.items.length}</div>
-      <div><strong>Total Quantity:</strong> ${order.items.reduce((sum, i) => sum + i.quantity, 0)}</div>
+      <h2>Ordre Informasjon</h2>
+      <div><strong>Total Vekt:</strong> ${totalWeight.toFixed(2)} kg</div>
+      <div><strong>Total Volum:</strong> ${totalVolume.toFixed(2)} m³</div>
+      ${palletPreference ? `<div><strong>Palletype:</strong> ${palletPreference}</div>` : ''}
     </div>
 
     <div class="barcode-box">
       <div class="barcode">${order._id.toString().toUpperCase()}</div>
     </div>
 
+    <div class="signature-section">
+      <h2>Leveringsbekreftelse</h2>
+      <div class="signature-box">
+        <div class="signature-field">
+          <div>Signatur</div>
+          <div class="signature-line"></div>
+        </div>
+      </div>
+    </div>
+
     <div class="footer">
-      Printed on ${new Date().toLocaleString()}
+      Skrevet ut ${new Date().toLocaleString()}
     </div>
   </div>
 

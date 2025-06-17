@@ -15,12 +15,10 @@ export enum UserSort {
 
 export type GetAllCustomersRequest = ApiData<
   {
-    name?: string;
-    email?: string;
-    userType?: UserType;
     page?: string;
     limit?: string;
-    sort?: UserSort;
+    search?: string;
+    userType?: UserType;
     status?: UserStatusFilter;
   },
   {

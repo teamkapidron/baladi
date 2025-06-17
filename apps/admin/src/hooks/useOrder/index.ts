@@ -1,11 +1,12 @@
 // Node Modules
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { toast } from '@repo/ui/lib/sonner';
 import { useMutation, useQuery } from '@tanstack/react-query';
 
 // Hooks
 import { useRequest } from '@/hooks/useRequest';
-import { useGetParams } from '@repo/ui/hooks/useParams';
+import { toOrderStatus, useOrderFilters } from './useOrderFilters';
+import { usePagination } from '@repo/ui/hooks/usePagination';
 import { useDateRangeInParams } from '@repo/ui/hooks/useDate/useDateRangeInParams';
 
 // Types
@@ -202,11 +203,9 @@ export function useUpdateOrderStatus() {
 
 export function useOrder() {
   const api = useRequest();
-  const { getAllParams } = useGetParams();
-
-  const params = useMemo(() => {
-    return getAllParams();
-  }, [getAllParams]);
+  const { page, limit } = usePagination();
+  const { search, status } = useOrderFilters();
+  const { dateRangeInString } = useDateRangeInParams();
 
   const getAllOrders = useCallback(
     async (payload: GetAllOrdersRequest['payload']) => {
@@ -224,8 +223,22 @@ export function useOrder() {
     isLoading,
     refetch: refetchOrders,
   } = useQuery({
-    queryKey: [ReactQueryKeys.GET_ALL_ORDERS, JSON.stringify(params)],
-    queryFn: () => getAllOrders(params),
+    queryKey: [
+      ReactQueryKeys.GET_ALL_ORDERS,
+      search,
+      status,
+      dateRangeInString.from,
+      dateRangeInString.to,
+    ],
+    queryFn: () =>
+      getAllOrders({
+        page,
+        limit,
+        from: dateRangeInString.from,
+        to: dateRangeInString.to,
+        search,
+        status: toOrderStatus(status),
+      }),
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
   });

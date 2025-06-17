@@ -200,12 +200,12 @@ function StockAlertsList() {
 
           {stockAlerts.length > 8 && (
             <div className="mt-3 text-center">
-              <a
+              <Link
                 href="/dashboard/inventory"
                 className="hover:text-[var(--baladi-primary)]/80 font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-primary)]"
               >
                 Se {stockAlerts.length - 8} flere varslinger
-              </a>
+              </Link>
             </div>
           )}
         </div>

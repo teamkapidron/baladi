@@ -37,39 +37,6 @@ function ProductTableContent() {
     return productsData?.products || [];
   }, [productsData]);
 
-  const getStockStatus = (stock: number) => {
-    if (stock === 0)
-      return {
-        label: 'Utsolgt',
-        color: 'text-[var(--baladi-error)] bg-red-50',
-        badge: 'bg-red-100 text-red-800',
-      };
-    if (stock < 10)
-      return {
-        label: `Lav Lagerbeholdning (${stock})`,
-        color: 'text-[var(--baladi-warning)] bg-amber-50',
-        badge: 'bg-amber-100 text-amber-800',
-      };
-    return {
-      label: stock.toString(),
-      color: 'text-[var(--baladi-success)] bg-green-50',
-      badge: 'bg-green-100 text-green-800',
-    };
-  };
-
-  const getVisibilityBadge = (visibility: string) => {
-    switch (visibility) {
-      case 'public':
-        return 'bg-green-100 text-green-800';
-      case 'private':
-        return 'bg-gray-100 text-gray-800';
-      case 'hidden':
-        return 'bg-red-100 text-red-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
-
   return (
     <div className="relative">
       <div className="max-h-[700px] overflow-auto rounded-xl border border-[var(--baladi-border)] bg-white shadow-sm">
@@ -175,7 +142,7 @@ function ProductTableContent() {
                               Uten MVA:
                             </span>
                             <span className="font-[family-name:var(--font-sora)] text-sm font-semibold text-gray-700">
-                              {formatPrice(priceWithVat)} kr
+                              {formatPrice(product.salePrice)} kr
                             </span>
                           </div>
                         </div>
@@ -199,7 +166,7 @@ function ProductTableContent() {
                               Uten MVA:
                             </span>
                             <span className="text-sm font-semibold text-gray-600">
-                              {formatPrice(costPriceWithVat)} kr
+                              {formatPrice(product.costPrice)} kr
                             </span>
                           </div>
                         </div>
@@ -407,3 +374,36 @@ function ProductTableContent() {
 }
 
 export default memo(ProductTableContent);
+
+function getStockStatus(stock: number) {
+  if (stock === 0)
+    return {
+      label: 'Utsolgt',
+      color: 'text-[var(--baladi-error)] bg-red-50',
+      badge: 'bg-red-100 text-red-800',
+    };
+  if (stock < 10)
+    return {
+      label: `Lav Lagerbeholdning (${stock})`,
+      color: 'text-[var(--baladi-warning)] bg-amber-50',
+      badge: 'bg-amber-100 text-amber-800',
+    };
+  return {
+    label: stock.toString(),
+    color: 'text-[var(--baladi-success)] bg-green-50',
+    badge: 'bg-green-100 text-green-800',
+  };
+}
+
+function getVisibilityBadge(visibility: string) {
+  switch (visibility) {
+    case 'public':
+      return 'bg-green-100 text-green-800';
+    case 'private':
+      return 'bg-gray-100 text-gray-800';
+    case 'hidden':
+      return 'bg-red-100 text-red-800';
+    default:
+      return 'bg-gray-100 text-gray-800';
+  }
+}

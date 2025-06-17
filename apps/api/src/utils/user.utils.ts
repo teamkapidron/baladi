@@ -1,28 +1,35 @@
 import User from '@/models/user.model';
 
+import { getPagination } from '@/utils/common/pagination.utils';
+
 import { UserStatusFilter, type FilterUserQuery } from '@/types/user.types';
 import type { GetAllUsersSchema } from '@/validators/user.validator';
 
 export function getUserFiltersFromQuery(query: GetAllUsersSchema['query']) {
-  const { name, email, userType, status, page, limit, sort } = query;
+  const { search, userType, status, page, limit } = query;
 
-  let sortObject = {};
   let queryObject: FilterUserQuery = {};
-  const perPage = parseInt(limit ?? '10', 10);
-  const currentPage = parseInt(page ?? '1', 10);
+  const {
+    page: currentPage,
+    limit: perPage,
+    skip,
+  } = getPagination(page, limit);
 
-  if (name) {
+  if (search) {
     queryObject['$or'] = [
-      { name: new RegExp(name, 'i') },
-      { username: new RegExp(name, 'i') },
+      { name: new RegExp(search, 'i') },
+      { email: new RegExp(search, 'i') },
+      { companyName: new RegExp(search, 'i') },
+      { organizationNumber: new RegExp(search, 'i') },
+      { phoneNumber: new RegExp(search, 'i') },
+      { address: new RegExp(search, 'i') },
     ];
   }
-  if (email) {
-    queryObject['email'] = new RegExp(email, 'i');
-  }
+
   if (userType) {
     queryObject['userType'] = userType;
   }
+
   if (status && status !== UserStatusFilter.ALL) {
     if (status === UserStatusFilter.APPROVED) {
       queryObject['isApprovedByAdmin'] = true;
@@ -32,15 +39,12 @@ export function getUserFiltersFromQuery(query: GetAllUsersSchema['query']) {
       queryObject['isEmailVerified'] = false;
     }
   }
-  if (sort) {
-    sortObject = { createdAt: sort === 'asc' ? 1 : -1 };
-  }
 
   return {
     queryObject,
-    sortObject,
     perPage,
     currentPage,
+    skip,
   };
 }
 

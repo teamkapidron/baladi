@@ -16,82 +16,43 @@ import {
 
 // Hooks
 import { useUsers } from '@/hooks/useUsers';
+import { usePagination } from '@repo/ui/hooks/usePagination';
+import { useUserFilter } from '@/hooks/useUsers/useUserFilter';
 
 // Types
 import { UserType } from '@repo/types/user';
-import { UserFilter } from '@/hooks/useUsers/useUserFilter';
 
 function CustomerTableFilters() {
-  const {
-    userFilter,
-    handleUserEmailFilterChange,
-    handleUserNameFilterChange,
-    handleUserTypeFilterChange,
-    page,
-    limit,
-    handlePageSizeChange,
-    handlePageChange,
-    users,
-  } = useUsers();
-
-  const [filter, setFilter] = useState<UserFilter>(UserFilter.NAME);
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const { users } = useUsers();
+  const { page, limit, handlePageSizeChange, handlePageChange } =
+    usePagination();
+  const { search, userType, handleSearchFilter, handleUserTypeFilter } =
+    useUserFilter();
 
   const currentPage = Number(page);
   const pageSize = Number(limit);
   const totalPages = users?.totalPages || 1;
 
+  const [searchQuery, setSearchQuery] = useState<string>(search);
   const [pageInput, setPageInput] = useState<string>(currentPage.toString());
-
-  const handleSearchQueryChange = useCallback(
-    (value: string) => {
-      setSearchQuery(value);
-      if (filter === UserFilter.NAME) {
-        handleUserNameFilterChange(value);
-      } else if (filter === UserFilter.EMAIL) {
-        handleUserEmailFilterChange(value);
-      }
-    },
-    [filter, handleUserNameFilterChange, handleUserEmailFilterChange],
-  );
 
   const handleSearch = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      handleSearchQueryChange(e.target.value);
       setSearchQuery(e.target.value);
+      handleSearchFilter(e.target.value);
     },
-    [handleSearchQueryChange, setSearchQuery],
-  );
-
-  const handleFilterChange = useCallback(
-    (newFilter: UserFilter) => {
-      setFilter(newFilter);
-      setSearchQuery('');
-      if (filter === UserFilter.NAME) {
-        handleUserNameFilterChange('');
-      } else if (filter === UserFilter.EMAIL) {
-        handleUserEmailFilterChange('');
-      }
-    },
-    [filter, handleUserNameFilterChange, handleUserEmailFilterChange],
+    [handleSearchFilter],
   );
 
   const handleUserTypeChange = useCallback(
     (userType: string) => {
       if (userType === 'all') {
-        handleUserTypeFilterChange(undefined as unknown as UserType);
+        handleUserTypeFilter(undefined);
       } else {
-        handleUserTypeFilterChange(userType as UserType);
+        handleUserTypeFilter(userType as UserType);
       }
     },
-    [handleUserTypeFilterChange],
-  );
-
-  const handlePageInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setPageInput(e.target.value);
-    },
-    [],
+    [handleUserTypeFilter],
   );
 
   const handlePageInputSubmit = useCallback(
@@ -107,90 +68,42 @@ function CustomerTableFilters() {
     [currentPage, handlePageChange, pageInput, totalPages],
   );
 
-  const getFilterLabel = useCallback((filterType: UserFilter) => {
-    switch (filterType) {
-      case UserFilter.NAME:
-        return 'Navn';
-      case UserFilter.EMAIL:
-        return 'E-post';
-      case UserFilter.USER_TYPE:
-        return 'Brukertype';
-      default:
-        return 'Navn';
-    }
-  }, []);
-
-  const getCurrentFilterValue = useCallback(() => {
-    switch (filter) {
-      case UserFilter.NAME:
-        return userFilter.name || '';
-      case UserFilter.EMAIL:
-        return userFilter.email || '';
-      case UserFilter.USER_TYPE:
-        return userFilter.userType || 'all';
-      default:
-        return '';
-    }
-  }, [filter, userFilter]);
-
   return (
     <div className="mb-6 space-y-4">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          {/* Filter Selection */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+            <Input
+              type="text"
+              placeholder="Søk kunder (navn, e-post, firma, org.nr, telefon, adresse)..."
+              className="w-96 pl-9 pr-4 font-[family-name:var(--font-dm-sans)] text-sm"
+              value={searchQuery}
+              onChange={handleSearch}
+            />
+          </div>
+
           <div className="flex items-center gap-2">
             <div className="bg-[var(--baladi-primary)]/10 flex h-8 w-8 items-center justify-center rounded-lg">
               <Filter className="h-4 w-4 text-[var(--baladi-primary)]" />
             </div>
             <Select
-              value={filter}
-              onValueChange={(value) => handleFilterChange(value as UserFilter)}
+              value={userType || 'all'}
+              onValueChange={handleUserTypeChange}
             >
-              <SelectTrigger className="w-32 font-[family-name:var(--font-dm-sans)] text-sm">
-                <SelectValue placeholder="Filtrer etter" />
+              <SelectTrigger className="w-40 font-[family-name:var(--font-dm-sans)] text-sm">
+                <SelectValue placeholder="Brukertype" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={UserFilter.NAME}>Navn</SelectItem>
-                <SelectItem value={UserFilter.EMAIL}>E-post</SelectItem>
-                <SelectItem value={UserFilter.USER_TYPE}>Brukertype</SelectItem>
+                <SelectItem value="all">Alle typer</SelectItem>
+                <SelectItem value={UserType.INTERNAL}>Intern</SelectItem>
+                <SelectItem value={UserType.EXTERNAL}>Ekstern</SelectItem>
               </SelectContent>
             </Select>
           </div>
-
-          {/* Conditional Input/Select based on filter */}
-          <div className="relative">
-            {filter === UserFilter.USER_TYPE ? (
-              <Select
-                value={getCurrentFilterValue()}
-                onValueChange={handleUserTypeChange}
-              >
-                <SelectTrigger className="w-48 font-[family-name:var(--font-dm-sans)] text-sm">
-                  <SelectValue placeholder="Velg brukertype" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Alle typer</SelectItem>
-                  <SelectItem value={UserType.INTERNAL}>Intern</SelectItem>
-                  <SelectItem value={UserType.EXTERNAL}>Ekstern</SelectItem>
-                </SelectContent>
-              </Select>
-            ) : (
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
-                <Input
-                  type="text"
-                  placeholder={`Søk etter ${getFilterLabel(filter).toLowerCase()}...`}
-                  className="w-48 pl-9 pr-4 font-[family-name:var(--font-dm-sans)] text-sm"
-                  value={searchQuery}
-                  onChange={handleSearch}
-                />
-              </div>
-            )}
-          </div>
         </div>
 
-        {/* Pagination Controls */}
         <div className="flex items-center gap-4">
-          {/* Page Size Selector */}
           <div className="flex items-center gap-2">
             <span className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-gray)]">
               Vis:
@@ -211,7 +124,6 @@ function CustomerTableFilters() {
             </Select>
           </div>
 
-          {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center gap-1">
               <button
@@ -223,24 +135,23 @@ function CustomerTableFilters() {
                 <ChevronDown className="h-4 w-4 rotate-90" />
               </button>
 
-              {Array.from({ length: totalPages }, (_, index) => {
-                const pageNum = index + 1;
+              {Array.from({ length: Math.min(totalPages, 5) }, (_, index) => {
+                let pageNum: number;
 
-                if (pageNum === 1) {
-                  return (
-                    <span
-                      key={`ellipsis-${index}`}
-                      className="px-2 font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]"
-                    >
-                      ...
-                    </span>
-                  );
+                if (totalPages <= 5) {
+                  pageNum = index + 1;
+                } else if (currentPage <= 3) {
+                  pageNum = index + 1;
+                } else if (currentPage >= totalPages - 2) {
+                  pageNum = totalPages - 4 + index;
+                } else {
+                  pageNum = currentPage - 2 + index;
                 }
 
                 return (
                   <button
                     key={`page-${pageNum}`}
-                    onClick={() => handlePageChange(Number(pageNum))}
+                    onClick={() => handlePageChange(pageNum)}
                     className={`h-8 min-w-8 rounded-lg px-3 font-[family-name:var(--font-sora)] text-sm font-medium transition-all duration-300 ${
                       pageNum === currentPage
                         ? 'bg-[var(--baladi-primary)] text-white shadow-md'
@@ -261,7 +172,7 @@ function CustomerTableFilters() {
                   <input
                     type="text"
                     value={pageInput}
-                    onChange={handlePageInputChange}
+                    onChange={(e) => setPageInput(e.target.value)}
                     className="hover:border-[var(--baladi-primary)]/50 focus:ring-[var(--baladi-primary)]/20 h-8 w-12 rounded-lg border border-[var(--baladi-border)] bg-white px-2 text-center font-[family-name:var(--font-dm-sans)] text-sm shadow-sm transition-all duration-300 focus:border-[var(--baladi-primary)] focus:outline-none focus:ring-2"
                     placeholder="Gå"
                   />
@@ -287,26 +198,28 @@ function CustomerTableFilters() {
         </div>
       </div>
 
-      {/* Results Summary */}
-      {users && (
-        <div className="flex items-center justify-between rounded-lg bg-[var(--baladi-light)] px-4 py-2">
-          <div className="flex items-center gap-2">
-            <div className="bg-[var(--baladi-primary)]/10 flex h-6 w-6 items-center justify-center rounded">
-              <Users className="h-3.5 w-3.5 text-[var(--baladi-primary)]" />
-            </div>
-            <span className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-              Viser {(currentPage - 1) * pageSize + 1} til{' '}
-              {Math.min(currentPage * pageSize, users.totalRecords)} av{' '}
-              {users.totalRecords} kunder
-            </span>
+      <div className="flex items-center justify-between rounded-lg bg-[var(--baladi-light)] px-4 py-2">
+        <div className="flex items-center gap-2">
+          <div className="bg-[var(--baladi-primary)]/10 flex h-6 w-6 items-center justify-center rounded">
+            <Users className="h-3.5 w-3.5 text-[var(--baladi-primary)]" />
           </div>
-          {totalPages > 1 && (
-            <span className="font-[family-name:var(--font-sora)] text-sm font-medium text-[var(--baladi-dark)]">
-              Side {currentPage} av {totalPages}
-            </span>
-          )}
+          <span className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
+            Viser {(currentPage - 1) * pageSize + 1} til{' '}
+            {Math.min(currentPage * pageSize, users?.totalRecords || 0)} av{' '}
+            {users?.totalRecords || 0} kunder
+            {searchQuery && (
+              <span className="ml-1 font-medium text-[var(--baladi-primary)]">
+                for &quot;{searchQuery}&quot;
+              </span>
+            )}
+          </span>
         </div>
-      )}
+        {totalPages > 1 && (
+          <span className="font-[family-name:var(--font-sora)] text-sm font-medium text-[var(--baladi-dark)]">
+            Side {currentPage} av {totalPages}
+          </span>
+        )}
+      </div>
     </div>
   );
 }

@@ -19,6 +19,7 @@ export function useCart() {
     updateQuantity: updateQuantityStore,
     getItemQuantity: getItemQuantityStore,
     isInCart: isInCartStore,
+    getBulkDiscountAmountForProduct: getBulkDiscountAmountForProductStore,
     setUserId,
   } = useCartStore(
     useShallow((state) => ({
@@ -32,6 +33,7 @@ export function useCart() {
       getItemQuantity: state.getItemQuantity,
       isInCart: state.isInCart,
       setUserId: state.setUserId,
+      getBulkDiscountAmountForProduct: state.getBulkDiscountAmountForProduct,
     })),
   );
   const { bulkDiscountQuery } = useDiscount();
@@ -88,6 +90,18 @@ export function useCart() {
     [updateQuantityStore, user, isAuthenticated, bulkDiscounts],
   );
 
+  const getBulkDiscountAmountForProduct = useCallback(
+    (productId: string): number => {
+      if (!user) return 0;
+      return getBulkDiscountAmountForProductStore(
+        user._id,
+        productId,
+        bulkDiscounts,
+      );
+    },
+    [getBulkDiscountAmountForProductStore, user, bulkDiscounts],
+  );
+
   return {
     cart,
     addToCart,
@@ -98,5 +112,6 @@ export function useCart() {
     userCartItems,
     isInCart,
     getItemQuantity,
+    getBulkDiscountAmountForProduct,
   };
 }

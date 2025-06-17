@@ -37,6 +37,8 @@ import { useOrderPreview } from '@/hooks/useOrder';
 import { downloadPdfFromHtmlString } from '@/utils/pdf.utils';
 
 // Types
+import { formatDate } from '@/utils/date.util';
+import { formatPrice } from '@/utils/price.util';
 import { OrderResponse } from '@/hooks/useOrder/types';
 
 function getStatusColor(status: string) {
@@ -178,7 +180,7 @@ function OrderTableContent() {
             </TableRow>
           </TableHeader>
           <TableBody className="divide-y divide-gray-200 bg-white">
-            {orders.map((order, index) => {
+            {orders.map((order) => {
               const totalItems = order.items.reduce(
                 (sum, item) => sum + item.quantity,
                 0,
@@ -192,30 +194,21 @@ function OrderTableContent() {
                 >
                   {/* Order Details */}
                   <TableCell className="p-4">
-                    <div className="space-y-2">
-                      <div className="flex items-center space-x-2">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-600">
-                          {index + 1}
+                    <div className="flex flex-col space-y-3">
+                      <div className="flex flex-col space-y-1">
+                        <div className="text-2xl font-bold text-gray-900">
+                          {formatPrice(order.totalAmount)} kr
                         </div>
-                        <div>
-                          <div className="font-medium text-gray-900">
-                            #{order._id}
-                          </div>
+                        <div className="flex items-center text-xs text-gray-500">
+                          <Clock className="mr-1 h-3 w-3" />
+                          {formatDate(order.createdAt)}
                         </div>
                       </div>
-                      <div className="flex items-center justify-between">
-                        <div className="text-lg font-bold text-gray-900">
-                          {order.totalAmount.toFixed(2)}kr
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          {new Date(order.createdAt).toLocaleDateString(
-                            'nb-NO',
-                            {
-                              month: 'short',
-                              day: 'numeric',
-                              year: 'numeric',
-                            },
-                          )}
+                      <div className="flex items-center space-x-2">
+                        <div className="rounded-md bg-gray-50 px-2 py-1">
+                          <span className="font-mono text-sm font-medium text-gray-600">
+                            #{order._id}
+                          </span>
                         </div>
                       </div>
                     </div>

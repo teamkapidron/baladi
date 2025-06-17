@@ -2,6 +2,7 @@
 
 // Node Modules
 import { memo, useCallback, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Package,
   AlertTriangle,
@@ -36,7 +37,11 @@ import { Button } from '@repo/ui/components/base/button';
 import { useInventory } from '@/hooks/useInventory';
 import { useInventoryFilters } from '@/hooks/useInventory/useInventoryFilters';
 
+// Types
+import { InventoryStatus } from '@/hooks/useInventory/types';
+
 function InventoryTable() {
+  const router = useRouter();
   const { inventoryQuery } = useInventory();
   const { search, status, handleSearchFilterChange, handleStatusFilterChange } =
     useInventoryFilters();
@@ -68,11 +73,11 @@ function InventoryTable() {
 
           <div className="flex flex-col gap-3 sm:flex-row">
             <div className="relative">
-              <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+              <Search className="absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-400" />
               <Input
                 type="text"
-                placeholder="Søk produkter..."
-                className="w-72 rounded-xl border-gray-200 bg-white pl-12 pr-4 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                placeholder="Søk etter produktnavn, SKU eller strekkode..."
+                className="w-96 rounded-xl border-gray-200 bg-white pl-12 pr-4 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 value={searchQuery}
                 onChange={handleSearch}
               />
@@ -85,10 +90,16 @@ function InventoryTable() {
                   <SelectValue placeholder="Alle" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Alle</SelectItem>
-                  <SelectItem value="in-stock">På Lager</SelectItem>
-                  <SelectItem value="low-stock">Lavt Lager</SelectItem>
-                  <SelectItem value="out-of-stock">Tomt på Lager</SelectItem>
+                  <SelectItem value={InventoryStatus.ALL}>Alle</SelectItem>
+                  <SelectItem value={InventoryStatus.IN_STOCK}>
+                    På Lager
+                  </SelectItem>
+                  <SelectItem value={InventoryStatus.LOW_STOCK}>
+                    Lavt Lager
+                  </SelectItem>
+                  <SelectItem value={InventoryStatus.OUT_OF_STOCK}>
+                    Tomt på Lager
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -117,98 +128,144 @@ function InventoryTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {inventory.map((item) => (
-              <TableRow
-                key={item._id}
-                className="group border-b border-gray-50 transition-all duration-200 hover:bg-gray-50/50"
-              >
-                <TableCell className="px-8 py-6">
-                  <div className="flex items-center space-x-4">
+            {inventory.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} className="px-8 py-16 text-center">
+                  <div className="flex flex-col items-center justify-center space-y-6">
                     <div className="relative">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-100 to-indigo-100 ring-2 ring-blue-100 transition-all group-hover:ring-blue-200">
-                        <Package className="h-6 w-6 text-blue-600" />
+                      <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-gray-100 to-gray-200 ring-8 ring-gray-50">
+                        <Filter className="h-10 w-10 text-gray-400" />
+                      </div>
+                      <div className="absolute -right-2 -top-2 flex h-8 w-8 items-center justify-center rounded-full bg-orange-100 ring-2 ring-white">
+                        <AlertTriangle className="h-4 w-4 text-orange-600" />
                       </div>
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="truncate font-semibold text-gray-900">
-                        {item.product.name}
-                      </div>
-                      <div className="mt-1 flex items-center gap-2">
-                        <span className="text-xs font-medium text-gray-500">
-                          SKU: {item.product.sku}
-                        </span>
-                      </div>
+                    <div className="space-y-3 text-center">
+                      <h3 className="text-xl font-semibold text-gray-900">
+                        Ingen resultater funnet
+                      </h3>
+                      <p className="max-w-md text-sm text-gray-600">
+                        Prøv å justere søkefilteret eller statusfilteret for å
+                        se flere resultater.
+                      </p>
                     </div>
-                  </div>
-                </TableCell>
-
-                <TableCell className="px-4 py-6">
-                  <span
-                    className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ring-1 ${getCategoryColor(item.product.categories[0]?.name ?? '')}`}
-                  >
-                    {item.product.categories[0]?.name ?? 'Ingen kategori'}
-                  </span>
-                </TableCell>
-
-                <TableCell className="px-4 py-6">
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg font-bold text-gray-900">
-                        {item.quantity}
-                      </span>
-                      <span className="text-sm text-gray-500">enheter</span>
+                    <div className="flex flex-col gap-3 sm:flex-row">
+                      <Button
+                        variant="outline"
+                        className="rounded-xl border-gray-200 px-6 py-2.5 text-gray-700 transition-all hover:border-gray-300 hover:bg-gray-50"
+                        onClick={() => window.location.reload()}
+                      >
+                        Oppdater Side
+                      </Button>
                     </div>
-                    <div className="w-24">
-                      <div className="h-2 rounded-full bg-gray-200">
-                        <div
-                          className={`h-2 rounded-full transition-all duration-300 ${getStockProgressColor(
-                            item.quantity,
-                            new Date(item.expirationDate),
-                          )}`}
-                          style={{
-                            width: getStockProgressWidth(
-                              item.quantity,
-                              new Date(item.expirationDate),
-                            ),
-                          }}
-                        ></div>
+                    <div className="mt-4 flex items-center gap-4 text-xs text-gray-500">
+                      <div className="flex items-center gap-2">
+                        <div className="h-2 w-2 rounded-full bg-blue-500"></div>
+                        <span>Filtrer på status</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="h-2 w-2 rounded-full bg-green-500"></div>
+                        <span>Søk på produkt</span>
                       </div>
                     </div>
-                  </div>
-                </TableCell>
-
-                <TableCell className="px-4 py-6">
-                  <div className="flex items-center gap-3">
-                    {getStatusIcon(
-                      item.quantity,
-                      new Date(item.expirationDate),
-                    )}
-                    {getStatusBadge(
-                      item.quantity,
-                      new Date(item.expirationDate),
-                    )}
-                  </div>
-                </TableCell>
-
-                <TableCell className="px-4 py-6">
-                  <div className="text-sm text-gray-600">
-                    {formatDate(new Date(item.expirationDate), 'MMM d, yyyy')}
-                  </div>
-                </TableCell>
-
-                <TableCell className="px-8 py-6">
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      className="group/btn rounded-lg p-2 text-gray-400 transition-all hover:bg-green-50 hover:text-green-600"
-                      title="Vis Detaljer"
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
                   </div>
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              inventory.map((item) => (
+                <TableRow
+                  key={item._id}
+                  className="group border-b border-gray-50 transition-all duration-200 hover:bg-gray-50/50"
+                >
+                  <TableCell className="px-8 py-6">
+                    <div className="flex items-center space-x-4">
+                      <div className="relative">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-100 to-indigo-100 ring-2 ring-blue-100 transition-all group-hover:ring-blue-200">
+                          <Package className="h-6 w-6 text-blue-600" />
+                        </div>
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="truncate font-semibold text-gray-900">
+                          {item.product.name}
+                        </div>
+                        <div className="mt-1 flex items-center gap-2">
+                          <span className="text-xs font-medium text-gray-500">
+                            SKU: {item.product.sku}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </TableCell>
+
+                  <TableCell className="px-4 py-6">
+                    <span
+                      className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ring-1 ${getCategoryColor(item.product.categories[0]?.name ?? '')}`}
+                    >
+                      {item.product.categories[0]?.name ?? 'Ingen kategori'}
+                    </span>
+                  </TableCell>
+
+                  <TableCell className="px-4 py-6">
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg font-bold text-gray-900">
+                          {item.quantity}
+                        </span>
+                        <span className="text-sm text-gray-500">enheter</span>
+                      </div>
+                      <div className="w-24">
+                        <div className="h-2 rounded-full bg-gray-200">
+                          <div
+                            className={`h-2 rounded-full transition-all duration-300 ${getStockProgressColor(
+                              item.quantity,
+                              new Date(item.expirationDate),
+                            )}`}
+                            style={{
+                              width: getStockProgressWidth(
+                                item.quantity,
+                                new Date(item.expirationDate),
+                              ),
+                            }}
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                  </TableCell>
+
+                  <TableCell className="px-4 py-6">
+                    <div className="flex items-center gap-3">
+                      {getStatusIcon(
+                        item.quantity,
+                        new Date(item.expirationDate),
+                      )}
+                      {getStatusBadge(
+                        item.quantity,
+                        new Date(item.expirationDate),
+                      )}
+                    </div>
+                  </TableCell>
+
+                  <TableCell className="px-4 py-6">
+                    <div className="text-sm text-gray-600">
+                      {formatDate(new Date(item.expirationDate), 'MMM d, yyyy')}
+                    </div>
+                  </TableCell>
+
+                  <TableCell className="px-8 py-6">
+                    <Button
+                      variant="outline"
+                      className="group/btn w-full rounded-lg text-gray-400 transition-all hover:bg-green-50 hover:text-green-600"
+                      title="Vis Detaljer"
+                      onClick={() =>
+                        router.push(`/dashboard/inventory/${item._id}`)
+                      }
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>

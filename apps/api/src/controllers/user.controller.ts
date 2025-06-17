@@ -34,16 +34,15 @@ import type {
 export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
   const query = req.query as GetAllUsersSchema['query'];
 
-  const { queryObject, sortObject, perPage, currentPage } =
+  const { queryObject, perPage, currentPage, skip } =
     getUserFiltersFromQuery(query);
 
-  const users = await User.find({ ...queryObject })
+  const users = await User.find(queryObject)
     .select('-password -otp -otpExpiry -resetToken -resetTokenExpiry')
     .limit(perPage)
-    .skip(perPage * (currentPage - 1))
-    .sort(sortObject);
+    .skip(skip);
 
-  const totalRecords = await User.countDocuments({ ...queryObject });
+  const totalRecords = await User.countDocuments(queryObject);
 
   sendResponse(res, 200, 'Users fetched successfully', {
     users,
@@ -234,8 +233,8 @@ export const getTopUsers = asyncHandler(async (req: Request, res: Response) => {
         _id: 0,
         user: {
           _id: '$user._id',
-          userName: '$user.userName',
-          userEmail: '$user.userEmail',
+          userName: '$user.name',
+          userEmail: '$user.email',
         },
         totalAmount: 1,
         totalOrders: 1,
