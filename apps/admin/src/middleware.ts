@@ -4,18 +4,7 @@ import type { NextRequest } from 'next/server';
 import { getAdminData } from '@/functions/auth.functions';
 
 const nonProtectedRoutes = ['/login'];
-const protectedRoutes = [
-  '/dashboard',
-  '/dashboard/products',
-  '/dashboard/categories',
-  '/dashboard/inventory',
-  '/dashboard/orders',
-  '/dashboard/customers',
-  '/dashboard/discounts',
-  '/dashboard/newsletter',
-  '/dashboard/promotion',
-  '/dashboard/settings',
-];
+const protectedRoutes = ['/dashboard'];
 
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value;
@@ -33,7 +22,9 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  if (protectedRoutes.includes(request.nextUrl.pathname)) {
+  if (
+    protectedRoutes.some((route) => request.nextUrl.pathname.startsWith(route))
+  ) {
     if (!token) {
       return NextResponse.redirect(new URL('/login', request.url));
     }
