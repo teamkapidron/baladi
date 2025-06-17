@@ -67,14 +67,15 @@ jobs:
       - name: Install Vercel CLI
         run: pnpm install -g vercel
 
+      - name: Pull Vercel Admin App Environment Information
+        run: |
+          cd apps/admin
+          vercel pull --yes --environment=production --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ vars.VERCEL_ORG_ID }}
+
       - name: Build Admin App
         run: |
-            cd apps/admin
-            vercel build \
-              --prod
-              --token ${{ secrets.VERCEL_TOKEN }} \
-              --scope ${{ vars.VERCEL_ORG_ID }} \
-              --yes
+          cd apps/admin
+          vercel build --yes --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ vars.VERCEL_ORG_ID }}
 
       - name: Deploy Admin to Vercel
         run: |
@@ -90,14 +91,15 @@ jobs:
             --build-env NEXT_PUBLIC_ADMIN_URL=${{ vars.NEXT_PUBLIC_ADMIN_URL }} \
             --yes
 
+      - name: Pull Vercel User App Environment Information
+        run: |
+          cd apps/user
+          vercel pull --yes --environment=production --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ vars.VERCEL_ORG_ID }}
+
       - name: Build User App
         run: |
           cd apps/user
-          vercel build \
-            --prod \
-            --token ${{ secrets.VERCEL_TOKEN }} \
-            --scope ${{ vars.VERCEL_ORG_ID }} \
-            --yes
+          vercel build --yes --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ vars.VERCEL_ORG_ID }}
 
       - name: Deploy User to Vercel
         run: |
