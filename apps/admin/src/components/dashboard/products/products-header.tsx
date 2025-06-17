@@ -5,7 +5,12 @@ import Link from 'next/link';
 import React, { memo } from 'react';
 import { Download, ShoppingBag, Plus } from '@repo/ui/lib/icons';
 
+// Hooks
+import { useExport } from '@/hooks/useExport';
+
 function ProductsHeader() {
+  const { exportProductsMutation } = useExport();
+
   return (
     <div className="relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-[var(--baladi-primary)] via-[var(--baladi-primary)] to-[var(--baladi-secondary)] p-6 shadow-lg">
       <div className="absolute inset-0 opacity-10">
@@ -39,7 +44,10 @@ function ProductsHeader() {
             <Plus className="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
             <span>Legg til Produkt</span>
           </Link>
-          <button className="group flex h-11 items-center gap-2 rounded-lg bg-white px-4 py-2 font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-primary)] shadow-lg transition-all duration-200 hover:scale-105 hover:bg-white/95 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-white/40">
+          <button
+            onClick={() => exportProductsMutation.mutate()}
+            className="group flex h-11 items-center gap-2 rounded-lg bg-white px-4 py-2 font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-primary)] shadow-lg transition-all duration-200 hover:scale-105 hover:bg-white/95 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-white/40"
+          >
             <Download className="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
             <span>Eksporter Produkter</span>
           </button>
