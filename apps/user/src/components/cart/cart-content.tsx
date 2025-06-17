@@ -101,7 +101,7 @@ function CartContent() {
             product._id,
           );
           const originalItemTotal =
-            item.quantity * product.salePrice * (1 + product.vat / 100);
+            item.quantity * product.price * (1 + product.vat / 100);
           const discountedItemTotal =
             originalItemTotal - (bulkDiscountAmount || 0);
           const hasDiscount = bulkDiscountAmount && bulkDiscountAmount > 0;
@@ -191,7 +191,7 @@ function CartContent() {
                       </div>
                       <div className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
                         {formatPrice(
-                          product.salePrice * (1 + product.vat / 100),
+                          product.price * (1 + product.vat / 100),
                         )}{' '}
                         kr per stk
                       </div>

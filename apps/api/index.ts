@@ -54,6 +54,7 @@ app.use('/api/discount', discountRoute);
 app.use('/api/inventory', inventoryRoute);
 app.use('/api/marketing', marketingRoute);
 app.use('/api/export', exportRoute);
+
 app.use(errorMiddleware);
 
 app.listen(5000, () => {

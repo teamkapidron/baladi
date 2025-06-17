@@ -44,9 +44,11 @@ import {
   QuickSearchProductAggregateType,
   ProductStock,
 } from '@/types/product.types';
+import { UserType } from '@repo/types/user';
 
 export const getProducts = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user?._id;
+  const userType = req.user?.userType;
   const query = req.query as GetProductsSchema['query'];
 
   const { queryObject, perPage, currentPage } =
@@ -147,10 +149,32 @@ export const getProducts = asyncHandler(async (req: Request, res: Response) => {
           favorite: 0,
         },
       },
+      {
+        $addFields: {
+          price:
+            userType === UserType.INTERNAL
+              ? '$costPrice'
+              : userType === UserType.EXTERNAL
+                ? '$salePrice'
+                : 0,
+        },
+      },
     );
+  } else {
+    pipeline.push({
+      $addFields: {
+        price: 0,
+      },
+    });
   }
 
   pipeline.push(
+    {
+      $project: {
+        costPrice: 0,
+        salePrice: 0,
+      },
+    },
     {
       $skip: perPage * (currentPage - 1),
     },
@@ -179,6 +203,7 @@ export const getProducts = asyncHandler(async (req: Request, res: Response) => {
 export const getProductById = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user?._id;
+    const userType = req.user?.userType;
     const { productId } = req.params as GetProductByIdSchema['params'];
 
     const pipeline: PipelineStage[] = [
@@ -256,7 +281,23 @@ export const getProductById = asyncHandler(
             favorite: 0,
           },
         },
+        {
+          $addFields: {
+            price:
+              userType === UserType.INTERNAL
+                ? '$costPrice'
+                : userType === UserType.EXTERNAL
+                  ? '$salePrice'
+                  : 0,
+          },
+        },
       );
+    } else {
+      pipeline.push({
+        $addFields: {
+          price: 0,
+        },
+      });
     }
 
     const product = await Product.aggregate(pipeline);
@@ -274,6 +315,7 @@ export const getProductById = asyncHandler(
 export const getProductBySlug = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user?._id;
+    const userType = req.user?.userType;
     const { slug } = req.params as GetProductBySlugSchema['params'];
 
     const pipeline: PipelineStage[] = [
@@ -351,7 +393,23 @@ export const getProductBySlug = asyncHandler(
             favorite: 0,
           },
         },
+        {
+          $addFields: {
+            price:
+              userType === UserType.INTERNAL
+                ? '$costPrice'
+                : userType === UserType.EXTERNAL
+                  ? '$salePrice'
+                  : 0,
+          },
+        },
       );
+    } else {
+      pipeline.push({
+        $addFields: {
+          price: 0,
+        },
+      });
     }
 
     const product = await Product.aggregate(pipeline);

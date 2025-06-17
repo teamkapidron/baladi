@@ -14,7 +14,7 @@ export function createCartItem(
   product: ProductResponse,
   quantity: number,
 ): CartItem {
-  const price = product.salePrice * (1 + product.vat / 100);
+  const price = product.price * (1 + product.vat / 100);
 
   return {
     userId,
@@ -35,7 +35,7 @@ export function updateCartItem(
   return {
     ...item,
     quantity: newQuantity,
-    totalPrice: calculateItemTotal(newQuantity, item.product.salePrice),
+    totalPrice: calculateItemTotal(newQuantity, item.product.price),
     updatedAt: new Date(),
   };
 }
@@ -49,18 +49,18 @@ export function calculateCartSummary(
 
   const totalItems = userCart.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = userCart.reduce(
-    (sum, item) => sum + item.product.salePrice,
+    (sum, item) => sum + item.product.price,
     0,
   );
   const uniqueItems = userCart.length;
 
   const totalPriceWithoutVat = userCart.reduce(
-    (sum, item) => sum + item.product.salePrice * item.quantity,
+    (sum, item) => sum + item.product.price * item.quantity,
     0,
   );
   const totalVat = userCart.reduce(
     (sum, item) =>
-      sum + (item.product.salePrice * item.quantity * item.product.vat) / 100,
+      sum + (item.product.price * item.quantity * item.product.vat) / 100,
     0,
   );
 
@@ -72,7 +72,7 @@ export function calculateCartSummary(
     if (bulkDiscount && item.product.hasVolumeDiscount) {
       return (
         sum +
-        (item.product.salePrice *
+        (item.product.price *
           item.quantity *
           bulkDiscount.discountPercentage) /
           100

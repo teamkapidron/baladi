@@ -3,20 +3,17 @@ import { Skeleton } from '@repo/ui/components/base/skeleton';
 export default function OrderListSkeleton() {
   return (
     <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
-      {/* Header Skeleton */}
       <div className="mb-8 space-y-4">
         <Skeleton className="h-8 w-48" />
         <Skeleton className="h-6 w-96" />
       </div>
 
-      {/* Filters Skeleton */}
       <div className="mb-6 flex flex-wrap gap-4">
         <Skeleton className="h-10 w-32" />
         <Skeleton className="h-10 w-32" />
         <Skeleton className="h-10 w-32" />
       </div>
 
-      {/* Order Cards Skeleton */}
       <div className="space-y-6">
         {Array.from({ length: 3 }).map((_, i) => (
           <div key={i} className="rounded-lg bg-white p-6 shadow-sm">

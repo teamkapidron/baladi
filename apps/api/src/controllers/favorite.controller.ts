@@ -17,12 +17,14 @@ import type {
   AddToFavoritesSchemaType,
   RemoveFromFavoritesSchemaType,
 } from '@/validators/favourite.validator';
+import { UserType } from '@repo/types/user';
 import type { Request, Response } from 'express';
 import type { FavoriteAggregateType } from '@/types/favourite.types';
 
 export const getUserFavorites = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user!._id;
+    const userType = req.user?.userType;
     const { page, limit } = req.query as GetFavoritesSchema['query'];
 
     const perPage = parseInt(limit ?? '10', 10);
@@ -33,18 +35,28 @@ export const getUserFavorites = asyncHandler(
       {
         $lookup: {
           from: 'products',
-          localField: 'productID',
+          localField: 'productId',
           foreignField: '_id',
-          as: 'productID',
+          as: 'productId',
         },
       },
-      { $unwind: '$productID' },
+      { $unwind: '$productId' },
       {
         $lookup: {
           from: 'categories',
-          localField: 'productID.categories',
+          localField: 'productId.categories',
           foreignField: '_id',
-          as: 'productID.categories',
+          as: 'productId.categories',
+        },
+      },
+      {
+        $addFields: {
+          'productId.price':
+            userType === UserType.INTERNAL
+              ? '$productId.costPrice'
+              : userType === UserType.EXTERNAL
+                ? '$productId.salePrice'
+                : 0,
         },
       },
       {
@@ -54,10 +66,9 @@ export const getUserFavorites = asyncHandler(
           product: {
             _id: 1,
             name: 1,
-            salePrice: 1,
-            unitPrice: 1,
             slug: 1,
             images: 1,
+            price: '$productId.price',
             shortDescription: 1,
             categories: {
               _id: 1,

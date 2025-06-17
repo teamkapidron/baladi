@@ -50,7 +50,7 @@ const ProductPriceDisplay = memo(
     const perUnitPrice = price / noOfUnits;
 
     return (
-      <div className="bg-[var(--baladi-light)]/50 space-y-4 rounded-lg p-4">
+      <div className="space-y-4 rounded-lg bg-[var(--baladi-light)]/50 p-4">
         <div className="flex flex-col gap-1">
           <div className="flex items-baseline gap-2">
             <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-primary)]">
@@ -152,7 +152,7 @@ const BulkDiscountDisplay = memo(
     if (!bulkDiscounts?.length || !hasVolumeDiscount) return null;
 
     return (
-      <div className="from-[var(--baladi-primary)]/10 to-[var(--baladi-accent)]/10 rounded-lg bg-gradient-to-r p-4">
+      <div className="rounded-lg bg-gradient-to-r from-[var(--baladi-primary)]/10 to-[var(--baladi-accent)]/10 p-4">
         <div className="mb-3 flex items-center gap-3">
           <TrendingDown size={20} className="text-[var(--baladi-primary)]" />
           <h4 className="font-[family-name:var(--font-sora)] font-semibold text-[var(--baladi-dark)]">
@@ -323,7 +323,7 @@ function useProductInfo(slug: string) {
       (product.dimensions?.length ?? 0) *
       (product.dimensions?.width ?? 0) *
       (product.dimensions?.height ?? 0);
-    const price = product.salePrice + (product.vat * product.salePrice) / 100;
+    const price = product.price + (product.vat * product.price) / 100;
     const cartQuantity = getItemQuantity(product._id);
 
     return {

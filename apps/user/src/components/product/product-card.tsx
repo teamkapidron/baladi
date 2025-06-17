@@ -40,7 +40,7 @@ const ProductImage = memo(({ product, isAuthenticated }: ProductImageProps) => {
   const productImage = product.images?.[0] || '';
 
   return (
-    <div className="bg-[var(--baladi-light)]/30 relative flex aspect-square items-center justify-center overflow-hidden">
+    <div className="relative flex aspect-square items-center justify-center overflow-hidden bg-[var(--baladi-light)]/30">
       <div className="absolute inset-0">
         <div className="relative h-full w-full">
           <Link
@@ -63,7 +63,7 @@ const ProductImage = memo(({ product, isAuthenticated }: ProductImageProps) => {
             <Button
               variant="ghost"
               className={cn(
-                'absolute right-3 top-3 z-20 rounded-full p-2 transition-all duration-300',
+                'absolute top-3 right-3 z-20 rounded-full p-2 transition-all duration-300',
                 'hover:scale-110 hover:shadow-md active:scale-95',
                 'bg-white/90 text-[var(--baladi-gray)] hover:bg-white hover:text-red-500',
               )}
@@ -73,7 +73,7 @@ const ProductImage = memo(({ product, isAuthenticated }: ProductImageProps) => {
           )}
 
           {product.hasVolumeDiscount && (
-            <div className="absolute left-3 top-3 z-20 rounded-full bg-gradient-to-r from-[var(--baladi-secondary)] to-[var(--baladi-accent)] px-2 py-1 text-xs font-medium text-white shadow-sm">
+            <div className="absolute top-3 left-3 z-20 rounded-full bg-gradient-to-r from-[var(--baladi-secondary)] to-[var(--baladi-accent)] px-2 py-1 text-xs font-medium text-white shadow-sm">
               <BarChart3 size={12} className="mr-1 inline-block" />
               Volum rabatt
             </div>
@@ -256,13 +256,13 @@ function ProductCard(props: ProductCardProps) {
         cartQuantity: getItemQuantity(product._id),
         isOutOfStock: product.stock <= 0,
         stockCount: product.stock,
-        price: product?.salePrice + (product?.vat * product?.salePrice) / 100,
+        price: product?.price + (product?.vat * product?.price) / 100,
       };
     }, [
       isInCart,
       product._id,
       product.stock,
-      product?.salePrice,
+      product?.price,
       product?.vat,
       getItemQuantity,
     ]);
@@ -286,7 +286,7 @@ function ProductCard(props: ProductCardProps) {
     <div
       className={cn(
         'group relative overflow-hidden rounded-lg bg-white transition-all duration-300',
-        'hover:border-[var(--baladi-primary)]/30 border border-[var(--baladi-border)]',
+        'border border-[var(--baladi-border)] hover:border-[var(--baladi-primary)]/30',
         'hover:shadow-[var(--baladi-primary)]/10 hover:shadow-lg',
         className,
       )}

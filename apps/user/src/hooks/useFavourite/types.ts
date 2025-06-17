@@ -1,13 +1,12 @@
 import { ApiData } from '@/utils/types.util';
 
-export interface Favorite {
+export interface FavoriteResponse {
   _id: string;
   createdAt: Date;
   product: {
     _id: string;
     name: string;
-    salePrice: number;
-    unitPrice: number;
+    price: number;
     slug: string;
     images: string[];
     shortDescription: string;
@@ -25,7 +24,7 @@ export type GetFavoritesRequest = ApiData<
     limit: number;
   },
   {
-    favorites: Favorite[];
+    favorites: FavoriteResponse[];
     totalFavorites: number;
     page: number;
     perPage: number;

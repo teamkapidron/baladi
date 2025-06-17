@@ -14,7 +14,8 @@ export enum ProductStock {
   OUT_OF_STOCK = 'out-of-stock',
 }
 
-export interface ProductResponse extends Omit<Product, 'categories'> {
+export interface ProductResponse
+  extends Omit<Product, 'categories' | 'salePrice' | 'costPrice'> {
   isFavorite?: boolean;
   categories: {
     _id: string;
@@ -23,6 +24,7 @@ export interface ProductResponse extends Omit<Product, 'categories'> {
   }[];
   stock: number;
   bestBeforeDate: string;
+  price: number;
 }
 
 export type GetProductsRequest = ApiData<

@@ -14,10 +14,11 @@ import { Badge } from '@repo/ui/components/base/badge';
 import { useFavourite } from '@/hooks/useFavourite';
 
 // Types
-import { Favorite } from '@/hooks/useFavourite/types';
+import { formatPrice } from '@/utils/price.util';
+import { FavoriteResponse } from '@/hooks/useFavourite/types';
 
 interface WishlistCardProps {
-  favorite: Favorite;
+  favorite: FavoriteResponse;
 }
 
 function WishlistCard(props: WishlistCardProps) {
@@ -27,11 +28,9 @@ function WishlistCard(props: WishlistCardProps) {
   const { removeFromFavoritesMutation } = useFavourite();
 
   const { product } = favorite;
-  const hasDiscount = product.salePrice < product.unitPrice;
+  const hasDiscount = product.price < product.price;
   const discountPercent = hasDiscount
-    ? Math.round(
-        ((product.unitPrice - product.salePrice) / product.unitPrice) * 100,
-      )
+    ? Math.round(((product.price - product.price) / product.price) * 100)
     : 0;
 
   const handleRemoveFromWishlist = useCallback(() => {
@@ -56,7 +55,7 @@ function WishlistCard(props: WishlistCardProps) {
         )}
 
         {hasDiscount && (
-          <Badge className="absolute left-3 top-3 bg-red-500 font-semibold text-white">
+          <Badge className="absolute top-3 left-3 bg-red-500 font-semibold text-white">
             -{discountPercent}%
           </Badge>
         )}
@@ -64,7 +63,7 @@ function WishlistCard(props: WishlistCardProps) {
         <Button
           size="sm"
           variant="outline"
-          className="group/btn absolute right-3 top-3 h-9 w-9 border-gray-200 bg-white/90 p-0 backdrop-blur-sm hover:border-red-200 hover:bg-red-50"
+          className="group/btn absolute top-3 right-3 h-9 w-9 border-gray-200 bg-white/90 p-0 backdrop-blur-sm hover:border-red-200 hover:bg-red-50"
           onClick={handleRemoveFromWishlist}
           disabled={removeFromFavoritesMutation.isPending}
         >
@@ -73,7 +72,7 @@ function WishlistCard(props: WishlistCardProps) {
       </div>
 
       <div className="space-y-3 p-4">
-        <h3 className="line-clamp-2 font-[family-name:var(--font-sora)] text-lg font-semibold leading-tight text-gray-900">
+        <h3 className="line-clamp-2 font-[family-name:var(--font-sora)] text-lg leading-tight font-semibold text-gray-900">
           {product.name}
         </h3>
 
@@ -104,11 +103,11 @@ function WishlistCard(props: WishlistCardProps) {
           <div className="space-y-1">
             {hasDiscount && (
               <p className="font-[family-name:var(--font-dm-sans)] text-xs text-gray-500 line-through">
-                {product.unitPrice.toLocaleString('nb-NO')} kr
+                {formatPrice(product.price)} kr
               </p>
             )}
             <p className="text-baladi-primary font-[family-name:var(--font-sora)] text-lg font-bold">
-              {product.salePrice.toLocaleString('nb-NO')} kr
+              {formatPrice(product.price)} kr
             </p>
           </div>
 

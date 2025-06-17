@@ -7,10 +7,10 @@ import { memo } from 'react';
 import WishlistCard from './wishlist-card';
 
 // Types
-import { Favorite } from '@/hooks/useFavourite/types';
+import { FavoriteResponse } from '@/hooks/useFavourite/types';
 
 interface WishlistGridProps {
-  favorites: Favorite[];
+  favorites: FavoriteResponse[];
 }
 
 function WishlistGrid(props: WishlistGridProps) {

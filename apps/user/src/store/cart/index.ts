@@ -169,7 +169,7 @@ export const useCartStore = create<CartStore>()(
                   quantity: newQuantity,
                   totalPrice: calculateItemTotal(
                     newQuantity,
-                    item.product.salePrice,
+                    item.product.price,
                   ),
                   updatedAt: new Date(),
                 }
@@ -224,7 +224,7 @@ export const useCartStore = create<CartStore>()(
 
         if (!bulkDiscount) return 0;
         return (
-          (product.product.salePrice *
+          (product.product.price *
             product.quantity *
             bulkDiscount.discountPercentage) /
           100
