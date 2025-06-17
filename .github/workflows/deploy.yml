@@ -13,7 +13,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18.19.1'
+          node-version: '20.14.0'
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
@@ -41,7 +41,7 @@ jobs:
             build-cache-
 
       - name: Install dependencies
-        run: pnpm install --shamefully-hoist
+        run: pnpm install
 
       - name: Set up environment variables
         run: |
@@ -66,51 +66,45 @@ jobs:
           echo "CLOUDFLARE_DEFAULT_ACCOUNT_ID=${{ secrets.CLOUDFLARE_DEFAULT_ACCOUNT_ID }}" >> $GITHUB_ENV
 
       - name: Install Vercel CLI
-        run: pnpm install -g vercel@32.2.0
+        run: pnpm install -g vercel
 
       - name: Pull Vercel Admin App Environment Information
-        run: |
-          cd apps/admin
-          vercel pull --yes --environment=production --token ${{ secrets.VERCEL_TOKEN }}
+        run: vercel pull --yes --cwd apps/admin --environment=production --token ${{ secrets.VERCEL_TOKEN }}
 
       - name: Build Admin App
         run: vercel build --prod --cwd apps/admin --token ${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy Admin to Vercel
-        run: |
-          cd apps/admin
-          vercel deploy \
-            --prebuilt \
-            --name baladi-admin \
-            --prod \
-            --token ${{ secrets.VERCEL_TOKEN }} \
-            --scope ${{ vars.VERCEL_ORG_ID }} \
-            --build-env NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL }} \
-            --build-env NEXT_PUBLIC_USER_URL=${{ vars.NEXT_PUBLIC_USER_URL }} \
-            --build-env NEXT_PUBLIC_ADMIN_URL=${{ vars.NEXT_PUBLIC_ADMIN_URL }} \
-            --yes
+        run: vercel deploy \
+          --cwd apps/admin \
+          --prebuilt \
+          --name baladi-admin \
+          --prod \
+          --token ${{ secrets.VERCEL_TOKEN }} \
+          --scope ${{ vars.VERCEL_ORG_ID }} \
+          --build-env NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL }} \
+          --build-env NEXT_PUBLIC_USER_URL=${{ vars.NEXT_PUBLIC_USER_URL }} \
+          --build-env NEXT_PUBLIC_ADMIN_URL=${{ vars.NEXT_PUBLIC_ADMIN_URL }} \
+          --yes
 
       - name: Pull Vercel User App Environment Information
-        run: |
-          cd apps/user
-          vercel pull --yes --environment=production --token ${{ secrets.VERCEL_TOKEN }}
+        run: vercel pull --yes --cwd apps/user --environment=production --token ${{ secrets.VERCEL_TOKEN }}
 
       - name: Build User App
         run: vercel build --prod --cwd apps/user --token ${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy User to Vercel
-        run: |
-          cd apps/user
-          vercel deploy \
-            --prebuilt \
-            --name baladi-user \
-            --prod \
-            --token ${{ secrets.VERCEL_TOKEN }} \
-            --scope ${{ vars.VERCEL_ORG_ID }} \
-            --build-env NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL }} \
-            --build-env NEXT_PUBLIC_USER_URL=${{ vars.NEXT_PUBLIC_USER_URL }} \
-            --build-env NEXT_PUBLIC_ADMIN_URL=${{ vars.NEXT_PUBLIC_ADMIN_URL }} \
-            --yes
+        run: vercel deploy \
+          --cwd apps/user \
+          --prebuilt \
+          --name baladi-user \
+          --prod \
+          --token ${{ secrets.VERCEL_TOKEN }} \
+          --scope ${{ vars.VERCEL_ORG_ID }} \
+          --build-env NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL }} \
+          --build-env NEXT_PUBLIC_USER_URL=${{ vars.NEXT_PUBLIC_USER_URL }} \
+          --build-env NEXT_PUBLIC_ADMIN_URL=${{ vars.NEXT_PUBLIC_ADMIN_URL }} \
+          --yes
 
       - name: Deploy SST to AWS (API, Cron, S3 Storage)
         run: npx sst deploy --stage prod
