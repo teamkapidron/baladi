@@ -61,7 +61,7 @@ export const getProducts = asyncHandler(async (req: Request, res: Response) => {
         isActive: true,
         visibility: {
           $in: !userId
-            ? [Visibility.EXTERNAL]
+            ? [Visibility.EXTERNAL, Visibility.BOTH]
             : userType === UserType.INTERNAL
               ? [Visibility.INTERNAL, Visibility.BOTH]
               : [Visibility.EXTERNAL, Visibility.BOTH],
@@ -309,12 +309,31 @@ export const getProductById = asyncHandler(
         },
         {
           $addFields: {
-            price:
-              userType === UserType.INTERNAL
-                ? '$costPrice'
-                : userType === UserType.EXTERNAL
-                  ? '$salePrice'
-                  : 0,
+            price: {
+              $cond: [
+                { $eq: [userType, UserType.INTERNAL] },
+                '$costPrice',
+                {
+                  $cond: [
+                    { $eq: [userType, UserType.EXTERNAL] },
+                    '$salePrice',
+                    0,
+                  ],
+                },
+              ],
+            },
+            hasVolumeDiscount: {
+              $cond: [
+                {
+                  $or: [
+                    { $eq: [userType, UserType.INTERNAL] },
+                    { $not: [userType] },
+                  ],
+                },
+                false,
+                '$hasVolumeDiscount',
+              ],
+            },
           },
         },
       );
@@ -322,6 +341,7 @@ export const getProductById = asyncHandler(
       pipeline.push({
         $addFields: {
           price: 0,
+          hasVolumeDiscount: false,
         },
       });
     }
@@ -421,12 +441,31 @@ export const getProductBySlug = asyncHandler(
         },
         {
           $addFields: {
-            price:
-              userType === UserType.INTERNAL
-                ? '$costPrice'
-                : userType === UserType.EXTERNAL
-                  ? '$salePrice'
-                  : 0,
+            price: {
+              $cond: [
+                { $eq: [userType, UserType.INTERNAL] },
+                '$costPrice',
+                {
+                  $cond: [
+                    { $eq: [userType, UserType.EXTERNAL] },
+                    '$salePrice',
+                    0,
+                  ],
+                },
+              ],
+            },
+            hasVolumeDiscount: {
+              $cond: [
+                {
+                  $or: [
+                    { $eq: [userType, UserType.INTERNAL] },
+                    { $not: [userType] },
+                  ],
+                },
+                false,
+                '$hasVolumeDiscount',
+              ],
+            },
           },
         },
       );
@@ -434,6 +473,7 @@ export const getProductBySlug = asyncHandler(
       pipeline.push({
         $addFields: {
           price: 0,
+          hasVolumeDiscount: false,
         },
       });
     }
