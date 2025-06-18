@@ -68,6 +68,9 @@ jobs:
       - name: Install Vercel CLI
         run: pnpm install -g vercel
 
+      - name: Install Serverless
+        run: pnpm install -g serverless
+
       - name: Deploy Admin to Vercel
         run: |
           vercel link --yes --project admin --token ${{ secrets.VERCEL_TOKEN }}
@@ -78,8 +81,15 @@ jobs:
           vercel link --yes --project user --token ${{ secrets.VERCEL_TOKEN }}
           vercel deploy --prod --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ vars.VERCEL_ORG_ID }} --yes
 
-      - name: Deploy SST to AWS (API, Cron, S3 Storage)
+      - name: Deploy SST to AWS (Cron, S3 Storage)
         run: npx sst deploy --stage prod
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Deploy API to AWS (Serverless)
+        run: |
+          npx serverless deploy --stage prod
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
