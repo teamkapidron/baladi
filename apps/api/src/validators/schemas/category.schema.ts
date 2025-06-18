@@ -10,7 +10,15 @@ export const categorySchema = z.object({
   parentId: z
     .string()
     .optional()
-    .refine((val) => isValidObjectId(val), {
-      message: 'Invalid parent ID format',
-    }),
+    .refine(
+      (val) => {
+        if (val === '' || val === null) {
+          return true;
+        }
+        return isValidObjectId(val);
+      },
+      {
+        message: 'Invalid parent ID format',
+      },
+    ),
 });

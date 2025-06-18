@@ -3,10 +3,11 @@ import type { Category, HierarchicalCategory } from '@repo/types/category';
 
 export interface CategoryRequestBody {
   name: string;
-  slug: string;
-  image: string;
-  isActive: boolean;
-  visibleToStore: boolean;
+  slug?: string;
+  image?: string;
+  isActive?: boolean;
+  visibleToStore?: boolean;
+  parentId?: string;
 }
 
 export type GetAllCategoriesRequest = ApiData<

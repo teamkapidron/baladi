@@ -26,6 +26,7 @@ import type {
   UpdateCategorySchema,
   DeleteCategorySchema,
 } from '@/validators/category.validator';
+import { generateSlug } from '@/utils/common/string.util';
 
 export const getCategories = asyncHandler(
   async (req: Request, res: Response) => {
@@ -205,13 +206,18 @@ export const createCategory = asyncHandler(
     const { name, slug, image, isActive, visibleToStore, parentId } =
       req.body as CreateCategorySchema['body'];
 
+    let newSlug = slug;
+    if (!newSlug) {
+      newSlug = generateSlug(name ?? '');
+    }
+
     const category = await Category.create({
       name,
-      slug,
+      slug: newSlug,
       image,
       isActive,
       visibleToStore,
-      parentId,
+      parentId: parentId === '' ? null : parentId,
     });
 
     sendResponse(res, 201, 'Category created successfully', { category });

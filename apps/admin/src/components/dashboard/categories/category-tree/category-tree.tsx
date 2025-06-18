@@ -14,6 +14,7 @@ import { useCategory } from '@/hooks/useCategory';
 
 // Types
 import type { HierarchicalCategory } from '@repo/types/category';
+import CreateCategoryDialog from '../create-category/create-category-dialog';
 
 function CategoryTree() {
   const { categories: data } = useCategory();
@@ -75,13 +76,15 @@ function CategoryTree() {
           <h2 className="font-[family-name:var(--font-sora)] text-lg font-semibold text-[var(--baladi-primary)]">
             Kategorier
           </h2>
-          <Button
-            size="sm"
-            className="hover:bg-[var(--baladi-primary)]/90 h-8 bg-[var(--baladi-primary)]"
-          >
-            <Plus className="mr-1 h-3 w-3" />
-            Legg til
-          </Button>
+          <CreateCategoryDialog>
+            <Button
+              size="sm"
+              className="hover:bg-[var(--baladi-primary)]/90 h-8 bg-[var(--baladi-primary)]"
+            >
+              <Plus className="mr-1 h-3 w-3" />
+              Legg til
+            </Button>
+          </CreateCategoryDialog>
         </div>
 
         <div className="relative">

@@ -50,7 +50,7 @@ export function useCategory() {
   const createCategory = useCallback(
     async (payload: CreateCategoryRequest['payload']) => {
       const response = await api.post<CreateCategoryRequest['response']>(
-        '/category/create',
+        '/category',
         payload,
       );
       return response.data.data;
