@@ -9,6 +9,9 @@ export const api = new sst.aws.ApiGatewayV1('BaladiApi', {
     }),
   },
   cors: false,
+  endpoint: {
+    type: 'regional',
+  },
 });
 
 api.route('ANY /{proxy+}', {
