@@ -20,9 +20,9 @@ export default function WaitForApprovalPage() {
         <div className="mb-10 text-center">
           <div className="mb-8">
             <div className="relative mb-6 inline-flex items-center justify-center">
-              <div className="bg-[var(--baladi-primary)]/10 absolute inset-0 animate-pulse rounded-2xl blur-2xl"></div>
-              <div className="from-[var(--baladi-primary)]/5 to-[var(--baladi-secondary)]/5 absolute -inset-6 rounded-2xl bg-gradient-to-r blur-xl"></div>
-              <div className="ring-[var(--baladi-primary)]/10 relative overflow-hidden rounded-2xl bg-white p-4 shadow-2xl ring-1">
+              <div className="absolute inset-0 animate-pulse rounded-2xl bg-[var(--baladi-primary)]/10 blur-2xl"></div>
+              <div className="absolute -inset-6 rounded-2xl bg-gradient-to-r from-[var(--baladi-primary)]/5 to-[var(--baladi-secondary)]/5 blur-xl"></div>
+              <div className="relative overflow-hidden rounded-2xl bg-white p-4 shadow-2xl ring-1 ring-[var(--baladi-primary)]/10">
                 <Image
                   width={96}
                   height={96}
@@ -78,7 +78,7 @@ export default function WaitForApprovalPage() {
               </div>
 
               <div className="space-y-4">
-                <div className="bg-[var(--baladi-success)]/10 flex items-center space-x-4 rounded-lg p-4">
+                <div className="flex items-center space-x-4 rounded-lg bg-[var(--baladi-success)]/10 p-4">
                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--baladi-success)] shadow-sm">
                     <CheckCircle className="h-4 w-4 text-white" />
                   </div>
@@ -92,7 +92,7 @@ export default function WaitForApprovalPage() {
                   </div>
                 </div>
 
-                <div className="bg-[var(--baladi-info)]/10 flex items-center space-x-4 rounded-lg p-4">
+                <div className="flex items-center space-x-4 rounded-lg bg-[var(--baladi-info)]/10 p-4">
                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--baladi-info)] shadow-sm">
                     <Shield className="h-4 w-4 animate-pulse text-white" />
                   </div>
@@ -121,9 +121,9 @@ export default function WaitForApprovalPage() {
                 </div>
               </div>
 
-              <div className="from-[var(--baladi-primary)]/5 to-[var(--baladi-secondary)]/5 border-[var(--baladi-primary)]/20 rounded-lg border bg-gradient-to-r p-4">
+              <div className="rounded-lg border border-[var(--baladi-primary)]/20 bg-gradient-to-r from-[var(--baladi-primary)]/5 to-[var(--baladi-secondary)]/5 p-4">
                 <div className="flex items-start space-x-3">
-                  <div className="bg-[var(--baladi-primary)]/10 flex h-6 w-6 items-center justify-center rounded-full">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--baladi-primary)]/10">
                     <Mail className="h-3 w-3 text-[var(--baladi-primary)]" />
                   </div>
                   <div>
@@ -136,6 +136,35 @@ export default function WaitForApprovalPage() {
                     </p>
                   </div>
                 </div>
+              </div>
+
+              <div className="rounded-lg border border-[var(--baladi-secondary)]/20 bg-gradient-to-br from-[var(--baladi-secondary)]/10 to-[var(--baladi-accent)]/10 p-6 text-center">
+                <h4 className="mb-3 font-[family-name:var(--font-sora)] text-lg font-semibold text-[var(--baladi-dark)]">
+                  I mellomtiden...
+                </h4>
+                <p className="mb-4 font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
+                  Utforsk vårt omfattende produktkatalog og se hva vi kan tilby
+                  din bedrift
+                </p>
+                <Link
+                  href="/"
+                  className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-[var(--baladi-primary)] to-[var(--baladi-secondary)] px-6 py-3 font-[family-name:var(--font-dm-sans)] text-sm font-medium text-white shadow-lg transition-all duration-200 hover:scale-105 hover:from-[var(--baladi-secondary)] hover:to-[var(--baladi-primary)] hover:shadow-xl"
+                >
+                  Se våre produkter
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 7l5 5m0 0l-5 5m5-5H6"
+                    />
+                  </svg>
+                </Link>
               </div>
 
               <div className="border-t border-[var(--baladi-border)] pt-4">
@@ -156,7 +185,7 @@ export default function WaitForApprovalPage() {
         </div>
 
         <div className="mt-8 text-center">
-          <div className="bg-[var(--baladi-primary)]/5 rounded-lg px-6 py-4">
+          <div className="rounded-lg bg-[var(--baladi-primary)]/5 px-6 py-4">
             <div className="mb-2 flex items-center justify-center">
               <Image
                 width={32}

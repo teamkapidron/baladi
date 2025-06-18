@@ -104,7 +104,11 @@ function CartContent() {
             item.quantity * product.price * (1 + product.vat / 100);
           const discountedItemTotal =
             originalItemTotal - (bulkDiscountAmount || 0);
-          const hasDiscount = bulkDiscountAmount && bulkDiscountAmount > 0;
+          const hasDiscount = !!bulkDiscountAmount && bulkDiscountAmount > 0;
+
+          const pricePerQuantity = hasDiscount
+            ? discountedItemTotal / item.quantity
+            : originalItemTotal / item.quantity;
 
           return (
             <div
@@ -114,7 +118,7 @@ function CartContent() {
               <div className="flex flex-col gap-4 sm:flex-row">
                 <Link
                   href={`/product/${product.slug}`}
-                  className="bg-[var(--baladi-light)]/30 group relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg"
+                  className="group relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg bg-[var(--baladi-light)]/30"
                 >
                   <Image
                     src={product.images?.[0] || ''}
@@ -185,15 +189,13 @@ function CartContent() {
                       )}
                       <div className="font-[family-name:var(--font-sora)] text-lg font-semibold text-[var(--baladi-primary)]">
                         {formatPrice(
-                          hasDiscount ? discountedItemTotal : item.totalPrice,
+                          hasDiscount ? discountedItemTotal : originalItemTotal,
                         )}{' '}
                         kr
                       </div>
                       <div className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-                        {formatPrice(
-                          product.price * (1 + product.vat / 100),
-                        )}{' '}
-                        kr per stk
+                        {formatPrice(pricePerQuantity / item.product.noOfUnits)}{' '}
+                        kr per enhet
                       </div>
                       {hasDiscount && (
                         <div className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
@@ -209,7 +211,7 @@ function CartContent() {
         })}
       </div>
 
-      <div className="bg-[var(--baladi-light)]/50 rounded-lg p-6">
+      <div className="rounded-lg bg-[var(--baladi-light)]/50 p-6">
         <div className="text-center">
           <h3 className="font-[family-name:var(--font-sora)] font-semibold text-[var(--baladi-dark)]">
             Trenger du noe mer?

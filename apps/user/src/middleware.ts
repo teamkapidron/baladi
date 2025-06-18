@@ -110,14 +110,14 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL('/login', request.url));
       }
 
+      if (!isOnboardingCompleted(user)) {
+        return NextResponse.redirect(new URL('/onboarding', request.url));
+      }
+
       if (!user.isApprovedByAdmin) {
         return NextResponse.redirect(
           new URL('/wait-for-approval', request.url),
         );
-      }
-
-      if (!isOnboardingCompleted(user)) {
-        return NextResponse.redirect(new URL('/onboarding', request.url));
       }
 
       return NextResponse.next();

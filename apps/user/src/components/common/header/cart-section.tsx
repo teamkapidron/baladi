@@ -28,7 +28,7 @@ function CartSection() {
         <TooltipTrigger asChild>
           <Link
             href="/cart"
-            className="hover:bg-[var(--baladi-primary)]/5 hover:shadow-[var(--baladi-primary)]/20 group relative flex h-12 w-12 items-center justify-center rounded-full border border-[var(--baladi-border)] bg-white/80 backdrop-blur-sm transition-all duration-300 hover:border-[var(--baladi-primary)] hover:shadow-lg"
+            className="group relative flex h-12 w-12 items-center justify-center rounded-full border border-[var(--baladi-border)] bg-white/80 backdrop-blur-sm transition-all duration-300 hover:border-[var(--baladi-primary)] hover:bg-[var(--baladi-primary)]/5 hover:shadow-[var(--baladi-primary)]/20 hover:shadow-lg"
           >
             <ShoppingCart
               size={20}
@@ -36,16 +36,16 @@ function CartSection() {
             />
 
             {cartSummary.uniqueItems > 0 && (
-              <Badge className="absolute -right-1 -top-1 h-6 w-6 rounded-full border-2 border-white bg-gradient-to-r from-[var(--baladi-accent)] to-[var(--baladi-secondary)] p-0 text-xs font-bold text-white shadow-lg">
+              <Badge className="absolute -top-1 -right-1 h-6 w-6 rounded-full border-2 border-white bg-gradient-to-r from-[var(--baladi-accent)] to-[var(--baladi-secondary)] p-0 text-xs font-bold text-white shadow-lg">
                 {cartSummary.uniqueItems > 99 ? '99+' : cartSummary.uniqueItems}
               </Badge>
             )}
 
             {cartSummary.uniqueItems > 0 && (
-              <div className="bg-[var(--baladi-accent)]/30 absolute -right-1 -top-1 h-6 w-6 animate-ping rounded-full" />
+              <div className="absolute -top-1 -right-1 h-6 w-6 animate-ping rounded-full bg-[var(--baladi-accent)]/30" />
             )}
 
-            <div className="from-[var(--baladi-primary)]/10 to-[var(--baladi-secondary)]/10 absolute inset-0 scale-0 rounded-full bg-gradient-to-r transition-transform duration-300 group-hover:scale-150" />
+            <div className="absolute inset-0 scale-0 rounded-full bg-gradient-to-r from-[var(--baladi-primary)]/10 to-[var(--baladi-secondary)]/10 transition-transform duration-300 group-hover:scale-150" />
           </Link>
         </TooltipTrigger>
 
@@ -77,7 +77,7 @@ function CartSection() {
                 {userCartItems.slice(0, 3).map((item, index) => (
                   <div
                     key={`${item.product._id}-${index}`}
-                    className="border-[var(--baladi-border)]/50 flex items-center gap-3 border-b px-4 py-3 last:border-b-0"
+                    className="flex items-center gap-3 border-b border-[var(--baladi-border)]/50 px-4 py-3 last:border-b-0"
                   >
                     <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--baladi-light)]">
                       <span className="font-[family-name:var(--font-sora)] text-xs font-bold text-[var(--baladi-primary)]">
@@ -109,7 +109,7 @@ function CartSection() {
                 )}
               </div>
 
-              <div className="from-[var(--baladi-light)]/50 border-t border-[var(--baladi-border)] bg-gradient-to-r to-white px-4 py-3">
+              <div className="border-t border-[var(--baladi-border)] bg-gradient-to-r from-[var(--baladi-light)]/50 to-white px-4 py-3">
                 <div className="mb-3 flex items-center justify-between">
                   <span className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-gray)]">
                     Totalt ({cartSummary.totalItems}{' '}
@@ -117,7 +117,7 @@ function CartSection() {
                   </span>
                   <div className="flex items-baseline">
                     <span className="font-[family-name:var(--font-sora)] text-xl font-bold text-[var(--baladi-primary)]">
-                      {formatPrice(cartSummary.totalPrice)}
+                      {formatPrice(cartSummary.netPrice)}
                     </span>
                     <span className="ml-1 font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
                       kr

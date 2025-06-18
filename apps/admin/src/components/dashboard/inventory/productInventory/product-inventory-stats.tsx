@@ -36,7 +36,7 @@ function ProductInventoryStats({ productId }: ProductInventoryStatsProps) {
     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
       {/* Total Quantity */}
       <div className="group relative overflow-hidden rounded-xl border border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100 shadow-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
-        <div className="absolute right-0 top-0 h-24 w-24 -translate-y-8 translate-x-8 rounded-full bg-blue-500/10" />
+        <div className="absolute top-0 right-0 h-24 w-24 translate-x-8 -translate-y-8 rounded-full bg-blue-500/10" />
         <div className="relative p-6">
           <div className="mb-4 flex items-center justify-between">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-500 shadow-lg">
@@ -62,7 +62,7 @@ function ProductInventoryStats({ productId }: ProductInventoryStatsProps) {
 
       {/* Total Batches */}
       <div className="group relative overflow-hidden rounded-xl border border-purple-200 bg-gradient-to-br from-purple-50 to-purple-100 shadow-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
-        <div className="absolute right-0 top-0 h-24 w-24 -translate-y-8 translate-x-8 rounded-full bg-purple-500/10" />
+        <div className="absolute top-0 right-0 h-24 w-24 translate-x-8 -translate-y-8 rounded-full bg-purple-500/10" />
         <div className="relative p-6">
           <div className="mb-4 flex items-center justify-between">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-purple-500 shadow-lg">
@@ -90,7 +90,7 @@ function ProductInventoryStats({ productId }: ProductInventoryStatsProps) {
 
       {/* Total Value */}
       <div className="group relative overflow-hidden rounded-xl border border-green-200 bg-gradient-to-br from-green-50 to-green-100 shadow-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
-        <div className="absolute right-0 top-0 h-24 w-24 -translate-y-8 translate-x-8 rounded-full bg-green-500/10" />
+        <div className="absolute top-0 right-0 h-24 w-24 translate-x-8 -translate-y-8 rounded-full bg-green-500/10" />
         <div className="relative p-6">
           <div className="mb-4 flex items-center justify-between">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-green-500 shadow-lg">
@@ -98,7 +98,7 @@ function ProductInventoryStats({ productId }: ProductInventoryStatsProps) {
             </div>
             <div className="text-right">
               <p className="text-2xl font-bold text-green-900">
-                <AnimatedCounter value={Number(stats.totalValue.toFixed(0))} />
+                <AnimatedCounter value={formatPrice(stats.totalValue)} />
                 kr
               </p>
               <p className="text-sm font-medium text-green-600">Total Verdi</p>

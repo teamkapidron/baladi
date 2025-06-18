@@ -3,7 +3,7 @@
 // Node Modules
 import { format } from '@repo/ui/lib/date';
 import React, { memo } from 'react';
-import { Archive, Download, Clock, TrendingUp } from '@repo/ui/lib/icons';
+import { Archive, Clock, TrendingUp } from '@repo/ui/lib/icons';
 
 // Components
 import {
@@ -13,7 +13,6 @@ import {
   SelectContent,
   SelectItem,
 } from '@repo/ui/components/base/select';
-import { Button } from '@repo/ui/components/base/button';
 import AddInventoryDialog from './add-inventory-dialog/add-inventory-dialog';
 
 // Hooks
@@ -31,9 +30,9 @@ function InventoryHeader() {
   return (
     <div className="relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-[var(--baladi-primary)] via-[var(--baladi-primary)] to-[var(--baladi-secondary)] p-6 shadow-lg">
       <div className="absolute inset-0 opacity-10">
-        <div className="absolute -right-4 -top-4 h-32 w-32 rounded-full bg-white/20"></div>
+        <div className="absolute -top-4 -right-4 h-32 w-32 rounded-full bg-white/20"></div>
         <div className="absolute -bottom-8 -left-8 h-40 w-40 rounded-full bg-white/10"></div>
-        <div className="absolute right-1/4 top-1/2 h-24 w-24 rounded-full bg-white/5"></div>
+        <div className="absolute top-1/2 right-1/4 h-24 w-24 rounded-full bg-white/5"></div>
       </div>
 
       <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
@@ -88,11 +87,6 @@ function InventoryHeader() {
             <div className="rounded-lg bg-white/10 p-1 backdrop-blur-sm">
               <AddInventoryDialog />
             </div>
-
-            <Button className="group flex h-11 items-center gap-2 rounded-lg bg-white/10 px-4 py-2 font-[family-name:var(--font-dm-sans)] text-sm font-medium text-white backdrop-blur-sm transition-all duration-200 hover:bg-white/20 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-white/40">
-              <Download className="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
-              <span>Eksporter Lager</span>
-            </Button>
           </div>
         </div>
       </div>

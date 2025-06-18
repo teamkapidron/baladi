@@ -22,12 +22,12 @@ export interface CartItem {
 }
 
 export interface CartSummary {
-  totalItems: number;
-  totalPrice: number;
-  totalPriceWithoutVat: number;
-  totalVat: number;
-  totalDiscount: number;
-  netPrice: number;
+  totalItems: number; // Total number of (products * quantity) in the cart (not unique)
+  totalPrice: number; // Total price of the cart (including vat)
+  totalPriceWithoutVat: number; // Total price of the cart (excluding vat)
+  totalVat: number; // Total vat of the cart
+  totalDiscount: number; // Total discount of the cart
+  netPrice: number; // Total price of the cart (excluding vat and discount)
   totalPriceWithDiscount: number;
   uniqueItems: number;
   isEmpty: boolean;

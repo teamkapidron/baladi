@@ -29,7 +29,7 @@ function InventoryMetrics() {
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
       <div className="group relative overflow-hidden rounded-xl border border-green-200 bg-gradient-to-br from-green-50 to-green-100 shadow-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
-        <div className="absolute right-0 top-0 h-24 w-24 -translate-y-8 translate-x-8 rounded-full bg-green-500/10" />
+        <div className="absolute top-0 right-0 h-24 w-24 translate-x-8 -translate-y-8 rounded-full bg-green-500/10" />
         <div className="relative p-6">
           <div className="mb-4 flex items-center justify-between">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-green-500 shadow-lg">
@@ -38,7 +38,7 @@ function InventoryMetrics() {
             <div className="text-right">
               <p className="text-2xl font-bold text-green-900">
                 <AnimatedCounter
-                  value={parseFloat(formatPrice(metrics.totalInventoryValue))}
+                  value={formatPrice(metrics.totalInventoryValue)}
                 />
                 kr
               </p>
@@ -62,7 +62,7 @@ function InventoryMetrics() {
       </div>
 
       <div className="group relative overflow-hidden rounded-xl border border-orange-200 bg-gradient-to-br from-orange-50 to-orange-100 shadow-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
-        <div className="absolute right-0 top-0 h-24 w-24 -translate-y-8 translate-x-8 rounded-full bg-orange-500/10" />
+        <div className="absolute top-0 right-0 h-24 w-24 translate-x-8 -translate-y-8 rounded-full bg-orange-500/10" />
         <div className="relative p-6">
           <div className="mb-4 flex items-center justify-between">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-500 shadow-lg">
@@ -100,7 +100,7 @@ function InventoryMetrics() {
       </div>
 
       <div className="group relative overflow-hidden rounded-xl border border-amber-200 bg-gradient-to-br from-amber-50 to-amber-100 shadow-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
-        <div className="absolute right-0 top-0 h-24 w-24 -translate-y-8 translate-x-8 rounded-full bg-amber-500/10" />
+        <div className="absolute top-0 right-0 h-24 w-24 translate-x-8 -translate-y-8 rounded-full bg-amber-500/10" />
         <div className="relative p-6">
           <div className="mb-4 flex items-center justify-between">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500 shadow-lg">
@@ -137,7 +137,7 @@ function InventoryMetrics() {
       </div>
 
       <div className="group relative overflow-hidden rounded-xl border border-red-200 bg-gradient-to-br from-red-50 to-red-100 shadow-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
-        <div className="absolute right-0 top-0 h-24 w-24 -translate-y-8 translate-x-8 rounded-full bg-red-500/10" />
+        <div className="absolute top-0 right-0 h-24 w-24 translate-x-8 -translate-y-8 rounded-full bg-red-500/10" />
         <div className="relative p-6">
           <div className="mb-4 flex items-center justify-between">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-red-500 shadow-lg">

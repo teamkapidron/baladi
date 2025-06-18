@@ -122,7 +122,7 @@ function AddInventoryForm(props: AddInventoryFormProps) {
                     min="1"
                     placeholder="Skriv inn antall enheter"
                     onChange={(e) => field.onChange(parseInt(e.target.value))}
-                    className="focus:ring-[var(--baladi-primary)]/20 w-full rounded-lg border border-[var(--baladi-border)] bg-[var(--baladi-muted)] px-4 py-3 font-[family-name:var(--font-dm-sans)] transition-all duration-200 focus:border-[var(--baladi-primary)] focus:bg-white focus:ring-2"
+                    className="w-full rounded-lg border border-[var(--baladi-border)] bg-[var(--baladi-muted)] px-4 py-3 font-[family-name:var(--font-dm-sans)] transition-all duration-200 focus:border-[var(--baladi-primary)] focus:bg-white focus:ring-2 focus:ring-[var(--baladi-primary)]/20"
                   />
                 </FormControl>
                 <FormMessage className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-error)]" />
@@ -175,7 +175,7 @@ function AddInventoryForm(props: AddInventoryFormProps) {
             <Button
               type="submit"
               disabled={createInventoryMutation.isPending}
-              className="focus:ring-[var(--baladi-primary)]/30 group relative flex-1 overflow-hidden rounded-lg bg-[var(--baladi-primary)] px-6 py-4 font-[family-name:var(--font-dm-sans)] text-base font-semibold text-white shadow-md transition-all duration-200 hover:bg-[var(--baladi-secondary)] hover:shadow-lg focus:outline-none focus:ring-4 disabled:cursor-not-allowed disabled:opacity-70"
+              className="group relative flex-1 overflow-hidden rounded-lg bg-[var(--baladi-primary)] px-6 py-4 font-[family-name:var(--font-dm-sans)] text-base font-semibold text-white shadow-md transition-all duration-200 hover:bg-[var(--baladi-secondary)] hover:shadow-lg focus:ring-4 focus:ring-[var(--baladi-primary)]/30 focus:outline-none disabled:cursor-not-allowed disabled:opacity-70"
             >
               <div className="relative flex items-center justify-center space-x-2">
                 {createInventoryMutation.isPending ? (

@@ -72,9 +72,7 @@ export function calculateCartSummary(
     if (bulkDiscount && item.product.hasVolumeDiscount) {
       return (
         sum +
-        (item.product.price *
-          item.quantity *
-          bulkDiscount.discountPercentage) /
+        (item.product.price * item.quantity * bulkDiscount.discountPercentage) /
           100
       );
     }
@@ -85,7 +83,7 @@ export function calculateCartSummary(
 
   return {
     totalItems,
-    totalPrice: Math.round(totalPrice * 100) / 100,
+    totalPrice,
     totalPriceWithoutVat,
     totalVat,
     totalDiscount,

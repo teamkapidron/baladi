@@ -50,12 +50,14 @@ import {
   OrderItem,
   OrderStatus,
 } from '@repo/types/order';
+import { UserType } from '@repo/types/user';
 import { OrderRevenueStats, OrderResponse } from '@/types/order.types';
 import { IInventory } from '@/models/interfaces/inventory.model';
 
 /*********************** START: User Controllers ***********************/
 export const placeOrder = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user!._id;
+  const userType = req.user!.userType;
   const {
     items,
     shippingAddressId,
@@ -130,23 +132,28 @@ export const placeOrder = asyncHandler(async (req: Request, res: Response) => {
         );
       }
 
-      const price = product.salePrice;
+      const price =
+        userType === UserType.INTERNAL ? product.costPrice : product.salePrice;
 
       const vatAmount = (product.vat * price) / 100;
 
       const priceWithVat = price + vatAmount;
 
       const discount = 0;
+      let volumeDiscount = 0;
 
-      const bulkDiscountPercentage = bulkDiscounts.find(
-        (bd) => bd.minQuantity <= item.quantity,
-      )?.discountPercentage;
-      const bulkDiscount =
-        product.hasVolumeDiscount && bulkDiscountPercentage
-          ? price * (bulkDiscountPercentage / 100)
-          : 0;
+      if (userType === UserType.EXTERNAL) {
+        const bulkDiscount = bulkDiscounts
+          .filter((bd) => bd.minQuantity <= item.quantity)
+          .sort((a, b) => b.discountPercentage - a.discountPercentage)[0];
 
-      const itemTotal = priceWithVat - bulkDiscount - discount;
+        if (bulkDiscount && product.hasVolumeDiscount) {
+          volumeDiscount =
+            price * (bulkDiscount.discountPercentage / 100) * item.quantity;
+        }
+      }
+
+      const itemTotal = priceWithVat - volumeDiscount - discount;
 
       orderItems.push({
         productId: product._id.toString(),
@@ -155,7 +162,7 @@ export const placeOrder = asyncHandler(async (req: Request, res: Response) => {
         vatAmount,
         priceWithVat,
         discount,
-        bulkDiscount,
+        bulkDiscount: volumeDiscount,
         totalPrice: itemTotal,
       });
 
@@ -637,7 +644,9 @@ export const getOrderRevenueStats = asyncHandler(
       },
       {
         $addFields: {
-          revenue: '$totalAmount',
+          revenue: {
+            $multiply: ['$items.priceWithVat', '$items.quantity'],
+          },
           cost: {
             $multiply: ['$productInfo.costPrice', '$items.quantity'],
           },
@@ -768,7 +777,7 @@ export const getOrderRevenueGraphData = asyncHandler(
       {
         $addFields: {
           revenue: {
-            $multiply: ['$items.price', '$items.quantity'],
+            $multiply: ['$items.priceWithVat', '$items.quantity'],
           },
           cost: {
             $multiply: ['$productInfo.costPrice', '$items.quantity'],

@@ -59,7 +59,13 @@ export const getProducts = asyncHandler(async (req: Request, res: Response) => {
       $match: {
         ...queryObject,
         isActive: true,
-        visibility: { $in: [Visibility.EXTERNAL, Visibility.BOTH] },
+        visibility: {
+          $in: !userId
+            ? [Visibility.EXTERNAL]
+            : userType === UserType.INTERNAL
+              ? [Visibility.INTERNAL, Visibility.BOTH]
+              : [Visibility.EXTERNAL, Visibility.BOTH],
+        },
       },
     },
     {
@@ -151,12 +157,31 @@ export const getProducts = asyncHandler(async (req: Request, res: Response) => {
       },
       {
         $addFields: {
-          price:
-            userType === UserType.INTERNAL
-              ? '$costPrice'
-              : userType === UserType.EXTERNAL
-                ? '$salePrice'
-                : 0,
+          price: {
+            $cond: [
+              { $eq: [userType, UserType.INTERNAL] },
+              '$costPrice',
+              {
+                $cond: [
+                  { $eq: [userType, UserType.EXTERNAL] },
+                  '$salePrice',
+                  0,
+                ],
+              },
+            ],
+          },
+          hasVolumeDiscount: {
+            $cond: [
+              {
+                $or: [
+                  { $eq: [userType, UserType.INTERNAL] },
+                  { $not: [userType] },
+                ],
+              },
+              false,
+              '$hasVolumeDiscount',
+            ],
+          },
         },
       },
     );
@@ -164,6 +189,7 @@ export const getProducts = asyncHandler(async (req: Request, res: Response) => {
     pipeline.push({
       $addFields: {
         price: 0,
+        hasVolumeDiscount: false,
       },
     });
   }
@@ -478,7 +504,7 @@ export const quickSearchProducts = asyncHandler(
       unitPrice: product.unitPrice,
       salePrice: product.salePrice,
       shortDescription: product.shortDescription,
-      categories: product.categories[0]!,
+      categories: product.categories[0] ?? { name: '', slug: '' },
     }));
 
     sendResponse(res, 200, 'Quick search completed successfully', {

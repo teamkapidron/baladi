@@ -59,7 +59,7 @@ function SearchSection() {
             value={category ? category : 'all'}
             onValueChange={handleCategorySelect}
           >
-            <SelectTrigger className="focus:ring-[var(--baladi-primary)]/20 w-48 rounded-full border-[var(--baladi-border)] bg-[var(--baladi-muted)] font-[family-name:var(--font-dm-sans)] text-sm transition-all duration-200 hover:border-[var(--baladi-primary)] focus:border-[var(--baladi-primary)] focus:ring-2">
+            <SelectTrigger className="w-48 rounded-full border-[var(--baladi-border)] bg-[var(--baladi-muted)] font-[family-name:var(--font-dm-sans)] text-sm transition-all duration-200 hover:border-[var(--baladi-primary)] focus:border-[var(--baladi-primary)] focus:ring-2 focus:ring-[var(--baladi-primary)]/20">
               <div className="flex items-center space-x-2">
                 <SelectValue
                   placeholder="Alle kategorier"
@@ -95,14 +95,14 @@ function SearchSection() {
 
         <div className="relative flex-1">
           <div className="absolute inset-y-0 left-4 flex items-center">
-            <Search size={20} className="text-[var(--baladi-primary)]" />
+            <Search size={20} className="z-10 text-[var(--baladi-primary)]" />
           </div>
           <Input
             type="text"
             placeholder="Søk etter produkter, kategorier eller merker..."
             value={searchQuery}
             onChange={handleInputChange}
-            className="focus:ring-[var(--baladi-primary)]/20 w-full rounded-full border-[var(--baladi-border)] bg-[var(--baladi-muted)] py-3 pl-12 pr-16 font-[family-name:var(--font-dm-sans)] text-sm transition-all duration-200 placeholder:text-[var(--baladi-gray)] hover:border-[var(--baladi-primary)] focus:border-[var(--baladi-primary)] focus:ring-2"
+            className="w-full rounded-full border-[var(--baladi-border)] bg-[var(--baladi-muted)] py-3 pr-16 pl-12 font-[family-name:var(--font-dm-sans)] text-sm transition-all duration-200 placeholder:text-[var(--baladi-gray)] hover:border-[var(--baladi-primary)] focus:border-[var(--baladi-primary)] focus:ring-2 focus:ring-[var(--baladi-primary)]/20"
           />
 
           {searchQuery && (
@@ -112,7 +112,7 @@ function SearchSection() {
                 variant="ghost"
                 size="sm"
                 onClick={clearSearch}
-                className="hover:bg-[var(--baladi-primary)]/10 h-7 w-7 rounded-full p-0 text-[var(--baladi-gray)] hover:text-[var(--baladi-primary)]"
+                className="h-7 w-7 rounded-full p-0 text-[var(--baladi-gray)] hover:bg-[var(--baladi-primary)]/10 hover:text-[var(--baladi-primary)]"
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -123,7 +123,7 @@ function SearchSection() {
 
       <div className="mt-3 lg:hidden">
         <Select value={category || 'all'} onValueChange={handleCategorySelect}>
-          <SelectTrigger className="focus:ring-[var(--baladi-primary)]/20 w-full rounded-full border-[var(--baladi-border)] bg-[var(--baladi-muted)] font-[family-name:var(--font-dm-sans)] text-sm transition-all duration-200 hover:border-[var(--baladi-primary)] focus:border-[var(--baladi-primary)] focus:ring-2">
+          <SelectTrigger className="w-full rounded-full border-[var(--baladi-border)] bg-[var(--baladi-muted)] font-[family-name:var(--font-dm-sans)] text-sm transition-all duration-200 hover:border-[var(--baladi-primary)] focus:border-[var(--baladi-primary)] focus:ring-2 focus:ring-[var(--baladi-primary)]/20">
             <div className="flex items-center space-x-2">
               <SelectValue placeholder="Velg kategori" />
             </div>

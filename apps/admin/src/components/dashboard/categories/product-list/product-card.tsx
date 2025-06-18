@@ -8,7 +8,8 @@ import { Package } from '@repo/ui/lib/icons';
 // Components
 // import { Switch } from '@repo/ui/components/base/switch';
 
-// Types
+// Types/Utils
+import { formatPrice } from '@/utils/price.util';
 import { ProductResponse } from '@/hooks/useProduct/types';
 
 // Constants
@@ -55,16 +56,19 @@ function ProductCard(props: ProductCardProps) {
           <div className="flex items-center gap-1">
             <span>Lagerstatus:</span>
             <span
-              className={`rounded-full px-2 py-1 font-medium ${getStockStatusColor(product.noOfUnits)}`}
+              className={`rounded-full px-2 py-1 font-medium ${getStockStatusColor(product.stock)}`}
             >
-              {product.noOfUnits}
+              {product.stock}
             </span>
           </div>
           <div>
             Pris ekskl./inkl. MVA:{' '}
             <span className="font-medium text-[var(--baladi-dark)]">
-              {product.costPrice}kr /{' '}
-              {product.costPrice + (product.vat * product.costPrice) / 100}kr
+              {formatPrice(product.salePrice)}kr /{' '}
+              {formatPrice(
+                product.salePrice + (product.vat * product.salePrice) / 100,
+              )}
+              kr
             </span>
           </div>
         </div>
@@ -87,7 +91,7 @@ function ProductCard(props: ProductCardProps) {
 export default memo(ProductCard);
 
 function getStockStatusColor(stock: number) {
-  if (stock > 100) return 'text-green-600 bg-green-50';
-  if (stock > 50) return 'text-yellow-600 bg-yellow-50';
+  if (stock > 25) return 'text-green-600 bg-green-50';
+  if (stock > 0) return 'text-yellow-600 bg-yellow-50';
   return 'text-red-600 bg-red-50';
 }
