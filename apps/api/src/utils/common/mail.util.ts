@@ -4,10 +4,9 @@ import { MailOptions } from 'nodemailer/lib/smtp-transport';
 import {
   otpVerificationTemplate,
   adminApprovalTemplate,
-  welcomeTemplate,
   passwordResetTemplate,
   adminCredentialsTemplate,
-  warehouseNotificationTemplate,
+  userApprovalTemplate,
 } from '@/templates/mail.template';
 import { inventoryAlertTemplate } from '@/templates/cron.template';
 
@@ -34,11 +33,10 @@ function getTemplate(template: MailTemplate) {
         template.data.name,
         template.data.email,
         template.data.userId,
+        template.data.createdAt,
       );
     }
-    case 'welcome': {
-      return welcomeTemplate(template.data.name, template.data.userType);
-    }
+
     case 'passwordReset': {
       return passwordResetTemplate(template.data.name, template.data.resetLink);
     }
@@ -48,13 +46,8 @@ function getTemplate(template: MailTemplate) {
         template.data.password,
       );
     }
-    case 'warehouseNotification': {
-      return warehouseNotificationTemplate(
-        template.data.orderNumber,
-        template.data.productName,
-        template.data.quantity,
-        template.data.customerName,
-      );
+    case 'userApprovalConfirmation': {
+      return userApprovalTemplate(template.data.name, template.data.email);
     }
     case 'inventoryAlert': {
       return inventoryAlertTemplate(template.data);

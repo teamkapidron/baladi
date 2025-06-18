@@ -35,6 +35,8 @@ api.route('ANY /{proxy+}', {
     SMTP_PASSWORD: process.env.SMTP_PASSWORD,
     ADMIN_API_KEY: process.env.ADMIN_API_KEY,
     WAREHOUSE_EMAIL: process.env.WAREHOUSE_EMAIL,
+    ADMIN_URL: process.env.ADMIN_URL,
+    USER_URL: process.env.USER_URL,
   },
 });
 
