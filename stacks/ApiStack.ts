@@ -30,3 +30,5 @@ api.route('ANY /{proxy+}', {
     WAREHOUSE_EMAIL: process.env.WAREHOUSE_EMAIL,
   },
 });
+
+api.deploy();
