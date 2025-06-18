@@ -14,6 +14,10 @@ export const api = new sst.aws.ApiGatewayV1('BaladiApi', {
   },
 });
 
+api.route('ANY /', {
+  handler: 'apps/api/index.handler',
+});
+
 api.route('ANY /{proxy+}', {
   handler: 'apps/api/index.handler',
   environment: {
