@@ -74,6 +74,10 @@ function ProductTableContent() {
               const costPriceWithVat =
                 product.costPrice + (product.vat * product.costPrice) / 100;
 
+              const haveSupplierInfo =
+                !!product.supplier &&
+                Object.values(product.supplier).some(Boolean);
+
               return (
                 <TableRow
                   key={product._id}
@@ -215,7 +219,7 @@ function ProductTableContent() {
 
                   <TableCell className="p-4">
                     <div className="space-y-3">
-                      {product.supplier ? (
+                      {product.supplier && haveSupplierInfo ? (
                         <div className="rounded-lg bg-blue-50 p-3">
                           <div className="space-y-2">
                             {product.supplier.name && (
@@ -306,7 +310,7 @@ function ProductTableContent() {
                             .map((category, idx) => (
                               <span
                                 key={idx}
-                                className="bg-[var(--baladi-primary)]/10 inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium text-[var(--baladi-primary)]"
+                                className="inline-flex items-center rounded-md bg-[var(--baladi-primary)]/10 px-2.5 py-1 text-xs font-medium text-[var(--baladi-primary)]"
                               >
                                 <Tag className="mr-1 h-3 w-3" />
                                 {category.name}
@@ -356,7 +360,7 @@ function ProductTableContent() {
                     <div className="flex items-center justify-center space-x-2">
                       <Link
                         href={`/dashboard/products/edit/${product.slug}`}
-                        className="bg-[var(--baladi-primary)]/10 hover:bg-[var(--baladi-primary)]/20 flex h-8 w-8 items-center justify-center rounded-lg text-[var(--baladi-primary)] transition-colors"
+                        className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--baladi-primary)]/10 text-[var(--baladi-primary)] transition-colors hover:bg-[var(--baladi-primary)]/20"
                         title="Rediger Produkt"
                       >
                         <EditIcon className="h-4 w-4" />

@@ -162,7 +162,7 @@ function ProductForm(props: ProductFormProps) {
     <div className="mx-auto max-w-7xl space-y-8">
       <div className="rounded-xl border border-[var(--baladi-border)] bg-gradient-to-r from-[var(--baladi-primary)] to-[var(--baladi-secondary)] p-6 shadow-lg">
         <h1 className="font-[family-name:var(--font-sora)] text-2xl font-bold text-white">
-          Opprett Nytt Produkt
+          {defaultValues ? 'Rediger Produkt' : 'Opprett Nytt Produkt'}
         </h1>
         <p className="mt-2 text-blue-100">
           Fyll ut detaljene nedenfor for å legge til et nytt produkt i lageret
@@ -195,7 +195,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Package className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                            <Package className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
                               placeholder="Skriv inn produktnavn"
                               className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
@@ -226,7 +226,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Hash className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                            <Hash className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
                               placeholder="produkt-slug"
                               className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
@@ -273,7 +273,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <FileText className="absolute left-3 top-3 h-4 w-4 text-[var(--baladi-gray)]" />
+                            <FileText className="absolute top-3 left-3 h-4 w-4 text-[var(--baladi-gray)]" />
                             <Textarea
                               placeholder="Detaljert produktbeskrivelse"
                               className="min-h-[120px] rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
@@ -351,7 +351,7 @@ function ProductForm(props: ProductFormProps) {
                         <div className="space-y-4">
                           <div
                             onClick={triggerFileInput}
-                            className="hover:bg-[var(--baladi-primary)]/5 flex h-32 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-[var(--baladi-border)] bg-gray-50 transition-colors hover:border-[var(--baladi-primary)]"
+                            className="flex h-32 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-[var(--baladi-border)] bg-gray-50 transition-colors hover:border-[var(--baladi-primary)] hover:bg-[var(--baladi-primary)]/5"
                           >
                             <div className="text-center">
                               <Upload className="mx-auto h-8 w-8 text-[var(--baladi-gray)]" />
@@ -412,12 +412,12 @@ function ProductForm(props: ProductFormProps) {
                                           onClick={() =>
                                             handleRemoveImage(index)
                                           }
-                                          className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white transition-colors hover:bg-red-600"
+                                          className="absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white transition-colors hover:bg-red-600"
                                         >
                                           <X className="h-3 w-3" />
                                         </button>
                                       </div>
-                                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2">
+                                      <div className="absolute right-0 bottom-0 left-0 bg-gradient-to-t from-black/60 to-transparent p-2">
                                         <p className="text-xs font-medium text-white">
                                           Bilde {index + 1}
                                         </p>
@@ -461,7 +461,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Landmark className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                            <Landmark className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
                               type="number"
                               step="0.01"
@@ -477,8 +477,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormControl>
                         <p className="text-xs text-[var(--baladi-gray)]">
                           {`Pris per enhet: ${formatPrice(
-                            (field.value || 0) /
-                              (form.watch('noOfUnits') || 1),
+                            (field.value || 0) / (form.watch('noOfUnits') || 1),
                           )}`}
                         </p>
                         <FormMessage />
@@ -496,7 +495,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Landmark className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-success)]" />
+                            <Landmark className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-success)]" />
                             <Input
                               type="number"
                               step="0.01"
@@ -512,8 +511,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormControl>
                         <p className="text-xs text-[var(--baladi-gray)]">
                           {`Pris per enhet: ${formatPrice(
-                            (field.value || 0) /
-                              (form.watch('noOfUnits') || 1),
+                            (field.value || 0) / (form.watch('noOfUnits') || 1),
                           )}`}
                         </p>
                         <FormMessage />
@@ -531,7 +529,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Landmark className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                            <Landmark className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
                               type="number"
                               disabled
@@ -558,7 +556,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Landmark className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-success)]" />
+                            <Landmark className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-success)]" />
                             <Input
                               type="number"
                               disabled
@@ -585,7 +583,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Percent className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                            <Percent className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Select
                               onValueChange={field.onChange}
                               defaultValue={field.value.toString()}
@@ -623,7 +621,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <BoxesIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                            <BoxesIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
                               type="number"
                               placeholder="10"
@@ -664,7 +662,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Tag className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                            <Tag className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
                               placeholder="Skriv inn SKU"
                               className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
@@ -690,7 +688,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Barcode className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                            <Barcode className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
                               placeholder="Skriv inn strekkode"
                               className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
@@ -714,7 +712,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Weight className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                            <Weight className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
                               type="number"
                               step="0.01"
@@ -756,7 +754,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Ruler className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                            <Ruler className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
                               type="number"
                               step="0.1"
@@ -785,7 +783,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Ruler className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                            <Ruler className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
                               type="number"
                               step="0.1"
@@ -814,7 +812,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Ruler className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                            <Ruler className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
                               type="number"
                               step="0.1"
@@ -862,7 +860,7 @@ function ProductForm(props: ProductFormProps) {
                         >
                           <FormControl className="relative">
                             <SelectTrigger className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]">
-                              <Eye className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                              <Eye className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                               <SelectValue placeholder="Velg synlighet" />
                             </SelectTrigger>
                           </FormControl>
@@ -885,7 +883,7 @@ function ProductForm(props: ProductFormProps) {
                     control={form.control}
                     name="isActive"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-lg border border-[var(--baladi-border)] p-4">
+                      <FormItem className="flex flex-row items-center space-y-0 space-x-3 rounded-lg border border-[var(--baladi-border)] p-4">
                         <FormControl>
                           <Checkbox
                             checked={field.value}
@@ -909,7 +907,7 @@ function ProductForm(props: ProductFormProps) {
                     control={form.control}
                     name="hasVolumeDiscount"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-lg border border-[var(--baladi-border)] p-4">
+                      <FormItem className="flex flex-row items-center space-y-0 space-x-3 rounded-lg border border-[var(--baladi-border)] p-4">
                         <FormControl>
                           <Checkbox
                             checked={field.value}
@@ -953,7 +951,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                            <User className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
                               placeholder="Leverandørnavn"
                               className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
@@ -977,7 +975,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Hash className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                            <Hash className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
                               placeholder="Leverandørnummer"
                               className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
@@ -1001,7 +999,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                            <MapPin className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
                               placeholder="Leverandørens lokasjon"
                               className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
@@ -1025,7 +1023,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Globe className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                            <Globe className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
                               placeholder="Opprinnelsesland"
                               className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
@@ -1049,7 +1047,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Barcode className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                            <Barcode className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
                               placeholder="HS kode"
                               className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
@@ -1071,7 +1069,7 @@ function ProductForm(props: ProductFormProps) {
             <Button
               type="submit"
               size="lg"
-              className="hover:bg-[var(--baladi-primary)]/90 focus:ring-[var(--baladi-primary)]/20 h-12 rounded-lg bg-[var(--baladi-primary)] px-8 font-[family-name:var(--font-sora)] font-semibold text-white shadow-lg transition-all hover:shadow-xl focus:ring-2"
+              className="h-12 rounded-lg bg-[var(--baladi-primary)] px-8 font-[family-name:var(--font-sora)] font-semibold text-white shadow-lg transition-all hover:bg-[var(--baladi-primary)]/90 hover:shadow-xl focus:ring-2 focus:ring-[var(--baladi-primary)]/20"
               disabled={isPending}
             >
               {isPending ? (

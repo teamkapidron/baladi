@@ -1,7 +1,7 @@
 'use client';
 
 // Node Modules
-import { memo, useMemo } from 'react';
+import { memo, useEffect, useMemo, useState } from 'react';
 
 // Components
 import ProductForm from '@/components/dashboard/products/product-form/product-form';
@@ -21,6 +21,34 @@ function EditProduct(props: EditProductProps) {
   const { data: productData } = useProductBySlug(slug);
 
   const product = productData?.product;
+  const [imagesFileList, setImagesFileList] = useState<File[]>([]);
+
+  useEffect(() => {
+    async function convertImagesToFiles() {
+      if (!product) {
+        setImagesFileList([]);
+        return;
+      }
+
+      const files: File[] = [];
+
+      for (const imageUrl of product.images || []) {
+        try {
+          const response = await fetch(imageUrl);
+          const blob = await response.blob();
+          const fileName = imageUrl.split('/').pop() || 'image.jpg';
+          const file = new File([blob], fileName, { type: blob.type });
+          files.push(file);
+        } catch (error) {
+          console.error('Error converting image URL to File:', error);
+        }
+      }
+
+      setImagesFileList(files);
+    }
+
+    convertImagesToFiles();
+  }, [product]);
 
   const defaultValues = useMemo(() => {
     if (!product) return undefined;
@@ -42,7 +70,7 @@ function EditProduct(props: EditProductProps) {
 
       categories: product.categories?.map((category) => category.name) || [],
 
-      images: product.images?.map((image) => new File([], image)) || [],
+      images: imagesFileList,
       isActive: product.isActive,
       visibility: product.visibility,
 
@@ -53,7 +81,7 @@ function EditProduct(props: EditProductProps) {
 
       supplier: product.supplier,
     };
-  }, [product]);
+  }, [product, imagesFileList]);
 
   function onSubmit(data: ProductFormValues) {
     if (!product) return;

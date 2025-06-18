@@ -196,7 +196,7 @@ export function useProduct() {
 
       const images = payload.images?.map(
         (image) =>
-          `https://baladi-prod-baladibucket-snxbbhrn.s3.eu-central-1.amazonaws.com/products/${payload.slug}/images/${image.name}`,
+          `https://baladi-prod-baladibucket-fedmxzsx.s3.eu-central-1.amazonaws.com/products/${payload.slug}/images/${image.name}`,
       );
 
       const response = await api.post<CreateProductRequest['response']>(
@@ -213,7 +213,7 @@ export function useProduct() {
 
   const createProductMutation = useMutation({
     mutationFn: createProduct,
-    onSuccess: () => {
+    onSuccess: function () {
       toast.success('Produkt opprettet');
       queryClient.invalidateQueries({
         queryKey: [ReactQueryKeys.GET_ALL_PRODUCTS],
@@ -224,9 +224,45 @@ export function useProduct() {
 
   const updateProduct = useCallback(
     async (payload: UpdateProductRequest['payload']) => {
+      if (payload.product.images?.length && payload.product.images.length > 0) {
+        const imageUploadUrlResponse = await api.post<
+          GetProductImageUploadUrlRequest['response']
+        >('/product/image-upload-url', {
+          slug: payload.product.slug,
+          names: payload.product.images.map((image) => image.name),
+          imageCount: payload.product.images.length,
+        });
+
+        const imageUploadUrls = imageUploadUrlResponse.data.data.urls;
+
+        await Promise.all(
+          imageUploadUrls.map((url, index) => {
+            const formData = new FormData();
+            Object.entries(url.fields).forEach(([key, value]) => {
+              formData.append(key, value);
+            });
+
+            const file = payload.product.images?.[index];
+            if (file) {
+              formData.append('file', file);
+            }
+
+            return axios.post(url.url, formData);
+          }),
+        );
+      }
+
+      const images = payload.product.images?.map(
+        (image) =>
+          `https://baladi-prod-baladibucket-fedmxzsx.s3.eu-central-1.amazonaws.com/products/${payload.product.slug}/images/${image.name}`,
+      );
+
       const response = await api.put<UpdateProductRequest['response']>(
         `/product/${payload.productId}`,
-        payload.product,
+        {
+          ...payload.product,
+          images,
+        },
       );
       return response.data.data;
     },
@@ -235,6 +271,13 @@ export function useProduct() {
 
   const updateProductMutation = useMutation({
     mutationFn: updateProduct,
+    onSuccess: function () {
+      toast.success('Produkt oppdatert');
+      queryClient.invalidateQueries({
+        queryKey: [ReactQueryKeys.GET_ALL_PRODUCTS],
+      });
+      router.push('/dashboard/products');
+    },
   });
 
   const deleteProduct = useCallback(

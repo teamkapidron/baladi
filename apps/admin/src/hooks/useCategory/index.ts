@@ -47,8 +47,6 @@ export function useCategory() {
     useQuery({
       queryKey: [ReactQueryKeys.GET_ALL_CATEGORIES_FLATTENED],
       queryFn: getAllCategoriesFlattened,
-      staleTime: 5 * 60 * 1000,
-      refetchOnWindowFocus: true,
     });
 
   const createCategory = useCallback(

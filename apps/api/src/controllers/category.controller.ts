@@ -93,7 +93,7 @@ export const getCategoriesFlattened = asyncHandler(
   async (req: Request, res: Response) => {
     const { page, limit } = req.query as GetCategoriesFlattenedSchema['query'];
 
-    const perPage = parseInt(limit ?? '10', 10);
+    const perPage = parseInt(limit ?? '10', 100);
     const currentPage = parseInt(page ?? '1', 10);
 
     const filter = { visibleToStore: true };
@@ -179,7 +179,7 @@ export const getAllCategoriesFlattened = asyncHandler(
     const { page, limit } =
       req.query as GetAllCategoriesFlattenedSchema['query'];
 
-    const perPage = parseInt(limit ?? '10', 10);
+    const perPage = parseInt(limit ?? '100', 10);
     const currentPage = parseInt(page ?? '1', 10);
 
     const categories = await Category.find()
