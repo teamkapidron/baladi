@@ -9,6 +9,7 @@ import {
   adminCredentialsTemplate,
   warehouseNotificationTemplate,
 } from '@/templates/mail.template';
+import { inventoryAlertTemplate } from '@/templates/cron.template';
 
 import { MailTemplate } from './interfaces/mail';
 
@@ -54,6 +55,9 @@ function getTemplate(template: MailTemplate) {
         template.data.quantity,
         template.data.customerName,
       );
+    }
+    case 'inventoryAlert': {
+      return inventoryAlertTemplate(template.data);
     }
   }
 }

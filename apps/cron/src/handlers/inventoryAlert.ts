@@ -5,7 +5,6 @@ import connectToMongo from '@/database/mongo.db';
 
 import { sendMail } from '@mail/mail.util';
 import Inventory from '@models/inventory.model';
-import { inventoryAlertTemplate } from '@/templates/mail.templates';
 
 export async function handler(event: ScheduledEvent, context: Context) {
   await connectToMongo();
@@ -56,7 +55,14 @@ export async function handler(event: ScheduledEvent, context: Context) {
     totalQuantity: product.totalQuantity,
   }));
 
-  const template = inventoryAlertTemplate({ products });
+  await sendMail({
+    to: 'teamkapidron@gmail.com',
+    subject: 'Inventory Alert',
+    template: {
+      type: 'inventoryAlert',
+      data: { products },
+    },
+  });
 
   return {
     statusCode: 200,

@@ -49,10 +49,22 @@ interface WarehouseNotificationTemplate {
   };
 }
 
+interface InventoryAlertTemplate {
+  type: 'inventoryAlert';
+  data: {
+    products: {
+      productName: string;
+      productImage: string;
+      totalQuantity: number;
+    }[];
+  };
+}
+
 export type MailTemplate =
   | VerifyEmailTemplate
   | AdminApprovalTemplate
   | WelcomeTemplate
   | PasswordResetTemplate
   | AdminCredentialsTemplate
-  | WarehouseNotificationTemplate;
+  | WarehouseNotificationTemplate
+  | InventoryAlertTemplate;
