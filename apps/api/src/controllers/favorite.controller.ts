@@ -1,4 +1,5 @@
 // Node Modules
+import { Types } from 'mongoose';
 
 // Schemas
 import Product from '@/models/product.model';
@@ -20,18 +21,18 @@ import type {
 import { UserType } from '@repo/types/user';
 import type { Request, Response } from 'express';
 import type { FavoriteAggregateType } from '@/types/favourite.types';
+import { getPagination } from '@/utils/common/pagination.utils';
 
 export const getUserFavorites = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user!._id;
     const userType = req.user?.userType;
-    const { page, limit } = req.query as GetFavoritesSchema['query'];
+    const query = req.query as GetFavoritesSchema['query'];
 
-    const perPage = parseInt(limit ?? '10', 10);
-    const currentPage = parseInt(page ?? '1', 10);
+    const { page, limit } = getPagination(query.page, query.limit);
 
     const favorites = await Favorite.aggregate<FavoriteAggregateType>([
-      { $match: { userId } },
+      { $match: { userId: new Types.ObjectId(userId) } },
       {
         $lookup: {
           from: 'products',
@@ -51,12 +52,19 @@ export const getUserFavorites = asyncHandler(
       },
       {
         $addFields: {
-          'productId.price':
-            userType === UserType.INTERNAL
-              ? '$productId.costPrice'
-              : userType === UserType.EXTERNAL
-                ? '$productId.salePrice'
-                : 0,
+          'productId.price': {
+            $cond: {
+              if: { $eq: [userType, UserType.INTERNAL] },
+              then: '$productId.costPrice',
+              else: {
+                $cond: {
+                  if: { $eq: [userType, UserType.EXTERNAL] },
+                  then: '$productId.salePrice',
+                  else: 0,
+                },
+              },
+            },
+          },
         },
       },
       {
@@ -64,31 +72,39 @@ export const getUserFavorites = asyncHandler(
           _id: 1,
           createdAt: 1,
           product: {
-            _id: 1,
-            name: 1,
-            slug: 1,
-            images: 1,
+            _id: '$productId._id',
+            name: '$productId.name',
+            slug: '$productId.slug',
+            images: '$productId.images',
             price: '$productId.price',
-            shortDescription: 1,
+            shortDescription: '$productId.shortDescription',
             categories: {
-              _id: 1,
-              name: 1,
-              slug: 1,
+              $map: {
+                input: '$productId.categories',
+                as: 'cat',
+                in: {
+                  _id: '$$cat._id',
+                  name: '$$cat.name',
+                  slug: '$$cat.slug',
+                },
+              },
             },
           },
         },
       },
       { $sort: { createdAt: -1 } },
-      { $skip: perPage * (currentPage - 1) },
-      { $limit: perPage },
+      { $skip: limit * (page - 1) },
+      { $limit: limit },
     ]);
+
+    const totalFavorites = await Favorite.countDocuments({ userId });
 
     sendResponse(res, 200, 'Favorites fetched successfully', {
       favorites,
-      totalFavorites: favorites.length,
-      page: currentPage,
-      perPage,
-      totalPages: Math.ceil(favorites.length / perPage),
+      totalFavorites,
+      page,
+      perPage: limit,
+      totalPages: Math.ceil(totalFavorites / limit),
     });
   },
 );
@@ -103,22 +119,11 @@ export const addToFavorites = asyncHandler(
       throw new ErrorHandler(404, 'Product not found', 'NOT_FOUND');
     }
 
-    const existingFavorite = await Favorite.findOne({
-      userId,
-      productId,
-    });
-    if (existingFavorite) {
-      throw new ErrorHandler(
-        400,
-        'Product already in favorites',
-        'BAD_REQUEST',
-      );
-    }
-
-    await Favorite.create({
-      userId,
-      productId,
-    });
+    await Favorite.findOneAndUpdate(
+      { userId, productId },
+      { userId, productId },
+      { upsert: true },
+    );
 
     sendResponse(res, 201, 'Product added to favorites');
   },
@@ -129,17 +134,10 @@ export const removeFromFavorites = asyncHandler(
     const userId = req.user!._id;
     const { productId } = req.params as RemoveFromFavoritesSchemaType['params'];
 
-    const result = await Favorite.findOneAndDelete({
+    await Favorite.findOneAndDelete({
       userId,
       productId,
     });
-    if (!result) {
-      throw new ErrorHandler(
-        404,
-        'Product not found in favorites',
-        'NOT_FOUND',
-      );
-    }
 
     sendResponse(res, 200, 'Product removed from favorites');
   },

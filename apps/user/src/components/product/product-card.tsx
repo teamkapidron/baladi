@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { cn } from '@repo/ui/lib/utils';
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { memo, useCallback, useMemo, useState } from 'react';
 import {
   Check,
@@ -21,10 +22,12 @@ import { QuantityInput } from '@repo/ui/components/base/quantity-input';
 // Hooks
 import { useCart } from '@/hooks/useCart';
 import { useAuth } from '@/hooks/useAuth';
+import { useFavourite } from '@/hooks/useFavourite';
 
 // Types/Utils
 import { formatPrice } from '@/utils/price.util';
 import { ProductResponse } from '@/hooks/useProduct/types';
+import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
 
 interface ProductCardProps {
   product: ProductResponse;
@@ -37,7 +40,49 @@ interface ProductImageProps {
 }
 
 const ProductImage = memo(({ product, isAuthenticated }: ProductImageProps) => {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const { addToFavoritesMutation, removeFromFavoritesMutation } =
+    useFavourite();
   const productImage = product.images?.[0] || '';
+
+  const handleToggleFavorite = useCallback(() => {
+    if (!isAuthenticated) {
+      router.push('/login');
+    }
+
+    if (product.isFavorite) {
+      removeFromFavoritesMutation.mutate(
+        { productId: product._id },
+        {
+          onSuccess: async function () {
+            await queryClient.invalidateQueries({
+              queryKey: [ReactQueryKeys.GET_PRODUCTS],
+            });
+          },
+        },
+      );
+    } else {
+      addToFavoritesMutation.mutate(
+        { productId: product._id },
+        {
+          onSuccess: async function () {
+            await queryClient.invalidateQueries({
+              queryKey: [ReactQueryKeys.GET_PRODUCTS],
+            });
+          },
+        },
+      );
+    }
+  }, [
+    isAuthenticated,
+    product.isFavorite,
+    product._id,
+    router,
+    removeFromFavoritesMutation,
+    queryClient,
+    addToFavoritesMutation,
+  ]);
 
   return (
     <div className="relative flex aspect-square items-center justify-center overflow-hidden bg-[var(--baladi-light)]/30">
@@ -66,9 +111,17 @@ const ProductImage = memo(({ product, isAuthenticated }: ProductImageProps) => {
                 'absolute top-3 right-3 z-20 rounded-full p-2 transition-all duration-300',
                 'hover:scale-110 hover:shadow-md active:scale-95',
                 'bg-white/90 text-[var(--baladi-gray)] hover:bg-white hover:text-red-500',
+                product.isFavorite
+                  ? 'text-red-500'
+                  : 'text-[var(--baladi-gray)]',
               )}
+              onClick={handleToggleFavorite}
             >
-              <Heart size={16} className="transition-all duration-300" />
+              <Heart
+                size={16}
+                className="transition-all duration-300"
+                fill={product.isFavorite ? 'red' : 'none'}
+              />
             </Button>
           )}
 

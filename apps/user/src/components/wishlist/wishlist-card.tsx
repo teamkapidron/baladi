@@ -1,10 +1,10 @@
 'use client';
 
 // Node Modules
-import { memo, useCallback, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ShoppingCart, ExternalLink, Trash2 } from '@repo/ui/lib/icons';
+import { memo, useCallback } from 'react';
+import { ExternalLink, Trash2 } from '@repo/ui/lib/icons';
 
 // Components
 import { Button } from '@repo/ui/components/base/button';
@@ -22,16 +22,9 @@ interface WishlistCardProps {
 }
 
 function WishlistCard(props: WishlistCardProps) {
-  const { favorite } = props;
+  const { product } = props.favorite;
 
-  const [imageError, setImageError] = useState(false);
   const { removeFromFavoritesMutation } = useFavourite();
-
-  const { product } = favorite;
-  const hasDiscount = product.price < product.price;
-  const discountPercent = hasDiscount
-    ? Math.round(((product.price - product.price) / product.price) * 100)
-    : 0;
 
   const handleRemoveFromWishlist = useCallback(() => {
     removeFromFavoritesMutation.mutate({ productId: product._id });
@@ -40,25 +33,12 @@ function WishlistCard(props: WishlistCardProps) {
   return (
     <div className="group overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
       <div className="relative aspect-square overflow-hidden bg-gray-100">
-        {!imageError && product.images.length > 0 ? (
-          <Image
-            src={product.images[0] || ''}
-            alt={product.name}
-            fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
-            onError={() => setImageError(true)}
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
-            <ShoppingCart className="h-16 w-16 text-gray-400" />
-          </div>
-        )}
-
-        {hasDiscount && (
-          <Badge className="absolute top-3 left-3 bg-red-500 font-semibold text-white">
-            -{discountPercent}%
-          </Badge>
-        )}
+        <Image
+          src={product.images[0] || ''}
+          alt={product.name}
+          fill
+          className="object-cover transition-transform duration-300 group-hover:scale-105"
+        />
 
         <Button
           size="sm"
@@ -101,20 +81,15 @@ function WishlistCard(props: WishlistCardProps) {
 
         <div className="flex items-center justify-between border-t border-gray-100 pt-2">
           <div className="space-y-1">
-            {hasDiscount && (
-              <p className="font-[family-name:var(--font-dm-sans)] text-xs text-gray-500 line-through">
-                {formatPrice(product.price)} kr
-              </p>
-            )}
             <p className="text-baladi-primary font-[family-name:var(--font-sora)] text-lg font-bold">
               {formatPrice(product.price)} kr
             </p>
           </div>
 
-          <Link href={`/product/${product.slug}`}>
+          <Link href={`/product/${product.slug}`} target="_blank">
             <Button
               size="sm"
-              className="from-baladi-primary to-baladi-secondary hover:from-baladi-primary/90 hover:to-baladi-secondary/90 group/link bg-gradient-to-r font-[family-name:var(--font-dm-sans)] text-white shadow-md transition-all duration-300 hover:shadow-lg"
+              className="group/link bg-gradient-to-r from-[var(--baladi-primary)] to-[var(--baladi-secondary)] text-white hover:shadow-lg"
             >
               <ExternalLink className="mr-1.5 h-4 w-4 transition-transform group-hover/link:translate-x-0.5" />
               Se produkt

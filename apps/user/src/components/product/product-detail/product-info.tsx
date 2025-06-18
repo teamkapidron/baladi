@@ -1,7 +1,9 @@
 'use client';
 
 // Node Modules
+import { cn } from '@repo/ui/lib/utils';
 import { useParams, useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import React, { useState, memo, useMemo, useCallback, useEffect } from 'react';
 import {
   ShoppingCart,
@@ -34,6 +36,7 @@ import { formatDate } from '@/utils/date.util';
 import { formatPrice } from '@/utils/price.util';
 import { BulkDiscount } from '@repo/types/bulkDiscount';
 import { ProductResponse } from '@/hooks/useProduct/types';
+import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
 
 // Sub-components
 interface ProductPriceDisplayProps {
@@ -230,6 +233,7 @@ interface ProductActionsProps {
   cartQuantity: number;
   quantity: number;
   price: number;
+  product: ProductResponse;
   onAddToCart: () => void;
   onAddToWishlist: () => void;
   onGoToCart: () => void;
@@ -247,6 +251,7 @@ const ProductActions = memo(
     onAddToWishlist,
     onGoToCart,
     onGoToLogin,
+    product,
   }: ProductActionsProps) => (
     <div className="flex gap-3">
       {isAuthenticated ? (
@@ -298,7 +303,10 @@ const ProductActions = memo(
       <Button
         size="lg"
         variant="outline"
-        className="font-[family-name:var(--font-dm-sans)] font-medium"
+        className={cn(
+          'font-[family-name:var(--font-dm-sans)] font-medium',
+          product.isFavorite && 'bg-red-500 text-white',
+        )}
         onClick={onAddToWishlist}
       >
         <Heart size={18} />
@@ -309,9 +317,11 @@ const ProductActions = memo(
 
 function useProductInfo(slug: string) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { isAuthenticated } = useAuth();
   const { addToCart, getItemQuantity } = useCart();
-  const { addToFavoritesMutation } = useFavourite();
+  const { addToFavoritesMutation, removeFromFavoritesMutation } =
+    useFavourite();
   const { bulkDiscountQuery } = useDiscount();
   const { data: productData, isLoading } = useProductBySlug(slug);
 
@@ -359,20 +369,48 @@ function useProductInfo(slug: string) {
   }, [productDetails?.product, isAuthenticated, addToCart, quantity, router]);
 
   const handleAddToWishlist = useCallback(() => {
+    if (!productDetails?.product._id) {
+      return;
+    }
+
     if (!isAuthenticated) {
       router.push('/login');
       return;
     }
 
-    if (productDetails?.product?._id) {
-      addToFavoritesMutation.mutate({
-        productId: productDetails.product._id,
-      });
+    if (productDetails?.product.isFavorite) {
+      removeFromFavoritesMutation.mutate(
+        { productId: productDetails.product._id },
+        {
+          onSuccess: async function () {
+            await queryClient.invalidateQueries({
+              queryKey: [ReactQueryKeys.GET_PRODUCT_BY_SLUG, slug],
+            });
+          },
+        },
+      );
+    } else {
+      addToFavoritesMutation.mutate(
+        {
+          productId: productDetails?.product._id,
+        },
+        {
+          onSuccess: async function () {
+            await queryClient.invalidateQueries({
+              queryKey: [ReactQueryKeys.GET_PRODUCT_BY_SLUG, slug],
+            });
+          },
+        },
+      );
     }
   }, [
     isAuthenticated,
+    productDetails?.product.isFavorite,
+    productDetails?.product._id,
     router,
-    productDetails?.product?._id,
+    removeFromFavoritesMutation,
+    queryClient,
+    slug,
     addToFavoritesMutation,
   ]);
 
@@ -499,6 +537,7 @@ function ProductInfo() {
           onAddToWishlist={handleAddToWishlist}
           onGoToCart={handleGoToCart}
           onGoToLogin={handleGoToLogin}
+          product={product}
         />
       </div>
     </div>

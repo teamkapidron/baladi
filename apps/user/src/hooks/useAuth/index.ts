@@ -111,8 +111,11 @@ export function useAuth() {
 
   const onboardingMutation = useMutation({
     mutationFn: onboarding,
-    onSuccess: function () {
+    onSuccess: async function () {
       refetchUser();
+      await queryClient.resetQueries({
+        queryKey: [ReactQueryKeys.GET_PRODUCTS],
+      });
       router.push('/wait-for-approval');
       toast.success('Onboarding successful');
     },
@@ -131,8 +134,11 @@ export function useAuth() {
 
   const loginMutation = useMutation({
     mutationFn: login,
-    onSuccess: function () {
+    onSuccess: async function () {
       refetchUser();
+      await queryClient.resetQueries({
+        queryKey: [ReactQueryKeys.GET_PRODUCTS],
+      });
       router.push('/wait-for-approval');
       toast.success('Login successful');
     },

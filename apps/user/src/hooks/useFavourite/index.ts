@@ -41,8 +41,8 @@ export function useFavourite() {
 
   const addToFavoritesMutation = useMutation({
     mutationFn: addToFavorites,
-    onSuccess: function () {
-      queryClient.invalidateQueries({
+    onSuccess: async function () {
+      await queryClient.invalidateQueries({
         queryKey: [ReactQueryKeys.GET_FAVORITES],
       });
       toast.success('Product added to favorites');
@@ -61,8 +61,8 @@ export function useFavourite() {
 
   const removeFromFavoritesMutation = useMutation({
     mutationFn: removeFromFavorites,
-    onSuccess: function () {
-      queryClient.invalidateQueries({
+    onSuccess: async function () {
+      await queryClient.invalidateQueries({
         queryKey: [ReactQueryKeys.GET_FAVORITES],
       });
       toast.success('Product removed from favorites');
