@@ -34,7 +34,14 @@ dotenv.config({ path: '.env.local' });
 
 app.use(
   cors({
-    origin: ['http://localhost:3000', 'http://localhost:3001'],
+    origin: [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'https://baladi.kapidron.live',
+      'https://www.baladi.kapidron.live',
+      'https://admin.baladi.kapidron.live',
+      'https://www.admin.baladi.kapidron.live',
+    ],
     methods: ['GET', 'POST', 'PUT', 'OPTIONS', 'HEAD', 'DELETE', 'PATCH'],
     credentials: true,
   }),

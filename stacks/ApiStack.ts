@@ -1,34 +1,14 @@
 /// <reference path="../apps/api/env.d.ts" />
 /// <reference path="../.sst/platform/config.d.ts" />
 
-import { bucket } from './StorageStack';
-
-export const api = new sst.aws.ApiGatewayV2('BaladiApi', {
+export const api = new sst.aws.ApiGatewayV1('BaladiApi', {
   domain: {
     name: 'api.baladi.kapidron.live',
     dns: sst.cloudflare.dns({
       zone: '5519bd9abe01426f810235a523330954',
     }),
   },
-  cors: {
-    allowCredentials: true,
-    allowOrigins: [
-      'https://baladi.kapidron.live',
-      'https://www.baladi.kapidron.live',
-      'https://admin.baladi.kapidron.live',
-      'https://www.admin.baladi.kapidron.live',
-    ],
-    allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowHeaders: [
-      'Content-Type',
-      'Authorization',
-      'X-Requested-With',
-      'X-Amz-Date',
-      'X-Api-Key',
-      'X-Amz-Security-Token',
-    ],
-  },
-  link: [bucket],
+  cors: false,
 });
 
 api.route('ANY /{proxy+}', {
