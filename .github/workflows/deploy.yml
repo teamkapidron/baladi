@@ -20,22 +20,20 @@ jobs:
         with:
           version: 9.0.0
 
-      - name: Cache Node.js modules
+      - name: Cache pnpm store
         uses: actions/cache@v4
         with:
           path: |
-            /home/runner/setup-pnpm/node_modules/.bin
-          key: |
-            node_modules-${{ hashFiles('pnpm-lock.yaml') }}
+            ~/.pnpm-store
+          key: pnpm-store-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-store-${{ runner.os }}-
 
       - name: Cache Turbo + Next.js build
         uses: actions/cache@v4
         with:
           path: |
-            ~/.pnpm
             ${{ github.workspace }}/.turbo
-            apps/admin/.next/cache
-            apps/user/.next/cache
           key: build-cache-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: |
             build-cache-
@@ -69,10 +67,14 @@ jobs:
         run: pnpm install -g vercel
 
       - name: Deploy Admin to Vercel
-        run: vercel deploy --prod --name admin --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ vars.VERCEL_ORG_ID }} --yes 
+        run: |
+          vercel link --yes --project admin --token ${{ secrets.VERCEL_TOKEN }}
+          vercel deploy --prod --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ vars.VERCEL_ORG_ID }} --yes
 
       - name: Deploy User to Vercel
-        run: vercel deploy --prod --name user --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ vars.VERCEL_ORG_ID }} --yes
+        run: |
+          vercel link --yes --project user --token ${{ secrets.VERCEL_TOKEN }}
+          vercel deploy --prod --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ vars.VERCEL_ORG_ID }} --yes
 
       - name: Deploy SST to AWS (API, Cron, S3 Storage)
         run: npx sst deploy --stage prod
