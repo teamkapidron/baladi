@@ -19,6 +19,7 @@ export interface User {
   isApprovedByAdmin: boolean;
   resetToken?: string;
   resetTokenExpiry?: Date;
+  isCreatedByAdmin?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

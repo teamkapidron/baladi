@@ -92,3 +92,17 @@ export type TopUsersRequest = ApiData<
     }[];
   }
 >;
+
+export type CreateUserRequest = ApiData<
+  {
+    name: string;
+    email: string;
+    companyName?: string;
+    organizationNumber?: string;
+    phoneNumber?: string;
+    userType: UserType;
+  },
+  {
+    user: User;
+  }
+>;
