@@ -46,8 +46,6 @@ export function useOrderStats() {
       dateRangeInString.to,
     ],
     queryFn: () => getOrderStats(dateRangeInString),
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: true,
   });
 
   const getOrderRevenueStats = useCallback(
@@ -68,8 +66,6 @@ export function useOrderStats() {
       dateRangeInString.to,
     ],
     queryFn: () => getOrderRevenueStats(dateRangeInString),
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: true,
   });
 
   return {
@@ -99,8 +95,6 @@ export function useOrderDashboard() {
       dateRangeInString.to,
     ],
     queryFn: () => getOrderStatusGraphData(dateRangeInString),
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: true,
   });
 
   const getOrderRevenueGraphData = useCallback(
@@ -120,8 +114,6 @@ export function useOrderDashboard() {
       dateRangeInString.to,
     ],
     queryFn: () => getOrderRevenueGraphData(dateRangeInString),
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: true,
   });
 
   const getRecentOrders = useCallback(
@@ -142,8 +134,6 @@ export function useOrderDashboard() {
       dateRangeInString.to,
     ],
     queryFn: () => getRecentOrders(dateRangeInString),
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: true,
   });
 
   return {
@@ -169,8 +159,6 @@ export function useOrderDetails(orderId: string) {
   const orderDetailsQuery = useQuery({
     queryKey: [ReactQueryKeys.GET_ORDER_DETAILS, orderId],
     queryFn: () => getOrderDetails({ orderId: orderId as string }),
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: true,
     enabled: !!orderId,
   });
 
@@ -239,8 +227,6 @@ export function useOrder() {
         search,
         status: toOrderStatus(status),
       }),
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: true,
   });
 
   return {

@@ -44,25 +44,34 @@ interface ProductPriceDisplayProps {
   vat: number;
   isAuthenticated: boolean;
   noOfUnits: number;
+  discountedPrice: number;
 }
 
 const ProductPriceDisplay = memo(
-  ({ price, vat, isAuthenticated, noOfUnits }: ProductPriceDisplayProps) => {
+  ({
+    vat,
+    isAuthenticated,
+    noOfUnits,
+    discountedPrice,
+  }: ProductPriceDisplayProps) => {
     if (!isAuthenticated) return null;
 
-    const perUnitPrice = price / noOfUnits;
+    const perUnitPrice = discountedPrice / noOfUnits;
 
     return (
-      <div className="space-y-4 rounded-lg bg-[var(--baladi-light)]/50 p-4">
-        <div className="flex flex-col gap-1">
+      <div className="space-y-4 rounded-lg py-4">
+        <div className="flex items-center gap-4">
           <div className="flex items-baseline gap-2">
             <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-primary)]">
-              {formatPrice(price)} kr
+              {formatPrice(discountedPrice)} kr
             </span>
           </div>
-          <div className="flex items-baseline gap-2">
-            <span className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-              {formatPrice(perUnitPrice)} kr per enhet
+          <div className="rounded-lg border border-[var(--baladi-secondary)]/20 bg-gradient-to-r from-[var(--baladi-secondary)]/10 to-[var(--baladi-accent)]/10 px-3 py-2">
+            <span className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-secondary)]">
+              {formatPrice(perUnitPrice)} kr
+            </span>
+            <span className="ml-1 font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
+              per enhet
             </span>
           </div>
         </div>
@@ -221,7 +230,7 @@ const QuantitySelector = memo(
         />
       </div>
       <span className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-        {availableStock} enheter tilgjengelige
+        {availableStock > 0 ? 'På lager' : 'Ikke på lager'}
       </span>
     </div>
   ),
@@ -325,6 +334,8 @@ function useProductInfo(slug: string) {
   const { bulkDiscountQuery } = useDiscount();
   const { data: productData, isLoading } = useProductBySlug(slug);
 
+  const [quantity, setQuantity] = useState(1);
+
   const productDetails = useMemo(() => {
     if (!productData?.product) return null;
 
@@ -336,21 +347,31 @@ function useProductInfo(slug: string) {
     const price = product.price + (product.vat * product.price) / 100;
     const cartQuantity = getItemQuantity(product._id);
 
+    const bulkDiscounts = bulkDiscountQuery.data?.bulkDiscounts || [];
+
+    const bulkDiscount = bulkDiscounts
+      ?.filter((d) => d.isActive && d.minQuantity <= quantity)
+      .sort((a, b) => b.discountPercentage - a.discountPercentage)[0];
+
+    const discountedPrice = bulkDiscount
+      ? price - (product.price * bulkDiscount.discountPercentage) / 100
+      : price;
+
     return {
       product,
       isOutOfStock: product.stock <= 0,
-      bulkDiscounts: bulkDiscountQuery.data?.bulkDiscounts || [],
+      bulkDiscounts,
       volume,
       price,
       cartQuantity,
+      discountedPrice,
     };
   }, [
     productData?.product,
-    bulkDiscountQuery.data?.bulkDiscounts,
     getItemQuantity,
+    bulkDiscountQuery.data?.bulkDiscounts,
+    quantity,
   ]);
-
-  const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
     if (productDetails?.cartQuantity) {
@@ -466,6 +487,7 @@ function ProductInfo() {
     bulkDiscounts,
     volume,
     price,
+    discountedPrice,
     cartQuantity,
     isLoading,
     quantity,
@@ -501,6 +523,7 @@ function ProductInfo() {
         vat={product.vat}
         isAuthenticated={isAuthenticated}
         noOfUnits={product.noOfUnits}
+        discountedPrice={discountedPrice ?? 0}
       />
 
       <ProductSpecifications

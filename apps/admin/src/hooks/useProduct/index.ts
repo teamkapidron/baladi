@@ -108,8 +108,6 @@ export function useProductDashboard() {
       dateRangeInString.to,
     ],
     queryFn: () => topProducts(dateRangeInString),
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: true,
   });
 
   const lowStockProducts = useCallback(
@@ -126,8 +124,6 @@ export function useProductDashboard() {
   const lowStockProductsQuery = useQuery({
     queryKey: [ReactQueryKeys.GET_LOW_STOCK_PRODUCTS],
     queryFn: () => lowStockProducts({ lowStockThreshold: '5' }),
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: true,
   });
 
   return { topProductsQuery, lowStockProductsQuery };
@@ -160,8 +156,6 @@ export function useProduct() {
         search: search ?? undefined,
         category: category ?? undefined,
       }),
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: true,
   });
 
   const createProduct = useCallback(
@@ -324,7 +318,6 @@ export function useQuickSearchProduct(query: string) {
     queryKey: [ReactQueryKeys.GET_QUICK_SEARCH_PRODUCTS, query],
     queryFn: () => quickSearchProduct({ query }),
     enabled: query.length > 0,
-    staleTime: 60 * 1000,
   });
 
   return { quickSearchProductQuery };

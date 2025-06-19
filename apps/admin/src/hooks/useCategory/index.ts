@@ -32,8 +32,6 @@ export function useCategory() {
   const { data: categories, isLoading: isLoadingCategories } = useQuery({
     queryKey: [ReactQueryKeys.GET_ALL_CATEGORIES],
     queryFn: getAllCategories,
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: true,
   });
 
   const getAllCategoriesFlattened = useCallback(async () => {
@@ -142,8 +140,6 @@ export function useCategory() {
         from: dateRangeInString.from,
         to: dateRangeInString.to,
       }),
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: true,
   });
 
   return {

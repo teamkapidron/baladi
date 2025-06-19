@@ -29,8 +29,6 @@ export function useAuth() {
   } = useQuery({
     queryKey: [ReactQueryKeys.GET_ADMIN_DATA],
     queryFn: getAdminData,
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: true,
   });
 
   const login = useCallback(

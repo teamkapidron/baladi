@@ -24,6 +24,7 @@ import { Separator } from '@repo/ui/components/base/separator';
 // Hooks
 import { useDiscount } from '@/hooks/useDiscount';
 import { useProductBySlug } from '@/hooks/useProduct';
+import { cn } from '@repo/ui/lib/utils';
 
 function ProductSpecifications() {
   const { slug } = useParams<{ slug: string }>();
@@ -64,7 +65,12 @@ function ProductSpecifications() {
   return (
     <div className="mt-12 rounded-lg p-4 shadow-md">
       <Tabs defaultValue="details" className="w-full">
-        <TabsList className="bg-[var(--baladi-light)]/50 grid w-full grid-cols-2">
+        <TabsList
+          className={cn(
+            'grid w-full bg-[var(--baladi-light)]/50',
+            hasVolumeDiscount ? 'grid-cols-2' : 'grid-cols-1',
+          )}
+        >
           <TabsTrigger
             value="details"
             className="font-[family-name:var(--font-dm-sans)] data-[state=active]:bg-white data-[state=active]:text-[var(--baladi-primary)]"
@@ -163,7 +169,7 @@ function ProductSpecifications() {
                 Mengderabatter
               </h3>
 
-              <div className="from-[var(--baladi-primary)]/10 to-[var(--baladi-accent)]/10 mb-6 rounded-lg bg-gradient-to-r p-4">
+              <div className="mb-6 rounded-lg bg-gradient-to-r from-[var(--baladi-primary)]/10 to-[var(--baladi-accent)]/10 p-4">
                 <div className="mb-3 flex items-center gap-3">
                   <TrendingDown
                     size={24}
@@ -186,11 +192,11 @@ function ProductSpecifications() {
                     .map((discount) => (
                       <div
                         key={discount._id}
-                        className="hover:border-[var(--baladi-primary)]/30 rounded-lg border-2 border-[var(--baladi-light)] bg-white p-4 transition-colors"
+                        className="rounded-lg border-2 border-[var(--baladi-light)] bg-white p-4 transition-colors hover:border-[var(--baladi-primary)]/30"
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-4">
-                            <div className="bg-[var(--baladi-primary)]/10 rounded-full p-3">
+                            <div className="rounded-full bg-[var(--baladi-primary)]/10 p-3">
                               <Percent
                                 size={24}
                                 className="text-[var(--baladi-primary)]"
@@ -231,7 +237,7 @@ function ProductSpecifications() {
                 </div>
               )}
 
-              <div className="bg-[var(--baladi-light)]/30 mt-6 rounded-lg p-4">
+              <div className="mt-6 rounded-lg bg-[var(--baladi-light)]/30 p-4">
                 <h5 className="mb-2 font-[family-name:var(--font-sora)] font-semibold text-[var(--baladi-dark)]">
                   Slik fungerer mengderabattene:
                 </h5>

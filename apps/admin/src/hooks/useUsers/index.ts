@@ -166,8 +166,6 @@ export function useUserDetails(userId: string) {
   const userDetailsQuery = useQuery({
     queryKey: [ReactQueryKeys.GET_USER_DETAILS, userId],
     queryFn: () => getUserDetails({ userId: userId as string }),
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: true,
     enabled: !!userId,
   });
 

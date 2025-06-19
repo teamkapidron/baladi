@@ -58,17 +58,17 @@ function PalletSelection({ control }: PalletSelectionProps) {
                     <Label
                       htmlFor="EUR"
                       className={cn(
-                        'hover:border-[var(--baladi-primary)]/50 peer-checked:bg-[var(--baladi-primary)]/5 flex cursor-pointer items-center justify-between rounded-lg border-2 border-[var(--baladi-border)] p-4 peer-checked:border-[var(--baladi-primary)]',
+                        'flex cursor-pointer items-center justify-between rounded-lg border-2 border-[var(--baladi-border)] p-4 peer-checked:border-[var(--baladi-primary)] peer-checked:bg-[var(--baladi-primary)]/5 hover:border-[var(--baladi-primary)]/50',
                         field.value === 'EUR' &&
-                          'bg-[var(--baladi-primary)]/5 border-[var(--baladi-primary)]',
+                          'border-[var(--baladi-primary)] bg-[var(--baladi-primary)]/5',
                       )}
                     >
                       <div className="space-y-1">
                         <div className="font-[family-name:var(--font-sora)] font-semibold text-[var(--baladi-dark)]">
-                          EUR Pallet
+                          Europall
                         </div>
                         <div className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-                          Standard europallet (80 x 120 cm)
+                          220 cm = 1,06 m³
                         </div>
                       </div>
                       <Package
@@ -87,17 +87,17 @@ function PalletSelection({ control }: PalletSelectionProps) {
                     <Label
                       htmlFor="Large"
                       className={cn(
-                        'hover:border-[var(--baladi-primary)]/50 peer-checked:bg-[var(--baladi-primary)]/5 flex cursor-pointer items-center justify-between rounded-lg border-2 border-[var(--baladi-border)] p-4 peer-checked:border-[var(--baladi-primary)]',
+                        'flex cursor-pointer items-center justify-between rounded-lg border-2 border-[var(--baladi-border)] p-4 peer-checked:border-[var(--baladi-primary)] peer-checked:bg-[var(--baladi-primary)]/5 hover:border-[var(--baladi-primary)]/50',
                         field.value === 'Large' &&
-                          'bg-[var(--baladi-primary)]/5 border-[var(--baladi-primary)]',
+                          'border-[var(--baladi-primary)] bg-[var(--baladi-primary)]/5',
                       )}
                     >
                       <div className="space-y-1">
                         <div className="font-[family-name:var(--font-sora)] font-semibold text-[var(--baladi-dark)]">
-                          Large Pallet
+                          Stor pall
                         </div>
                         <div className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-                          Stor pallet (100 x 120 cm)
+                          220 cm = 2,4 m³
                         </div>
                       </div>
                       <Package
