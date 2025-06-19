@@ -4,6 +4,7 @@
 import Category from '@/models/category.model';
 
 // Utils
+import { generateSlug } from '@/utils/common/string.util';
 import { sendResponse } from '@/utils/common/response.util';
 import { getDateMatchStage } from '@/utils/common/date.util';
 
@@ -16,10 +17,12 @@ import type { Request, Response } from 'express';
 import type { CategoryStats } from '@/types/category.types';
 import type { HierarchicalCategory } from '@repo/types/category';
 import type {
+  // User
   GetCategoriesSchema,
   GetCategoriesFlattenedSchema,
   GetCategoryByIdSchema,
-  GetAllCategoriesSchema,
+
+  // Admin
   GetAllCategoriesFlattenedSchema,
   GetCategoryStatsSchema,
   CreateCategorySchema,
@@ -205,13 +208,18 @@ export const createCategory = asyncHandler(
     const { name, slug, image, isActive, visibleToStore, parentId } =
       req.body as CreateCategorySchema['body'];
 
+    let newSlug = slug;
+    if (!newSlug) {
+      newSlug = generateSlug(name ?? '');
+    }
+
     const category = await Category.create({
       name,
-      slug,
+      slug: newSlug,
       image,
       isActive,
       visibleToStore,
-      parentId,
+      parentId: parentId === '' ? null : parentId,
     });
 
     sendResponse(res, 201, 'Category created successfully', { category });
