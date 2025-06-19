@@ -64,8 +64,8 @@ app.use('/api/export', exportRoute);
 
 app.use(errorMiddleware);
 
-app.listen(5000, () => {
-  console.log(`Server is running on port ${5000}`);
+app.listen(process.env.PORT || 80, () => {
+  console.log(`Server is running on port ${process.env.PORT || 80}`);
 });
 
 export const handler = serverlessExpress({ app });
