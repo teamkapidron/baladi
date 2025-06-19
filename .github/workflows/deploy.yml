@@ -96,12 +96,12 @@ jobs:
 
       - name: Deploy API to EC2
         run: |
-          ssh ${{ vars.EC2_USER }}@${{ vars.EC2_HOST }} << 'EOF'
+          ssh ${{ vars.EC2_USER }}@${{ vars.EC2_HOST }} << EOF
             set -e
             cd ~/baladi
             git pull origin main
 
-            cat <<EOT > apps/api/.env.local <<EOT
+            cat > apps/api/.env.local <<EOT
           MONGO_URI=${{ secrets.MONGO_URI }}
           JWT_SECRET=${{ secrets.JWT_SECRET }}
           JWT_EXPIRY=${{ vars.JWT_EXPIRY }}
