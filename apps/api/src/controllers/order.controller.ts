@@ -46,6 +46,7 @@ import type {
   GetRecentOrdersSchema,
   PreviewPickingListSchema,
   PreviewFreightLabelSchema,
+  CreateOrderSchema,
 } from '@/validators/order.validator';
 import {
   OrderCancellationReason,
@@ -1123,5 +1124,189 @@ export const deleteOrderAdmin = asyncHandler(
     }
   },
 );
+
+export const createOrder = asyncHandler(async (req: Request, res: Response) => {
+  const {
+    items,
+    shippingAddressId,
+    palletType,
+    desiredDeliveryDate,
+    notes,
+    userId,
+    userType,
+  } = req.body as CreateOrderSchema['body'];
+
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const shippingAddress = shippingAddressId
+      ? await Address.findOne({ _id: shippingAddressId, userId }).session(
+          session,
+        )
+      : await Address.findOne({ userId, isDefault: true }).session(session);
+    if (!shippingAddress) {
+      throw new ErrorHandler(404, 'Shipping address not found', 'NOT_FOUND');
+    }
+
+    const productIds = items.map((i) => i.productId);
+    const products = await Product.find({ _id: { $in: productIds } })
+      .lean()
+      .session(session);
+    const inventoryRecords = await Inventory.find({
+      productId: { $in: productIds },
+      quantity: { $gt: 0 },
+    })
+      .sort({ expirationDate: 1 }) // FIFO - use items expiring first
+      .session(session);
+    const bulkDiscounts = await BulkDiscount.find({
+      isActive: true,
+    }).session(session);
+
+    let totalAmount = 0;
+    const orderItems: OrderItem[] = [];
+    const inventoryUpdates: Array<{ _id: string; newQuantity: number }> = [];
+
+    for (const item of items) {
+      const product = products.find((p) => p._id.toString() === item.productId);
+      if (!product) {
+        throw new ErrorHandler(
+          404,
+          `Product not found: ${item.productId}`,
+          'NOT_FOUND',
+        );
+      }
+
+      if (!product.isActive) {
+        throw new ErrorHandler(
+          400,
+          `Product not available: ${product.name}`,
+          'BAD_REQUEST',
+        );
+      }
+
+      const productInventory = inventoryRecords.filter(
+        (inv) => inv.productId.toString() === item.productId,
+      );
+
+      const totalStock = productInventory.reduce(
+        (sum, inv) => sum + inv.quantity,
+        0,
+      );
+
+      if (totalStock < item.quantity) {
+        throw new ErrorHandler(
+          409,
+          `Not enough stock for: ${product.name}. Available: ${totalStock}, Requested: ${item.quantity}`,
+          'CONFLICT',
+        );
+      }
+
+      const price =
+        userType === UserType.INTERNAL ? product.costPrice : product.salePrice;
+
+      const vatAmount = (product.vat * price) / 100;
+
+      const priceWithVat = price + vatAmount;
+
+      const discount = 0;
+      let volumeDiscount = 0;
+
+      if (userType === UserType.EXTERNAL) {
+        const bulkDiscount = bulkDiscounts
+          .filter((bd) => bd.minQuantity <= item.quantity)
+          .sort((a, b) => b.discountPercentage - a.discountPercentage)[0];
+
+        if (bulkDiscount && product.hasVolumeDiscount) {
+          volumeDiscount = price * (bulkDiscount.discountPercentage / 100);
+        }
+      }
+
+      const itemTotal = priceWithVat - volumeDiscount - discount;
+
+      orderItems.push({
+        productId: product._id.toString(),
+        quantity: item.quantity,
+        price,
+        vatAmount,
+        priceWithVat,
+        discount,
+        bulkDiscount: volumeDiscount,
+        totalPrice: itemTotal,
+      });
+
+      totalAmount += itemTotal * item.quantity;
+
+      // Deduct quantity from inventory using FIFO
+      let remainingToDeduct = item.quantity;
+      for (const inv of productInventory) {
+        if (remainingToDeduct <= 0) break;
+
+        const deductFromThis = Math.min(inv.quantity, remainingToDeduct);
+        const newQuantity = inv.quantity - deductFromThis;
+
+        inventoryUpdates.push({
+          _id: (inv._id as Types.ObjectId).toString(),
+          newQuantity,
+        });
+
+        remainingToDeduct -= deductFromThis;
+      }
+    }
+
+    await Promise.all(
+      inventoryUpdates.map((update) =>
+        Inventory.findByIdAndUpdate(
+          update._id,
+          { quantity: update.newQuantity },
+          { session },
+        ),
+      ),
+    );
+
+    const order = await Order.create(
+      [
+        {
+          userId,
+          items: orderItems,
+          totalAmount,
+          shippingAddress: shippingAddress._id,
+          notes,
+          desiredDeliveryDate,
+          palletType,
+          isCreatedByAdmin: true,
+          status: OrderStatus.CONFIRMED,
+        },
+      ],
+      { session },
+    );
+
+    await session.commitTransaction();
+    session.endSession();
+
+    const populatedOrder = await Order.findById(order[0]?._id).populate([
+      { path: 'items.productId', select: 'name images' },
+      { path: 'userId', select: 'name email' },
+      { path: 'shippingAddress' },
+    ]);
+
+    sendResponse(res, 201, 'Order placed successfully', {
+      order: populatedOrder,
+    });
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+
+    if (error instanceof ErrorHandler) {
+      throw error;
+    }
+
+    throw new ErrorHandler(
+      500,
+      'Failed to place order. Please try again later.',
+      'INTERNAL_SERVER',
+    );
+  }
+});
 
 /****************** END: Admin Controllers ********************/

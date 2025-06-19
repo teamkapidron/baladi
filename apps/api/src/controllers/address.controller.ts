@@ -19,6 +19,8 @@ import type {
   UpdateAddressSchema,
   DeleteAddressSchema,
   SetDefaultAddressSchema,
+  GetAddressesSchemaAdmin,
+  AddAddressSchemaAdmin,
 } from '@/validators/address.validator';
 import type { Request, Response } from 'express';
 
@@ -168,5 +170,48 @@ export const setDefaultAddress = asyncHandler(
     sendResponse(res, 200, 'Default address updated successfully', {
       address: updatedAddress,
     });
+  },
+);
+
+export const getAddressesAdmin = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { userId } = req.params as GetAddressesSchemaAdmin['params'];
+    const query = req.query as GetAddressesSchemaAdmin['query'];
+
+    const { page, limit, skip } = getPagination(query.page, query.limit);
+
+    const addresses = await Address.find({ userId })
+      .sort({ isDefault: -1, createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const totalAddresses = await Address.countDocuments({ userId });
+
+    sendResponse(res, 200, 'Addresses fetched successfully', {
+      addresses,
+      totalAddresses,
+      page,
+      perPage: limit,
+      totalPages: Math.ceil(totalAddresses / limit),
+    });
+  },
+);
+
+export const addAddressAdmin = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { userId } = req.params as AddAddressSchemaAdmin['params'];
+    const addressData = req.body as AddAddressSchemaAdmin['body'];
+
+    const addressCount = await Address.countDocuments({ userId });
+    const isFirstAddress = addressCount === 0;
+    const isDefault = isFirstAddress || addressData.isDefault === true;
+
+    if (isDefault) {
+      await Address.updateMany({ userId }, { $set: { isDefault: false } });
+    }
+
+    const address = await Address.create({ ...addressData, userId, isDefault });
+
+    sendResponse(res, 201, 'Address added successfully', { address });
   },
 );

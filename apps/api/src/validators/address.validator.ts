@@ -8,6 +8,23 @@ export const getAddressesSchema = z.object({
   }),
 });
 
+export const getAddressesSchemaAdmin = z.object({
+  params: z.object({
+    userId: z.string().min(1, 'User ID is required'),
+  }),
+  query: z.object({
+    page: z.string().optional(),
+    limit: z.string().optional(),
+  }),
+});
+
+export const addAddressSchemaAdmin = z.object({
+  params: z.object({
+    userId: z.string().min(1, 'User ID is required'),
+  }),
+  body: addressSchema,
+});
+
 export const getAddressByIdSchema = z.object({
   params: z.object({
     addressId: z.string().min(1, 'Address ID is required'),
@@ -43,3 +60,5 @@ export type AddAddressSchema = z.infer<typeof addAddressSchema>;
 export type UpdateAddressSchema = z.infer<typeof updateAddressSchema>;
 export type DeleteAddressSchema = z.infer<typeof deleteAddressSchema>;
 export type SetDefaultAddressSchema = z.infer<typeof setDefaultAddressSchema>;
+export type GetAddressesSchemaAdmin = z.infer<typeof getAddressesSchemaAdmin>;
+export type AddAddressSchemaAdmin = z.infer<typeof addAddressSchemaAdmin>;

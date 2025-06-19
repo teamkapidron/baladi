@@ -1,7 +1,7 @@
 import express, { Router } from 'express';
 
 import validate from '@/middlewares/validate.middleware';
-import { isAuthenticated } from '@/middlewares/auth.middleware';
+import { isAdmin, isAuthenticated } from '@/middlewares/auth.middleware';
 
 import {
   getAddresses,
@@ -10,6 +10,8 @@ import {
   updateAddress,
   deleteAddress,
   setDefaultAddress,
+  getAddressesAdmin,
+  addAddressAdmin,
 } from '@/controllers/address.controller';
 import {
   getAddressesSchema,
@@ -18,6 +20,8 @@ import {
   updateAddressSchema,
   deleteAddressSchema,
   setDefaultAddressSchema,
+  getAddressesSchemaAdmin,
+  addAddressSchemaAdmin,
 } from '@/validators/address.validator';
 
 const router: Router = express.Router();
@@ -52,6 +56,19 @@ router.patch(
   isAuthenticated,
   validate(setDefaultAddressSchema),
   setDefaultAddress,
+);
+
+router.get(
+  '/admin/list/:userId',
+  isAdmin,
+  validate(getAddressesSchemaAdmin),
+  getAddressesAdmin,
+);
+router.post(
+  '/admin/add/:userId',
+  isAdmin,
+  validate(addAddressSchemaAdmin),
+  addAddressAdmin,
 );
 
 export default router;

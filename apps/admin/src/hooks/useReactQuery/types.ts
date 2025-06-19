@@ -57,4 +57,8 @@ export enum ReactQueryKeys {
   // Settings
   GET_ALL_ADMINS = 'GET::/user/admin/all',
   GET_SITE_CONFIG = 'GET::/product/config',
+
+  // Address
+  GET_ADDRESSES_ADMIN = 'GET::/address/admin/list',
+  ADD_ADDRESS_ADMIN = 'POST::/address/admin/add',
 }
