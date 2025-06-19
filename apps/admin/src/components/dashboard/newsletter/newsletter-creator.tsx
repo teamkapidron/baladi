@@ -93,7 +93,7 @@ function NewsletterCreator(props: NewsletterCreatorProps) {
 
   return (
     <Card className="h-fit rounded-xl shadow-lg">
-      <CardHeader className="pb-4">
+      <CardHeader>
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
@@ -110,29 +110,6 @@ function NewsletterCreator(props: NewsletterCreatorProps) {
       </CardHeader>
 
       <CardContent className="space-y-6">
-        <div className="grid grid-cols-2 gap-4">
-          <Card className="bg-[var(--baladi-primary)]/5">
-            <CardContent>
-              <div className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-primary)]">
-                Valgte Produkter
-              </div>
-              <div className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
-                {selectedProducts.length}
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="bg-[var(--baladi-success)]/5">
-            <CardContent>
-              <div className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-success)]">
-                Klar til Sending
-              </div>
-              <div className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
-                {form.formState.isValid ? 'Ja' : 'Nei'}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
@@ -247,11 +224,11 @@ function NewsletterCreator(props: NewsletterCreatorProps) {
                   type="submit"
                   className="gap-2 bg-[var(--baladi-primary)] text-white hover:bg-[var(--baladi-primary)]/90"
                   disabled={
-                    !form.formState.isValid || form.formState.isSubmitting
+                    !form.formState.isValid || createCampaignMutation.isPending
                   }
                 >
                   <Send className="h-4 w-4" />
-                  {form.formState.isSubmitting
+                  {createCampaignMutation.isPending
                     ? 'Sender...'
                     : 'Send Nyhetsbrev'}
                 </Button>

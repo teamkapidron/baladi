@@ -4,6 +4,7 @@
 import Category from '@/models/category.model';
 
 // Utils
+import { generateSlug } from '@/utils/common/string.util';
 import { sendResponse } from '@/utils/common/response.util';
 import { getDateMatchStage } from '@/utils/common/date.util';
 
@@ -16,17 +17,18 @@ import type { Request, Response } from 'express';
 import type { CategoryStats } from '@/types/category.types';
 import type { HierarchicalCategory } from '@repo/types/category';
 import type {
+  // User
   GetCategoriesSchema,
   GetCategoriesFlattenedSchema,
   GetCategoryByIdSchema,
-  GetAllCategoriesSchema,
+
+  // Admin
   GetAllCategoriesFlattenedSchema,
   GetCategoryStatsSchema,
   CreateCategorySchema,
   UpdateCategorySchema,
   DeleteCategorySchema,
 } from '@/validators/category.validator';
-import { generateSlug } from '@/utils/common/string.util';
 
 export const getCategories = asyncHandler(
   async (req: Request, res: Response) => {

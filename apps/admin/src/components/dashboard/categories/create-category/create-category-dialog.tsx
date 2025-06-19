@@ -2,12 +2,12 @@
 
 // Node Modules
 import React, { memo, useState, useMemo } from 'react';
-import { useForm, zodResolver, z } from '@repo/ui/lib/form';
+import { useForm, zodResolver } from '@repo/ui/lib/form';
 import { Tag } from '@repo/ui/lib/icons';
 
 // Components
-import { Button } from '@repo/ui/components/base/button';
 import { Input } from '@repo/ui/components/base/input';
+import { Button } from '@repo/ui/components/base/button';
 import {
   Dialog,
   DialogContent,
@@ -26,21 +26,21 @@ import {
   FormMessage,
 } from '@repo/ui/components/base/form';
 import { Switch } from '@repo/ui/components/base/switch';
-import { ParentCategoryCombobox } from './parent-category-combobox';
+import ParentCategoryCombobox from './parent-category-combobox';
 
 // Hooks
 import { useCategory } from '@/hooks/useCategory';
 
-const createCategorySchema = z.object({
-  name: z.string().min(1, { message: 'Navn er påkrevd' }),
-  isActive: z.boolean().optional(),
-  visibleToStore: z.boolean().optional(),
-  parentId: z.string().optional(),
-});
+// Types/Schemas
+import { createCategorySchema, CreateCategoryFormValues } from './schema';
 
-type CreateCategoryFormValues = z.infer<typeof createCategorySchema>;
+interface CreateCategoryDialogProps {
+  children: React.ReactNode;
+}
 
-function CreateCategoryDialog({ children }: { children: React.ReactNode }) {
+function CreateCategoryDialog(props: CreateCategoryDialogProps) {
+  const { children } = props;
+
   const [open, setOpen] = useState(false);
   const { createCategoryMutation, categoriesFlattened } = useCategory();
 
@@ -65,11 +65,7 @@ function CreateCategoryDialog({ children }: { children: React.ReactNode }) {
   });
 
   function onSubmit(data: CreateCategoryFormValues) {
-    const submitData = {
-      ...data,
-    };
-
-    createCategoryMutation.mutate(submitData, {
+    createCategoryMutation.mutate(data, {
       onSettled: function () {
         setOpen(false);
         form.reset();
@@ -99,7 +95,7 @@ function CreateCategoryDialog({ children }: { children: React.ReactNode }) {
                   </FormLabel>
                   <FormControl>
                     <div className="relative">
-                      <Tag className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                      <Tag className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                       <Input
                         placeholder="Skriv inn kategorinavn"
                         className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
@@ -117,7 +113,7 @@ function CreateCategoryDialog({ children }: { children: React.ReactNode }) {
                 control={form.control}
                 name="isActive"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg p-3 shadow-sm">
                     <div className="space-y-0.5">
                       <FormLabel>Aktiv</FormLabel>
                       <FormDescription>
@@ -138,7 +134,7 @@ function CreateCategoryDialog({ children }: { children: React.ReactNode }) {
                 control={form.control}
                 name="visibleToStore"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg p-3 shadow-sm">
                     <div className="space-y-0.5">
                       <FormLabel className="font-[family-name:var(--font-sora)] font-medium text-[var(--baladi-primary)]">
                         Synlig i butikk
@@ -186,7 +182,7 @@ function CreateCategoryDialog({ children }: { children: React.ReactNode }) {
               <Button
                 type="submit"
                 disabled={createCategoryMutation.isPending}
-                className="hover:bg-[var(--baladi-primary)]/90 h-12 w-full rounded-lg bg-[var(--baladi-primary)] font-[family-name:var(--font-sora)] font-semibold"
+                className="h-12 w-full rounded-lg bg-[var(--baladi-primary)] font-[family-name:var(--font-sora)] font-semibold hover:bg-[var(--baladi-primary)]/90"
               >
                 {createCategoryMutation.isPending
                   ? 'Legger til...'
