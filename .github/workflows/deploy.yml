@@ -122,7 +122,7 @@ jobs:
 
             pnpm install
             cd apps/api
-            pm2 restart api || pm2 start dist/apps/api/index.js --name api
+            pm2 start dist/apps/api/index.js --name api || pm2 restart api
             pm2 save
           EOF
 
