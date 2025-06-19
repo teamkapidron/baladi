@@ -21,6 +21,7 @@ import {
   getRecentOrders,
   previewPickingList,
   previewFreightLabel,
+  createOrder,
 } from '@/controllers/order.controller';
 
 import {
@@ -41,6 +42,7 @@ import {
   getRecentOrdersSchema,
   previewPickingListSchema,
   previewFreightLabelSchema,
+  createOrderSchema,
 } from '@/validators/order.validator';
 
 const router: Router = express.Router();
@@ -65,6 +67,7 @@ router.post(
   cancelOrder,
 );
 
+router.post('/admin/create', isAdmin, validate(createOrderSchema), createOrder);
 router.get('/all', isAdmin, validate(getAllOrdersSchema), getAllOrders);
 router.get(
   '/details/admin/:orderId',
