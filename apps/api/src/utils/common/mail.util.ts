@@ -7,6 +7,7 @@ import {
   passwordResetTemplate,
   adminCredentialsTemplate,
   userApprovalTemplate,
+  orderPlacedTemplate,
 } from '@/templates/mail.template';
 import { inventoryAlertTemplate } from '@/templates/cron.template';
 
@@ -51,6 +52,9 @@ function getTemplate(template: MailTemplate) {
     }
     case 'inventoryAlert': {
       return inventoryAlertTemplate(template.data);
+    }
+    case 'orderPlaced': {
+      return orderPlacedTemplate(template.data.order);
     }
   }
 }

@@ -1,3 +1,5 @@
+import { OrderResponse } from '@/types/order.types';
+
 const COMPANY_LOGO =
   'https://res.cloudinary.com/dv7ar9aca/image/upload/v1748515719/w700h700_1-removebg-preview_ykrmdu.png';
 
@@ -1874,6 +1876,266 @@ export function userApprovalTemplate(name: string, email: string) {
           <div class="footer">
             <p>Dette er en automatisk e-post. Vennligst ikke svar på denne e-posten.</p>
             <p>Hvis du har spørsmål, kan du kontakte oss via våre vanlige kanaler.</p>
+            <p>© ${new Date().getFullYear()} Baladi. Alle rettigheter forbeholdt.</p>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+}
+
+export function orderPlacedTemplate(order: OrderResponse) {
+  function formatPrice(price: number) {
+    return new Intl.NumberFormat('no-NO', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(price);
+  }
+
+  return `
+    <html>
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+          * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+          }
+
+          body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #0f172a;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 20px;
+            margin: 0;
+          }
+
+          .email-wrapper {
+            max-width: 700px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
+            overflow: hidden;
+          }
+
+          .header {
+            background: #183c6c;
+            padding: 40px 30px;
+            text-align: center;
+            color: #ffffff;
+          }
+
+          .logo img {
+            max-width: 120px;
+            height: auto;
+            margin-bottom: 20px;
+            filter: brightness(0) invert(1);
+          }
+
+          .header h1 {
+            font-family: 'Sora', sans-serif;
+            font-size: 28px;
+            font-weight: 600;
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          }
+
+          .order-number {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 15px;
+            display: inline-block;
+          }
+
+          .content {
+            padding: 40px 30px;
+          }
+
+          .greeting {
+            font-size: 18px;
+            font-weight: 600;
+            color: #183c6c;
+            margin-bottom: 20px;
+          }
+
+          .message {
+            font-size: 16px;
+            color: #475569;
+            margin-bottom: 30px;
+          }
+
+          
+
+          .order-total {
+            background: linear-gradient(135deg, #183c6c 0%, #4b7bbe 100%);
+            color: #ffffff;
+            padding: 25px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 30px 0;
+          }
+
+          .order-total h3 {
+            font-family: 'Sora', sans-serif;
+            font-size: 18px;
+            margin-bottom: 10px;
+          }
+
+          .total-amount {
+            font-size: 32px;
+            font-weight: 700;
+            font-family: 'Sora', sans-serif;
+          }
+
+          
+
+          .footer {
+            background: #f1f5f9;
+            padding: 25px 30px;
+            text-align: center;
+            border-top: 1px solid #e2e8f0;
+          }
+
+          .footer p {
+            color: #64748b;
+            font-size: 13px;
+            margin: 5px 0;
+          }
+
+          .signature {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            color: #475569;
+          }
+
+          .signature strong {
+            color: #183c6c;
+            font-family: 'Sora', sans-serif;
+          }
+
+          .order-details-section {
+            text-align: center;
+            margin: 30px 0;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+          }
+
+          .order-details-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #183c6c 0%, #4b7bbe 100%);
+            color: #ffffff !important;
+            text-decoration: none;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(24, 60, 108, 0.3);
+            border: none;
+            cursor: pointer;
+          }
+
+          .order-details-button:hover {
+            background: linear-gradient(135deg, #0f172a 0%, #183c6c 100%);
+            box-shadow: 0 6px 20px rgba(24, 60, 108, 0.4);
+            transform: translateY(-2px);
+          }
+
+          .order-details-button::before {
+            content: "📄";
+            margin-right: 8px;
+            font-size: 16px;
+          }
+
+          @media (max-width: 600px) {
+            body {
+              padding: 10px;
+            }
+
+            .email-wrapper {
+              margin: 0;
+              border-radius: 8px;
+              max-width: 100%;
+            }
+
+            .header, .content {
+              padding: 20px 15px;
+            }
+
+            .header h1 {
+              font-size: 22px;
+              line-height: 1.3;
+            }
+
+            .total-amount {
+              font-size: 24px;
+            }
+
+            .order-details-section {
+              padding: 20px 15px;
+              margin: 20px 0;
+            }
+
+            .order-details-button {
+              padding: 12px 24px;
+              font-size: 15px;
+              width: 100%;
+              max-width: 280px;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="email-wrapper">
+          <div class="header">
+            <div class="logo">
+              <img src="${COMPANY_LOGO}" alt="Baladi Logo">
+            </div>
+            <h1 style="color: #ffffff;">Bestilling Bekreftet</h1>
+            <div class="order-number">Ordre #${order._id.toString().slice(-8).toUpperCase()}</div>
+          </div>
+
+          <div class="content">
+            <div class="greeting">Hei ${order.userId.name},</div>
+
+            <div class="message">
+              Din bestilling har blitt mottatt og bekreftet! Vi takker for din ordre og jobber nå med å behandle den så raskt som mulig.
+            </div>
+
+            <div class="order-total">
+              <h3>Totalt å betale</h3>
+              <div class="total-amount">${formatPrice(order.totalAmount)} kr</div>
+              <div style="font-size: 14px; margin-top: 5px; opacity: 0.9;">Inkludert mva</div>
+            </div>
+
+            <div class="order-details-section">
+              <a href="${process.env.USER_URL || '#'}/order/${order._id}" class="order-details-button">
+                Se Bestillingsdetaljer
+              </a>
+              <div style="color: #64748b; font-size: 14px; margin-top: 15px; line-height: 1.5;">
+                Klikk på knappen ovenfor for å se fullstendige bestillingsdetaljer<br>
+                og spore statusen til din ordre.
+              </div>
+            </div>
+
+            <div class="signature">
+              <p>Med vennlig hilsen,<br><strong>Baladi Engros</strong></p>
+            </div>
+          </div>
+
+          <div class="footer">
+            <p>Dette er en automatisk e-post. Vennligst ikke svar på denne e-posten.</p>
+            <p>Hvis du har spørsmål om din bestilling, kan du kontakte oss via våre vanlige kanaler.</p>
             <p>© ${new Date().getFullYear()} Baladi. Alle rettigheter forbeholdt.</p>
           </div>
         </div>

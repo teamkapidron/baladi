@@ -38,7 +38,6 @@ function CheckoutForm(props: CheckoutFormProps) {
     defaultValues: {
       selectedAddressId: '',
       customerComment: '',
-      desiredDeliveryDate: undefined,
       palletType: 'EUR',
     },
   });

@@ -49,6 +49,10 @@ export type OnboardingRequest = ApiData<
     organizationNumber: string;
     phoneNumber: string;
     address: string;
+    city: string;
+    state: string;
+    country: string;
+    postalCode: string;
   },
   undefined
 >;

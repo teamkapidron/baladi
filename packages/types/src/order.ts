@@ -33,7 +33,7 @@ export interface Order {
   shippingAddress?: string;
   cancellationReason?: OrderCancellationReason;
   notes?: string;
-  desiredDeliveryDate: string;
+  desiredDeliveryDate?: string;
   palletType?: string;
   createdAt: Date;
   updatedAt: Date;

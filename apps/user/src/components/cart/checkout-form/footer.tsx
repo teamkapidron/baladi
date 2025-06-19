@@ -29,7 +29,7 @@ function CheckoutFormFooter(props: CheckoutFormFooterProps) {
         isLoading={isPending}
       >
         <Truck size={16} className="mr-2" />
-        Gå til betaling
+        Send bestilling
       </Button>
     </div>
   );

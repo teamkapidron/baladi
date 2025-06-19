@@ -201,7 +201,7 @@ function CartSummary(props: CartSummaryProps) {
           className="w-full font-[family-name:var(--font-dm-sans)] font-semibold shadow-lg"
         >
           <MapPin size={18} className="mr-2" />
-          Legg til adresse og tilpasninger
+          Gå til bestilling
           <ArrowRight size={16} className="ml-2" />
         </Button>
 

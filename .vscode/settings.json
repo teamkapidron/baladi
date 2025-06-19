@@ -6,7 +6,8 @@
   ],
   "material-icon-theme.folders.associations": {
     ".sst": "target",
-    "eslint": "proto"
+    "eslint": "proto",
+    "cron": "aws"
   },
   "material-icon-theme.files.associations": {},
   "material-icon-theme.files.customClones": [

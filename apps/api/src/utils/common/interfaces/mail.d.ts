@@ -51,6 +51,13 @@ interface InventoryAlertTemplate {
   };
 }
 
+interface OrderPlacedTemplate {
+  type: 'orderPlaced';
+  data: {
+    order: OrderResponse;
+  };
+}
+
 export type MailTemplate =
   | VerifyEmailTemplate
   | AdminApprovalTemplate
@@ -58,4 +65,5 @@ export type MailTemplate =
   | AdminCredentialsTemplate
   | WarehouseNotificationTemplate
   | InventoryAlertTemplate
-  | UserApprovalConfirmationTemplate;
+  | UserApprovalConfirmationTemplate
+  | OrderPlacedTemplate;

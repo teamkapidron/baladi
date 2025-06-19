@@ -68,7 +68,7 @@ function PalletSelection({ control }: PalletSelectionProps) {
                           Europall
                         </div>
                         <div className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-                          220 cm = 1,06 m³
+                          220 cm = 1,92 m³
                         </div>
                       </div>
                       <Package

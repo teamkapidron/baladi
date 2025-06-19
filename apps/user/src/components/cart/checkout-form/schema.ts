@@ -6,7 +6,7 @@ export const checkoutFormSchema = z.object({
     .string()
     .max(500, 'Kommentaren kan ikke være lengre enn 500 tegn')
     .optional(),
-  desiredDeliveryDate: z.date(),
+  desiredDeliveryDate: z.date().optional(),
   palletType: z.enum(['EUR', 'Large'], {
     required_error: 'Vennligst velg en pallettype',
   }),

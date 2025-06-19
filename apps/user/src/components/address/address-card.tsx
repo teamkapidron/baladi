@@ -5,11 +5,9 @@ import { memo, useCallback, useMemo, useState } from 'react';
 import {
   MapPin,
   Edit2,
-  Trash2,
   Star,
   Phone,
   Tag,
-  MoreVertical,
   Home,
   Building,
 } from '@repo/ui/lib/icons';
@@ -17,13 +15,6 @@ import {
 // Components
 import { Button } from '@repo/ui/components/base/button';
 import { Badge } from '@repo/ui/components/base/badge';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@repo/ui/components/base/dropdown-menu';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -109,11 +100,11 @@ function AddressCard(props: AddressCardProps) {
 
   return (
     <div
-      className={`group relative overflow-hidden rounded-2xl border ${address.isDefault ? 'border-[var(--baladi-accent)]/30 from-[var(--baladi-accent)]/5 bg-gradient-to-br to-[var(--baladi-light)]' : `${config.borderColor} bg-white`} shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md`}
+      className={`group relative overflow-hidden rounded-2xl border ${address.isDefault ? 'border-[var(--baladi-accent)]/30 bg-gradient-to-br from-[var(--baladi-accent)]/5 to-[var(--baladi-light)]' : `${config.borderColor} bg-white`} shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md`}
     >
       {address.isDefault && (
-        <div className="absolute right-4 top-4 z-10">
-          <Badge className="to-[var(--baladi-accent)]/80 bg-gradient-to-r from-[var(--baladi-accent)] px-2.5 py-1 font-semibold text-white shadow-sm">
+        <div className="absolute top-4 right-4 z-10">
+          <Badge className="bg-gradient-to-r from-[var(--baladi-accent)] to-[var(--baladi-accent)]/80 px-2.5 py-1 font-semibold text-white shadow-sm">
             <Star className="mr-1.5 h-3 w-3" fill="currentColor" />
             Standard
           </Badge>
@@ -135,7 +126,7 @@ function AddressCard(props: AddressCardProps) {
                     className={`h-1.5 w-1.5 rounded-full bg-gradient-to-r ${config.gradient}`}
                   ></div>
                   <span
-                    className={`font-[family-name:var(--font-sora)] text-xs font-medium uppercase tracking-wide ${config.textColor}`}
+                    className={`font-[family-name:var(--font-sora)] text-xs font-medium tracking-wide uppercase ${config.textColor}`}
                   >
                     {address.label}
                   </span>
@@ -146,51 +137,10 @@ function AddressCard(props: AddressCardProps) {
               </h3>
             </div>
           </div>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 rounded-full p-0 opacity-0 transition-opacity duration-200 hover:bg-[var(--baladi-muted)] group-hover:opacity-100"
-              >
-                <MoreVertical className="h-4 w-4 text-[var(--baladi-gray)]" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              className="w-48 rounded-xl border border-[var(--baladi-border)] bg-white shadow-lg"
-            >
-              <DropdownMenuItem
-                onClick={() => setIsEditDialogOpen(true)}
-                className="rounded-lg text-[var(--baladi-dark)] hover:bg-[var(--baladi-light)] focus:bg-[var(--baladi-light)]"
-              >
-                <Edit2 className="mr-2 h-4 w-4 text-[var(--baladi-primary)]" />
-                Rediger adresse
-              </DropdownMenuItem>
-              {!address.isDefault && (
-                <DropdownMenuItem
-                  onClick={handleSetDefault}
-                  className="rounded-lg text-[var(--baladi-dark)] hover:bg-[var(--baladi-light)] focus:bg-[var(--baladi-light)]"
-                >
-                  <Star className="mr-2 h-4 w-4 text-[var(--baladi-accent)]" />
-                  Sett som standard
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuSeparator className="border-[var(--baladi-border)]" />
-              <DropdownMenuItem
-                onClick={() => setIsDeleteDialogOpen(true)}
-                className="hover:bg-[var(--baladi-error)]/5 focus:bg-[var(--baladi-error)]/5 rounded-lg text-[var(--baladi-error)] focus:text-[var(--baladi-error)]"
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                Slett adresse
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
 
         <div className="space-y-3">
-          <div className="border-[var(--baladi-border)]/50 flex items-start space-x-3 rounded-lg border bg-[var(--baladi-light)] p-3">
+          <div className="flex items-start space-x-3 rounded-lg border border-[var(--baladi-border)]/50 bg-[var(--baladi-light)] p-3">
             <div className="mt-0.5 rounded-full bg-[var(--baladi-muted)] p-1.5">
               <MapPin className="h-3.5 w-3.5 text-[var(--baladi-gray)]" />
             </div>
@@ -200,7 +150,7 @@ function AddressCard(props: AddressCardProps) {
           </div>
 
           {address.phoneNumber && (
-            <div className="border-[var(--baladi-border)]/50 flex items-center space-x-3 rounded-lg border bg-[var(--baladi-light)] p-3">
+            <div className="flex items-center space-x-3 rounded-lg border border-[var(--baladi-border)]/50 bg-[var(--baladi-light)] p-3">
               <div className="rounded-full bg-[var(--baladi-muted)] p-1.5">
                 <Phone className="h-3.5 w-3.5 text-[var(--baladi-gray)]" />
               </div>
@@ -216,7 +166,7 @@ function AddressCard(props: AddressCardProps) {
             variant="outline"
             size="sm"
             onClick={() => setIsEditDialogOpen(true)}
-            className="hover:border-[var(--baladi-primary)]/30 flex-1 rounded-xl border-[var(--baladi-border)] font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-dark)] hover:bg-[var(--baladi-light)]"
+            className="flex-1 rounded-xl border-[var(--baladi-border)] font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-dark)] hover:border-[var(--baladi-primary)]/30 hover:bg-[var(--baladi-light)]"
           >
             <Edit2 className="mr-2 h-3.5 w-3.5" />
             Rediger
@@ -227,7 +177,7 @@ function AddressCard(props: AddressCardProps) {
               variant="outline"
               size="sm"
               onClick={handleSetDefault}
-              className="border-[var(--baladi-accent)]/30 hover:bg-[var(--baladi-accent)]/5 hover:border-[var(--baladi-accent)]/50 flex-1 rounded-xl font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-accent)]"
+              className="flex-1 rounded-xl border-[var(--baladi-accent)]/30 font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-accent)] hover:border-[var(--baladi-accent)]/50 hover:bg-[var(--baladi-accent)]/5"
               disabled={setDefaultAddressMutation.isPending}
             >
               <Star className="mr-2 h-3.5 w-3.5" />
@@ -263,7 +213,7 @@ function AddressCard(props: AddressCardProps) {
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
-              className="hover:bg-[var(--baladi-error)]/90 rounded-xl bg-[var(--baladi-error)] font-[family-name:var(--font-dm-sans)]"
+              className="rounded-xl bg-[var(--baladi-error)] font-[family-name:var(--font-dm-sans)] hover:bg-[var(--baladi-error)]/90"
               disabled={deleteAddressMutation.isPending}
             >
               {deleteAddressMutation.isPending ? 'Sletter...' : 'Slett'}

@@ -73,7 +73,6 @@ const orderSchema = new Schema<IOrder>(
     },
     desiredDeliveryDate: {
       type: String,
-      required: true,
     },
     palletType: {
       type: String,

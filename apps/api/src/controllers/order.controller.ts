@@ -18,6 +18,7 @@ import {
   freightLabelTemplate,
 } from '@/templates/order.template';
 import { getDateMatchStage, fillMissingDates } from '@/utils/common/date.util';
+import { sendMail } from '@/utils/common/mail.util';
 
 // Handlers
 import { asyncHandler } from '@/handlers/async.handler';
@@ -148,8 +149,7 @@ export const placeOrder = asyncHandler(async (req: Request, res: Response) => {
           .sort((a, b) => b.discountPercentage - a.discountPercentage)[0];
 
         if (bulkDiscount && product.hasVolumeDiscount) {
-          volumeDiscount =
-            price * (bulkDiscount.discountPercentage / 100) * item.quantity;
+          volumeDiscount = price * (bulkDiscount.discountPercentage / 100);
         }
       }
 
@@ -213,11 +213,24 @@ export const placeOrder = asyncHandler(async (req: Request, res: Response) => {
     await session.commitTransaction();
     session.endSession();
 
-    const populatedOrder = await Order.findById(order[0]?._id).populate([
+    const populatedOrder = await Order.findById<OrderResponse>(
+      order[0]?._id,
+    ).populate([
       { path: 'items.productId', select: 'name images' },
       { path: 'userId', select: 'name email' },
       { path: 'shippingAddress' },
     ]);
+
+    sendMail({
+      to: populatedOrder?.userId.email || '',
+      subject: 'Bestilling mottatt',
+      template: {
+        type: 'orderPlaced',
+        data: {
+          order: populatedOrder,
+        },
+      },
+    });
 
     sendResponse(res, 201, 'Order placed successfully', {
       order: populatedOrder,

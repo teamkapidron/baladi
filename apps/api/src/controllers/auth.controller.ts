@@ -3,6 +3,7 @@
 // Schemas
 import User from '@/models/user.model';
 import Admin from '@/models/admin.model';
+import Address from '@/models/address.model';
 
 // Utils
 import { sendJwt } from '@/utils/common/jwt.util';
@@ -163,8 +164,16 @@ export const resendOTP = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const onboarding = asyncHandler(async (req: Request, res: Response) => {
-  const { companyName, organizationNumber, phoneNumber, address } =
-    req.body as OnboardingSchema['body'];
+  const {
+    companyName,
+    organizationNumber,
+    phoneNumber,
+    address,
+    city,
+    state,
+    country,
+    postalCode,
+  } = req.body as OnboardingSchema['body'];
 
   const userId = req.user!._id;
   await User.findByIdAndUpdate(userId, {
@@ -172,6 +181,17 @@ export const onboarding = asyncHandler(async (req: Request, res: Response) => {
     organizationNumber,
     phoneNumber,
     address,
+  });
+
+  await Address.create({
+    userId,
+    addressLine1: address,
+    city,
+    state,
+    country,
+    postalCode,
+    phoneNumber,
+    isDefault: true,
   });
 
   sendResponse(res, 200, 'Onboarding successful');

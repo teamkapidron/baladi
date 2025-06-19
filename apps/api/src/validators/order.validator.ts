@@ -34,7 +34,7 @@ export const placeOrderSchema = z.object({
     palletType: z.enum(['EUR', 'Large'], {
       required_error: 'Pallet type is required',
     }),
-    desiredDeliveryDate: z.string(),
+    desiredDeliveryDate: z.string().optional(),
     customerComment: z.string().optional(),
   }),
 });

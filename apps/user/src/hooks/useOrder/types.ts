@@ -45,7 +45,7 @@ export type PlaceOrderRequest = ApiData<
     }[];
     shippingAddressId?: string;
     palletType: 'EUR' | 'Large';
-    desiredDeliveryDate: string;
+    desiredDeliveryDate?: string;
     customerComment?: string;
   },
   {
