@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "build": "tsc && tsc-alias",
-    "start": "tsc && tsc-alias && node dist/index.js",
+    "start": "tsc && tsc-alias && node dist/apps/api/index.js",
     "dev": "nodemon"
   },
   "dependencies": {

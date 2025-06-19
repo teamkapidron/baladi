@@ -74,12 +74,12 @@ jobs:
       - name: Deploy Admin to Vercel
         run: |
           vercel link --yes --project admin --token ${{ secrets.VERCEL_TOKEN }}
-          vercel deploy --prod --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ vars.VERCEL_ORG_ID }} --yes
+          vercel deploy --prod --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ vars.VERCEL_ORG_ID }} --no-wait --yes
 
       - name: Deploy User to Vercel
         run: |
           vercel link --yes --project user --token ${{ secrets.VERCEL_TOKEN }}
-          vercel deploy --prod --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ vars.VERCEL_ORG_ID }} --yes
+          vercel deploy --prod --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ vars.VERCEL_ORG_ID }} --no-wait --yes
 
       - name: Deploy SST to AWS (Cron, S3 Storage)
         run: npx sst deploy --stage prod
@@ -87,10 +87,43 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      - name: Deploy API to AWS (Serverless)
+      - name: Set up SSH for EC2
         run: |
-          npx serverless deploy --stage prod
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ vars.EC2_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy API to EC2
+        run: |
+          ssh ${{ vars.EC2_USER }}@${{ vars.EC2_HOST }} << 'EOF'
+            set -e
+            cd ~/baladi
+            git pull origin main
+
+            cat <<EOT > apps/api/.env.local
+            MONGO_URI=${{ secrets.MONGO_URI }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            JWT_EXPIRY=${{ vars.JWT_EXPIRY }}
+            COOKIE_EXPIRY=${{ vars.COOKIE_EXPIRY }}
+            COOKIE_DOMAIN=${{ vars.COOKIE_DOMAIN }}
+            SMTP_NAME=${{ vars.SMTP_NAME }}
+            SMTP_MAIL=${{ vars.SMTP_MAIL }}
+            SMTP_REPLY_TO=${{ vars.SMTP_REPLY_TO }}
+            SMTP_HOST=${{ vars.SMTP_HOST }}
+            SMTP_PORT=${{ vars.SMTP_PORT }}
+            SMTP_USERNAME=${{ secrets.SMTP_USERNAME }}
+            SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}
+            ADMIN_API_KEY=${{ secrets.ADMIN_API_KEY }}
+            WAREHOUSE_EMAIL=${{ vars.WAREHOUSE_EMAIL }}
+            ADMIN_URL=${{ vars.ADMIN_URL }}
+            USER_URL=${{ vars.USER_URL }}
+            EOT
+
+            pnpm install
+            cd apps/api
+            pm2 restart api || pm2 start dist/apps/api/index.js --name api
+            pm2 save
+          EOF
+
+      
