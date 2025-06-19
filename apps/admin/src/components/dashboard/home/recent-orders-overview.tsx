@@ -11,6 +11,7 @@ import { useOrderDashboard } from '@/hooks/useOrder';
 
 // Types/Utils
 import { formatDate } from '@/utils/date.util';
+import { formatPrice } from '@/utils/price.util';
 
 function RecentOrdersOverview() {
   const router = useRouter();
@@ -33,7 +34,7 @@ function RecentOrdersOverview() {
         </div>
         <Link
           href="/dashboard/orders"
-          className="bg-[var(--baladi-primary)]/10 hover:bg-[var(--baladi-primary)]/20 group flex items-center gap-1 rounded-lg px-3 py-1.5 font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-primary)] transition-colors"
+          className="group flex items-center gap-1 rounded-lg bg-[var(--baladi-primary)]/10 px-3 py-1.5 font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-primary)] transition-colors hover:bg-[var(--baladi-primary)]/20"
         >
           Se alle
           <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
@@ -59,11 +60,11 @@ function RecentOrdersOverview() {
             <div
               key={order._id}
               onClick={() => router.push(`/dashboard/orders/${order._id}`)}
-              className="hover:border-[var(--baladi-primary)]/20 group cursor-pointer rounded-lg border border-[var(--baladi-border)] p-3 transition-all duration-200 hover:bg-[var(--baladi-light)]"
+              className="group cursor-pointer rounded-lg border border-[var(--baladi-border)] p-3 transition-all duration-200 hover:border-[var(--baladi-primary)]/20 hover:bg-[var(--baladi-light)]"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="from-[var(--baladi-primary)]/10 to-[var(--baladi-secondary)]/10 flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-[var(--baladi-primary)]/10 to-[var(--baladi-secondary)]/10">
                     <User className="h-4 w-4 text-[var(--baladi-primary)]" />
                   </div>
 
@@ -72,7 +73,9 @@ function RecentOrdersOverview() {
                       {order.user.name}
                     </div>
                     <div className="flex items-center gap-2 font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
-                      <span>{order._id}</span>
+                      <span>
+                        #{order._id.toString().slice(-8).toUpperCase()}
+                      </span>
                       <span>•</span>
                       <span>
                         {order.itemsCount} vare{order.itemsCount > 1 ? 'r' : ''}
@@ -85,7 +88,7 @@ function RecentOrdersOverview() {
 
                 <div className="text-right">
                   <div className="font-[family-name:var(--font-dm-sans)] text-sm font-bold text-[var(--baladi-dark)]">
-                    {order.totalAmount} kr
+                    {formatPrice(order.totalAmount)} kr
                   </div>
                 </div>
               </div>

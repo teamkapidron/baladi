@@ -49,7 +49,6 @@ export default function Login() {
           </span>
         </div>
 
-        {/* Footer */}
         <div className="mt-8 text-center">
           <div className="inline-flex items-center space-x-1 text-xs text-[var(--baladi-gray)]">
             <span className="font-[family-name:var(--font-dm-sans)]">

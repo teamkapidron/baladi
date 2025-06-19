@@ -272,10 +272,10 @@ const ProductActions = memo(
       return (
         <Button
           onClick={onGoToLogin}
-          className="flex w-full items-center justify-center rounded-lg bg-gradient-to-r from-[var(--baladi-secondary)] to-[var(--baladi-accent)] px-3 py-2.5 font-[family-name:var(--font-dm-sans)] text-sm font-medium text-white transition-all duration-300 hover:from-[var(--baladi-secondary-dark)] hover:to-[var(--baladi-accent-dark)]"
+          className="flex w-full items-center justify-center rounded-lg bg-[var(--baladi-primary)]/95 px-3 py-2.5 font-[family-name:var(--font-dm-sans)] text-sm font-medium text-white transition-all duration-300 hover:bg-[var(--baladi-primary)]"
         >
           <LogIn className="mr-2 h-4 w-4" />
-          Logg inn for å bestille
+          Logg inn
         </Button>
       );
     }
@@ -296,7 +296,7 @@ const ProductActions = memo(
           onClick={onAddToCart}
           className={cn(
             'flex items-center justify-center rounded-lg p-2.5 text-white transition-all duration-300',
-            'bg-gradient-to-r from-[var(--baladi-secondary)] to-[var(--baladi-accent)] shadow-md hover:from-[var(--baladi-secondary-dark)] hover:to-[var(--baladi-accent-dark)] hover:shadow-lg',
+            'bg-[var(--baladi-primary)] shadow-md hover:bg-[var(--baladi-primary-dark)] hover:shadow-lg',
           )}
         >
           <ShoppingCart size={16} />

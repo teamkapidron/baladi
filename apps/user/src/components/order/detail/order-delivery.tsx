@@ -69,7 +69,9 @@ function OrderDelivery({ order }: OrderDeliveryProps) {
                   Ønsket leveringsdato
                 </p>
                 <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-                  {formatDate(order.desiredDeliveryDate)}
+                  {order.desiredDeliveryDate
+                    ? formatDate(order.desiredDeliveryDate)
+                    : 'Ikke spesifisert'}
                 </p>
               </div>
             </div>
