@@ -21,7 +21,7 @@ export const newsLetterPreviewSchema = z.object({
 
 export const previewPromotionPosterSchema = z.object({
   body: z.object({
-    posterType: z.enum(['new-arrival', 'discounted']),
+    posterType: z.enum(['new-arrival', 'promotion']),
     productsIds: z.array(z.string()).min(1, 'Products IDs are required'),
   }),
 });

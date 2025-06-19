@@ -1,8 +1,8 @@
 'use client';
 
 // Node Modules
-import { memo, useMemo, useState } from 'react';
-import { ImageIcon, Sparkles, Tag } from '@repo/ui/lib/icons';
+import { memo, useEffect, useState } from 'react';
+import { ImageIcon, Percent, Sparkles } from '@repo/ui/lib/icons';
 import { useForm, z, zodResolver } from '@repo/ui/lib/form';
 
 // Components
@@ -39,10 +39,9 @@ interface PromotionPosterCreatorProps {
 }
 
 const formSchema = z.object({
-  title: z.string().min(1, 'Tittel er påkrevd'),
-  posterType: z.enum(['new-arrival', 'discounted'], {
-    required_error: 'Vennligst velg en plakattype',
-  }),
+  title: z.string().optional(),
+  posterType: z.enum(['new-arrival', 'promotion']),
+  productsIds: z.array(z.string()).min(1, 'Vennligst velg minst ett produkt'),
 });
 
 type FormSchema = z.infer<typeof formSchema>;
@@ -54,16 +53,14 @@ function PromotionPosterCreator(props: PromotionPosterCreatorProps) {
 
   const { previewPromotionPosterMutation } = usePromotion();
 
-  const poster = useMemo(
-    () => previewPromotionPosterMutation.data?.html,
-    [previewPromotionPosterMutation.data?.html],
-  );
+  const poster = previewPromotionPosterMutation.data?.html;
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: '',
-      posterType: undefined,
+      posterType: 'new-arrival',
+      productsIds: selectedProducts,
     },
   });
 
@@ -71,7 +68,7 @@ function PromotionPosterCreator(props: PromotionPosterCreatorProps) {
     previewPromotionPosterMutation.mutate(
       {
         posterType: values.posterType,
-        productsIds: selectedProducts,
+        productsIds: values.productsIds,
       },
       {
         onSuccess: () => {
@@ -80,6 +77,13 @@ function PromotionPosterCreator(props: PromotionPosterCreatorProps) {
       },
     );
   }
+
+  useEffect(() => {
+    form.setValue('productsIds', selectedProducts, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+  }, [form, selectedProducts]);
 
   return (
     <Card className="h-fit rounded-xl shadow-lg">
@@ -93,36 +97,13 @@ function PromotionPosterCreator(props: PromotionPosterCreatorProps) {
               Design iøynefallende plakater for dine markedsføringskampanjer
             </p>
           </div>
-          <div className="bg-[var(--baladi-primary)]/10 flex h-10 w-10 items-center justify-center rounded-lg">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--baladi-primary)]/10">
             <ImageIcon className="h-5 w-5 text-[var(--baladi-primary)]" />
           </div>
         </div>
       </CardHeader>
 
       <CardContent className="space-y-6">
-        <div className="grid grid-cols-2 gap-4">
-          <Card className="bg-[var(--baladi-primary)]/5">
-            <CardContent>
-              <div className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-primary)]">
-                Valgte Produkter
-              </div>
-              <div className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
-                {selectedProducts.length}
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="bg-[var(--baladi-success)]/5">
-            <CardContent>
-              <div className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--baladi-success)]">
-                Plakat Klar
-              </div>
-              <div className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-dark)]">
-                {form.formState.isValid ? 'Ja' : 'Nei'}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
@@ -146,10 +127,10 @@ function PromotionPosterCreator(props: PromotionPosterCreatorProps) {
                           Nyheter
                         </div>
                       </SelectItem>
-                      <SelectItem value="discounted">
+                      <SelectItem value="promotion">
                         <div className="flex items-center gap-2">
-                          <Tag className="h-4 w-4 text-[var(--baladi-accent)]" />
-                          Spesiell Rabatt
+                          <Percent className="h-4 w-4 text-[var(--baladi-accent)]" />
+                          Kampanje
                         </div>
                       </SelectItem>
                     </SelectContent>
@@ -165,11 +146,11 @@ function PromotionPosterCreator(props: PromotionPosterCreatorProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="font-[family-name:var(--font-dm-sans)] font-medium text-[var(--baladi-dark)]">
-                    Plakattittel
+                    Bildenavn
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Skriv en engasjerende plakattittel..."
+                      placeholder="Skriv inn et bildenavn..."
                       className="h-11"
                       {...field}
                     />
@@ -182,17 +163,11 @@ function PromotionPosterCreator(props: PromotionPosterCreatorProps) {
             <div className="flex items-center justify-end">
               <Button
                 type="submit"
-                className="hover:bg-[var(--baladi-primary)]/90 gap-2 bg-[var(--baladi-primary)] text-white"
-                disabled={
-                  !form.formState.isValid ||
-                  selectedProducts.length === 0 ||
-                  form.formState.isSubmitting
-                }
+                className="gap-2 bg-[var(--baladi-primary)] text-white hover:bg-[var(--baladi-primary)]/90"
+                disabled={!form.formState.isValid}
               >
                 <ImageIcon className="h-4 w-4" />
-                {form.formState.isSubmitting
-                  ? 'Oppretter...'
-                  : 'Opprett Plakat'}
+                {form.formState.isSubmitting ? 'Oppretter...' : 'Opprett'}
               </Button>
             </div>
           </form>
@@ -203,7 +178,7 @@ function PromotionPosterCreator(props: PromotionPosterCreatorProps) {
         open={isPreviewOpen}
         onOpenChange={setIsPreviewOpen}
         poster={poster?.[0] ?? ''}
-        title={form.getValues('title')}
+        title={form.getValues('title') ?? 'Kampanje'}
       />
     </Card>
   );

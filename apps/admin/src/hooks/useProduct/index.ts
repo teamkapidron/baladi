@@ -1,6 +1,7 @@
 // Node Modules
 import axios from 'axios';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import debounce from 'lodash.debounce';
 import { useRouter } from 'next/navigation';
 import { toast } from '@repo/ui/lib/sonner';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -302,6 +303,20 @@ export function useProduct() {
 
 export function useQuickSearchProduct(query: string) {
   const api = useRequest();
+  const [searchQuery, setSearchQuery] = useState(query);
+  const debouncedSearchQuery = useRef(debounce(setSearchQuery, 500));
+
+  useEffect(() => {
+    debouncedSearchQuery.current(searchQuery);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const searchQueryRef = debouncedSearchQuery.current;
+
+    return () => {
+      searchQueryRef.cancel();
+    };
+  }, []);
 
   const quickSearchProduct = useCallback(
     async (payload: QuickSearchProductsRequest['payload']) => {
@@ -315,10 +330,13 @@ export function useQuickSearchProduct(query: string) {
   );
 
   const quickSearchProductQuery = useQuery({
-    queryKey: [ReactQueryKeys.GET_QUICK_SEARCH_PRODUCTS, query],
-    queryFn: () => quickSearchProduct({ query }),
-    enabled: query.length > 0,
+    queryKey: [ReactQueryKeys.GET_QUICK_SEARCH_PRODUCTS, searchQuery],
+    queryFn: () => quickSearchProduct({ query: searchQuery }),
   });
 
-  return { quickSearchProductQuery };
+  const handleSearch = useCallback((query: string) => {
+    debouncedSearchQuery.current(query);
+  }, []);
+
+  return { quickSearchProductQuery, handleSearch };
 }

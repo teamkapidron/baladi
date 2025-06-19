@@ -1,11 +1,19 @@
 'use client';
 
 // Node Modules
-import React, { memo, useCallback, useMemo } from 'react';
-import { Package, CheckCircle, Tag, ShoppingBag } from '@repo/ui/lib/icons';
+import React, { memo, useCallback, useMemo, useState } from 'react';
+import {
+  Package,
+  CheckCircle,
+  Tag,
+  ShoppingBag,
+  Search,
+  X,
+} from '@repo/ui/lib/icons';
 
 // Components
 import { Button } from '@repo/ui/components/base/button';
+import { Input } from '@repo/ui/components/base/input';
 import {
   Card,
   CardContent,
@@ -16,7 +24,7 @@ import { Checkbox } from '@repo/ui/components/base/checkbox';
 import { Badge } from '@repo/ui/components/base/badge';
 
 // Hooks
-import { useProduct } from '@/hooks/useProduct';
+import { useQuickSearchProduct } from '@/hooks/useProduct';
 
 interface NewsletterProductSelectionProps {
   selectedProducts: string[];
@@ -26,11 +34,13 @@ interface NewsletterProductSelectionProps {
 function NewsletterProductSelection(props: NewsletterProductSelectionProps) {
   const { selectedProducts, setSelectedProducts } = props;
 
-  const { products: productsData } = useProduct();
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const { quickSearchProductQuery, handleSearch } = useQuickSearchProduct('');
 
   const products = useMemo(() => {
-    return productsData?.products ?? [];
-  }, [productsData]);
+    return quickSearchProductQuery.data?.products ?? [];
+  }, [quickSearchProductQuery.data]);
 
   const selectedCount = selectedProducts.length;
 
@@ -45,6 +55,14 @@ function NewsletterProductSelection(props: NewsletterProductSelectionProps) {
     [setSelectedProducts],
   );
 
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchQuery(e.target.value);
+      handleSearch(e.target.value);
+    },
+    [handleSearch],
+  );
+
   return (
     <Card className="rounded-xl shadow-lg">
       <CardHeader className="pb-4">
@@ -57,13 +75,39 @@ function NewsletterProductSelection(props: NewsletterProductSelectionProps) {
               Velg produkter som skal fremheves i din neste nyhetsbrevkampanje
             </p>
           </div>
-          <div className="bg-[var(--baladi-primary)]/10 flex h-10 w-10 items-center justify-center rounded-lg">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--baladi-primary)]/10">
             <ShoppingBag className="h-5 w-5 text-[var(--baladi-primary)]" />
           </div>
         </div>
       </CardHeader>
 
       <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <div className="relative">
+            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+            <Input
+              type="text"
+              placeholder="Søk etter produkter..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+              className="pr-10 pl-10"
+            />
+            {searchQuery && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSearchQuery('')}
+                className="absolute top-1/2 right-1 h-6 w-6 -translate-y-1/2 p-0 text-[var(--baladi-gray)] hover:text-[var(--baladi-dark)]"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+          <p className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
+            Skriv minst 1 tegn for å begynne søket
+          </p>
+        </div>
+
         {selectedCount > 0 && (
           <Card className="border-[var(--baladi-success)]/20 bg-[var(--baladi-success)]/5">
             <CardContent className="p-4">
@@ -78,6 +122,21 @@ function NewsletterProductSelection(props: NewsletterProductSelectionProps) {
           </Card>
         )}
 
+        {quickSearchProductQuery.isLoading && searchQuery && (
+          <Card>
+            <CardContent className="p-8">
+              <div className="flex flex-col items-center justify-center text-center">
+                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--baladi-primary)]/10">
+                  <Search className="h-8 w-8 animate-pulse text-[var(--baladi-primary)]" />
+                </div>
+                <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
+                  Søker etter produkter...
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         <div className="space-y-3">
           {products.map((product) => {
             const isSelected = selectedProducts.includes(product._id);
@@ -86,7 +145,7 @@ function NewsletterProductSelection(props: NewsletterProductSelectionProps) {
                 key={product._id}
                 className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
                   isSelected
-                    ? 'bg-[var(--baladi-primary)]/5 border-[var(--baladi-primary)]'
+                    ? 'border-[var(--baladi-primary)] bg-[var(--baladi-primary)]/5'
                     : 'hover:border-[var(--baladi-primary)]/30'
                 }`}
                 onClick={() => toggleProductSelection(product._id)}
@@ -104,7 +163,7 @@ function NewsletterProductSelection(props: NewsletterProductSelectionProps) {
                       />
                     </div>
 
-                    <div className="bg-[var(--baladi-secondary)]/10 flex h-12 w-12 items-center justify-center rounded-lg">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[var(--baladi-secondary)]/10">
                       <Package className="h-6 w-6 text-[var(--baladi-secondary)]" />
                     </div>
 
@@ -118,10 +177,14 @@ function NewsletterProductSelection(props: NewsletterProductSelectionProps) {
                             {product.name}
                           </label>
 
+                          <p className="mt-1 line-clamp-2 text-xs text-[var(--baladi-gray)]">
+                            {product.shortDescription}
+                          </p>
+
                           <div className="mt-2 flex flex-wrap items-center gap-2">
                             <Badge variant="secondary" className="text-xs">
                               <Tag className="mr-1 h-3 w-3" />
-                              {product.categories?.[0]?.name ?? 'Ukategorisert'}
+                              {product.categories?.name ?? 'Ukategorisert'}
                             </Badge>
                           </div>
                         </div>
@@ -139,19 +202,26 @@ function NewsletterProductSelection(props: NewsletterProductSelectionProps) {
             );
           })}
 
-          {products.length === 0 && (
+          {products.length === 0 && !quickSearchProductQuery.isLoading && (
             <Card>
               <CardContent className="p-12">
                 <div className="flex flex-col items-center justify-center text-center">
-                  <div className="bg-[var(--baladi-gray)]/10 mb-4 flex h-16 w-16 items-center justify-center rounded-full">
-                    <Package className="h-8 w-8 text-[var(--baladi-gray)]" />
+                  <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--baladi-gray)]/10">
+                    {searchQuery ? (
+                      <Search className="h-8 w-8 text-[var(--baladi-gray)]" />
+                    ) : (
+                      <Package className="h-8 w-8 text-[var(--baladi-gray)]" />
+                    )}
                   </div>
                   <h4 className="mb-2 font-[family-name:var(--font-sora)] text-lg font-semibold text-[var(--baladi-dark)]">
-                    Ingen produkter tilgjengelig
+                    {searchQuery
+                      ? 'Ingen produkter funnet'
+                      : 'Søk etter produkter'}
                   </h4>
                   <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-                    Legg til noen produkter i lageret ditt for å fremheve dem i
-                    nyhetsbrev
+                    {searchQuery
+                      ? `Ingen produkter matcher "${searchQuery}". Prøv et annet søkeord.`
+                      : 'Bruk søkefeltet ovenfor for å finne produkter å fremheve i nyhetsbrev'}
                   </p>
                 </div>
               </CardContent>
@@ -176,7 +246,7 @@ function NewsletterProductSelection(props: NewsletterProductSelectionProps) {
                   variant="ghost"
                   size="sm"
                   onClick={() => setSelectedProducts([])}
-                  className="hover:text-[var(--baladi-primary)]/80 text-[var(--baladi-primary)]"
+                  className="text-[var(--baladi-primary)] hover:text-[var(--baladi-primary)]/80"
                 >
                   Fjern Valg
                 </Button>

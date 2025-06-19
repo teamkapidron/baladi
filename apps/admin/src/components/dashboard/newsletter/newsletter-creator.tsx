@@ -1,7 +1,7 @@
 'use client';
 
 // Node Modules
-import { memo, useCallback, useMemo } from 'react';
+import { memo, useCallback, useEffect, useMemo } from 'react';
 import { useForm, z, zodResolver } from '@repo/ui/lib/form';
 import { Send, Eye, Mail, Sparkles } from '@repo/ui/lib/icons';
 
@@ -61,6 +61,13 @@ function NewsletterCreator(props: NewsletterCreatorProps) {
     resolver: zodResolver(formSchema),
   });
 
+  useEffect(() => {
+    form.setValue('products', selectedProducts, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+  }, [form, selectedProducts]);
+
   function onSubmit(values: z.infer<typeof formSchema>) {
     createCampaignMutation.mutate({
       title: values.subject,
@@ -96,7 +103,7 @@ function NewsletterCreator(props: NewsletterCreatorProps) {
               Design og send engasjerende nyhetsbrev til dine abonnenter
             </p>
           </div>
-          <div className="bg-[var(--baladi-primary)]/10 flex h-10 w-10 items-center justify-center rounded-lg">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--baladi-primary)]/10">
             <Mail className="h-5 w-5 text-[var(--baladi-primary)]" />
           </div>
         </div>
@@ -219,7 +226,7 @@ function NewsletterCreator(props: NewsletterCreatorProps) {
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center py-8 text-center">
-                    <div className="bg-[var(--baladi-primary)]/10 mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+                    <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--baladi-primary)]/10">
                       <Eye className="h-8 w-8 text-[var(--baladi-primary)]" />
                     </div>
                     <h4 className="mb-2 font-[family-name:var(--font-sora)] text-lg font-semibold text-[var(--baladi-dark)]">
@@ -234,18 +241,11 @@ function NewsletterCreator(props: NewsletterCreatorProps) {
               </CardContent>
             </Card>
 
-            <div className="flex items-center justify-between">
-              <div className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-                {!form.formState.isValid && (
-                  <span className="text-[var(--baladi-error)]">
-                    Vennligst fyll ut alle påkrevde felt for å sende nyhetsbrev
-                  </span>
-                )}
-              </div>
+            <div className="flex items-center justify-end">
               <div className="flex gap-3">
                 <Button
                   type="submit"
-                  className="hover:bg-[var(--baladi-primary)]/90 gap-2 bg-[var(--baladi-primary)] text-white"
+                  className="gap-2 bg-[var(--baladi-primary)] text-white hover:bg-[var(--baladi-primary)]/90"
                   disabled={
                     !form.formState.isValid || form.formState.isSubmitting
                   }

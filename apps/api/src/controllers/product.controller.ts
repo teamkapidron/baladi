@@ -523,7 +523,7 @@ export const quickSearchProducts = asyncHandler(
           images: 1,
           slug: 1,
           shortDescription: 1,
-          unitPrice: 1,
+          noOfUnits: 1,
           salePrice: 1,
           categories: {
             name: 1,
@@ -541,7 +541,7 @@ export const quickSearchProducts = asyncHandler(
       name: product.name,
       image: product.images?.[0],
       slug: product.slug,
-      unitPrice: product.unitPrice,
+      noOfUnits: product.noOfUnits,
       salePrice: product.salePrice,
       shortDescription: product.shortDescription,
       categories: product.categories[0] ?? { name: '', slug: '' },

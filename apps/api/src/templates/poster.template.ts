@@ -2,7 +2,6 @@ export function promotionPosterTemplate(product: {
   name: string;
   price: number;
   originalPrice?: number;
-  tagline: string;
   promotionTitle: string;
   image: string;
   backgroundImage?: number;
@@ -122,7 +121,6 @@ export function promotionPosterTemplate(product: {
   <div class="price-box">
     <div class="original">1150.00 kr</div>
     <div class="discounted">120.00 kr</div>
-    <div class="bulk-offer">Buy 3 or more: <strong>110.00 kr</strong> each</div>
   </div>
 
   <div class="special-offer">SPECIAL RAMADAN OFFER</div>
@@ -136,7 +134,6 @@ export function promotionPosterTemplate(product: {
 
 export function multiProductPromotionTemplate(products: {
   promotionTitle: string;
-  tagline: string;
   items: {
     name: string;
     price: number;
@@ -272,7 +269,6 @@ export function multiProductPromotionTemplate(products: {
 
   <div class="header">
     <img src="https://s3.ap-south-1.amazonaws.com/kapidron.public/baladi.png" alt="Company Logo" class="logo">
-    <p>${products.tagline}</p>
   </div>
 
   <div class="title">${products.promotionTitle}</div>

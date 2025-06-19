@@ -26,7 +26,7 @@ export interface QuickSearchProductAggregateType {
   name: string;
   images: string[];
   slug: string;
-  unitPrice: number;
+  noOfUnits: number;
   salePrice: number;
   shortDescription: string;
   categories: {
@@ -36,11 +36,11 @@ export interface QuickSearchProductAggregateType {
 }
 
 export interface QuickSearchProduct {
-  _id: string;
+  _id: string;  
   name: string;
   image: string | undefined;
   slug: string;
-  unitPrice: number;
+  noOfUnits: number;
   salePrice: number;
   shortDescription: string;
   categories: {

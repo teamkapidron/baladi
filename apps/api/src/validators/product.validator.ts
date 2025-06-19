@@ -43,7 +43,7 @@ export const getProductBySlugSchema = z.object({
 
 export const quickSearchProductsSchema = z.object({
   query: z.object({
-    query: z.string().min(1, 'Search query is required'),
+    query: z.string().optional(),
     limit: z.string().optional(),
   }),
 });

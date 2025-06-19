@@ -13,7 +13,7 @@ export interface QuickSearchProduct {
   name: string;
   image: string | undefined;
   slug: string;
-  unitPrice: number;
+  noOfUnits: number;
   salePrice: number;
   shortDescription: string;
   categories: {

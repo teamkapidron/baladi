@@ -111,8 +111,7 @@ export const previewPromotionPoster = asyncHandler(
       name: product.name,
       price: product.salePrice,
       image: product.images?.[0] ?? '',
-      tagline: 'Buy 3 or more and get 10% off',
-      promotionTitle: 'Special Offer',
+      promotionTitle: posterType === 'new-arrival' ? 'New Arrival' : '',
     }));
 
     if (productsData.length > 3) {
@@ -131,16 +130,14 @@ export const previewPromotionPoster = asyncHandler(
           name: productsData[0]?.name ?? '',
           price: productsData[0]?.price ?? 0,
           image: productsData[0]?.image ?? '',
-          tagline: 'Buy 3 or more and get 10% off',
-          promotionTitle: 'Special Offer',
+          promotionTitle: productsData[0]?.promotionTitle ?? '',
         }),
       ];
     }
 
     html = [
       multiProductPromotionTemplate({
-        promotionTitle: 'Special Offer',
-        tagline: 'Buy 3 or more and get 10% off',
+        promotionTitle: productsData[0]?.promotionTitle ?? '',
         items: productsData,
       }),
     ];
