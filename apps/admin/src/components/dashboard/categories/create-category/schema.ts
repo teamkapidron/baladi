@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from '@repo/ui/lib/form';
 
 export const createCategorySchema = z.object({
   name: z.string().min(1, { message: 'Navn er påkrevd' }),
