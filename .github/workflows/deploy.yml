@@ -101,24 +101,24 @@ jobs:
             cd ~/baladi
             git pull origin main
 
-            cat <<EOT > apps/api/.env.local
-            MONGO_URI=${{ secrets.MONGO_URI }}
-            JWT_SECRET=${{ secrets.JWT_SECRET }}
-            JWT_EXPIRY=${{ vars.JWT_EXPIRY }}
-            COOKIE_EXPIRY=${{ vars.COOKIE_EXPIRY }}
-            COOKIE_DOMAIN=${{ vars.COOKIE_DOMAIN }}
-            SMTP_NAME=${{ vars.SMTP_NAME }}
-            SMTP_MAIL=${{ vars.SMTP_MAIL }}
-            SMTP_REPLY_TO=${{ vars.SMTP_REPLY_TO }}
-            SMTP_HOST=${{ vars.SMTP_HOST }}
-            SMTP_PORT=${{ vars.SMTP_PORT }}
-            SMTP_USERNAME=${{ secrets.SMTP_USERNAME }}
-            SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}
-            ADMIN_API_KEY=${{ secrets.ADMIN_API_KEY }}
-            WAREHOUSE_EMAIL=${{ vars.WAREHOUSE_EMAIL }}
-            ADMIN_URL=${{ vars.ADMIN_URL }}
-            USER_URL=${{ vars.USER_URL }}
-            EOT
+            cat <<EOT > apps/api/.env.local <<EOT
+          MONGO_URI=${{ secrets.MONGO_URI }}
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
+          JWT_EXPIRY=${{ vars.JWT_EXPIRY }}
+          COOKIE_EXPIRY=${{ vars.COOKIE_EXPIRY }}
+          COOKIE_DOMAIN=${{ vars.COOKIE_DOMAIN }}
+          SMTP_NAME=${{ vars.SMTP_NAME }}
+          SMTP_MAIL=${{ vars.SMTP_MAIL }}
+          SMTP_REPLY_TO=${{ vars.SMTP_REPLY_TO }}
+          SMTP_HOST=${{ vars.SMTP_HOST }}
+          SMTP_PORT=${{ vars.SMTP_PORT }}
+          SMTP_USERNAME=${{ secrets.SMTP_USERNAME }}
+          SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}
+          ADMIN_API_KEY=${{ secrets.ADMIN_API_KEY }}
+          WAREHOUSE_EMAIL=${{ vars.WAREHOUSE_EMAIL }}
+          ADMIN_URL=${{ vars.ADMIN_URL }}
+          USER_URL=${{ vars.USER_URL }}
+          EOT
 
             pnpm install
             cd apps/api
