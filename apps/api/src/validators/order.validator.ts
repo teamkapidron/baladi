@@ -189,6 +189,32 @@ export const previewFreightLabelSchema = z.object({
   }),
 });
 
+export const updateOrderItemSchema = z.object({
+  params: z.object({
+    orderId: z.string().refine((val) => isValidObjectId(val), {
+      message: 'Invalid order ID format',
+    }),
+    itemId: z.string().refine((val) => isValidObjectId(val), {
+      message: 'Invalid item ID format',
+    }),
+  }),
+  body: z.object({
+    quantity: z
+      .number()
+      .int()
+      .positive('Quantity must be a positive number')
+      .optional(),
+    price: z.number().positive('Price must be a positive number').optional(),
+    vatPercentage: z
+      .number()
+      .positive('VAT amount must be a positive number')
+      .refine((val) => val > 0 && val < 100, {
+        message: 'VAT amount must be between 0 and 100',
+      })
+      .optional(),
+  }),
+});
+
 export type GetAllOrdersSchema = z.infer<typeof getAllOrdersSchema>;
 export type GetOrderDetailsAdminSchema = z.infer<
   typeof getOrderDetailsAdminSchema
@@ -211,4 +237,5 @@ export type PreviewPickingListSchema = z.infer<typeof previewPickingListSchema>;
 export type PreviewFreightLabelSchema = z.infer<
   typeof previewFreightLabelSchema
 >;
+export type UpdateOrderItemSchema = z.infer<typeof updateOrderItemSchema>;
 /****************** END: Admin Validators ********************/

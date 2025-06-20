@@ -21,6 +21,7 @@ import {
   getRecentOrders,
   previewPickingList,
   previewFreightLabel,
+  updateOrderItem,
 } from '@/controllers/order.controller';
 
 import {
@@ -41,6 +42,7 @@ import {
   getRecentOrdersSchema,
   previewPickingListSchema,
   previewFreightLabelSchema,
+  updateOrderItemSchema,
 } from '@/validators/order.validator';
 
 const router: Router = express.Router();
@@ -114,6 +116,12 @@ router.get(
   isAdmin,
   validate(previewFreightLabelSchema),
   previewFreightLabel,
+);
+router.patch(
+  '/:orderId/item/:itemId',
+  isAdmin,
+  validate(updateOrderItemSchema),
+  updateOrderItem,
 );
 
 export default router;

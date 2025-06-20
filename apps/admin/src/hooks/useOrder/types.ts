@@ -39,6 +39,7 @@ export type OrderResponse = Omit<
         _id: string;
         name: string;
       }[];
+      vat?: number;
     };
     quantity: number;
     price: number;
@@ -178,5 +179,20 @@ export type PreviewFreightLabelRequest = ApiData<
   },
   {
     html: string;
+  }
+>;
+
+export type UpdateOrderItemRequest = ApiData<
+  {
+    orderId: string;
+    itemId: string;
+    quantity: number;
+    price: number;
+    vatPercentage: number;
+    discount: number;
+    bulkDiscount: number;
+  },
+  {
+    order: OrderResponse;
   }
 >;

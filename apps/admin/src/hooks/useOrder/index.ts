@@ -1,7 +1,7 @@
 // Node Modules
 import { useCallback } from 'react';
 import { toast } from '@repo/ui/lib/sonner';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 // Hooks
 import { useRequest } from '@/hooks/useRequest';
@@ -14,6 +14,7 @@ import type {
   GetAllOrdersRequest,
   GetOrderDetailsAdminRequest,
   UpdateOrderStatusRequest,
+  UpdateOrderItemRequest,
   GetOrderStatsRequest,
   GetOrderRevenueStatsRequest,
   GetOrderStatusGraphDataRequest,
@@ -274,4 +275,42 @@ export function useOrderPreview() {
     pickingListMutation,
     freightLabelMutation,
   };
+}
+
+export function useUpdateOrderItem() {
+  const api = useRequest();
+  const queryClient = useQueryClient();
+
+  const updateOrderItem = useCallback(
+    async (payload: UpdateOrderItemRequest['payload']) => {
+      const response = await api.patch<UpdateOrderItemRequest['response']>(
+        `/order/${payload.orderId}/item/${payload.itemId}`,
+        {
+          quantity: payload.quantity,
+          price: payload.price,
+          vatPercentage: payload.vatPercentage,
+          discount: payload.discount,
+          bulkDiscount: payload.bulkDiscount,
+        },
+      );
+      return response.data.data;
+    },
+    [api],
+  );
+
+  const updateOrderItemMutation = useMutation({
+    mutationFn: updateOrderItem,
+    onSuccess: function (data, variables) {
+      // Invalidate order details query to refresh the data
+      queryClient.invalidateQueries({
+        queryKey: [ReactQueryKeys.GET_ORDER_DETAILS, variables.orderId],
+      });
+      toast.success('Ordre vare oppdatert');
+    },
+    onError: function (error) {
+      toast.error('Kunne ikke oppdatere ordre vare');
+    },
+  });
+
+  return { updateOrderItemMutation };
 }
