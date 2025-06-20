@@ -4,6 +4,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { memo, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   EditIcon,
   Package,
@@ -31,6 +32,7 @@ import { Visibility } from '@repo/types/product';
 import { formatPrice } from '@/utils/price.util';
 
 function ProductTableContent() {
+  const router = useRouter();
   const { products: productsData } = useProduct();
 
   const products = useMemo(() => {
@@ -81,9 +83,12 @@ function ProductTableContent() {
               return (
                 <TableRow
                   key={product._id}
-                  className={`border-b border-[var(--baladi-border)] transition-colors hover:bg-[var(--baladi-muted)] ${
+                  className={`cursor-pointer border-b border-[var(--baladi-border)] transition-colors hover:bg-[var(--baladi-muted)] ${
                     index % 2 === 0 ? 'bg-white' : 'bg-[var(--baladi-light)]'
                   }`}
+                  onClick={() => {
+                    router.push(`/dashboard/products/edit/${product.slug}`);
+                  }}
                 >
                   <TableCell className="p-4">
                     <div className="flex items-start space-x-4">

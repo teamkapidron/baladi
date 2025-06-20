@@ -41,8 +41,6 @@ function OnboardingForm() {
       phoneNumber: '',
       address: '',
       city: '',
-      state: '',
-      country: '',
       postalCode: '',
     },
   });
@@ -175,50 +173,6 @@ function OnboardingForm() {
                     <Input
                       {...field}
                       placeholder="f.eks. Oslo"
-                      className="w-full rounded-lg border border-[var(--baladi-border)] bg-[var(--baladi-muted)] px-4 py-3 font-[family-name:var(--font-dm-sans)] transition-all duration-200 focus:border-[var(--baladi-primary)] focus:bg-white focus:ring-2 focus:ring-[var(--baladi-primary)]/20"
-                    />
-                  </FormControl>
-                  <FormMessage className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-error)]" />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <FormField
-              control={form.control}
-              name="state"
-              render={({ field }) => (
-                <FormItem className="space-y-2">
-                  <FormLabel className="flex items-center gap-2 font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-dark)]">
-                    <MapPin className="h-4 w-4 text-[var(--baladi-gray)]" />
-                    Fylke
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="f.eks. Oslo"
-                      className="w-full rounded-lg border border-[var(--baladi-border)] bg-[var(--baladi-muted)] px-4 py-3 font-[family-name:var(--font-dm-sans)] transition-all duration-200 focus:border-[var(--baladi-primary)] focus:bg-white focus:ring-2 focus:ring-[var(--baladi-primary)]/20"
-                    />
-                  </FormControl>
-                  <FormMessage className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-error)]" />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="country"
-              render={({ field }) => (
-                <FormItem className="space-y-2">
-                  <FormLabel className="flex items-center gap-2 font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-dark)]">
-                    <MapPin className="h-4 w-4 text-[var(--baladi-gray)]" />
-                    Land
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="f.eks. Norge"
                       className="w-full rounded-lg border border-[var(--baladi-border)] bg-[var(--baladi-muted)] px-4 py-3 font-[family-name:var(--font-dm-sans)] transition-all duration-200 focus:border-[var(--baladi-primary)] focus:bg-white focus:ring-2 focus:ring-[var(--baladi-primary)]/20"
                     />
                   </FormControl>

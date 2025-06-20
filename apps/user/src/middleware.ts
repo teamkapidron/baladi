@@ -87,7 +87,11 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL('/login', request.url));
       }
 
-      if (isOnboardingCompleted(user) && user.isApprovedByAdmin) {
+      if (!isOnboardingCompleted(user)) {
+        return NextResponse.redirect(new URL('/onboarding', request.url));
+      }
+
+      if (user.isApprovedByAdmin) {
         return NextResponse.redirect(new URL('/', request.url));
       }
 

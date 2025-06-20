@@ -7,13 +7,8 @@ import { cn } from '@repo/ui/lib/utils';
 import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { memo, useCallback, useMemo, useState } from 'react';
-import {
-  Check,
-  Heart,
-  ShoppingCart,
-  BarChart3,
-  LogIn,
-} from '@repo/ui/lib/icons';
+import { Heart, ShoppingCart, BarChart3, LogIn } from '@repo/ui/lib/icons';
+import { toast } from '@repo/ui/lib/sonner';
 
 // Components
 import { Button } from '@repo/ui/components/base/button';
@@ -26,6 +21,7 @@ import { useDiscount } from '@/hooks/useDiscount';
 import { useFavourite } from '@/hooks/useFavourite';
 
 // Types/Utils
+import { getPricing } from '@/utils/price.util';
 import { formatPrice } from '@/utils/price.util';
 import { ProductResponse } from '@/hooks/useProduct/types';
 import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
@@ -170,14 +166,17 @@ const ProductStockBadge = memo(({ stock }: ProductStockBadgeProps) => {
 interface ProductInfoSectionProps {
   product: ProductResponse;
   price: number;
-  discountedPrice: number;
+  pricePerUnit: number;
   isAuthenticated: boolean;
 }
 
 const ProductInfoSection = memo(
-  ({ product, discountedPrice, isAuthenticated }: ProductInfoSectionProps) => {
-    const pricePerUnit = discountedPrice / product.noOfUnits;
-
+  ({
+    product,
+    price,
+    pricePerUnit,
+    isAuthenticated,
+  }: ProductInfoSectionProps) => {
     return (
       <div className="mb-3">
         <div className="mb-2">
@@ -200,7 +199,7 @@ const ProductInfoSection = memo(
             <div className="flex items-baseline justify-between">
               <div className="flex items-baseline">
                 <span className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-primary)]">
-                  {formatPrice(discountedPrice)} kr
+                  {formatPrice(price)} kr
                 </span>
               </div>
               <span className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
@@ -208,7 +207,7 @@ const ProductInfoSection = memo(
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="font-[family-name:var(--font-dm-sans)] text-xs text-[var(--baladi-gray)]">
+              <span className="font-[family-name:var(--font-dm-sans)] font-bold text-[var(--baladi-gray)]">
                 {formatPrice(pricePerUnit)} kr/enhet
               </span>
             </div>
@@ -222,13 +221,11 @@ const ProductInfoSection = memo(
 interface ProductActionsProps {
   isAuthenticated: boolean;
   isOutOfStock: boolean;
-  isInCart: boolean;
-  cartQuantity: number;
   quantity: number;
   stockCount: number;
+  isInCart: boolean;
   onQuantityChange: (quantity: number) => void;
   onAddToCart: () => void;
-  onGoToCart: () => void;
   onGoToLogin: () => void;
 }
 
@@ -236,13 +233,11 @@ const ProductActions = memo(
   ({
     isAuthenticated,
     isOutOfStock,
-    isInCart,
-    cartQuantity,
     quantity,
     stockCount,
+    isInCart,
     onQuantityChange,
     onAddToCart,
-    onGoToCart,
     onGoToLogin,
   }: ProductActionsProps) => {
     if (isOutOfStock) {
@@ -252,18 +247,6 @@ const ProductActions = memo(
           disabled
         >
           Utsolgt
-        </Button>
-      );
-    }
-
-    if (isInCart) {
-      return (
-        <Button
-          onClick={onGoToCart}
-          className="flex w-full items-center justify-center rounded-lg border border-green-200 bg-green-50 px-3 py-2.5 font-[family-name:var(--font-dm-sans)] text-sm font-medium text-green-700 transition-colors hover:bg-green-100"
-        >
-          <Check className="mr-2 h-4 w-4" />
-          Gå til handlekurv ({cartQuantity})
         </Button>
       );
     }
@@ -296,10 +279,13 @@ const ProductActions = memo(
           onClick={onAddToCart}
           className={cn(
             'flex items-center justify-center rounded-lg p-2.5 text-white transition-all duration-300',
-            'bg-[var(--baladi-primary)] shadow-md hover:bg-[var(--baladi-primary-dark)] hover:shadow-lg',
+            isInCart
+              ? 'bg-green-600 shadow-md hover:bg-green-700 hover:shadow-lg'
+              : 'bg-[var(--baladi-primary)] shadow-md hover:bg-[var(--baladi-primary-dark)] hover:shadow-lg',
           )}
         >
           <ShoppingCart size={16} />
+          {isInCart && <span className="ml-1 text-xs font-medium">✓</span>}
         </Button>
       </div>
     );
@@ -312,59 +298,48 @@ function ProductCard(props: ProductCardProps) {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
   const { bulkDiscountQuery } = useDiscount();
-  const { addToCart, isInCart, getItemQuantity } = useCart();
+  const { addToCart, isInCart, getItemQuantity, updateQuantity } = useCart();
 
-  const [quantity, setQuantity] = useState(1);
+  const itemQuantity = getItemQuantity(product._id);
 
-  const {
-    isInCartState,
-    cartQuantity,
-    isOutOfStock,
-    stockCount,
-    price,
-    discountedPrice,
-  } = useMemo(() => {
+  const [quantity, setQuantity] = useState(itemQuantity || 1);
+
+  const { isOutOfStock, stockCount, price, pricePerUnit } = useMemo(() => {
     const bulkDiscounts = bulkDiscountQuery.data?.bulkDiscounts || [];
 
-    const price = product?.price + (product?.vat * product?.price) / 100;
-
-    const bulkDiscount = bulkDiscounts
-      ?.filter((d) => d.isActive && d.minQuantity <= quantity)
-      .sort((a, b) => b.discountPercentage - a.discountPercentage)[0];
-
-    const discountedPrice = bulkDiscount
-      ? price - (product.price * bulkDiscount.discountPercentage) / 100
-      : price;
+    const { netPrice, pricePerUnit } = getPricing({
+      product,
+      quantity,
+      bulkDiscounts,
+    });
 
     return {
-      isInCartState: isInCart(product._id),
-      cartQuantity: getItemQuantity(product._id),
       isOutOfStock: product.stock <= 0,
       stockCount: product.stock,
-      price,
-      discountedPrice,
+      price: netPrice,
+      pricePerUnit,
     };
-  }, [
-    bulkDiscountQuery.data?.bulkDiscounts,
-    isInCart,
-    product._id,
-    product.stock,
-    product?.price,
-    product?.vat,
-    getItemQuantity,
-    quantity,
-  ]);
+  }, [bulkDiscountQuery.data?.bulkDiscounts, product, quantity]);
 
   const handleAddToCart = useCallback(() => {
     if (isOutOfStock || !isAuthenticated) return;
-    addToCart(product, quantity);
 
-    router.refresh();
-  }, [addToCart, isAuthenticated, isOutOfStock, product, quantity, router]);
-
-  const handleGoToCart = useCallback(() => {
-    router.push('/cart');
-  }, [router]);
+    if (isInCart(product._id)) {
+      updateQuantity(product._id, quantity);
+      toast.success('Antall oppdatert i handlekurven');
+    } else {
+      addToCart(product, quantity);
+      toast.success('Produktet er lagt til i handlekurven');
+    }
+  }, [
+    addToCart,
+    isAuthenticated,
+    isOutOfStock,
+    product,
+    quantity,
+    isInCart,
+    updateQuantity,
+  ]);
 
   const handleGoToLogin = useCallback(() => {
     router.push('/login');
@@ -385,20 +360,18 @@ function ProductCard(props: ProductCardProps) {
         <ProductInfoSection
           product={product}
           price={price}
-          discountedPrice={discountedPrice}
+          pricePerUnit={pricePerUnit}
           isAuthenticated={isAuthenticated}
         />
 
         <ProductActions
           isAuthenticated={isAuthenticated}
           isOutOfStock={isOutOfStock}
-          isInCart={isInCartState}
-          cartQuantity={cartQuantity}
           quantity={quantity}
+          isInCart={isInCart(product._id)}
           stockCount={stockCount}
           onQuantityChange={setQuantity}
           onAddToCart={handleAddToCart}
-          onGoToCart={handleGoToCart}
           onGoToLogin={handleGoToLogin}
         />
       </div>

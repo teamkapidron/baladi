@@ -94,7 +94,7 @@ function CartSection() {
                     </div>
                     <div className="text-right">
                       <p className="font-[family-name:var(--font-sora)] text-sm font-semibold text-[var(--baladi-dark)]">
-                        {formatPrice(item.totalPrice)} kr
+                        {formatPrice(item.totalPaymentItemAmount)} kr
                       </p>
                     </div>
                   </div>
@@ -117,7 +117,7 @@ function CartSection() {
                   </span>
                   <div className="flex items-baseline">
                     <span className="font-[family-name:var(--font-sora)] text-xl font-bold text-[var(--baladi-primary)]">
-                      {formatPrice(cartSummary.netPrice)}
+                      {formatPrice(cartSummary.totalPaymentAmount)}
                     </span>
                     <span className="ml-1 font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
                       kr

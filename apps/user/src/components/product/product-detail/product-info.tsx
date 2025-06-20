@@ -5,6 +5,7 @@ import { cn } from '@repo/ui/lib/utils';
 import { useParams, useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import React, { useState, memo, useMemo, useCallback, useEffect } from 'react';
+import { toast } from '@repo/ui/lib/sonner';
 import {
   ShoppingCart,
   Package2,
@@ -17,6 +18,7 @@ import {
   Barcode,
   Calendar,
   Heart,
+  LogIn,
 } from '@repo/ui/lib/icons';
 
 // Components
@@ -34,6 +36,7 @@ import { useProductBySlug } from '@/hooks/useProduct';
 // Types/Utils
 import { formatDate } from '@/utils/date.util';
 import { formatPrice } from '@/utils/price.util';
+import { getPricing } from '@/utils/price.util';
 import { BulkDiscount } from '@repo/types/bulkDiscount';
 import { ProductResponse } from '@/hooks/useProduct/types';
 import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
@@ -42,33 +45,25 @@ import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
 interface ProductPriceDisplayProps {
   price: number;
   vat: number;
+  pricePerUnit: number;
   isAuthenticated: boolean;
-  noOfUnits: number;
-  discountedPrice: number;
 }
 
 const ProductPriceDisplay = memo(
-  ({
-    vat,
-    isAuthenticated,
-    noOfUnits,
-    discountedPrice,
-  }: ProductPriceDisplayProps) => {
+  ({ vat, isAuthenticated, pricePerUnit, price }: ProductPriceDisplayProps) => {
     if (!isAuthenticated) return null;
-
-    const perUnitPrice = discountedPrice / noOfUnits;
 
     return (
       <div className="space-y-4 rounded-lg py-4">
         <div className="flex items-center gap-4">
           <div className="flex items-baseline gap-2">
             <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-primary)]">
-              {formatPrice(discountedPrice)} kr
+              {formatPrice(price)} kr
             </span>
           </div>
           <div className="rounded-lg border border-[var(--baladi-secondary)]/20 bg-gradient-to-r from-[var(--baladi-secondary)]/10 to-[var(--baladi-accent)]/10 px-3 py-2">
             <span className="font-[family-name:var(--font-sora)] text-lg font-bold text-[var(--baladi-secondary)]">
-              {formatPrice(perUnitPrice)} kr
+              {formatPrice(pricePerUnit)} kr
             </span>
             <span className="ml-1 font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
               per enhet
@@ -239,102 +234,118 @@ const QuantitySelector = memo(
 interface ProductActionsProps {
   isAuthenticated: boolean;
   isOutOfStock: boolean;
-  cartQuantity: number;
   quantity: number;
   price: number;
   product: ProductResponse;
   onAddToCart: () => void;
   onAddToWishlist: () => void;
-  onGoToCart: () => void;
   onGoToLogin: () => void;
+  isInCart: boolean;
 }
 
 const ProductActions = memo(
   ({
     isAuthenticated,
     isOutOfStock,
-    cartQuantity,
     quantity,
     price,
     onAddToCart,
     onAddToWishlist,
-    onGoToCart,
     onGoToLogin,
     product,
-  }: ProductActionsProps) => (
-    <div className="flex gap-3">
-      {isAuthenticated ? (
-        !isOutOfStock ? (
-          cartQuantity && cartQuantity > 0 ? (
-            <Button
-              size="lg"
-              onClick={onGoToCart}
-              className="flex-1 font-[family-name:var(--font-dm-sans)] font-medium"
-            >
-              <div className="flex items-center gap-2">
-                <ShoppingCart size={18} />
-                Gå til Handlekurv • {formatPrice(price * cartQuantity)} kr
-              </div>
-            </Button>
-          ) : (
-            <Button
-              size="lg"
-              onClick={onAddToCart}
-              className="flex-1 font-[family-name:var(--font-dm-sans)] font-medium"
-            >
-              <div className="flex items-center gap-2">
-                <ShoppingCart size={18} />
-                Legg til i Handlekurv • {formatPrice(price * quantity)} kr
-              </div>
-            </Button>
-          )
-        ) : (
-          <Button
-            size="lg"
-            variant="outline"
-            className="flex-1 font-[family-name:var(--font-dm-sans)] font-medium"
-            disabled
-          >
-            <Bell size={18} />
-            Produktet er ikke tilgjengelig
-          </Button>
-        )
-      ) : (
+    isInCart,
+  }: ProductActionsProps) => {
+    if (!isAuthenticated) {
+      return (
         <Button
           size="lg"
-          onClick={onGoToLogin}
+          variant="outline"
           className="flex-1 font-[family-name:var(--font-dm-sans)] font-medium"
+          onClick={onGoToLogin}
         >
+          <LogIn size={18} />
           Logg inn for å bestille
         </Button>
-      )}
+      );
+    }
 
-      <Button
-        size="lg"
-        variant="outline"
-        className={cn(
-          'font-[family-name:var(--font-dm-sans)] font-medium',
-          product.isFavorite && 'bg-red-500 text-white',
-        )}
-        onClick={onAddToWishlist}
-      >
-        <Heart size={18} />
-      </Button>
-    </div>
-  ),
+    if (isOutOfStock) {
+      return (
+        <Button
+          size="lg"
+          variant="outline"
+          className="flex-1 font-[family-name:var(--font-dm-sans)] font-medium"
+          disabled
+        >
+          <Bell size={18} />
+          Produktet er ikke tilgjengelig
+        </Button>
+      );
+    }
+
+    return (
+      <div className="flex gap-3">
+        <Button
+          size="lg"
+          onClick={onAddToCart}
+          className={cn(
+            'flex-1 font-[family-name:var(--font-dm-sans)] font-medium',
+            isInCart && 'bg-green-600 hover:bg-green-700',
+          )}
+        >
+          <div className="flex items-center gap-2">
+            <ShoppingCart size={18} />
+            {isInCart ? (
+              <>
+                <span>Oppdatert i handlekurv</span>
+                <span className="text-sm opacity-80">
+                  • {formatPrice(price * quantity)} kr
+                </span>
+              </>
+            ) : (
+              <>
+                <span>Legg til i Handlekurv</span>
+                <span className="text-sm opacity-80">
+                  • {formatPrice(price * quantity)} kr
+                </span>
+              </>
+            )}
+          </div>
+        </Button>
+
+        <Button
+          size="lg"
+          variant="outline"
+          className={cn(
+            'font-[family-name:var(--font-dm-sans)] font-medium',
+            product.isFavorite && 'bg-red-500 text-white',
+          )}
+          onClick={onAddToWishlist}
+        >
+          <Heart size={18} />
+        </Button>
+      </div>
+    );
+  },
 );
 
 function useProductInfo(slug: string) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { isAuthenticated } = useAuth();
-  const { addToCart, getItemQuantity } = useCart();
+  const { addToCart, getItemQuantity, updateQuantity, isInCart } = useCart();
   const { addToFavoritesMutation, removeFromFavoritesMutation } =
     useFavourite();
   const { bulkDiscountQuery } = useDiscount();
   const { data: productData, isLoading } = useProductBySlug(slug);
 
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(
+    getItemQuantity(productData?.product?._id) || 1,
+  );
+
+  useEffect(() => {
+    setQuantity(getItemQuantity(productData?.product?._id) || 1);
+  }, [productData?.product?._id, getItemQuantity]);
 
   const productDetails = useMemo(() => {
     if (!productData?.product) return null;
@@ -344,40 +355,22 @@ function useProductInfo(slug: string) {
       (product.dimensions?.length ?? 0) *
       (product.dimensions?.width ?? 0) *
       (product.dimensions?.height ?? 0);
-    const price = product.price + (product.vat * product.price) / 100;
-    const cartQuantity = getItemQuantity(product._id);
 
-    const bulkDiscounts = bulkDiscountQuery.data?.bulkDiscounts || [];
-
-    const bulkDiscount = bulkDiscounts
-      ?.filter((d) => d.isActive && d.minQuantity <= quantity)
-      .sort((a, b) => b.discountPercentage - a.discountPercentage)[0];
-
-    const discountedPrice = bulkDiscount
-      ? price - (product.price * bulkDiscount.discountPercentage) / 100
-      : price;
+    const { netPrice, pricePerUnit } = getPricing({
+      product,
+      quantity,
+      bulkDiscounts: bulkDiscountQuery.data?.bulkDiscounts,
+    });
 
     return {
       product,
       isOutOfStock: product.stock <= 0,
-      bulkDiscounts,
       volume,
-      price,
-      cartQuantity,
-      discountedPrice,
+      price: netPrice,
+      pricePerUnit,
+      bulkDiscounts: bulkDiscountQuery.data?.bulkDiscounts,
     };
-  }, [
-    productData?.product,
-    getItemQuantity,
-    bulkDiscountQuery.data?.bulkDiscounts,
-    quantity,
-  ]);
-
-  useEffect(() => {
-    if (productDetails?.cartQuantity) {
-      setQuantity(productDetails.cartQuantity);
-    }
-  }, [productDetails?.cartQuantity]);
+  }, [productData?.product, bulkDiscountQuery.data?.bulkDiscounts, quantity]);
 
   const handleAddToCart = useCallback(() => {
     if (!productDetails?.product || !isAuthenticated) {
@@ -385,9 +378,22 @@ function useProductInfo(slug: string) {
       return;
     }
 
-    addToCart(productDetails.product, quantity);
-    router.push('/cart');
-  }, [productDetails?.product, isAuthenticated, addToCart, quantity, router]);
+    if (isInCart(productDetails.product._id)) {
+      updateQuantity(productDetails.product._id, quantity);
+      toast.success('Antall oppdatert');
+    } else {
+      addToCart(productDetails.product, quantity);
+      toast.success('Produktet er lagt til i handlekurv');
+    }
+  }, [
+    productDetails?.product,
+    isAuthenticated,
+    isInCart,
+    router,
+    updateQuantity,
+    quantity,
+    addToCart,
+  ]);
 
   const handleAddToWishlist = useCallback(() => {
     if (!productDetails?.product._id) {
@@ -435,10 +441,6 @@ function useProductInfo(slug: string) {
     addToFavoritesMutation,
   ]);
 
-  const handleGoToCart = useCallback(() => {
-    router.push('/cart');
-  }, [router]);
-
   const handleGoToLogin = useCallback(() => {
     router.push('/login');
   }, [router]);
@@ -451,8 +453,8 @@ function useProductInfo(slug: string) {
     isAuthenticated,
     handleAddToCart,
     handleAddToWishlist,
-    handleGoToCart,
     handleGoToLogin,
+    isInCart: isInCart(productDetails?.product?._id ?? ''),
   };
 }
 
@@ -484,19 +486,18 @@ function ProductInfo() {
   const {
     product,
     isOutOfStock,
-    bulkDiscounts,
     volume,
     price,
-    discountedPrice,
-    cartQuantity,
+    pricePerUnit,
+    bulkDiscounts,
     isLoading,
     quantity,
     setQuantity,
     isAuthenticated,
     handleAddToCart,
     handleAddToWishlist,
-    handleGoToCart,
     handleGoToLogin,
+    isInCart,
   } = useProductInfo(slug);
 
   if (isLoading) {
@@ -522,8 +523,7 @@ function ProductInfo() {
         price={price ?? 0}
         vat={product.vat}
         isAuthenticated={isAuthenticated}
-        noOfUnits={product.noOfUnits}
-        discountedPrice={discountedPrice ?? 0}
+        pricePerUnit={pricePerUnit ?? 0}
       />
 
       <ProductSpecifications
@@ -540,27 +540,24 @@ function ProductInfo() {
       <Separator />
 
       <div className="space-y-4">
-        {!cartQuantity && (
-          <QuantitySelector
-            quantity={quantity}
-            onQuantityChange={setQuantity}
-            maxStock={product.stock ?? 0}
-            isOutOfStock={isOutOfStock ?? false}
-            availableStock={product.stock ?? 0}
-          />
-        )}
+        <QuantitySelector
+          quantity={quantity}
+          onQuantityChange={setQuantity}
+          maxStock={product.stock ?? 0}
+          isOutOfStock={isOutOfStock ?? false}
+          availableStock={product.stock ?? 0}
+        />
 
         <ProductActions
           isAuthenticated={isAuthenticated}
           isOutOfStock={isOutOfStock ?? false}
-          cartQuantity={cartQuantity ?? 0}
           quantity={quantity}
           price={price ?? 0}
           onAddToCart={handleAddToCart}
           onAddToWishlist={handleAddToWishlist}
-          onGoToCart={handleGoToCart}
           onGoToLogin={handleGoToLogin}
           product={product}
+          isInCart={isInCart}
         />
       </div>
     </div>
