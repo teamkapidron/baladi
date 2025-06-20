@@ -19,12 +19,12 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function ProductDetailPage() {
   return (
-    <div className="min-h-screen">
-      <Header />
+    <Suspense>
+      <div className="min-h-screen">
+        <Header />
 
-      <ScrollToTop />
+        <ScrollToTop />
 
-      <Suspense>
         <main className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
           <div className="space-y-8">
             <ProductBreadcrumb />
@@ -35,9 +35,9 @@ export default function ProductDetailPage() {
             <ProductSpecifications />
           </div>
         </main>
-      </Suspense>
 
-      <Footer />
-    </div>
+        <Footer />
+      </div>
+    </Suspense>
   );
 }
