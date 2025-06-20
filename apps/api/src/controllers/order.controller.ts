@@ -955,7 +955,7 @@ export const previewFreightLabel = asyncHandler(
 export const updateOrderItem = asyncHandler(
   async (req: Request, res: Response) => {
     const { orderId, itemId } = req.params as UpdateOrderItemSchema['params'];
-    const { quantity, price, vatPercentage } =
+    const { quantity, price, vatPercentage, bulkDiscount, discount } =
       req.body as UpdateOrderItemSchema['body'];
 
     const session = await mongoose.startSession();
@@ -981,6 +981,12 @@ export const updateOrderItem = asyncHandler(
     }
     if (vatPercentage) {
       item.vatAmount = (item.price * vatPercentage) / 100;
+    }
+    if (bulkDiscount) {
+      item.bulkDiscount = bulkDiscount;
+    }
+    if (discount) {
+      item.discount = discount;
     }
     item.priceWithVat = item.price + item.vatAmount;
     item.totalPrice = item.priceWithVat - item.bulkDiscount - item.discount;

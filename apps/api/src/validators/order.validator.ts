@@ -202,7 +202,7 @@ export const updateOrderItemSchema = z.object({
     quantity: z
       .number()
       .int()
-      .positive('Quantity must be a positive number')
+      .min(0, 'Quantity must be a positive number')
       .optional(),
     price: z.number().positive('Price must be a positive number').optional(),
     vatPercentage: z
@@ -211,6 +211,14 @@ export const updateOrderItemSchema = z.object({
       .refine((val) => val > 0 && val < 100, {
         message: 'VAT amount must be between 0 and 100',
       })
+      .optional(),
+    bulkDiscount: z
+      .number()
+      .min(0, 'Bulk discount must be a positive number')
+      .optional(),
+    discount: z
+      .number()
+      .min(0, 'Discount must be a positive number')
       .optional(),
   }),
 });

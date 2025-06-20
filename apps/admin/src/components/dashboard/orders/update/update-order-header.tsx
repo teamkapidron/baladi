@@ -11,10 +11,8 @@ import {
   XCircle,
   Clock,
   ChevronRight,
-  Save,
   Edit3,
 } from '@repo/ui/lib/icons';
-import { toast } from '@repo/ui/lib/sonner';
 
 // Components
 import { Button } from '@repo/ui/components/base/button';
@@ -36,12 +34,6 @@ function UpdateOrderHeader(props: UpdateOrderHeaderProps) {
 
   const { data: orderData } = useOrderDetails(orderId);
   const order = orderData?.order;
-
-  const handleSaveChanges = useCallback(async () => {
-    // This will be handled by individual item updates
-    // For now, just show success message
-    toast.success('Alle endringer er lagret automatisk');
-  }, []);
 
   const handleCancel = useCallback(() => {
     router.back();
@@ -118,14 +110,6 @@ function UpdateOrderHeader(props: UpdateOrderHeaderProps) {
             onClick={handleCancel}
           >
             Avbryt
-          </Button>
-          <Button
-            size="sm"
-            className="group bg-white font-[family-name:var(--font-dm-sans)] text-[var(--baladi-primary)] hover:bg-white/90"
-            onClick={handleSaveChanges}
-          >
-            <Save className="mr-2 h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
-            Lagre Endringer
           </Button>
         </div>
       </div>

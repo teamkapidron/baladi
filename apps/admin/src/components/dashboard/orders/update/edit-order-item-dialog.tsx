@@ -26,14 +26,11 @@ import { Input } from '@repo/ui/components/base/input';
 import { Button } from '@repo/ui/components/base/button';
 import { Separator } from '@repo/ui/components/base/separator';
 
-// Hooks
-import { useProductDetails } from '@/hooks/useProduct';
-
 // Types/Utils
 import { formatPrice } from '@/utils/price.util';
 
 const editOrderItemSchema = z.object({
-  quantity: z.number().min(1, 'Antall må være minst 1'),
+  quantity: z.number().min(0, 'Antall må være minst 0'),
   price: z.number().min(0, 'Pris kan ikke være negativ'),
   vatPercentage: z
     .number()
@@ -54,7 +51,6 @@ interface OrderItem {
   discountAmount?: number;
   bulkDiscountAmount?: number;
   name?: string;
-  // Add other item properties as needed
 }
 
 interface EditOrderItemDialogProps {
@@ -72,15 +68,12 @@ function EditOrderItemDialog({
 }: EditOrderItemDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Get initial VAT percentage from product or item
-  const initialVatPercentage = item.vatPercentage;
-
   const form = useForm<EditOrderItemFormData>({
     resolver: zodResolver(editOrderItemSchema),
     defaultValues: {
       quantity: item.quantity,
       price: item.price,
-      vatPercentage: initialVatPercentage,
+      vatPercentage: item.vatPercentage || 0,
       discountAmount: item.discountAmount || 0,
       bulkDiscountAmount: item.bulkDiscountAmount || 0,
     },
@@ -96,17 +89,16 @@ function EditOrderItemDialog({
       'bulkDiscountAmount',
     ]);
 
-  // Calculate derived values
   const calculatedValues = useMemo(() => {
     const vatAmount = (price * vatPercentage) / 100;
     const priceWithVat = price + vatAmount;
     const discountedPrice = price - discountAmount;
     const bulkDiscountedPrice = discountedPrice - bulkDiscountAmount;
     const finalItemPrice = bulkDiscountedPrice;
-    const finalVatAmount = (finalItemPrice * vatPercentage) / 100;
+    const finalVatAmount = (price * vatPercentage) / 100;
     const finalPriceWithVat = finalItemPrice + finalVatAmount;
 
-    const subtotal = finalItemPrice * quantity;
+    const subtotal = price * quantity;
     const totalVat = finalVatAmount * quantity;
     const totalWithVat = finalPriceWithVat * quantity;
     const totalDiscount = (discountAmount + bulkDiscountAmount) * quantity;
@@ -126,14 +118,6 @@ function EditOrderItemDialog({
     };
   }, [price, vatPercentage, quantity, discountAmount, bulkDiscountAmount]);
 
-  // Auto-fill VAT percentage when product data is loaded
-  useEffect(() => {
-    if (item.vatPercentage) {
-      setValue('vatPercentage', item.vatPercentage);
-    }
-  }, [item.vatPercentage, setValue]);
-
-  // Reset form when dialog opens
   useEffect(() => {
     if (open) {
       form.reset({
@@ -233,7 +217,6 @@ function EditOrderItemDialog({
                             step="0.01"
                             className="h-11 pr-10 text-right font-[family-name:var(--font-dm-sans)]"
                             {...field}
-                            value={field.value?.toFixed(2) || '0.00'}
                             onChange={(e) => {
                               const value = parseFloat(e.target.value) || 0;
                               field.onChange(Math.round(value * 100) / 100);
@@ -271,7 +254,6 @@ function EditOrderItemDialog({
                             step="0.1"
                             className="h-11 pr-10 text-right font-[family-name:var(--font-dm-sans)]"
                             {...field}
-                            value={field.value?.toFixed(1) || '0.0'}
                             onChange={(e) => {
                               const value = parseFloat(e.target.value) || 0;
                               field.onChange(Math.round(value * 10) / 10);
@@ -303,7 +285,6 @@ function EditOrderItemDialog({
                             step="0.01"
                             className="h-11 pr-10 text-right font-[family-name:var(--font-dm-sans)]"
                             {...field}
-                            value={field.value?.toFixed(2) || '0.00'}
                             onChange={(e) => {
                               const value = parseFloat(e.target.value) || 0;
                               field.onChange(Math.round(value * 100) / 100);
@@ -335,7 +316,6 @@ function EditOrderItemDialog({
                             step="0.01"
                             className="h-11 pr-10 text-right font-[family-name:var(--font-dm-sans)]"
                             {...field}
-                            value={field.value?.toFixed(2) || '0.00'}
                             onChange={(e) => {
                               const value = parseFloat(e.target.value) || 0;
                               field.onChange(Math.round(value * 100) / 100);

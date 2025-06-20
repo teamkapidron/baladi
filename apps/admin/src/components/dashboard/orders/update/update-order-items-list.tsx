@@ -23,20 +23,22 @@ interface UpdateOrderItemsListProps {
   orderId: string;
 }
 
+interface EditOrderItem {
+  id: string;
+  productId: string;
+  quantity: number;
+  price: number;
+  vatPercentage?: number;
+  discountAmount?: number;
+  bulkDiscountAmount?: number;
+  name?: string;
+}
+
 function UpdateOrderItemsList({ orderId }: UpdateOrderItemsListProps) {
   const { data: orderData } = useOrderDetails(orderId);
   const order = orderData?.order;
   const { updateOrderItemMutation } = useUpdateOrderItem();
-  const [editingItem, setEditingItem] = useState<{
-    id: string;
-    productId: string;
-    quantity: number;
-    price: number;
-    vatPercentage?: number;
-    discountAmount?: number;
-    bulkDiscountAmount?: number;
-    name?: string;
-  } | null>(null);
+  const [editingItem, setEditingItem] = useState<EditOrderItem | null>(null);
 
   const pricingTotals = useMemo(() => {
     if (!order?.items) return null;
@@ -88,7 +90,6 @@ function UpdateOrderItemsList({ orderId }: UpdateOrderItemsListProps) {
   }, [order?.items]);
 
   const handleEditItem = (item: OrderResponse['items'][number]) => {
-    console.log(item);
     setEditingItem({
       id: item._id,
       productId: item.productId._id,
@@ -105,13 +106,9 @@ function UpdateOrderItemsList({ orderId }: UpdateOrderItemsListProps) {
     setEditingItem(null);
   };
 
-  const handleSaveItem = (updatedData: {
-    quantity: number;
-    price: number;
-    vatPercentage: number;
-    discountAmount: number;
-    bulkDiscountAmount: number;
-  }) => {
+  const handleSaveItem = (
+    updatedData: Omit<EditOrderItem, 'id' | 'name' | 'productId'>,
+  ) => {
     if (!editingItem) return;
 
     updateOrderItemMutation.mutate({
@@ -119,9 +116,9 @@ function UpdateOrderItemsList({ orderId }: UpdateOrderItemsListProps) {
       itemId: editingItem.id,
       quantity: updatedData.quantity,
       price: updatedData.price,
-      vatPercentage: updatedData.vatPercentage,
-      discount: updatedData.discountAmount,
-      bulkDiscount: updatedData.bulkDiscountAmount,
+      vatPercentage: updatedData.vatPercentage || 0,
+      discount: updatedData.discountAmount || 0,
+      bulkDiscount: updatedData.bulkDiscountAmount || 0,
     });
     setEditingItem(null);
   };
