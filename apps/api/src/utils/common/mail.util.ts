@@ -11,6 +11,10 @@ import {
   contactUsTemplate,
 } from '@/templates/mail.template';
 import { inventoryAlertTemplate } from '@/templates/cron.template';
+import {
+  newArrivalTemplate,
+  productPromotionTemplate,
+} from '@/templates/newsletter.template';
 
 import { MailTemplate } from './interfaces/mail';
 
@@ -66,6 +70,18 @@ function getTemplate(template: MailTemplate) {
         template.data.subject,
         template.data.message,
         template.data.submittedAt,
+      );
+    }
+    case 'newArrival': {
+      return newArrivalTemplate(
+        template.data.products,
+        template.data.customerName,
+      );
+    }
+    case 'promotion': {
+      return productPromotionTemplate(
+        template.data.products,
+        template.data.customerName,
       );
     }
   }

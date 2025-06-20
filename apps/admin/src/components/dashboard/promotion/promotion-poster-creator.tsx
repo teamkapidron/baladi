@@ -1,8 +1,8 @@
 'use client';
 
 // Node Modules
-import { memo, useEffect, useState } from 'react';
-import { ImageIcon, Percent, Sparkles } from '@repo/ui/lib/icons';
+import { memo, useEffect } from 'react';
+import { Download, ImageIcon, Percent, Sparkles } from '@repo/ui/lib/icons';
 import { useForm, z, zodResolver } from '@repo/ui/lib/form';
 
 // Components
@@ -29,7 +29,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@repo/ui/components/base/select';
-import PreviewDialog from '@/components/dashboard/promotion/preview-dialog';
 
 // Hooks
 import { usePromotion } from '@/hooks/usePromotion';
@@ -49,11 +48,7 @@ type FormSchema = z.infer<typeof formSchema>;
 function PromotionPosterCreator(props: PromotionPosterCreatorProps) {
   const { selectedProducts } = props;
 
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-
   const { previewPromotionPosterMutation } = usePromotion();
-
-  const poster = previewPromotionPosterMutation.data?.html;
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
@@ -65,17 +60,11 @@ function PromotionPosterCreator(props: PromotionPosterCreatorProps) {
   });
 
   function onSubmit(values: FormSchema) {
-    previewPromotionPosterMutation.mutate(
-      {
-        posterType: values.posterType,
-        productsIds: values.productsIds,
-      },
-      {
-        onSuccess: () => {
-          setIsPreviewOpen(true);
-        },
-      },
-    );
+    previewPromotionPosterMutation.mutate({
+      posterType: values.posterType,
+      productsIds: values.productsIds,
+      title: values.title ?? 'Kampanje',
+    });
   }
 
   useEffect(() => {
@@ -160,26 +149,24 @@ function PromotionPosterCreator(props: PromotionPosterCreatorProps) {
               )}
             />
 
-            <div className="flex items-center justify-end">
+            <div className="flex items-center justify-end gap-3">
               <Button
                 type="submit"
                 className="gap-2 bg-[var(--baladi-primary)] text-white hover:bg-[var(--baladi-primary)]/90"
-                disabled={!form.formState.isValid}
+                disabled={
+                  !form.formState.isValid ||
+                  previewPromotionPosterMutation.isPending
+                }
               >
-                <ImageIcon className="h-4 w-4" />
-                {form.formState.isSubmitting ? 'Oppretter...' : 'Opprett'}
+                <Download className="h-4 w-4" />
+                {previewPromotionPosterMutation.isPending
+                  ? 'Laster ned...'
+                  : 'Last ned'}
               </Button>
             </div>
           </form>
         </Form>
       </CardContent>
-
-      <PreviewDialog
-        open={isPreviewOpen}
-        onOpenChange={setIsPreviewOpen}
-        poster={poster?.[0] ?? ''}
-        title={form.getValues('title') ?? 'Kampanje'}
-      />
     </Card>
   );
 }

@@ -4,6 +4,7 @@
 import User from '@/models/user.model';
 import Admin from '@/models/admin.model';
 import Address from '@/models/address.model';
+import Subscriber from '@/models/subscriber.model';
 
 // Utils
 import { sendJwt } from '@/utils/common/jwt.util';
@@ -127,6 +128,8 @@ export const verifyOTP = asyncHandler(async (req: Request, res: Response) => {
   user.otp = undefined;
   user.otpExpiry = undefined;
   await user.save();
+
+  await Subscriber.create({ userId: user._id });
 
   const payload = { id: String(user._id) };
   sendJwt(res, payload, { message: 'Email verified successfully' });

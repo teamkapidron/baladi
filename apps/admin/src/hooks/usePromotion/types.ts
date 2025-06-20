@@ -8,6 +8,16 @@ export type PreviewPromotionPosterRequest = ApiData<
     productsIds: string[];
   },
   {
-    html: string[];
+    productsData: {
+      name: string;
+      price: number;
+      image: string;
+      pricePerUnit: number;
+      bulkDiscount: {
+        minQuantity: number;
+        price: number;
+        pricePerUnit: number;
+      }[];
+    }[];
   }
 >;

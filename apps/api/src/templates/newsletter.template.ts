@@ -4,7 +4,7 @@ export function newArrivalTemplate(
     price: number;
     image: string;
   }[],
-  customerName: string = 'Valued Customer',
+  customerName: string = 'Verdsatt Kunde',
 ) {
   const productCards = products
     .map(
@@ -13,7 +13,7 @@ export function newArrivalTemplate(
       <img src="${product.image}" alt="${product.name}" class="product-image" />
       <div class="product-info">
         <h3 class="product-name">${product.name}</h3>
-        <div class="product-price">$${product.price}</div>
+        <div class="product-price">${product.price} kr</div>
       </div>
     </div>
   `,
@@ -21,7 +21,7 @@ export function newArrivalTemplate(
     .join('');
 
   return `
-    <html lang="en">
+    <html lang="no">
       <head>
         <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
         <style>
@@ -242,24 +242,24 @@ export function newArrivalTemplate(
         <div class="email-container">
           <div class="header">
             <div class="logo">BALADI</div>
-            <div class="header-subtitle">Premium Quality, Delivered Fresh</div>
+            <div class="header-subtitle">Premium Kvalitet, Levert Friskt</div>
           </div>
 
           <div class="content">
-            <div class="badge">✨ New Arrivals</div>
+            <div class="badge">✨ Nye Ankomster</div>
 
-            <div class="greeting">Hello ${customerName}!</div>
+            <div class="greeting">Hei ${customerName}!</div>
 
             <div class="intro-text">
-              We're excited to share our latest arrivals with you!
-              These premium products have just been added to our collection.
+              Vi er glade for å dele våre nyeste ankomster med deg!
+              Disse premium produktene har nettopp blitt lagt til i vår samling.
             </div>
 
             ${
               products.length > 0
                 ? `
             <div class="products-section">
-              <div class="products-title">Featured New Products</div>
+              <div class="products-title">Utvalgte Nye Produkter</div>
               <div class="products-grid">
                 ${productCards}
               </div>
@@ -269,19 +269,19 @@ export function newArrivalTemplate(
             }
 
             <div class="cta-container">
-              <a href="#" class="cta-button">Shop New Arrivals</a>
+              <a href="#" class="cta-button">Handle Nye Ankomster</a>
             </div>
           </div>
 
           <div class="footer">
             <div class="footer-text">
-              Thank you for choosing Baladi. We're committed to bringing you
-              the finest products with exceptional quality.
+              Takk for at du velger Baladi. Vi er forpliktet til å bringe deg
+              de fineste produktene med eksepsjonell kvalitet.
             </div>
 
             <div class="unsubscribe">
-              © ${new Date().getFullYear()} Baladi. All rights reserved.<br>
-              <a href="#">Unsubscribe</a> | <a href="#">Update Preferences</a>
+              © ${new Date().getFullYear()} Baladi. Alle rettigheter reservert.<br>
+              <a href="#">Avmeld</a> | <a href="#">Oppdater Preferanser</a>
             </div>
           </div>
         </div>
@@ -296,7 +296,7 @@ export function productPromotionTemplate(
     price: number;
     image: string;
   }[],
-  customerName: string = 'Valued Customer',
+  customerName: string = 'Verdsatt Kunde',
 ) {
   const productCards = products
     .map(
@@ -305,7 +305,7 @@ export function productPromotionTemplate(
       <img src="${product.image}" alt="${product.name}" class="product-image" />
       <div class="product-info">
         <h3 class="product-name">${product.name}</h3>
-        <div class="product-price">$${product.price}</div>
+        <div class="product-price">${product.price} kr</div>
       </div>
     </div>
   `,
@@ -313,7 +313,7 @@ export function productPromotionTemplate(
     .join('');
 
   return `
-    <html lang="en">
+    <html lang="no">
       <head>
         <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
         <style>
@@ -476,7 +476,7 @@ export function productPromotionTemplate(
           }
 
           .product-card::before {
-            content: 'SALE';
+            content: 'SALG';
             position: absolute;
             top: 8px;
             right: 8px;
@@ -604,32 +604,32 @@ export function productPromotionTemplate(
         <div class="email-container">
           <div class="header">
             <div class="logo">BALADI</div>
-            <div class="header-subtitle">Premium Quality, Delivered Fresh</div>
-            <div class="promotion-badge">🔥 Special Promotion</div>
+            <div class="header-subtitle">Premium Kvalitet, Levert Friskt</div>
+            <div class="promotion-badge">🔥 Spesiell Kampanje</div>
           </div>
 
           <div class="content">
-            <div class="badge">🎯 Limited Time Offer</div>
+            <div class="badge">🎯 Begrenset Tilbud</div>
 
-            <div class="greeting">Hello ${customerName}!</div>
+            <div class="greeting">Hei ${customerName}!</div>
 
-            <div class="promo-title">Don't Miss Our Special Promotion!</div>
+            <div class="promo-title">Ikke Gå Glipp Av Vår Spesielle Kampanje!</div>
 
             <div class="intro-text">
-              We're offering exclusive discounts on selected premium products.
-              This is your chance to get the best quality at unbeatable prices.
+              Vi tilbyr eksklusive rabatter på utvalgte premium produkter.
+              Dette er din sjanse til å få beste kvalitet til uslåelige priser.
             </div>
 
             <div class="discount-highlight">
-              <div class="discount-text">Save on Premium Products</div>
-              <div class="discount-subtitle">Limited time offer - while stocks last</div>
+              <div class="discount-text">Spar på Premium Produkter</div>
+              <div class="discount-subtitle">Begrenset tilbud - så lenge lageret rekker</div>
             </div>
 
             ${
               products.length > 0
                 ? `
             <div class="products-section">
-              <div class="products-title">Promotional Products</div>
+              <div class="products-title">Kampanjeprodukter</div>
               <div class="products-grid">
                 ${productCards}
               </div>
@@ -639,19 +639,19 @@ export function productPromotionTemplate(
             }
 
             <div class="cta-container">
-              <a href="#" class="cta-button">Shop Promotion Now</a>
+              <a href="#" class="cta-button">Handle Kampanje Nå</a>
             </div>
           </div>
 
           <div class="footer">
             <div class="footer-text">
-              Don't miss out on these incredible savings! This promotion is for a limited time only.
-              <br>Thank you for being a valued customer of Baladi.
+              Ikke gå glipp av disse utrolige besparelsene! Denne kampanjen varer kun i begrenset tid.
+              <br>Takk for at du er en verdsatt kunde av Baladi.
             </div>
 
             <div class="unsubscribe">
-              © ${new Date().getFullYear()} Baladi. All rights reserved.<br>
-              <a href="#">Unsubscribe</a> | <a href="#">Update Preferences</a>
+              © ${new Date().getFullYear()} Baladi. Alle rettigheter reservert.<br>
+              <a href="#">Avmeld</a> | <a href="#">Oppdater Preferanser</a>
             </div>
           </div>
         </div>

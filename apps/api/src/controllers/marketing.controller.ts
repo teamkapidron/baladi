@@ -5,6 +5,7 @@ import { formatDate } from 'date-fns';
 import Product from '@/models/product.model';
 import Campaign from '@/models/campaign.model';
 import Subscriber from '@/models/subscriber.model';
+import BulkDiscount from '@/models/bulkDiscount.model';
 
 // Utils
 import { sendResponse } from '@/utils/common/response.util';
@@ -12,10 +13,6 @@ import {
   newArrivalTemplate,
   productPromotionTemplate,
 } from '@/templates/newsletter.template';
-import {
-  multiProductPromotionTemplate,
-  promotionPosterTemplate,
-} from '@/templates/poster.template';
 import { sendMail } from '@/utils/common/mail.util';
 
 // Handlers
@@ -32,6 +29,7 @@ import type {
 import type { Request, Response } from 'express';
 import { CampaignType } from '@repo/types/campaign';
 import { SubscriberStatus } from '@repo/types/subscribers';
+import { SubscriberWithUser } from '@/types/marketing.types';
 
 export const newsletterStats = asyncHandler(
   async (_: Request, res: Response) => {
@@ -65,6 +63,27 @@ export const createCampaign = asyncHandler(
       description,
       type,
       productsIds,
+    });
+
+    const subscribers = await Subscriber.find<SubscriberWithUser>({
+      status: SubscriberStatus.SUBSCRIBED,
+    }).populate({
+      path: 'userId',
+      select: 'email name',
+    });
+
+    subscribers.forEach((subscriber) => {
+      sendMail({
+        to: subscriber.userId.email,
+        subject: title,
+        template: {
+          type: type === CampaignType.NEW_ARRIVAL ? 'newArrival' : 'promotion',
+          data: {
+            customerName: subscriber.userId.name,
+            products,
+          },
+        },
+      });
     });
 
     sendResponse(res, 201, 'Campaign created successfully', { campaign });
@@ -110,43 +129,28 @@ export const previewPromotionPoster = asyncHandler(
       throw new ErrorHandler(400, 'Some products are not found', 'BAD_REQUEST');
     }
 
-    const productsData = products.map((product) => ({
-      name: product.name,
-      price: product.salePrice,
-      image: product.images?.[0] ?? '',
-      promotionTitle: posterType === 'new-arrival' ? 'New Arrival' : '',
-    }));
+    const bulkDiscounts = await BulkDiscount.find();
 
-    if (productsData.length > 3) {
-      throw new ErrorHandler(
-        400,
-        'You can only select up to 3 products',
-        'BAD_REQUEST',
-      );
-    }
+    const productsData = products.map((product) => {
+      const price = product.salePrice * (1 + product.vat / 100);
 
-    let html: string[] = [];
-
-    if (productsData.length === 1) {
-      html = [
-        promotionPosterTemplate({
-          name: productsData[0]?.name ?? '',
-          price: productsData[0]?.price ?? 0,
-          image: productsData[0]?.image ?? '',
-          promotionTitle: productsData[0]?.promotionTitle ?? '',
-        }),
-      ];
-    }
-
-    html = [
-      multiProductPromotionTemplate({
-        promotionTitle: productsData[0]?.promotionTitle ?? '',
-        items: productsData,
-      }),
-    ];
+      return {
+        name: product.name,
+        price,
+        image: product.images?.[0] ?? '',
+        pricePerUnit: product.salePrice / product.noOfUnits,
+        bulkDiscount: bulkDiscounts.map((bulkDiscount) => ({
+          minQuantity: bulkDiscount.minQuantity,
+          price: price * (1 - bulkDiscount.discountPercentage / 100),
+          pricePerUnit:
+            (price * (1 - bulkDiscount.discountPercentage / 100)) /
+            product.noOfUnits,
+        })),
+      };
+    });
 
     sendResponse(res, 200, 'Promotion poster preview fetched successfully', {
-      html,
+      productsData,
     });
   },
 );

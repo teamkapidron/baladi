@@ -11,6 +11,8 @@ import {
   Search,
   Filter,
   Eye,
+  ChevronDown,
+  Archive,
 } from '@repo/ui/lib/icons';
 import { formatDate } from '@repo/ui/lib/date';
 
@@ -35,6 +37,7 @@ import { Button } from '@repo/ui/components/base/button';
 
 // Hooks
 import { useInventory } from '@/hooks/useInventory';
+import { usePagination } from '@repo/ui/hooks/usePagination';
 import { useInventoryFilters } from '@/hooks/useInventory/useInventoryFilters';
 
 // Types
@@ -43,6 +46,8 @@ import { InventoryStatus } from '@/hooks/useInventory/types';
 function InventoryTable() {
   const router = useRouter();
   const { inventoryQuery } = useInventory();
+  const { page, limit, handlePageChange, handlePageSizeChange } =
+    usePagination();
   const { search, status, handleSearchFilterChange, handleStatusFilterChange } =
     useInventoryFilters();
 
@@ -51,6 +56,7 @@ function InventoryTable() {
   }, [inventoryQuery.data]);
 
   const [searchQuery, setSearchQuery] = useState<string>(search ?? '');
+  const [pageInput, setPageInput] = useState<string>(page.toString());
 
   const handleSearch = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,6 +65,32 @@ function InventoryTable() {
     },
     [handleSearchFilterChange],
   );
+
+  const handlePageInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setPageInput(e.target.value);
+    },
+    [],
+  );
+
+  const handlePageInputSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      const pageNum = parseInt(pageInput, 10);
+      const totalPages = inventoryQuery.data?.totalPages || 1;
+      if (!isNaN(pageNum) && pageNum >= 1 && pageNum <= totalPages) {
+        handlePageChange(pageNum);
+      } else {
+        setPageInput(page.toString());
+      }
+    },
+    [handlePageChange, inventoryQuery.data?.totalPages, page, pageInput],
+  );
+
+  const currentPage = Number(page);
+  const pageSize = Number(limit);
+  const totalPages = inventoryQuery.data?.totalPages || 1;
+  const totalItems = inventoryQuery.data?.totalInventory || 0;
 
   return (
     <div className="overflow-hidden rounded-xl bg-white shadow-lg ring-1 ring-gray-200">
@@ -73,20 +105,20 @@ function InventoryTable() {
 
           <div className="flex flex-col gap-3 sm:flex-row">
             <div className="relative">
-              <Search className="absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-400" />
+              <Search className="absolute top-1/2 left-4 z-10 h-5 w-5 -translate-y-1/2 text-gray-400" />
               <Input
                 type="text"
                 placeholder="Søk etter produktnavn, SKU eller strekkode..."
-                className="w-96 rounded-xl border-gray-200 bg-white pl-12 pr-4 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="w-96 rounded-xl border-gray-200 bg-white pr-4 pl-12 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 value={searchQuery}
                 onChange={handleSearch}
               />
             </div>
 
             <div className="relative">
-              <Filter className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              <Filter className="absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-gray-400" />
               <Select value={status} onValueChange={handleStatusFilterChange}>
-                <SelectTrigger className="w-full rounded-xl border-gray-200 bg-white py-2.5 pl-11 pr-10 text-sm font-medium shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                <SelectTrigger className="w-full rounded-xl border-gray-200 bg-white py-2.5 pr-10 pl-11 text-sm font-medium shadow-sm focus:border-blue-500 focus:ring-blue-500">
                   <SelectValue placeholder="Alle" />
                 </SelectTrigger>
                 <SelectContent>
@@ -136,7 +168,7 @@ function InventoryTable() {
                       <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-gray-100 to-gray-200 ring-8 ring-gray-50">
                         <Filter className="h-10 w-10 text-gray-400" />
                       </div>
-                      <div className="absolute -right-2 -top-2 flex h-8 w-8 items-center justify-center rounded-full bg-orange-100 ring-2 ring-white">
+                      <div className="absolute -top-2 -right-2 flex h-8 w-8 items-center justify-center rounded-full bg-orange-100 ring-2 ring-white">
                         <AlertTriangle className="h-4 w-4 text-orange-600" />
                       </div>
                     </div>
@@ -268,6 +300,121 @@ function InventoryTable() {
             )}
           </TableBody>
         </Table>
+      </div>
+
+      <div className="border-t border-gray-100 bg-gray-50/50 px-8 py-4">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-gray-700">Vis:</span>
+              <Select
+                value={pageSize.toString()}
+                onValueChange={(value) => handlePageSizeChange(Number(value))}
+              >
+                <SelectTrigger className="w-20 text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="25">25</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {totalItems > 0 && (
+              <div className="flex items-center gap-2">
+                <div className="flex h-6 w-6 items-center justify-center rounded bg-blue-100">
+                  <Archive className="h-3.5 w-3.5 text-blue-600" />
+                </div>
+                <span className="text-sm text-gray-600">
+                  Viser {(currentPage - 1) * pageSize + 1} til{' '}
+                  {Math.min(currentPage * pageSize, totalItems)} av {totalItems}{' '}
+                  lagerenheter
+                </span>
+              </div>
+            )}
+          </div>
+
+          {totalPages > 1 && (
+            <div className="flex items-center gap-1">
+              <button
+                className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white transition-all duration-300 hover:border-blue-500 hover:bg-blue-500 hover:text-white disabled:opacity-50 disabled:hover:bg-white disabled:hover:text-gray-400"
+                disabled={currentPage === 1}
+                onClick={() => handlePageChange(currentPage - 1)}
+                title="Forrige side"
+              >
+                <ChevronDown className="h-4 w-4 rotate-90" />
+              </button>
+
+              {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                let pageNum;
+                if (totalPages <= 5) {
+                  pageNum = i + 1;
+                } else if (currentPage <= 3) {
+                  pageNum = i + 1;
+                } else if (currentPage >= totalPages - 2) {
+                  pageNum = totalPages - 4 + i;
+                } else {
+                  pageNum = currentPage - 2 + i;
+                }
+
+                return (
+                  <button
+                    key={`page-${pageNum}`}
+                    onClick={() => handlePageChange(pageNum)}
+                    className={`h-8 min-w-8 rounded-lg px-3 text-sm font-medium transition-all duration-300 ${
+                      pageNum === currentPage
+                        ? 'bg-blue-500 text-white shadow-md'
+                        : 'border border-gray-200 bg-white text-gray-700 hover:border-blue-500 hover:bg-blue-500 hover:text-white'
+                    }`}
+                    title={`Side ${pageNum}`}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
+
+              {totalPages > 5 && (
+                <form
+                  onSubmit={handlePageInputSubmit}
+                  className="ml-1 flex items-center gap-1"
+                >
+                  <input
+                    type="text"
+                    value={pageInput}
+                    onChange={handlePageInputChange}
+                    className="h-8 w-12 rounded-lg border border-gray-200 bg-white px-2 text-center text-sm shadow-sm transition-all duration-300 hover:border-blue-500/50 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
+                    placeholder="Gå"
+                  />
+                  <button
+                    type="submit"
+                    className="h-8 rounded-lg border border-gray-200 bg-white px-2 text-xs font-medium transition-all duration-300 hover:border-blue-500 hover:bg-blue-500 hover:text-white"
+                  >
+                    Gå
+                  </button>
+                </form>
+              )}
+
+              <button
+                className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white transition-all duration-300 hover:border-blue-500 hover:bg-blue-500 hover:text-white disabled:opacity-50 disabled:hover:bg-white disabled:hover:text-gray-400"
+                disabled={currentPage === totalPages}
+                onClick={() => handlePageChange(currentPage + 1)}
+                title="Neste side"
+              >
+                <ChevronDown className="h-4 w-4 -rotate-90" />
+              </button>
+            </div>
+          )}
+        </div>
+
+        {totalPages > 1 && (
+          <div className="mt-3 text-center">
+            <span className="text-sm font-medium text-gray-700">
+              Side {currentPage} av {totalPages}
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -71,6 +71,18 @@ interface ContactUsTemplate {
   };
 }
 
+interface NewsletterTemplate {
+  type: 'newArrival' | 'promotion';
+  data: {
+    customerName: string;
+    products: {
+      name: string;
+      price: number;
+      image: string;
+    }[];
+  };
+}
+
 export type MailTemplate =
   | VerifyEmailTemplate
   | AdminApprovalTemplate
@@ -80,4 +92,5 @@ export type MailTemplate =
   | InventoryAlertTemplate
   | UserApprovalConfirmationTemplate
   | OrderPlacedTemplate
-  | ContactUsTemplate;
+  | ContactUsTemplate
+  | NewsletterTemplate;
