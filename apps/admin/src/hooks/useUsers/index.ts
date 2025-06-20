@@ -1,6 +1,6 @@
 // Node Modules
 import { useCallback } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 // Hooks
 import { useRequest } from '@/hooks/useRequest';
@@ -16,8 +16,10 @@ import {
   GetUserRegistrationGraphDataRequest,
   GetUserStatsRequest,
   TopUsersRequest,
+  CreateUserRequest,
 } from './types';
 import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
+import { toast } from '@repo/ui/lib/sonner';
 
 export function useUserStats() {
   const api = useRequest();
@@ -52,6 +54,7 @@ export function useUsers() {
   const { page, limit } = usePagination();
   const { dateRangeInString } = useDateRangeInParams();
   const { search, userType, status } = useUserFilter();
+  const queryClient = useQueryClient();
 
   const getAllUsers = useCallback(
     async (payload: GetAllCustomersRequest['payload']) => {
@@ -135,6 +138,26 @@ export function useUsers() {
     ],
     queryFn: () => getTopUsers(dateRangeInString),
   });
+  const createUser = useCallback(
+    async (payload: CreateUserRequest['payload']) => {
+      const response = await api.post<CreateUserRequest['response']>(
+        '/user/create',
+        payload,
+      );
+      return response.data.data;
+    },
+    [api],
+  );
+
+  const createUserMutation = useMutation({
+    mutationFn: createUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [ReactQueryKeys.GET_ALL_USERS],
+      });
+      toast.success('User created successfully');
+    },
+  });
 
   return {
     // Queries
@@ -145,6 +168,7 @@ export function useUsers() {
 
     // Mutations
     updateUserMutation,
+    createUserMutation,
   };
 }
 

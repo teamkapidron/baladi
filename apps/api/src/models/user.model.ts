@@ -65,6 +65,11 @@ const userSchema = new Schema<IUser>(
       type: Date,
       required: false,
     },
+    isCreatedByAdmin: {
+      type: Boolean,
+      default: false,
+      required: false,
+    },
   },
   { timestamps: true },
 );

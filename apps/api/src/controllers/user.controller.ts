@@ -29,7 +29,45 @@ import type {
   GetUserRegistrationGraphDataSchema,
   GetUserStatsSchema,
   TopUsersSchema,
+  CreateCustomerSchema,
 } from '@/validators/user.validator';
+import { encryptPassword } from '@/utils/common/password.util';
+
+export const createCustomer = asyncHandler(
+  async (req: Request, res: Response) => {
+    const {
+      name,
+      email,
+      companyName,
+      organizationNumber,
+      phoneNumber,
+      userType,
+    } = req.body as CreateCustomerSchema['body'];
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      throw new ErrorHandler(
+        400,
+        'User already exists with this email',
+        'CONFLICT',
+      );
+    }
+    const hashedPassword = await encryptPassword('');
+    const user = await User.create({
+      email,
+      name,
+      password: hashedPassword,
+      companyName,
+      organizationNumber,
+      phoneNumber,
+      isEmailVerified: true,
+      isApprovedByAdmin: true,
+      userType,
+      isCreatedByAdmin: true,
+    });
+
+    sendResponse(res, 201, 'Customer created successfully', { user });
+  },
+);
 
 export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
   const query = req.query as GetAllUsersSchema['query'];

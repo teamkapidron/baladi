@@ -10,6 +10,7 @@ import {
   getUserRegistrationGraphData,
   getUserStats,
   getTopUsers,
+  createCustomer,
 } from '@/controllers/user.controller';
 
 import {
@@ -19,6 +20,7 @@ import {
   getUserRegistrationGraphDataSchema,
   getUserStatsSchema,
   topUsersSchema,
+  createCustomerSchema,
 } from '@/validators/user.validator';
 
 const router: Router = express.Router();
@@ -39,5 +41,6 @@ router.get(
 );
 router.get('/stats', isAdmin, validate(getUserStatsSchema), getUserStats);
 router.get('/top', isAdmin, validate(topUsersSchema), getTopUsers);
+router.post('/create', isAdmin, validate(createCustomerSchema), createCustomer);
 
 export default router;

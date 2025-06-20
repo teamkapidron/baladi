@@ -4,6 +4,17 @@ import { UserType } from '@repo/types/user';
 import { UserStatusFilter } from '@/types/user.types';
 import { dateSchema } from '@/validators/schemas/date.schema';
 
+export const createCustomerSchema = z.object({
+  body: z.object({
+    name: z.string().min(1, 'Name is required'),
+    email: z.string().email('Invalid email address'),
+    companyName: z.string().optional(),
+    organizationNumber: z.string().optional(),
+    phoneNumber: z.string().optional(),
+    userType: z.nativeEnum(UserType).default(UserType.INTERNAL),
+  }),
+});
+
 export const getAllUsersSchema = z.object({
   query: z.object({
     search: z.string().optional(),
@@ -93,3 +104,4 @@ export type GetUserRegistrationGraphDataSchema = z.infer<
 >;
 export type GetUserStatsSchema = z.infer<typeof getUserStatsSchema>;
 export type TopUsersSchema = z.infer<typeof topUsersSchema>;
+export type CreateCustomerSchema = z.infer<typeof createCustomerSchema>;
