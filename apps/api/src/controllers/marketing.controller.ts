@@ -1,4 +1,5 @@
 // Node Modules
+import { formatDate } from 'date-fns';
 
 // Schemas
 import Product from '@/models/product.model';
@@ -15,6 +16,7 @@ import {
   multiProductPromotionTemplate,
   promotionPosterTemplate,
 } from '@/templates/poster.template';
+import { sendMail } from '@/utils/common/mail.util';
 
 // Handlers
 import { asyncHandler } from '@/handlers/async.handler';
@@ -25,6 +27,7 @@ import type {
   CreateCampaignSchema,
   NewsLetterPreviewSchema,
   PreviewPromotionPosterSchema,
+  SendContactFormSchema,
 } from '@/validators/marketing.validator';
 import type { Request, Response } from 'express';
 import { CampaignType } from '@repo/types/campaign';
@@ -145,5 +148,40 @@ export const previewPromotionPoster = asyncHandler(
     sendResponse(res, 200, 'Promotion poster preview fetched successfully', {
       html,
     });
+  },
+);
+
+export const sendContactForm = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { name, email, phone, company, subject, message } =
+      req.body as SendContactFormSchema['body'];
+    const contactEmail = process.env.CONTACT_EMAIL;
+
+    if (!contactEmail) {
+      throw new ErrorHandler(
+        500,
+        'Contact email is not set',
+        'INTERNAL_SERVER',
+      );
+    }
+
+    sendMail({
+      to: contactEmail,
+      subject: 'New Contact Form Submission',
+      template: {
+        type: 'contactUs',
+        data: {
+          name,
+          email,
+          phone,
+          company,
+          subject,
+          message,
+          submittedAt: formatDate(new Date(), 'dd/MM/yyyy HH:mm'),
+        },
+      },
+    });
+
+    sendResponse(res, 200, 'Contact form sent successfully');
   },
 );

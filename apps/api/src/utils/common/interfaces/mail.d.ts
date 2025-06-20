@@ -58,6 +58,19 @@ interface OrderPlacedTemplate {
   };
 }
 
+interface ContactUsTemplate {
+  type: 'contactUs';
+  data: {
+    name: string;
+    email: string;
+    phone?: string;
+    company?: string;
+    subject: string;
+    message: string;
+    submittedAt: string;
+  };
+}
+
 export type MailTemplate =
   | VerifyEmailTemplate
   | AdminApprovalTemplate
@@ -66,4 +79,5 @@ export type MailTemplate =
   | WarehouseNotificationTemplate
   | InventoryAlertTemplate
   | UserApprovalConfirmationTemplate
-  | OrderPlacedTemplate;
+  | OrderPlacedTemplate
+  | ContactUsTemplate;

@@ -8,6 +8,7 @@ import {
   newsletterStats,
   newsLetterPreview,
   previewPromotionPoster,
+  sendContactForm,
 } from '@/controllers/marketing.controller';
 
 import {
@@ -15,6 +16,7 @@ import {
   createCampaignSchema,
   newsLetterPreviewSchema,
   previewPromotionPosterSchema,
+  sendContactFormSchema,
 } from '@/validators/marketing.validator';
 
 const router: Router = express.Router();
@@ -43,5 +45,6 @@ router.post(
   validate(previewPromotionPosterSchema),
   previewPromotionPoster,
 );
+router.post('/contact/form', validate(sendContactFormSchema), sendContactForm);
 
 export default router;

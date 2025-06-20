@@ -17,5 +17,12 @@ export function getQueryClient() {
         toast.error(err.title, { description: err.description });
       },
     }),
+    defaultOptions: {
+      queries: {
+        retry: 1,
+        gcTime: 1000 * 60 * 60 * 24,
+        staleTime: 1000 * 60 * 60 * 24,
+      },
+    },
   });
 }
