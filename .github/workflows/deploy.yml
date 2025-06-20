@@ -60,6 +60,7 @@ jobs:
           echo "WAREHOUSE_EMAIL=${{ vars.WAREHOUSE_EMAIL }}" >> $GITHUB_ENV
           echo "ADMIN_URL=${{ vars.ADMIN_URL }}" >> $GITHUB_ENV
           echo "USER_URL=${{ vars.USER_URL }}" >> $GITHUB_ENV
+          echo "CONTACT_EMAIL=${{ vars.CONTACT_EMAIL }}" >> $GITHUB_ENV
 
           # Cloudflare
           echo "CLOUDFLARE_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }}" >> $GITHUB_ENV
@@ -118,6 +119,7 @@ jobs:
           WAREHOUSE_EMAIL=${{ vars.WAREHOUSE_EMAIL }}
           ADMIN_URL=${{ vars.ADMIN_URL }}
           USER_URL=${{ vars.USER_URL }}
+          CONTACT_EMAIL=${{ vars.CONTACT_EMAIL }}
           EOT
 
             pnpm install
@@ -132,5 +134,3 @@ jobs:
             
             pm2 save
           EOF
-
-      

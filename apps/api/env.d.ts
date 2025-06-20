@@ -18,6 +18,7 @@ declare module 'global' {
         WAREHOUSE_EMAIL: string;
         ADMIN_URL: string;
         USER_URL: string;
+        CONTACT_EMAIL: string;
       }
     }
   }

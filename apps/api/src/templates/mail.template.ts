@@ -1971,7 +1971,7 @@ export function orderPlacedTemplate(order: OrderResponse) {
             margin-bottom: 30px;
           }
 
-          
+
 
           .order-total {
             background: linear-gradient(135deg, #183c6c 0%, #4b7bbe 100%);
@@ -1994,7 +1994,7 @@ export function orderPlacedTemplate(order: OrderResponse) {
             font-family: 'Sora', sans-serif;
           }
 
-          
+
 
           .footer {
             background: #f1f5f9;
@@ -2137,6 +2137,464 @@ export function orderPlacedTemplate(order: OrderResponse) {
             <p>Dette er en automatisk e-post. Vennligst ikke svar på denne e-posten.</p>
             <p>Hvis du har spørsmål om din bestilling, kan du kontakte oss via våre vanlige kanaler.</p>
             <p>© ${new Date().getFullYear()} Baladi. Alle rettigheter forbeholdt.</p>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+}
+
+export function contactUsTemplate(
+  name: string,
+  email: string,
+  phone: string,
+  company: string,
+  subject: string,
+  message: string,
+  submittedAt: string,
+) {
+  const formattedDate = new Date(submittedAt).toLocaleDateString('no-NO', {
+    weekday: 'long',
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+
+  return `
+    <html>
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+          * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+          }
+
+          body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #0f172a;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 20px;
+            margin: 0;
+          }
+
+          .email-wrapper {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
+            overflow: hidden;
+          }
+
+          .header {
+            background: linear-gradient(135deg, #183c6c 0%, #4b7bbe 100%);
+            padding: 40px 30px;
+            text-align: center;
+            color: #ffffff;
+          }
+
+          .logo img {
+            max-width: 120px;
+            height: auto;
+            margin-bottom: 20px;
+            filter: brightness(0) invert(1);
+          }
+
+          .notification-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            display: block;
+          }
+
+          .header h1 {
+            font-family: 'Sora', sans-serif;
+            font-size: 28px;
+            font-weight: 600;
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          }
+
+          .content {
+            padding: 40px 30px;
+          }
+
+          .greeting {
+            font-size: 18px;
+            font-weight: 600;
+            color: #183c6c;
+            margin-bottom: 20px;
+          }
+
+          .message {
+            font-size: 16px;
+            color: #475569;
+            margin-bottom: 30px;
+            line-height: 1.6;
+          }
+
+          .contact-details {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            border-left: 4px solid #ff9f45;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 30px 0;
+          }
+
+          .contact-details h3 {
+            font-family: 'Sora', sans-serif;
+            color: #183c6c;
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+          }
+
+          .contact-details h3::before {
+            content: "📞";
+            margin-right: 8px;
+            font-size: 20px;
+          }
+
+          .detail-item {
+            display: flex;
+            margin-bottom: 12px;
+            align-items: flex-start;
+          }
+
+          .detail-label {
+            font-weight: 600;
+            color: #334155;
+            min-width: 120px;
+            margin-right: 15px;
+            margin-top: 8px;
+          }
+
+          .detail-value {
+            color: #64748b;
+            background: #ffffff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            flex: 1;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            min-width: 0;
+          }
+
+          .detail-value.email {
+            font-family: 'Courier New', monospace;
+          }
+
+          .detail-value.phone {
+            font-family: 'Courier New', monospace;
+          }
+
+          .message-section {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-left: 4px solid #183c6c;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 30px 0;
+          }
+
+          .message-section h3 {
+            font-family: 'Sora', sans-serif;
+            color: #183c6c;
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+          }
+
+          .message-section h3::before {
+            content: "💬";
+            margin-right: 8px;
+            font-size: 20px;
+          }
+
+          .message-content {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            color: #475569;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+          }
+
+          .urgency-section {
+            text-align: center;
+            margin: 40px 0;
+            padding: 25px;
+            background: linear-gradient(135deg, #fef3cd 0%, #fde68a 100%);
+            border-radius: 12px;
+            border: 1px solid #f59e0b;
+          }
+
+          .urgency-section h3 {
+            color: #92400e;
+            font-family: 'Sora', sans-serif;
+            font-size: 16px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+
+          .urgency-section h3::before {
+            content: "⚡";
+            margin-right: 8px;
+            font-size: 18px;
+          }
+
+          .urgency-section p {
+            color: #92400e;
+            font-size: 14px;
+            margin: 0;
+          }
+
+          .timestamp-section {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: center;
+          }
+
+          .timestamp-section h4 {
+            color: #475569;
+            font-family: 'Sora', sans-serif;
+            font-size: 14px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
+
+          .timestamp {
+            color: #183c6c;
+            font-weight: 600;
+            font-size: 16px;
+          }
+
+          .footer {
+            background: #f1f5f9;
+            padding: 25px 30px;
+            text-align: center;
+            border-top: 1px solid #e2e8f0;
+          }
+
+          .footer p {
+            color: #64748b;
+            font-size: 13px;
+            margin: 5px 0;
+          }
+
+          .signature {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            color: #475569;
+          }
+
+          .signature strong {
+            color: #183c6c;
+            font-family: 'Sora', sans-serif;
+          }
+
+          @media (max-width: 600px) {
+            body {
+              padding: 10px;
+            }
+
+            .email-wrapper {
+              margin: 0;
+              border-radius: 8px;
+              max-width: 100%;
+            }
+
+            .header, .content {
+              padding: 20px 15px;
+            }
+
+            .header h1 {
+              font-size: 22px;
+              line-height: 1.3;
+            }
+
+            .notification-icon {
+              font-size: 36px;
+            }
+
+            .greeting {
+              font-size: 16px;
+            }
+
+            .message {
+              font-size: 14px;
+              line-height: 1.5;
+            }
+
+            .contact-details, .message-section, .urgency-section {
+              padding: 15px;
+              margin: 20px 0;
+            }
+
+            .contact-details h3, .message-section h3 {
+              font-size: 16px;
+            }
+
+            .detail-item {
+              flex-direction: column;
+              align-items: flex-start;
+              margin-bottom: 15px;
+            }
+
+            .detail-label {
+              min-width: auto;
+              margin-right: 0;
+              margin-bottom: 5px;
+              margin-top: 0;
+              font-size: 13px;
+            }
+
+            .detail-value {
+              font-size: 14px;
+              padding: 10px 12px;
+              width: 100%;
+            }
+
+            .message-content {
+              padding: 15px;
+              font-size: 14px;
+            }
+
+            .timestamp-section {
+              padding: 15px;
+            }
+
+            .footer {
+              padding: 20px 15px;
+            }
+
+            .signature {
+              font-size: 14px;
+            }
+          }
+
+          @media (max-width: 480px) {
+            .header h1 {
+              font-size: 20px;
+            }
+
+            .notification-icon {
+              font-size: 32px;
+            }
+
+            .greeting {
+              font-size: 15px;
+            }
+
+            .message {
+              font-size: 13px;
+            }
+
+            .detail-value {
+              font-size: 13px;
+              padding: 8px 10px;
+            }
+
+            .message-content {
+              font-size: 13px;
+              padding: 12px;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="email-wrapper">
+          <div class="header">
+            <div class="logo">
+              <img src="${COMPANY_LOGO}" alt="Baladi Logo">
+            </div>
+            <div class="notification-icon">📩</div>
+            <h1>Ny Kontakthenvendelse</h1>
+          </div>
+
+          <div class="content">
+            <div class="greeting">Hei Administrator!</div>
+
+            <div class="message">
+              Du har mottatt en ny kontakthenvendelse via kontaktskjemaet på Baladi Engros nettsiden.
+              Her er detaljene for henvendelsen som krever din oppmerksomhet.
+            </div>
+
+            <div class="contact-details">
+              <h3>Kontaktopplysninger</h3>
+              <div class="detail-item">
+                <span class="detail-label">Navn:</span>
+                <span class="detail-value">${name}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">E-post:</span>
+                <span class="detail-value email">${email}</span>
+              </div>
+              ${
+                phone
+                  ? `
+              <div class="detail-item">
+                <span class="detail-label">Telefon:</span>
+                <span class="detail-value phone">${phone}</span>
+              </div>
+              `
+                  : ''
+              }
+              ${
+                company
+                  ? `
+              <div class="detail-item">
+                <span class="detail-label">Bedrift:</span>
+                <span class="detail-value">${company}</span>
+              </div>
+              `
+                  : ''
+              }
+              <div class="detail-item">
+                <span class="detail-label">Emne:</span>
+                <span class="detail-value">${subject}</span>
+              </div>
+            </div>
+
+            <div class="message-section">
+              <h3>Melding fra kunde</h3>
+              <div class="message-content">${message}</div>
+            </div>
+
+            <div class="timestamp-section">
+              <h4>Henvendelse mottatt</h4>
+              <div class="timestamp">${formattedDate}</div>
+            </div>
+
+            <div class="urgency-section">
+              <h3>Påminnelse</h3>
+              <p>Vennligst svar på denne henvendelsen så snart som mulig for å opprettholde god kundeservice.</p>
+            </div>
+
+            <div class="signature">
+              <p>Dette er en automatisk varsling fra<br><strong>Baladi Engros Kontaktskjema</strong></p>
+            </div>
+          </div>
+
+          <div class="footer">
+            <p>Dette er en automatisk e-post som varsler om ny kontakthenvendelse.</p>
+            <p>For å svare kunden, vennligst bruk e-postadressen oppgitt i kontaktopplysningene ovenfor.</p>
+            <p>© ${new Date().getFullYear()} Baladi Engros. Alle rettigheter forbeholdt.</p>
           </div>
         </div>
       </body>

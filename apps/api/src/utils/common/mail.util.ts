@@ -8,6 +8,7 @@ import {
   adminCredentialsTemplate,
   userApprovalTemplate,
   orderPlacedTemplate,
+  contactUsTemplate,
 } from '@/templates/mail.template';
 import { inventoryAlertTemplate } from '@/templates/cron.template';
 
@@ -55,6 +56,17 @@ function getTemplate(template: MailTemplate) {
     }
     case 'orderPlaced': {
       return orderPlacedTemplate(template.data.order);
+    }
+    case 'contactUs': {
+      return contactUsTemplate(
+        template.data.name,
+        template.data.email,
+        template.data.phone,
+        template.data.company,
+        template.data.subject,
+        template.data.message,
+        template.data.submittedAt,
+      );
     }
   }
 }

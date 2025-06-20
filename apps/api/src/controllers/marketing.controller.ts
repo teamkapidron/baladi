@@ -25,10 +25,14 @@ import type {
   CreateCampaignSchema,
   NewsLetterPreviewSchema,
   PreviewPromotionPosterSchema,
+  SendContactFormSchema,
 } from '@/validators/marketing.validator';
 import type { Request, Response } from 'express';
 import { CampaignType } from '@repo/types/campaign';
 import { SubscriberStatus } from '@repo/types/subscribers';
+import { sendMail } from '@/utils/common/mail.util';
+import { contactUsTemplate } from '@/templates/mail.template';
+import { ErrorName } from '@/types/common/error.types';
 
 export const newsletterStats = asyncHandler(
   async (_: Request, res: Response) => {
@@ -145,5 +149,40 @@ export const previewPromotionPoster = asyncHandler(
     sendResponse(res, 200, 'Promotion poster preview fetched successfully', {
       html,
     });
+  },
+);
+
+export const sendContactForm = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { name, email, phone, company, subject, message } =
+      req.body as SendContactFormSchema['body'];
+    const contactEmail = process.env.CONTACT_EMAIL;
+
+    if (!contactEmail) {
+      throw new ErrorHandler(
+        500,
+        'Contact email is not set',
+        'INTERNAL_SERVER',
+      );
+    }
+
+    sendMail({
+      to: contactEmail,
+      subject: 'New Contact Form Submission',
+      template: {
+        type: 'contactUs',
+        data: {
+          name,
+          email,
+          phone,
+          company,
+          subject,
+          message,
+          submittedAt: new Date().toISOString(),
+        },
+      },
+    });
+
+    sendResponse(res, 200, 'Contact form sent successfully');
   },
 );

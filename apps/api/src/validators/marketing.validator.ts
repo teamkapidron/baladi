@@ -26,9 +26,21 @@ export const previewPromotionPosterSchema = z.object({
   }),
 });
 
+export const sendContactFormSchema = z.object({
+  body: z.object({
+    name: z.string().min(1, 'Name is required'),
+    email: z.string().email('Invalid email address'),
+    phone: z.string().optional(),
+    company: z.string().optional(),
+    subject: z.string().min(1, 'Subject is required'),
+    message: z.string().min(1, 'Message is required'),
+  }),
+});
+
 export type NewsletterStatsSchema = z.infer<typeof newsletterStatsSchema>;
 export type CreateCampaignSchema = z.infer<typeof createCampaignSchema>;
 export type NewsLetterPreviewSchema = z.infer<typeof newsLetterPreviewSchema>;
 export type PreviewPromotionPosterSchema = z.infer<
   typeof previewPromotionPosterSchema
 >;
+export type SendContactFormSchema = z.infer<typeof sendContactFormSchema>;
