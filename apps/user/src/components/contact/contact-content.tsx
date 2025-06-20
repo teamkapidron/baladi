@@ -1,15 +1,21 @@
 'use client';
 
-import { Mail, MapPin, Phone, Clock } from '@repo/ui/lib/icons';
+// Node Modules
+import { memo } from 'react';
+import { Mail, MapPin, Phone } from '@repo/ui/lib/icons';
+
+// Components
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from '@repo/ui/components/base/card';
+
+// Components
 import ContactForm from './contact-form';
 
-export default function ContactContent() {
+function ContactContent() {
   const contactInfo = [
     {
       icon: Mail,
@@ -32,12 +38,6 @@ export default function ContactContent() {
       description: 'Besøk vårt lager',
       href: 'https://maps.google.com/?q=Høgskoleringen+1,+1337+Høgskoleringen',
     },
-    {
-      icon: Clock,
-      title: 'Åpningstider',
-      content: 'Man-Fre: 08:00-16:00',
-      description: 'Våre kontortider',
-    },
   ];
 
   return (
@@ -52,7 +52,7 @@ export default function ContactContent() {
         </p>
       </div>
 
-      <div className="mb-16 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mb-16 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {contactInfo.map((info, index) => (
           <Card
             key={index}
@@ -92,7 +92,6 @@ export default function ContactContent() {
       </div>
 
       <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
-        {/* Company Information */}
         <div className="space-y-8">
           <div>
             <h2 className="mb-6 font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-dark)]">
@@ -153,3 +152,5 @@ export default function ContactContent() {
     </main>
   );
 }
+
+export default memo(ContactContent);

@@ -1,15 +1,11 @@
 // Node Modules
 import { useCallback } from 'react';
+import { toast } from '@repo/ui/lib/sonner';
 import { useMutation } from '@tanstack/react-query';
 
-// Hooks
-import { useRequest } from '../useRequest';
+import { useRequest } from '@/hooks/useRequest';
 
-// Types
 import { SendContactFormRequest } from './types';
-
-// Utils
-import { toast } from '@repo/ui/lib/sonner';
 
 export function useContact() {
   const api = useRequest();
@@ -27,10 +23,10 @@ export function useContact() {
 
   const sendContactFormMutation = useMutation({
     mutationFn: sendContactForm,
-    onSuccess: () => {
+    onSuccess: function () {
       toast.success('Takk for at du kontaktet oss!');
     },
-    onError: () => {
+    onError: function () {
       toast.error('Det oppstod en feil. Vennligst prøv igjen senere.');
     },
   });

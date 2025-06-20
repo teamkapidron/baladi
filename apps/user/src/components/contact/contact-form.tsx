@@ -1,9 +1,11 @@
 'use client';
 
-import { useState } from 'react';
-import { zodResolver, useForm } from '@repo/ui/lib/form';
-import { z } from '@repo/ui/lib/form';
+// Node Modules
+import { memo } from 'react';
 import { Send } from '@repo/ui/lib/icons';
+import { z, zodResolver, useForm } from '@repo/ui/lib/form';
+
+// Components
 import { Button } from '@repo/ui/components/base/button';
 import { Input } from '@repo/ui/components/base/input';
 import { Textarea } from '@repo/ui/components/base/textarea';
@@ -16,6 +18,8 @@ import {
   FormMessage,
 } from '@repo/ui/components/base/form';
 import { Card, CardContent } from '@repo/ui/components/base/card';
+
+// Hooks
 import { useContact } from '@/hooks/useContact';
 
 const contactFormSchema = z.object({
@@ -47,19 +51,8 @@ const contactFormSchema = z.object({
 
 type ContactFormValues = z.infer<typeof contactFormSchema>;
 
-export default function ContactForm() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+function ContactForm() {
   const { sendContactFormMutation } = useContact();
-
-  const onSubmit = (values: ContactFormValues) => {
-    setIsSubmitting(true);
-    sendContactFormMutation.mutate(values, {
-      onSuccess: () => {
-        setIsSubmitting(false);
-        form.reset();
-      },
-    });
-  };
 
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactFormSchema),
@@ -72,6 +65,14 @@ export default function ContactForm() {
       message: '',
     },
   });
+
+  function onSubmit(values: ContactFormValues) {
+    sendContactFormMutation.mutate(values, {
+      onSuccess: () => {
+        form.reset();
+      },
+    });
+  }
 
   return (
     <Card className="border-[var(--baladi-border)] shadow-lg">
@@ -207,10 +208,10 @@ export default function ContactForm() {
 
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={sendContactFormMutation.isPending}
               className="w-full bg-gradient-to-r from-[var(--baladi-primary)] to-[var(--baladi-secondary)] py-3 font-[family-name:var(--font-dm-sans)] text-base font-semibold text-white transition-all duration-300 hover:scale-105 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {isSubmitting ? (
+              {sendContactFormMutation.isPending ? (
                 <div className="flex items-center space-x-2">
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                   <span>Sender...</span>
@@ -228,3 +229,5 @@ export default function ContactForm() {
     </Card>
   );
 }
+
+export default memo(ContactForm);

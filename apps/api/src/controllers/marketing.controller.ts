@@ -1,4 +1,5 @@
 // Node Modules
+import { formatDate } from 'date-fns';
 
 // Schemas
 import Product from '@/models/product.model';
@@ -15,6 +16,7 @@ import {
   multiProductPromotionTemplate,
   promotionPosterTemplate,
 } from '@/templates/poster.template';
+import { sendMail } from '@/utils/common/mail.util';
 
 // Handlers
 import { asyncHandler } from '@/handlers/async.handler';
@@ -30,9 +32,6 @@ import type {
 import type { Request, Response } from 'express';
 import { CampaignType } from '@repo/types/campaign';
 import { SubscriberStatus } from '@repo/types/subscribers';
-import { sendMail } from '@/utils/common/mail.util';
-import { contactUsTemplate } from '@/templates/mail.template';
-import { ErrorName } from '@/types/common/error.types';
 
 export const newsletterStats = asyncHandler(
   async (_: Request, res: Response) => {
@@ -178,7 +177,7 @@ export const sendContactForm = asyncHandler(
           company,
           subject,
           message,
-          submittedAt: new Date().toISOString(),
+          submittedAt: formatDate(new Date(), 'dd/MM/yyyy HH:mm'),
         },
       },
     });

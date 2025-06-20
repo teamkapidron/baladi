@@ -6,8 +6,6 @@ import Footer from '@/components/common/footer/footer';
 
 export const metadata: Metadata = {
   title: 'Kontakt oss | Baladi Engros',
-  description:
-    'Ta kontakt med Baladi Engros. Vi er her for å hjelpe deg med alle dine engrosprodukter.',
 };
 
 export default function ContactPage() {
