@@ -35,6 +35,7 @@ export interface Order {
   notes?: string;
   desiredDeliveryDate?: string;
   palletType?: string;
+  isCreatedByAdmin?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

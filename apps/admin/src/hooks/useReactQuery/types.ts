@@ -53,4 +53,8 @@ export enum ReactQueryKeys {
   EXPORT_ORDERS = 'GET::/export/orders',
   EXPORT_PRODUCTS = 'GET::/export/products',
   EXPORT_USERS = 'GET::/export/users',
+
+  // Address
+  GET_ADDRESSES_ADMIN = 'GET::/address/admin/list',
+  ADD_ADDRESS_ADMIN = 'POST::/address/admin/add',
 }
