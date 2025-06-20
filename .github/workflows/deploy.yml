@@ -68,6 +68,14 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+          SMTP_NAME: ${{ vars.SMTP_NAME }}
+          SMTP_MAIL: ${{ vars.SMTP_MAIL }}
+          SMTP_REPLY_TO: ${{ vars.SMTP_REPLY_TO }}
+          SMTP_HOST: ${{ vars.SMTP_HOST }}
+          SMTP_PORT: ${{ vars.SMTP_PORT }}
+          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
 
       - name: Set up SSH for EC2
         run: |
