@@ -3,6 +3,7 @@ import { Sora, DM_Sans } from 'next/font/google';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { Toaster } from '@repo/ui/components/base/sonner';
 import ReactQueryProvider from '@/providers/react-query-provider';
+import CookieConsent from '@/components/common/cookie-consent';
 
 import type { Metadata } from 'next';
 
@@ -37,6 +38,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           <NuqsAdapter>
             <main>{children}</main>
             <Toaster richColors />
+            <CookieConsent />
           </NuqsAdapter>
         </ReactQueryProvider>
       </body>

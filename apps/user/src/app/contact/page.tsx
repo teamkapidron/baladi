@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { Suspense } from 'react';
 
 import Header from '@/components/common/header/header';
 import ContactContent from '@/components/contact/contact-content';
@@ -10,10 +11,12 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen bg-[var(--baladi-background)]">
-      <Header />
-      <ContactContent />
-      <Footer />
-    </div>
+    <Suspense>
+      <div className="min-h-screen bg-[var(--baladi-background)]">
+        <Header />
+        <ContactContent />
+        <Footer />
+      </div>
+    </Suspense>
   );
 }

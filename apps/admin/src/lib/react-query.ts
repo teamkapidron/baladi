@@ -22,6 +22,8 @@ export function getQueryClient() {
         retry: 1,
         gcTime: 1000 * 60 * 60 * 24,
         staleTime: 1000 * 60 * 60 * 24,
+        refetchOnWindowFocus: false,
+        refetchOnMount: false,
       },
     },
   });
