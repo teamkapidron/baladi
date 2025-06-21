@@ -104,7 +104,7 @@ export const getCategoriesFlattened = asyncHandler(
     const categories = await Category.find(filter)
       .skip((currentPage - 1) * perPage)
       .limit(perPage)
-      .sort({ createdAt: -1 })
+      .sort({ name: 1 })
       .lean();
 
     const total = await Category.countDocuments(filter);

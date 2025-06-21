@@ -76,6 +76,7 @@ export function useAuth() {
     onSuccess: function () {
       refetchUser();
       router.push('/onboarding');
+      window.location.reload();
       toast.success('OTP verified successfully');
     },
   });
@@ -117,6 +118,7 @@ export function useAuth() {
         queryKey: [ReactQueryKeys.GET_PRODUCTS],
       });
       router.push('/wait-for-approval');
+      window.location.reload();
       toast.success('Onboarding successful');
     },
   });
@@ -140,6 +142,7 @@ export function useAuth() {
         queryKey: [ReactQueryKeys.GET_PRODUCTS],
       });
       router.push('/wait-for-approval');
+      window.location.reload();
       toast.success('Login successful');
     },
   });
@@ -194,6 +197,7 @@ export function useAuth() {
         queryKey: [ReactQueryKeys.GET_USER_DATA],
       });
       router.push('/login');
+      window.location.reload();
       toast.success('Logged out successfully');
     },
   });
