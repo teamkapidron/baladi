@@ -1,25 +1,22 @@
+function formatPrice(price: number) {
+  return new Intl.NumberFormat('nb-NO', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(price);
+}
+
 export function newArrivalTemplate(
   products: {
+    _id: string;
     name: string;
     price: number;
     image: string;
+    vat: number;
+    noOfUnits: number;
   }[],
   customerName: string = 'Verdsatt Kunde',
+  email?: string,
 ) {
-  const productCards = products
-    .map(
-      (product) => `
-    <div class="product-card">
-      <img src="${product.image}" alt="${product.name}" class="product-image" />
-      <div class="product-info">
-        <h3 class="product-name">${product.name}</h3>
-        <div class="product-price">${product.price} kr</div>
-      </div>
-    </div>
-  `,
-    )
-    .join('');
-
   return `
     <html lang="no">
       <head>
@@ -29,6 +26,10 @@ export function newArrivalTemplate(
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+          }
+
+          a {
+            text-decoration: none;
           }
 
           body {
@@ -56,21 +57,28 @@ export function newArrivalTemplate(
             position: relative;
           }
 
-          .logo {
+          .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 8px;
+          }
+
+          .logo-image {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+          }
+
+          .logo-text {
             font-family: 'Sora', sans-serif;
             font-size: 24px;
             font-weight: 700;
             color: #ffffff;
             letter-spacing: 1px;
-            margin-bottom: 8px;
           }
-
-          .header-subtitle {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 14px;
-            font-weight: 400;
-          }
-
+    
           .content {
             padding: 32px 24px;
           }
@@ -162,6 +170,11 @@ export function newArrivalTemplate(
             color: #10b981;
           }
 
+          .product-units {
+            font-size: 12px;
+            color: #64748b;
+          }
+
           .cta-container {
             text-align: center;
             margin: 32px 0;
@@ -235,14 +248,29 @@ export function newArrivalTemplate(
             .greeting {
               font-size: 18px;
             }
+
+            .logo-container {
+              gap: 8px;
+            }
+
+            .logo-image {
+              width: 32px;
+              height: 32px;
+            }
+
+            .logo-text {
+              font-size: 20px;
+            }
           }
         </style>
       </head>
       <body>
         <div class="email-container">
           <div class="header">
-            <div class="logo">BALADI</div>
-            <div class="header-subtitle">Premium Kvalitet, Levert Friskt</div>
+            <div class="logo-container">
+              <img src="https://baladi-prod-baladibucket-fedmxzsx.s3.eu-central-1.amazonaws.com/products/baladi.png" alt="Baladi Logo" class="logo-image" />
+              <div class="logo-text">BALADI ENGROS</div>
+            </div>
           </div>
 
           <div class="content">
@@ -260,28 +288,54 @@ export function newArrivalTemplate(
                 ? `
             <div class="products-section">
               <div class="products-title">Utvalgte Nye Produkter</div>
-              <div class="products-grid">
-                ${productCards}
-              </div>
+             <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse: collapse;">
+                <tr>
+                  ${products
+                    .map(
+                      (product, i) => `
+                      <td align="center" valign="top" style="padding: 8px; width: 33.333%;">
+                        <table cellpadding="0" cellspacing="0" role="presentation" width="100%" style="border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
+                          <tr>
+                            <td>
+                              <img src="${product.image}" alt="${product.name}" width="100%" height="120" style="display: block; object-fit: cover;" />
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="padding: 12px; font-family: 'DM Sans', sans-serif; font-size: 14px;">
+                              <strong style="display: block; font-size: 14px; margin-bottom: 4px;">${product.name}</strong>
+                              <span style="color: #10b981; font-weight: 600;">${formatPrice(
+                                product.price * (1 + product.vat / 100),
+                              )} inkl. mva</span><br />
+                              <span style="font-size: 12px; color: #64748b;">${product.noOfUnits} enhet per kartong</span>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                      ${(i + 1) % 2 === 0 ? '</tr><tr>' : ''}
+                    `,
+                    )
+                    .join('')}
+                </tr>
+              </table>
             </div>
             `
                 : ''
             }
 
             <div class="cta-container">
-              <a href="#" class="cta-button">Handle Nye Ankomster</a>
+              <a href="${process.env.USER_URL}" class="cta-button">Handle Nye Ankomster</a>
             </div>
           </div>
 
           <div class="footer">
             <div class="footer-text">
-              Takk for at du velger Baladi. Vi er forpliktet til å bringe deg
+              Takk for at du velger Baladi Engros. Vi er forpliktet til å bringe deg
               de fineste produktene med eksepsjonell kvalitet.
             </div>
 
             <div class="unsubscribe">
-              © ${new Date().getFullYear()} Baladi. Alle rettigheter reservert.<br>
-              <a href="#">Avmeld</a> | <a href="#">Oppdater Preferanser</a>
+              © ${new Date().getFullYear()} Baladi Engros. Alle rettigheter reservert.<br>
+              ${email ? `<a href="${process.env.API_URL}/marketing/unsubscribe?email=${email}">Avmeld</a>` : '<a href="#">Avmeld</a>'}
             </div>
           </div>
         </div>
@@ -292,26 +346,16 @@ export function newArrivalTemplate(
 
 export function productPromotionTemplate(
   products: {
+    _id: string;
     name: string;
     price: number;
     image: string;
+    vat: number;
+    noOfUnits: number;
   }[],
   customerName: string = 'Verdsatt Kunde',
+  email?: string,
 ) {
-  const productCards = products
-    .map(
-      (product) => `
-    <div class="product-card">
-      <img src="${product.image}" alt="${product.name}" class="product-image" />
-      <div class="product-info">
-        <h3 class="product-name">${product.name}</h3>
-        <div class="product-price">${product.price} kr</div>
-      </div>
-    </div>
-  `,
-    )
-    .join('');
-
   return `
     <html lang="no">
       <head>
@@ -321,6 +365,10 @@ export function productPromotionTemplate(
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+          }
+
+          a {
+            text-decoration: none;
           }
 
           body {
@@ -348,6 +396,17 @@ export function productPromotionTemplate(
             position: relative;
           }
 
+          .logo-container {
+            margin-bottom: 8px;
+          }
+
+          .logo-image {
+            max-width: 120px;
+            max-height: 60px;
+            margin: 0 auto;
+            display: block;
+          }
+
           .logo {
             font-family: 'Sora', sans-serif;
             font-size: 24px;
@@ -355,12 +414,6 @@ export function productPromotionTemplate(
             color: #ffffff;
             letter-spacing: 1px;
             margin-bottom: 8px;
-          }
-
-          .header-subtitle {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 14px;
-            font-weight: 400;
           }
 
           .promotion-badge {
@@ -603,8 +656,10 @@ export function productPromotionTemplate(
       <body>
         <div class="email-container">
           <div class="header">
-            <div class="logo">BALADI</div>
-            <div class="header-subtitle">Premium Kvalitet, Levert Friskt</div>
+            <div class="logo-container">
+              <img src="https://baladi-prod-baladibucket-fedmxzsx.s3.eu-central-1.amazonaws.com/products/baladi.png" alt="Baladi Logo" class="logo-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+              <div class="logo" style="display: none;">BALADI</div>
+            </div>
             <div class="promotion-badge">🔥 Spesiell Kampanje</div>
           </div>
 
@@ -630,28 +685,55 @@ export function productPromotionTemplate(
                 ? `
             <div class="products-section">
               <div class="products-title">Kampanjeprodukter</div>
-              <div class="products-grid">
-                ${productCards}
-              </div>
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse: collapse;">
+                <tr>
+                  ${products
+                    .map(
+                      (product, i) => `
+                      <td align="center" valign="top" style="padding: 8px; width: 33.333%;">
+                        <table cellpadding="0" cellspacing="0" role="presentation" width="100%" style="border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
+                          <tr>
+                            <td>
+                              <img src="${product.image}" alt="${product.name}" width="100%" height="120" style="display: block; object-fit: cover;" />
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="padding: 12px; font-family: 'DM Sans', sans-serif; font-size: 14px;">
+                              <strong style="display: block; font-size: 14px; margin-bottom: 4px;">${product.name}</strong>
+                              <span style="color: #10b981; font-weight: 600;">${formatPrice(
+                                product.price * (1 + product.vat / 100),
+                              )} inkl. mva</span><br />
+                              <span style="font-size: 12px; color: #64748b;">${product.noOfUnits} enhet per kartong</span>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                      ${(i + 1) % 2 === 0 ? '</tr><tr>' : ''}
+                    `,
+                    )
+                    .join('')}
+                </tr>
+              </table>
+
             </div>
             `
                 : ''
             }
 
             <div class="cta-container">
-              <a href="#" class="cta-button">Handle Kampanje Nå</a>
+              <a href="${process.env.USER_URL}" class="cta-button">Handle Kampanje Nå</a>
             </div>
           </div>
 
           <div class="footer">
             <div class="footer-text">
               Ikke gå glipp av disse utrolige besparelsene! Denne kampanjen varer kun i begrenset tid.
-              <br>Takk for at du er en verdsatt kunde av Baladi.
+              <br>Takk for at du er en verdsatt kunde av Baladi Engros.
             </div>
 
             <div class="unsubscribe">
-              © ${new Date().getFullYear()} Baladi. Alle rettigheter reservert.<br>
-              <a href="#">Avmeld</a> | <a href="#">Oppdater Preferanser</a>
+              © ${new Date().getFullYear()} Baladi Engros. Alle rettigheter reservert.<br>
+              ${email ? `<a href="${process.env.API_URL}/marketing/unsubscribe?email=${email}">Avmeld</a>` : '<a href="#">Avmeld</a>'}
             </div>
           </div>
         </div>

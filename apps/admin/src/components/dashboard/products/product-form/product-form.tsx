@@ -1075,7 +1075,9 @@ function ProductForm(props: ProductFormProps) {
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  {defaultValues ? 'Oppdaterer Produkt...' : 'Oppretter Produkt...'}
+                  {defaultValues
+                    ? 'Oppdaterer Produkt...'
+                    : 'Oppretter Produkt...'}
                 </>
               ) : (
                 <>

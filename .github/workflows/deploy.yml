@@ -109,6 +109,7 @@ jobs:
           ADMIN_URL=${{ vars.ADMIN_URL }}
           USER_URL=${{ vars.USER_URL }}
           CONTACT_EMAIL=${{ vars.CONTACT_EMAIL }}
+          API_URL=${{ vars.API_URL }}
           EOT
 
             pnpm install

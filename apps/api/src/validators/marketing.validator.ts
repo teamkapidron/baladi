@@ -37,6 +37,12 @@ export const sendContactFormSchema = z.object({
   }),
 });
 
+export const unsubscribeSchema = z.object({
+  query: z.object({
+    email: z.string().email('Invalid email address'),
+  }),
+});
+
 export type NewsletterStatsSchema = z.infer<typeof newsletterStatsSchema>;
 export type CreateCampaignSchema = z.infer<typeof createCampaignSchema>;
 export type NewsLetterPreviewSchema = z.infer<typeof newsLetterPreviewSchema>;
@@ -44,3 +50,4 @@ export type PreviewPromotionPosterSchema = z.infer<
   typeof previewPromotionPosterSchema
 >;
 export type SendContactFormSchema = z.infer<typeof sendContactFormSchema>;
+export type UnsubscribeSchema = z.infer<typeof unsubscribeSchema>;

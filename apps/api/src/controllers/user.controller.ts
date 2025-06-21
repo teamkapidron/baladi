@@ -14,6 +14,7 @@ import {
   formatDate,
   getDateMatchStage,
 } from '@/utils/common/date.util';
+import { sendMail } from '@/utils/common/mail.util';
 import { sendResponse } from '@/utils/common/response.util';
 
 // Handlers
@@ -81,6 +82,20 @@ export const updateUser = asyncHandler(async (req: Request, res: Response) => {
   user.userType = userType;
   user.isApprovedByAdmin = isApprovedByAdmin ?? true;
   await user.save();
+
+  if (isApprovedByAdmin) {
+    await sendMail({
+      to: user.email,
+      subject: 'Din konto har blitt godkjent',
+      template: {
+        type: 'userApprovalConfirmation',
+        data: {
+          name: user.name,
+          email: user.email,
+        },
+      },
+    });
+  }
 
   sendResponse(res, 200, 'User updated successfully');
 });

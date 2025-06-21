@@ -55,16 +55,19 @@ export async function handler(event: ScheduledEvent, context: Context) {
     totalQuantity: product.totalQuantity,
   }));
 
-  await sendMail({
-    to: 'teamkapidron@gmail.com',
-    subject: 'Inventory Alert',
-    template: {
-      type: 'inventoryAlert',
-      data: { products },
-    },
-  });
+  if (products.length > 0) {
+    await sendMail({
+      to: 'teamkapidron@gmail.com',
+      subject: 'Inventory Alert',
+      template: {
+        type: 'inventoryAlert',
+        data: { products },
+      },
+    });
+  }
 
   return {
     statusCode: 200,
+    affectedItems: products.length,
   };
 }

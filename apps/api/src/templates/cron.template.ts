@@ -248,30 +248,39 @@ export function inventoryAlertTemplate(props: InventoryAlertTemplateProps) {
                 <div class="date-badge">Dato: ${currentDate}</div>
             </div>
             
-            <div class="products-grid">
-                ${products
-                  .map(
-                    (product) => `
-                    <div class="product-card">
-                        <img src="${product.productImage}" alt="${product.productName}" class="product-image" onerror="this.style.display='none'">
-                        <div class="product-info">
-                            <div class="product-name">${product.productName}</div>
-                            <div class="product-quantity">
-                                Beholdning: ${product.totalQuantity} enheter
-                                <span class="quantity-badge">Utløper snart</span>
-                            </div>
+            <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse: collapse;">
+            ${products
+              .map(
+                (product) => `
+                <tr>
+                <td style="padding: 12px 0;">
+                    <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="border: 1px solid #e5e7eb; border-radius: 12px; background-color: #f9fafb;">
+                    <tr>
+                        <td style="padding: 16px; vertical-align: top;">
+                        <img src="${product.productImage}" alt="${product.productName}" width="64" height="64" style="border-radius: 8px; object-fit: cover; border: 2px solid #e5e7eb;" onerror="this.style.display='none'" />
+                        </td>
+                        <td style="padding: 16px; vertical-align: top;">
+                        <div style="font-size: 16px; font-weight: 600; color: #1f2937; margin-bottom: 6px;">${product.productName}</div>
+                        <div style="font-size: 14px; color: #6b7280;">
+                            Beholdning: ${product.totalQuantity} enheter
+                            <span style="background-color: #fee2e2; color: #dc2626; padding: 2px 6px; border-radius: 6px; font-weight: 600; font-size: 12px; margin-left: 8px;">Utløper snart</span>
                         </div>
-                    </div>
+                        </td>
+                    </tr>
+                    </table>
+                </td>
+                </tr>
                 `,
-                  )
-                  .join('')}
-            </div>
+              )
+              .join('')}
+            </table>
+
             
             <div class="cta-section">
                 <p style="margin-bottom: 16px; color: #374151; font-size: 16px;">
                     <strong>Handling kreves:</strong> Vurder å lage tilbud, øke markedsføringen eller kontakte leverandører for disse produktene.
                 </p>
-                <a href="#" class="cta-button">Gå til lageroversikt</a>
+                <a href="${process.env.ADMIN_URL}/dashboard/inventory" class="cta-button">Gå til lageroversikt</a>
             </div>
         </div>
         

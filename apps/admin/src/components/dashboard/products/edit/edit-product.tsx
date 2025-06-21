@@ -2,6 +2,7 @@
 
 // Node Modules
 import { memo, useEffect, useMemo, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 
 // Components
 import ProductForm from '@/components/dashboard/products/product-form/product-form';
@@ -10,12 +11,17 @@ import { ProductFormValues } from '@/components/dashboard/products/product-form/
 // Hooks
 import { useProductBySlug, useProduct } from '@/hooks/useProduct';
 
+// Types
+import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
+
 interface EditProductProps {
   slug: string;
 }
 
 function EditProduct(props: EditProductProps) {
   const { slug } = props;
+
+  const queryClient = useQueryClient();
 
   const { updateProductMutation } = useProduct();
   const { data: productData } = useProductBySlug(slug);
@@ -68,7 +74,7 @@ function EditProduct(props: EditProductProps) {
       salePrice: product.salePrice,
       noOfUnits: product.noOfUnits,
 
-      categories: product.categories?.map((category) => category.name) || [],
+      categories: product.categories?.map((category) => category._id) || [],
 
       images: imagesFileList,
       isActive: product.isActive,
@@ -86,10 +92,19 @@ function EditProduct(props: EditProductProps) {
   function onSubmit(data: ProductFormValues) {
     if (!product) return;
 
-    updateProductMutation.mutate({
-      productId: product._id,
-      product: data,
-    });
+    updateProductMutation.mutate(
+      {
+        productId: product._id,
+        product: data,
+      },
+      {
+        onSuccess: function () {
+          queryClient.invalidateQueries({
+            queryKey: [ReactQueryKeys.GET_PRODUCT_BY_SLUG, slug],
+          });
+        },
+      },
+    );
   }
 
   return (

@@ -1,12 +1,14 @@
 'use client';
 
 // Node Modules
-import { memo } from 'react';
+import { memo, useCallback } from 'react';
 import Image from 'next/image';
-import { Package } from '@repo/ui/lib/icons';
+import { useRouter } from 'next/navigation';
+import { Package, Edit } from '@repo/ui/lib/icons';
 
 // Components
 // import { Switch } from '@repo/ui/components/base/switch';
+import { Button } from '@repo/ui/components/base/button';
 
 // Types/Utils
 import { formatPrice } from '@/utils/price.util';
@@ -22,6 +24,12 @@ interface ProductCardProps {
 
 function ProductCard(props: ProductCardProps) {
   const { product } = props;
+
+  const router = useRouter();
+
+  const handleEditProduct = useCallback(() => {
+    router.push(`/dashboard/products/edit/${product._id}`);
+  }, [product._id, router]);
 
   return (
     <div className="flex items-center gap-4 rounded-lg border border-[var(--baladi-border)] bg-gray-50/50 p-4 transition-all hover:shadow-md">
@@ -44,12 +52,15 @@ function ProductCard(props: ProductCardProps) {
           <h3 className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-dark)]">
             {product.name}
           </h3>
-          {/* <Switch
-            checked={product.isActive}
-            onCheckedChange={(checked) =>
-              onToggleActive?.(product._id, checked)
-            }
-          /> */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleEditProduct}
+            className="ml-2 h-8 w-8 p-0 text-[var(--baladi-gray)] hover:bg-[var(--baladi-primary)] hover:text-white"
+            title="Rediger produkt"
+          >
+            <Edit className="h-4 w-4" />
+          </Button>
         </div>
 
         <div className="flex items-center gap-4 text-xs text-[var(--baladi-gray)]">

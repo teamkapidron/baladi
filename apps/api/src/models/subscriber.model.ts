@@ -4,7 +4,7 @@ import { ISubscriber } from './interfaces/subscriber.mode';
 
 const subscriberSchema = new Schema<ISubscriber>(
   {
-    userId: { type: Schema.Types.ObjectId, required: true },
+    userId: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
     status: {
       type: String,
       enum: SubscriberStatus,

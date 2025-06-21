@@ -25,6 +25,7 @@ import type {
   NewsLetterPreviewSchema,
   PreviewPromotionPosterSchema,
   SendContactFormSchema,
+  UnsubscribeSchema,
 } from '@/validators/marketing.validator';
 import type { Request, Response } from 'express';
 import { CampaignType } from '@repo/types/campaign';
@@ -72,18 +73,38 @@ export const createCampaign = asyncHandler(
       select: 'email name',
     });
 
+    const productsData = products.map((product) => ({
+      _id: product._id?.toString() ?? '',
+      name: product.name,
+      price: product.salePrice,
+      image: product.images?.[0] ?? '',
+      vat: product.vat,
+      noOfUnits: product.noOfUnits,
+    }));
+
     subscribers.forEach((subscriber) => {
-      sendMail({
-        to: subscriber.userId.email,
-        subject: title,
-        template: {
-          type: type === CampaignType.NEW_ARRIVAL ? 'newArrival' : 'promotion',
-          data: {
-            customerName: subscriber.userId.name,
-            products,
-          },
-        },
-      });
+      (async () => {
+        try {
+          await sendMail({
+            to: subscriber.userId.email,
+            subject: title,
+            template: {
+              type:
+                type === CampaignType.NEW_ARRIVAL ? 'newArrival' : 'promotion',
+              data: {
+                customerName: subscriber.userId.name,
+                products: productsData,
+                email: subscriber.userId.email,
+              },
+            },
+          });
+        } catch (err) {
+          console.error(
+            `Failed to send mail to ${subscriber.userId.email}:`,
+            err,
+          );
+        }
+      })();
     });
 
     sendResponse(res, 201, 'Campaign created successfully', { campaign });
@@ -103,9 +124,12 @@ export const newsLetterPreview = asyncHandler(
     let html = '';
 
     const productsData = products.map((product) => ({
+      _id: product._id.toString(),
       name: product.name,
       price: product.salePrice,
       image: product.images?.[0] ?? '',
+      vat: product.vat,
+      noOfUnits: product.noOfUnits,
     }));
 
     if (type === CampaignType.NEW_ARRIVAL) {
@@ -189,3 +213,14 @@ export const sendContactForm = asyncHandler(
     sendResponse(res, 200, 'Contact form sent successfully');
   },
 );
+
+export const unsubscribe = asyncHandler(async (req: Request, res: Response) => {
+  const { email } = req.query as UnsubscribeSchema['query'];
+
+  await Subscriber.updateOne(
+    { email },
+    { status: SubscriberStatus.UNSUBSCRIBED },
+  );
+
+  sendResponse(res, 200, 'Unsubscribed successfully');
+});

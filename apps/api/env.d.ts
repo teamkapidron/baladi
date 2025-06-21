@@ -19,6 +19,7 @@ declare module 'global' {
         ADMIN_URL: string;
         USER_URL: string;
         CONTACT_EMAIL: string;
+        API_URL: string;
       }
     }
   }

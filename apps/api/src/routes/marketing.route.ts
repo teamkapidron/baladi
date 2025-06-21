@@ -9,6 +9,7 @@ import {
   newsLetterPreview,
   previewPromotionPoster,
   sendContactForm,
+  unsubscribe,
 } from '@/controllers/marketing.controller';
 
 import {
@@ -17,6 +18,7 @@ import {
   newsLetterPreviewSchema,
   previewPromotionPosterSchema,
   sendContactFormSchema,
+  unsubscribeSchema,
 } from '@/validators/marketing.validator';
 
 const router: Router = express.Router();
@@ -46,5 +48,6 @@ router.post(
   previewPromotionPoster,
 );
 router.post('/contact/form', validate(sendContactFormSchema), sendContactForm);
+router.get('/unsubscribe', validate(unsubscribeSchema), unsubscribe);
 
 export default router;

@@ -131,6 +131,20 @@ export const verifyOTP = asyncHandler(async (req: Request, res: Response) => {
 
   await Subscriber.create({ userId: user._id });
 
+  await sendMail({
+    to: email,
+    subject: 'Welcome to Baladi Engros',
+    template: {
+      type: 'adminApproval',
+      data: {
+        name: user.name,
+        email: user.email,
+        userId: user._id,
+        createdAt: user.createdAt.toISOString(),
+      },
+    },
+  });
+
   const payload = { id: String(user._id) };
   sendJwt(res, payload, { message: 'Email verified successfully' });
 });
