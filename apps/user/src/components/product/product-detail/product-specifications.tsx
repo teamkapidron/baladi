@@ -236,24 +236,6 @@ function ProductSpecifications() {
                   </p>
                 </div>
               )}
-
-              <div className="mt-6 rounded-lg bg-[var(--baladi-light)]/30 p-4">
-                <h5 className="mb-2 font-[family-name:var(--font-sora)] font-semibold text-[var(--baladi-dark)]">
-                  Slik fungerer mengderabattene:
-                </h5>
-                <ul className="space-y-2 font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-                  <li>
-                    • Rabattene gjelder automatisk når du når minstekravet
-                  </li>
-                  <li>
-                    • Rabatten gjelder for hele bestillingen av dette produktet
-                  </li>
-                  <li>• Kan kombineres med andre tilbud og kampanjer</li>
-                  <li>
-                    • Vises tydelig i handlekurven før du fullfører kjøpet
-                  </li>
-                </ul>
-              </div>
             </div>
           </TabsContent>
         )}

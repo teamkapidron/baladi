@@ -49,6 +49,7 @@ export function useAuth() {
         queryKey: [ReactQueryKeys.GET_ADMIN_DATA],
       });
       router.push('/dashboard');
+      window.location.reload();
       toast.success('Login successful');
     },
   });
@@ -65,6 +66,7 @@ export function useAuth() {
         queryKey: [ReactQueryKeys.GET_ADMIN_DATA],
       });
       router.push('/login');
+      window.location.reload();
       toast.success('Logged out successfully');
     },
   });

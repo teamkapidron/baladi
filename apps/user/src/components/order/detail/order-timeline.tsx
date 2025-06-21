@@ -127,7 +127,7 @@ function OrderTimeline({ order }: OrderTimelineProps) {
             {index < steps.length - 1 && (
               <div
                 className={cn(
-                  'absolute left-5 top-12 h-12 w-0.5',
+                  'absolute top-12 left-5 h-12 w-0.5',
                   step.status === 'completed'
                     ? 'bg-[var(--baladi-primary)]'
                     : 'bg-[var(--baladi-border)]',
@@ -141,7 +141,7 @@ function OrderTimeline({ order }: OrderTimelineProps) {
                 step.status === 'completed'
                   ? 'bg-[var(--baladi-primary)] text-white'
                   : step.status === 'current'
-                    ? 'ring-[var(--baladi-secondary)]/20 bg-[var(--baladi-secondary)] text-white ring-4'
+                    ? 'bg-[var(--baladi-secondary)] text-white ring-4 ring-[var(--baladi-secondary)]/20'
                     : 'bg-[var(--baladi-muted)] text-[var(--baladi-gray)]',
               )}
             >
@@ -176,17 +176,6 @@ function OrderTimeline({ order }: OrderTimelineProps) {
               >
                 {step.description}
               </p>
-
-              {step.status === 'current' && step.id === 'shipped' && (
-                <div className="bg-[var(--baladi-light)]/50 mt-3 rounded-lg p-3">
-                  <div className="flex items-center gap-2">
-                    <Truck size={16} className="text-[var(--baladi-primary)]" />
-                    <span className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-dark)]">
-                      Forventet levering: 3-5 virkedager
-                    </span>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         ))}
