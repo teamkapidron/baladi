@@ -1,9 +1,11 @@
 'use client';
 
 // Node Modules
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState, memo, useMemo } from 'react';
 import { zodResolver, useForm, z } from '@repo/ui/lib/form';
-import { Loader2, Package, Calculator } from '@repo/ui/lib/icons';
+
+// Icons
+import { Package, Calculator } from '@repo/ui/lib/icons';
 
 // Components
 import {
@@ -485,4 +487,4 @@ function EditOrderItemDialog({
   );
 }
 
-export default EditOrderItemDialog;
+export default memo(EditOrderItemDialog);

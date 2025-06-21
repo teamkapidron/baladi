@@ -1,5 +1,7 @@
+// Node Modules
 import { Metadata } from 'next';
 
+// Components
 import UpdateOrderHeader from '@/components/dashboard/orders/update/update-order-header';
 import UpdateOrderItemsList from '@/components/dashboard/orders/update/update-order-items-list';
 import CustomerInfoCard from '@/components/dashboard/orders/order-detail/customer-info-card';

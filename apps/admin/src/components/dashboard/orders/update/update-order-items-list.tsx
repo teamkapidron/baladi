@@ -3,6 +3,8 @@
 // Node Modules
 import React, { memo, useMemo, useState } from 'react';
 import Image from 'next/image';
+
+// Icons
 import { Edit, ImageIcon, Package } from '@repo/ui/lib/icons';
 
 // Components
