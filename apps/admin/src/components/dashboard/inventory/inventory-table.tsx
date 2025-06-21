@@ -208,6 +208,10 @@ function InventoryTable() {
                 <TableRow
                   key={item._id}
                   className="group border-b border-gray-50 transition-all duration-200 hover:bg-gray-50/50"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    router.push(`/dashboard/inventory/${item._id}`);
+                  }}
                 >
                   <TableCell className="px-8 py-6">
                     <div className="flex items-center space-x-4">
@@ -288,9 +292,10 @@ function InventoryTable() {
                       variant="outline"
                       className="group/btn w-full rounded-lg text-gray-400 transition-all hover:bg-green-50 hover:text-green-600"
                       title="Vis Detaljer"
-                      onClick={() =>
-                        router.push(`/dashboard/inventory/${item._id}`)
-                      }
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(`/dashboard/inventory/${item._id}`);
+                      }}
                     >
                       <Eye className="h-4 w-4" />
                     </Button>

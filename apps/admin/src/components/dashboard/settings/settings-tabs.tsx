@@ -2,7 +2,7 @@
 
 // Node Modules
 import { memo } from 'react';
-import { User, Shield, Box } from '@repo/ui/lib/icons';
+import { User, Shield } from '@repo/ui/lib/icons';
 
 // Components
 import {
@@ -13,7 +13,6 @@ import {
 } from '@repo/ui/components/base/tabs';
 import ProfileTab from './settings-tabs/profile-tab';
 import AdminTab from './settings-tabs/admin-tab';
-import ConfigTab from './settings-tabs/config-tab';
 
 function SettingsTabs() {
   return (
@@ -43,17 +42,6 @@ function SettingsTabs() {
                   <div className="text-sm opacity-75">Brukerstyring</div>
                 </div>
               </TabsTrigger>
-
-              <TabsTrigger
-                value="config"
-                className="flex flex-1 items-center justify-center gap-4 rounded-lg px-8 py-5 font-[family-name:var(--font-dm-sans)] text-base font-medium transition-all duration-200 data-[state=active]:bg-purple-600 data-[state=active]:text-white data-[state=active]:shadow-sm"
-              >
-                <Box className="h-8 w-8" />
-                <div className="text-center">
-                  <div className="font-semibold">Konfig</div>
-                  <div className="text-sm opacity-75">Systeminnstillinger</div>
-                </div>
-              </TabsTrigger>
             </TabsList>
           </div>
 
@@ -67,12 +55,6 @@ function SettingsTabs() {
             <TabsContent value="admin" className="mt-0 focus:outline-none">
               <div className="animate-in fade-in-50 duration-200">
                 <AdminTab />
-              </div>
-            </TabsContent>
-
-            <TabsContent value="config" className="mt-0 focus:outline-none">
-              <div className="animate-in fade-in-50 duration-200">
-                <ConfigTab />
               </div>
             </TabsContent>
           </div>

@@ -4,13 +4,18 @@ import validate from '@/middlewares/validate.middleware';
 import { addUserToRequest, isAdmin } from '@/middlewares/auth.middleware';
 
 import {
+  // User
   getProducts,
   getProductById,
   getProductBySlug,
   quickSearchProducts,
   fullSearchProducts,
+
+  // Admin
   getAllProducts,
   getProductImageUploadUrl,
+  getProductByIdAdmin,
+  getProductBySlugAdmin,
   createProduct,
   updateProduct,
   deleteProduct,
@@ -37,6 +42,7 @@ import {
 
 const router: Router = express.Router();
 
+/* --------------------------START: User Routes -------------------------- */
 router.get('/list', addUserToRequest, validate(getProductsSchema), getProducts);
 router.get(
   '/details/:productId',
@@ -56,7 +62,9 @@ router.get(
   quickSearchProducts,
 );
 router.get('/search', validate(fullSearchProductsSchema), fullSearchProducts);
+/* --------------------------END: User Routes -------------------------- */
 
+/* --------------------------START: Admin Routes -------------------------- */
 router.get('/all', isAdmin, validate(getAllProductsSchema), getAllProducts);
 router.post(
   '/image-upload-url',
@@ -65,6 +73,18 @@ router.post(
   getProductImageUploadUrl,
 );
 router.post('/', isAdmin, validate(createProductSchema), createProduct);
+router.get(
+  '/admin/details/:productId',
+  isAdmin,
+  validate(getProductByIdSchema),
+  getProductByIdAdmin,
+);
+router.get(
+  '/admin/slug/:slug',
+  isAdmin,
+  validate(getProductBySlugSchema),
+  getProductBySlugAdmin,
+);
 router.put(
   '/:productId',
   isAdmin,
@@ -85,5 +105,6 @@ router.get(
 );
 router.get('/top', isAdmin, validate(topProductsSchema), topProducts);
 router.get('/stats', isAdmin, validate(productStatsSchema), productStats);
+/* --------------------------END: Admin Routes -------------------------- */
 
 export default router;

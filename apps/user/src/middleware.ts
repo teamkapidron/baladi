@@ -1,3 +1,4 @@
+import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
@@ -24,7 +25,8 @@ function isOnboardingCompleted(user: User) {
 }
 
 export async function middleware(request: NextRequest) {
-  const token = request.cookies.get('token')?.value;
+  const cookieStore = await cookies();
+  const token = cookieStore.get('token')?.value;
 
   if (
     noAuthRoutes.some((route) => request.nextUrl.pathname.startsWith(route))

@@ -281,13 +281,13 @@ export function freightLabelTemplate(order: OrderResponse) {
     <div class="section">
       <h2>Frakt Til</h2>
       <div><strong>${order.userId.name}</strong></div>
-      <div>${order.shippingAddress.addressLine1}</div>
-      <div>${order.shippingAddress.addressLine2}</div>
+      <div>${order.shippingAddress.addressLine1 ?? ''}</div>
+      <div>${order.shippingAddress.addressLine2 ?? ''}</div>
       <div>
-        ${order.shippingAddress.city}, ${order.shippingAddress.state}
-        ${order.shippingAddress.postalCode}
+        ${order.shippingAddress.city ?? ''} ${order.shippingAddress.state ?? ''}
+        ${order.shippingAddress.postalCode ?? ''}
       </div>
-      <div>${order.shippingAddress.country}</div>
+      <div>${order.shippingAddress.country ?? ''}</div>
     </div>
 
     <div class="section">

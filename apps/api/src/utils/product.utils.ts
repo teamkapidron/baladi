@@ -1,13 +1,28 @@
 import { PipelineStage, Types } from 'mongoose';
-import { Visibility } from '@repo/types/product';
 
+import Category from '@/models/category.model';
+
+import { Visibility } from '@repo/types/product';
 import { ProductFilter, UserProductFilter } from '@/types/product.types';
 import type {
   GetAllProductsSchema,
   GetProductsSchema,
 } from '@/validators/product.validator';
 
-export function getUserProductFilterFromQuery(
+export async function getAllSubCategoryIds(
+  categoryId: Types.ObjectId,
+): Promise<Types.ObjectId[]> {
+  const subCategories = await Category.find({ parentId: categoryId }, '_id');
+  const subCategoryIds = subCategories.map((cat) => cat._id as Types.ObjectId);
+
+  const deeperSubCategoryIds = await Promise.all(
+    subCategoryIds.map((id) => getAllSubCategoryIds(id)),
+  );
+
+  return [categoryId, ...subCategoryIds, ...deeperSubCategoryIds.flat()];
+}
+
+export async function getUserProductFilterFromQuery(
   query: GetProductsSchema['query'],
 ) {
   const { search, page, limit, category, minPrice, maxPrice } = query;
@@ -26,7 +41,10 @@ export function getUserProductFilterFromQuery(
   }
 
   if (category) {
-    queryObject.categories = { $in: [new Types.ObjectId(category)] };
+    const categoryId = new Types.ObjectId(category);
+    const subCategoryIds = await getAllSubCategoryIds(categoryId);
+
+    queryObject.categories = { $in: subCategoryIds };
   }
 
   if (minPrice || maxPrice) {
@@ -48,7 +66,7 @@ export function getUserProductFilterFromQuery(
   };
 }
 
-export function getProductFilterFromQuery(
+export async function getProductFilterFromQuery(
   query: GetAllProductsSchema['query'],
 ) {
   const { search, page, limit, category, isActive, visibility } = query;
@@ -66,7 +84,10 @@ export function getProductFilterFromQuery(
   }
 
   if (category) {
-    queryObject.categories = { $in: [new Types.ObjectId(category)] };
+    const categoryId = new Types.ObjectId(category);
+    const subCategoryIds = await getAllSubCategoryIds(categoryId);
+
+    queryObject.categories = { $in: subCategoryIds };
   }
 
   if (isActive) {

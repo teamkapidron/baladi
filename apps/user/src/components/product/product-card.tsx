@@ -207,7 +207,7 @@ const ProductInfoSection = memo(
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="font-[family-name:var(--font-dm-sans)] font-bold text-[var(--baladi-gray)]">
+              <span className="font-[family-name:var(--font-dm-sans)] font-bold text-green-700">
                 {formatPrice(pricePerUnit)} kr/enhet
               </span>
             </div>

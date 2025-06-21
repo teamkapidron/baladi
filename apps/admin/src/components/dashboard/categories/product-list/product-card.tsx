@@ -28,8 +28,8 @@ function ProductCard(props: ProductCardProps) {
   const router = useRouter();
 
   const handleEditProduct = useCallback(() => {
-    router.push(`/dashboard/products/edit/${product._id}`);
-  }, [product._id, router]);
+    router.push(`/dashboard/products/edit/${product.slug}`);
+  }, [product.slug, router]);
 
   return (
     <div className="flex items-center gap-4 rounded-lg border border-[var(--baladi-border)] bg-gray-50/50 p-4 transition-all hover:shadow-md">

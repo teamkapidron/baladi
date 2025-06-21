@@ -3,6 +3,7 @@
 // Node Modules
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import React, { memo, useCallback, useMemo } from 'react';
 import {
   Eye,
@@ -115,6 +116,8 @@ function getInitials(name: string) {
 }
 
 function OrderTableContent() {
+  const router = useRouter();
+
   const { orders: ordersData } = useOrder();
   const { pickingListMutation, freightLabelMutation } = useOrderPreview();
 
@@ -190,9 +193,9 @@ function OrderTableContent() {
               return (
                 <TableRow
                   key={order._id}
-                  className="border-b border-gray-100 transition-colors duration-150 ease-in-out hover:bg-gray-50"
+                  onClick={() => router.push(`/dashboard/orders/${order._id}`)}
+                  className="cursor-pointer border-b border-gray-100 transition-colors duration-150 ease-in-out hover:bg-gray-50"
                 >
-                  {/* Order Details */}
                   <TableCell className="p-4">
                     <div className="flex flex-col space-y-3">
                       <div className="flex flex-col space-y-1">
@@ -231,7 +234,7 @@ function OrderTableContent() {
                         </div>
                         <div className="mt-1 flex items-center">
                           <User className="mr-1 h-3 w-3 text-gray-400" />
-                          <span className="text-xs capitalize text-gray-500">
+                          <span className="text-xs text-gray-500 capitalize">
                             {order.userId.userType}
                           </span>
                         </div>
@@ -279,7 +282,7 @@ function OrderTableContent() {
                                 </div>
                               )}
                               {item.quantity > 1 && (
-                                <div className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-blue-500 text-xs font-bold text-white">
+                                <div className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-blue-500 text-xs font-bold text-white">
                                   {item.quantity}
                                 </div>
                               )}
@@ -342,7 +345,10 @@ function OrderTableContent() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handleDownloadPickingList(order._id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDownloadPickingList(order._id);
+                        }}
                         disabled={pickingListMutation.isPending}
                         className="h-8 w-8 border-green-200 p-0 text-green-600 transition-all duration-150 hover:border-green-300 hover:bg-green-50"
                         title="Last ned plukkliste"
@@ -357,7 +363,10 @@ function OrderTableContent() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handleDownloadFreightLabel(order._id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDownloadFreightLabel(order._id);
+                        }}
                         disabled={freightLabelMutation.isPending}
                         className="h-8 w-8 border-purple-200 p-0 text-purple-600 transition-all duration-150 hover:border-purple-300 hover:bg-purple-50"
                         title="Last ned fraktetikett"

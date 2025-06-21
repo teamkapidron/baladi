@@ -132,14 +132,14 @@ export const verifyOTP = asyncHandler(async (req: Request, res: Response) => {
   await Subscriber.create({ userId: user._id });
 
   await sendMail({
-    to: email,
-    subject: 'Welcome to Baladi Engros',
+    to: process.env.SMTP_REPLY_TO!,
+    subject: 'New User Registration',
     template: {
       type: 'adminApproval',
       data: {
         name: user.name,
         email: user.email,
-        userId: user._id,
+        userId: user._id?.toString(),
         createdAt: user.createdAt.toISOString(),
       },
     },

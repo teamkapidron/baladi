@@ -46,11 +46,9 @@ function ProductsSortBar() {
 
     if (!productsData) return 'Ingen produkter funnet';
 
-    const { totalProducts, currentPage, perPage } = productsData;
-    const startItem = (currentPage - 1) * perPage + 1;
-    const endItem = Math.min(currentPage * perPage, totalProducts);
+    const { totalProducts } = productsData;
 
-    return `Viser ${startItem}-${endItem} av ${totalProducts} produkter`;
+    return `${totalProducts} produkter`;
   }, [isLoading, productsData]);
 
   return (

@@ -82,11 +82,13 @@ export const updateUser = asyncHandler(async (req: Request, res: Response) => {
     throw new ErrorHandler(404, 'User not found', 'NOT_FOUND');
   }
 
+  const isAlreadyApproved = user.isApprovedByAdmin;
+
   user.userType = userType;
   user.isApprovedByAdmin = isApprovedByAdmin ?? true;
   await user.save();
 
-  if (isApprovedByAdmin) {
+  if (!isAlreadyApproved) {
     await sendMail({
       to: user.email,
       subject: 'Din konto har blitt godkjent',

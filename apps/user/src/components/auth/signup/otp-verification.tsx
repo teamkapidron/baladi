@@ -108,7 +108,8 @@ function OtpVerification(props: OtpVerificationProps) {
         <div className="w-full max-w-sm space-y-3">
           <Button
             onClick={handleVerify}
-            disabled={otp.length !== 6}
+            isLoading={verifyOTPMutation.isPending}
+            disabled={otp.length !== 6 || verifyOTPMutation.isPending}
             className="h-11 w-full bg-[var(--baladi-primary)] font-medium text-white hover:bg-[var(--baladi-primary)]/90"
           >
             Bekreft kode
@@ -140,7 +141,14 @@ function OtpVerification(props: OtpVerificationProps) {
         </div>
       </div>
     ),
-    [otp, handleVerify, resendTimer, handleResend, resendOTPMutation.isPending],
+    [
+      otp,
+      handleVerify,
+      verifyOTPMutation.isPending,
+      resendTimer,
+      handleResend,
+      resendOTPMutation.isPending,
+    ],
   );
 
   if (isMobile) {

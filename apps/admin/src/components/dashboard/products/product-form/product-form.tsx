@@ -90,12 +90,12 @@ function ProductForm(props: ProductFormProps) {
   const form = useForm({
     resolver: zodResolver(productFormSchema),
     defaultValues: {
-      name: '',
-      slug: '',
-      description: '',
-      shortDescription: '',
-      sku: '',
-      barcode: '',
+      name: undefined,
+      slug: undefined,
+      description: undefined,
+      shortDescription: undefined,
+      sku: undefined,
+      barcode: undefined,
       vat: VAT.VAT_15,
       costPrice: 0,
       salePrice: 0,
@@ -112,11 +112,11 @@ function ProductForm(props: ProductFormProps) {
       },
       weight: 0,
       supplier: {
-        number: '',
-        name: '',
-        location: '',
-        countryOfOrigin: '',
-        hsCode: '',
+        number: undefined,
+        name: undefined,
+        location: undefined,
+        countryOfOrigin: undefined,
+        hsCode: undefined,
       },
     },
   });
@@ -465,13 +465,14 @@ function ProductForm(props: ProductFormProps) {
                             <Input
                               type="number"
                               step="0.01"
+                              min={0}
                               placeholder="0.00"
                               className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
                               {...field}
                               onChange={(e) =>
                                 field.onChange(Number(e.target.value))
                               }
-                              value={field.value || ''}
+                              value={field.value}
                             />
                           </div>
                         </FormControl>
@@ -499,13 +500,14 @@ function ProductForm(props: ProductFormProps) {
                             <Input
                               type="number"
                               step="0.01"
+                              min={0}
                               placeholder="0.00"
                               className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
                               {...field}
                               onChange={(e) =>
                                 field.onChange(Number(e.target.value))
                               }
-                              value={field.value || ''}
+                              value={field.value}
                             />
                           </div>
                         </FormControl>
@@ -624,13 +626,14 @@ function ProductForm(props: ProductFormProps) {
                             <BoxesIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
                               type="number"
+                              min={0}
                               placeholder="10"
                               className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
                               {...field}
                               onChange={(e) => {
                                 field.onChange(Number(e.target.value));
                               }}
-                              value={field.value || ''}
+                              value={field.value}
                             />
                           </div>
                         </FormControl>
@@ -716,13 +719,14 @@ function ProductForm(props: ProductFormProps) {
                             <Input
                               type="number"
                               step="0.01"
+                              min={0}
                               placeholder="0.00"
                               className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
                               {...field}
                               onChange={(e) =>
                                 field.onChange(Number(e.target.value))
                               }
-                              value={field.value || ''}
+                              value={field.value}
                             />
                           </div>
                         </FormControl>
@@ -758,13 +762,14 @@ function ProductForm(props: ProductFormProps) {
                             <Input
                               type="number"
                               step="0.1"
+                              min={0}
                               placeholder="0.0"
                               className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
                               {...field}
                               onChange={(e) =>
                                 field.onChange(Number(e.target.value))
                               }
-                              value={field.value || ''}
+                              value={field.value}
                             />
                           </div>
                         </FormControl>
@@ -787,13 +792,14 @@ function ProductForm(props: ProductFormProps) {
                             <Input
                               type="number"
                               step="0.1"
+                              min={0}
                               placeholder="0.0"
                               className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
                               {...field}
                               onChange={(e) =>
                                 field.onChange(Number(e.target.value))
                               }
-                              value={field.value || ''}
+                              value={field.value}
                             />
                           </div>
                         </FormControl>
@@ -816,13 +822,14 @@ function ProductForm(props: ProductFormProps) {
                             <Input
                               type="number"
                               step="0.1"
+                              min={0}
                               placeholder="0.0"
                               className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
                               {...field}
                               onChange={(e) =>
                                 field.onChange(Number(e.target.value))
                               }
-                              value={field.value || ''}
+                              value={field.value}
                             />
                           </div>
                         </FormControl>
@@ -956,7 +963,7 @@ function ProductForm(props: ProductFormProps) {
                               placeholder="Leverandørnavn"
                               className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
                               {...field}
-                              value={field.value || ''}
+                              value={field.value}
                             />
                           </div>
                         </FormControl>

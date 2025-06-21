@@ -1,9 +1,8 @@
 'use client';
 
 // Node Modules
-import debounce from 'lodash.debounce';
 import { cn } from '@repo/ui/lib/utils';
-import React, { useState, useRef, useEffect, memo, useCallback } from 'react';
+import React, { useState, memo, useCallback } from 'react';
 import { Check, ChevronsUpDown, Package } from '@repo/ui/lib/icons';
 
 // Components
@@ -36,17 +35,12 @@ function ProductSearchCombobox(props: ProductSearchComboboxProps) {
   const { onSelect, placeholder, className } = props;
 
   const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedProduct, setSelectedProduct] =
     useState<QuickSearchProduct | null>(null);
 
-  const debouncedSearch = useRef(
-    debounce((search: string) => {
-      setSearch(search);
-    }, 300),
-  );
-
-  const { quickSearchProductQuery } = useQuickSearchProduct(search);
+  const { quickSearchProductQuery, handleSearch } =
+    useQuickSearchProduct(searchQuery);
   const products = quickSearchProductQuery.data?.products || [];
 
   function handleSelect(productId: string) {
@@ -58,17 +52,13 @@ function ProductSearchCombobox(props: ProductSearchComboboxProps) {
     setOpen(false);
   }
 
-  const handleSearch = useCallback((value: string) => {
-    debouncedSearch.current(value);
-  }, []);
-
-  useEffect(() => {
-    const debouncedSearchRef = debouncedSearch.current;
-
-    return () => {
-      debouncedSearchRef.cancel();
-    };
-  }, []);
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      setSearchQuery(value);
+      handleSearch(value);
+    },
+    [handleSearch],
+  );
 
   return (
     <Popover open={open} onOpenChange={setOpen} modal>
@@ -96,12 +86,12 @@ function ProductSearchCombobox(props: ProductSearchComboboxProps) {
             <CommandInput
               placeholder={placeholder ?? 'Søk etter produkt...'}
               className="border-0 bg-transparent font-[family-name:var(--font-inter)] text-[var(--baladi-text)] placeholder:text-[var(--baladi-gray)] focus:outline-none"
-              onValueChange={handleSearch}
+              onValueChange={handleSearchChange}
             />
           </div>
           <CommandList>
             <CommandEmpty className="flex flex-col items-center justify-center py-8">
-              <Package className="text-[var(--baladi-gray)]/50 mb-3 h-12 w-12" />
+              <Package className="mb-3 h-12 w-12 text-[var(--baladi-gray)]/50" />
               <p className="font-[family-name:var(--font-inter)] text-sm font-medium text-[var(--baladi-text)]">
                 Ingen produkter funnet
               </p>
@@ -117,8 +107,8 @@ function ProductSearchCombobox(props: ProductSearchComboboxProps) {
                   onSelect={() => handleSelect(product._id)}
                   className="cursor-pointer p-0 font-[family-name:var(--font-inter)] text-[var(--baladi-text)]"
                 >
-                  <div className="hover:from-[var(--baladi-primary)]/5 hover:to-[var(--baladi-secondary)]/5 flex w-full items-center gap-3 rounded-lg p-3 transition-all duration-200 hover:bg-gradient-to-r">
-                    <div className="from-[var(--baladi-primary)]/10 to-[var(--baladi-secondary)]/10 flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br">
+                  <div className="flex w-full items-center gap-3 rounded-lg p-3 transition-all duration-200 hover:bg-gradient-to-r hover:from-[var(--baladi-primary)]/5 hover:to-[var(--baladi-secondary)]/5">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-[var(--baladi-primary)]/10 to-[var(--baladi-secondary)]/10">
                       <Package className="h-5 w-5 text-[var(--baladi-primary)]" />
                     </div>
 
@@ -127,7 +117,7 @@ function ProductSearchCombobox(props: ProductSearchComboboxProps) {
                         {product.name}
                       </p>
                       <div className="flex items-center gap-2">
-                        <span className="bg-[var(--baladi-primary)]/10 rounded-full px-2 py-0.5 text-xs font-medium text-[var(--baladi-primary)]">
+                        <span className="rounded-full bg-[var(--baladi-primary)]/10 px-2 py-0.5 text-xs font-medium text-[var(--baladi-primary)]">
                           {product.categories.name}
                         </span>
                       </div>

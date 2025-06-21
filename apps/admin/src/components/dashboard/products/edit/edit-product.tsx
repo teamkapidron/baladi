@@ -89,6 +89,8 @@ function EditProduct(props: EditProductProps) {
     };
   }, [product, imagesFileList]);
 
+  console.log(defaultValues);
+
   function onSubmit(data: ProductFormValues) {
     if (!product) return;
 

@@ -89,7 +89,22 @@ export const getAllInventory = asyncHandler(
       {
         $group: {
           _id: '$productId',
+          quantity: { $sum: '$quantity' },
         },
+      },
+      {
+        $lookup: {
+          from: 'products',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'product',
+        },
+      },
+      {
+        $unwind: '$product',
+      },
+      {
+        $match: queryObject,
       },
       {
         $count: 'total',

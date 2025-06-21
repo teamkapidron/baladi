@@ -50,31 +50,37 @@ function Header() {
     >
       <div className="bg-white">
         <div className="border-b border-[var(--baladi-border)] bg-[var(--baladi-primary)]/80 text-white">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-center py-2 text-center">
-              <div className="flex items-center gap-2">
-                <Info className="h-3 w-3 flex-shrink-0" />
-                <div className="flex flex-col text-xs sm:flex-row sm:items-center sm:gap-4 sm:text-sm">
-                  <div className="flex items-center gap-1">
+          <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-center py-2.5 text-center">
+              <div className="flex w-full max-w-4xl items-start gap-2 sm:items-center">
+                <div className="flex w-full flex-col gap-2 text-xs sm:flex-row sm:items-center sm:gap-4 sm:text-sm">
+                  <div className="flex items-center justify-center gap-1 sm:justify-start">
+                    <Info className="mt-0.5 h-3 w-3 flex-shrink-0 sm:mt-0" />
                     <span className="font-[family-name:var(--font-dm-sans)] font-bold text-white/90">
                       Alle priser inkluderer mva
                     </span>
                   </div>
+
                   <div className="hidden text-white/60 sm:block">•</div>
-                  <div className="flex items-center gap-1">
-                    <Package className="h-4 w-4 flex-shrink-0" />
-                    <span className="font-[family-name:var(--font-sora)] font-semibold">
-                      Palltyper og dimensjoner
-                    </span>
-                  </div>
-                  <div className="hidden text-white/60 sm:block">•</div>
-                  <div className="flex flex-col font-[family-name:var(--font-dm-sans)] sm:flex-row sm:gap-4">
-                    <span className="text-white/90">
-                      <strong>Europall:</strong> 220 cm = 1,92 m³
-                    </span>
-                    <span className="text-white/90">
-                      <strong>Stor pall:</strong> 220 cm = 2,4 m³
-                    </span>
+
+                  <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:gap-4">
+                    <div className="flex items-center justify-center gap-1 sm:justify-start">
+                      <Package className="h-3.5 w-3.5 flex-shrink-0" />
+                      <span className="font-[family-name:var(--font-sora)] font-semibold">
+                        Palltyper og dimensjoner
+                      </span>
+                    </div>
+
+                    <div className="hidden text-white/60 sm:block">•</div>
+
+                    <div className="flex flex-col gap-1 font-[family-name:var(--font-dm-sans)] text-xs sm:flex-row sm:gap-3 sm:text-sm">
+                      <span className="text-white/90">
+                        <strong>Europall:</strong> 220 cm = 1,92 m³
+                      </span>
+                      <span className="text-white/90">
+                        <strong>Stor pall:</strong> 220 cm = 2,4 m³
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -104,7 +110,7 @@ function Header() {
                           {totalWeight.toFixed(2)} kg
                         </span>
                         <span className="rounded bg-[var(--baladi-secondary)]/10 px-2 py-1 font-[family-name:var(--font-dm-sans)] font-medium text-[var(--baladi-secondary)]">
-                          {(totalVolume / 1000000).toFixed(3)} m³
+                          {totalVolume.toFixed(2)} m³
                         </span>
                       </div>
                     </div>
@@ -114,7 +120,7 @@ function Header() {
                         {totalWeight.toFixed(1)}kg
                       </span>
                       <span className="rounded bg-[var(--baladi-secondary)]/10 px-1.5 py-0.5 font-[family-name:var(--font-dm-sans)] font-medium text-[var(--baladi-secondary)]">
-                        {(totalVolume / 1000000).toFixed(3)}m³
+                        {totalVolume.toFixed(2)}m³
                       </span>
                     </div>
                   </>

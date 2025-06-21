@@ -4,7 +4,6 @@
 import { memo, useMemo } from 'react';
 import {
   ShoppingBag,
-  ArrowUpRight,
   Clock,
   CheckCircle,
   TruckIcon,
@@ -79,8 +78,8 @@ function OrderMetricCards() {
 
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-      <div className="to-[var(--baladi-primary)]/5 hover:shadow-[var(--baladi-primary)]/20 group relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-white p-6 shadow-md transition-all duration-300 hover:shadow-lg">
-        <div className="bg-[var(--baladi-primary)]/10 absolute -right-8 -top-8 h-24 w-24 rounded-full transition-transform duration-300 group-hover:scale-110"></div>
+      <div className="group relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-white to-[var(--baladi-primary)]/5 p-6 shadow-md transition-all duration-300 hover:shadow-[var(--baladi-primary)]/20 hover:shadow-lg">
+        <div className="absolute -top-8 -right-8 h-24 w-24 rounded-full bg-[var(--baladi-primary)]/10 transition-transform duration-300 group-hover:scale-110"></div>
 
         <div className="relative flex items-start justify-between">
           <div className="space-y-4">
@@ -97,7 +96,7 @@ function OrderMetricCards() {
                   <AnimatedCounter value={statusStats.totalOrders} />
                 </span>
                 {statusStats.totalOrders > 0 && (
-                  <div className="bg-[var(--baladi-success)]/10 flex items-center gap-1 rounded-full px-2 py-1">
+                  <div className="flex items-center gap-1 rounded-full bg-[var(--baladi-success)]/10 px-2 py-1">
                     <TrendingUp className="h-3 w-3 text-[var(--baladi-success)]" />
                     <span className="text-xs font-medium text-[var(--baladi-success)]">
                       Aktiv
@@ -122,8 +121,8 @@ function OrderMetricCards() {
         </div>
       </div>
 
-      <div className="to-[var(--baladi-warning)]/5 hover:shadow-[var(--baladi-warning)]/20 group relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-white p-6 shadow-md transition-all duration-300 hover:shadow-lg">
-        <div className="bg-[var(--baladi-warning)]/10 absolute -right-8 -top-8 h-24 w-24 rounded-full transition-transform duration-300 group-hover:scale-110"></div>
+      <div className="group relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-white to-[var(--baladi-warning)]/5 p-6 shadow-md transition-all duration-300 hover:shadow-[var(--baladi-warning)]/20 hover:shadow-lg">
+        <div className="absolute -top-8 -right-8 h-24 w-24 rounded-full bg-[var(--baladi-warning)]/10 transition-transform duration-300 group-hover:scale-110"></div>
 
         <div className="relative flex items-start justify-between">
           <div className="space-y-4">
@@ -139,7 +138,7 @@ function OrderMetricCards() {
                 <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-text)]">
                   <AnimatedCounter value={statusStats.pendingOrders} />
                 </span>
-                <div className="bg-[var(--baladi-warning)]/10 flex items-center gap-1 rounded-full px-2 py-1">
+                <div className="flex items-center gap-1 rounded-full bg-[var(--baladi-warning)]/10 px-2 py-1">
                   <span className="text-xs font-medium text-[var(--baladi-warning)]">
                     {statusStats.pendingPercent}%
                   </span>
@@ -161,8 +160,8 @@ function OrderMetricCards() {
         </div>
       </div>
 
-      <div className="to-[var(--baladi-secondary)]/5 hover:shadow-[var(--baladi-secondary)]/20 group relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-white p-6 shadow-md transition-all duration-300 hover:shadow-lg">
-        <div className="bg-[var(--baladi-secondary)]/10 absolute -right-8 -top-8 h-24 w-24 rounded-full transition-transform duration-300 group-hover:scale-110"></div>
+      <div className="group relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-white to-[var(--baladi-secondary)]/5 p-6 shadow-md transition-all duration-300 hover:shadow-[var(--baladi-secondary)]/20 hover:shadow-lg">
+        <div className="absolute -top-8 -right-8 h-24 w-24 rounded-full bg-[var(--baladi-secondary)]/10 transition-transform duration-300 group-hover:scale-110"></div>
 
         <div className="relative flex items-start justify-between">
           <div className="space-y-4">
@@ -178,7 +177,7 @@ function OrderMetricCards() {
                 <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-text)]">
                   <AnimatedCounter value={statusStats.confirmedOrders} />
                 </span>
-                <div className="bg-[var(--baladi-secondary)]/10 flex items-center gap-1 rounded-full px-2 py-1">
+                <div className="flex items-center gap-1 rounded-full bg-[var(--baladi-secondary)]/10 px-2 py-1">
                   <span className="text-xs font-medium text-[var(--baladi-secondary)]">
                     {statusStats.confirmedPercent}%
                   </span>
@@ -200,8 +199,8 @@ function OrderMetricCards() {
         </div>
       </div>
 
-      <div className="to-[var(--baladi-success)]/5 hover:shadow-[var(--baladi-success)]/20 group relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-white p-6 shadow-md transition-all duration-300 hover:shadow-lg">
-        <div className="bg-[var(--baladi-success)]/10 absolute -right-8 -top-8 h-24 w-24 rounded-full transition-transform duration-300 group-hover:scale-110"></div>
+      <div className="group relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-white to-[var(--baladi-success)]/5 p-6 shadow-md transition-all duration-300 hover:shadow-[var(--baladi-success)]/20 hover:shadow-lg">
+        <div className="absolute -top-8 -right-8 h-24 w-24 rounded-full bg-[var(--baladi-success)]/10 transition-transform duration-300 group-hover:scale-110"></div>
 
         <div className="relative flex items-start justify-between">
           <div className="space-y-4">
@@ -217,7 +216,7 @@ function OrderMetricCards() {
                 <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-text)]">
                   <AnimatedCounter value={statusStats.shippedOrders} />
                 </span>
-                <div className="bg-[var(--baladi-success)]/10 flex items-center gap-1 rounded-full px-2 py-1">
+                <div className="flex items-center gap-1 rounded-full bg-[var(--baladi-success)]/10 px-2 py-1">
                   <span className="text-xs font-medium text-[var(--baladi-success)]">
                     {statusStats.shippedPercent}%
                   </span>
@@ -237,8 +236,8 @@ function OrderMetricCards() {
         </div>
       </div>
 
-      <div className="to-[var(--baladi-info)]/5 hover:shadow-[var(--baladi-info)]/20 group relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-white p-6 shadow-md transition-all duration-300 hover:shadow-lg">
-        <div className="bg-[var(--baladi-info)]/10 absolute -right-8 -top-8 h-24 w-24 rounded-full transition-transform duration-300 group-hover:scale-110"></div>
+      <div className="group relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-white to-[var(--baladi-info)]/5 p-6 shadow-md transition-all duration-300 hover:shadow-[var(--baladi-info)]/20 hover:shadow-lg">
+        <div className="absolute -top-8 -right-8 h-24 w-24 rounded-full bg-[var(--baladi-info)]/10 transition-transform duration-300 group-hover:scale-110"></div>
 
         <div className="relative flex items-start justify-between">
           <div className="space-y-4">
@@ -254,7 +253,7 @@ function OrderMetricCards() {
                 <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-text)]">
                   <AnimatedCounter value={statusStats.deliveredOrders} />
                 </span>
-                <div className="bg-[var(--baladi-info)]/10 flex items-center gap-1 rounded-full px-2 py-1">
+                <div className="flex items-center gap-1 rounded-full bg-[var(--baladi-info)]/10 px-2 py-1">
                   <span className="text-xs font-medium text-[var(--baladi-info)]">
                     {statusStats.deliveredPercent}%
                   </span>
@@ -276,8 +275,8 @@ function OrderMetricCards() {
         </div>
       </div>
 
-      <div className="to-[var(--baladi-error)]/5 hover:shadow-[var(--baladi-error)]/20 group relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-white p-6 shadow-md transition-all duration-300 hover:shadow-lg">
-        <div className="bg-[var(--baladi-error)]/10 absolute -right-8 -top-8 h-24 w-24 rounded-full transition-transform duration-300 group-hover:scale-110"></div>
+      <div className="group relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-white to-[var(--baladi-error)]/5 p-6 shadow-md transition-all duration-300 hover:shadow-[var(--baladi-error)]/20 hover:shadow-lg">
+        <div className="absolute -top-8 -right-8 h-24 w-24 rounded-full bg-[var(--baladi-error)]/10 transition-transform duration-300 group-hover:scale-110"></div>
 
         <div className="relative flex items-start justify-between">
           <div className="space-y-4">
@@ -293,7 +292,7 @@ function OrderMetricCards() {
                 <span className="font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-text)]">
                   <AnimatedCounter value={statusStats.cancelledOrders} />
                 </span>
-                <div className="bg-[var(--baladi-error)]/10 flex items-center gap-1 rounded-full px-2 py-1">
+                <div className="flex items-center gap-1 rounded-full bg-[var(--baladi-error)]/10 px-2 py-1">
                   <span className="text-xs font-medium text-[var(--baladi-error)]">
                     {statusStats.cancelledPercent}%
                   </span>
@@ -315,8 +314,8 @@ function OrderMetricCards() {
         </div>
       </div>
 
-      <div className="to-[var(--baladi-success)]/5 hover:shadow-[var(--baladi-success)]/20 group relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-white p-6 shadow-md transition-all duration-300 hover:shadow-lg">
-        <div className="bg-[var(--baladi-success)]/10 absolute -right-8 -top-8 h-24 w-24 rounded-full transition-transform duration-300 group-hover:scale-110"></div>
+      <div className="group relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-white to-[var(--baladi-success)]/5 p-6 shadow-md transition-all duration-300 hover:shadow-[var(--baladi-success)]/20 hover:shadow-lg">
+        <div className="absolute -top-8 -right-8 h-24 w-24 rounded-full bg-[var(--baladi-success)]/10 transition-transform duration-300 group-hover:scale-110"></div>
 
         <div className="relative flex items-start justify-between">
           <div className="space-y-4">
@@ -334,14 +333,6 @@ function OrderMetricCards() {
                     value={formatPrice(revenueStats.totalRevenue)}
                   />
                 </span>
-                {revenueStats.totalRevenue > 0 && (
-                  <div className="bg-[var(--baladi-success)]/10 flex items-center gap-1 rounded-full px-2 py-1">
-                    <ArrowUpRight className="h-3 w-3 text-[var(--baladi-success)]" />
-                    <span className="text-xs font-medium text-[var(--baladi-success)]">
-                      Omsetning
-                    </span>
-                  </div>
-                )}
               </div>
             </div>
           </div>
@@ -360,8 +351,8 @@ function OrderMetricCards() {
         </div>
       </div>
 
-      <div className="to-[var(--baladi-accent)]/5 hover:shadow-[var(--baladi-accent)]/20 group relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-white p-6 shadow-md transition-all duration-300 hover:shadow-lg">
-        <div className="bg-[var(--baladi-accent)]/10 absolute -right-8 -top-8 h-24 w-24 rounded-full transition-transform duration-300 group-hover:scale-110"></div>
+      <div className="group relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-white to-[var(--baladi-accent)]/5 p-6 shadow-md transition-all duration-300 hover:shadow-[var(--baladi-accent)]/20 hover:shadow-lg">
+        <div className="absolute -top-8 -right-8 h-24 w-24 rounded-full bg-[var(--baladi-accent)]/10 transition-transform duration-300 group-hover:scale-110"></div>
 
         <div className="relative flex items-start justify-between">
           <div className="space-y-4">
@@ -381,7 +372,7 @@ function OrderMetricCards() {
                   kr
                 </span>
                 {revenueStats.profitMargin > 0 && (
-                  <div className="bg-[var(--baladi-accent)]/10 flex items-center gap-1 rounded-full px-2 py-1">
+                  <div className="flex items-center gap-1 rounded-full bg-[var(--baladi-accent)]/10 px-2 py-1">
                     <span className="text-xs font-medium text-[var(--baladi-accent)]">
                       {revenueStats.profitMargin.toFixed(1)}%
                     </span>

@@ -2,7 +2,7 @@
 
 // Node Modules
 import { memo, useMemo } from 'react';
-import { Package, AlertTriangle, XCircle, PiggyBank } from '@repo/ui/lib/icons';
+import { Package, AlertTriangle, XCircle, Wallet } from '@repo/ui/lib/icons';
 
 // Components
 import AnimatedCounter from '@repo/ui/components/base/animate-counter';
@@ -33,7 +33,7 @@ function InventoryMetrics() {
         <div className="relative p-6">
           <div className="mb-4 flex items-center justify-between">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-green-500 shadow-lg">
-              <PiggyBank className="h-6 w-6 text-white" />
+              <Wallet className="h-6 w-6 text-white" />
             </div>
             <div className="text-right">
               <p className="text-2xl font-bold text-green-900">

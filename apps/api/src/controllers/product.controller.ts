@@ -52,7 +52,7 @@ export const getProducts = asyncHandler(async (req: Request, res: Response) => {
   const query = req.query as GetProductsSchema['query'];
 
   const { queryObject, perPage, currentPage } =
-    getUserProductFilterFromQuery(query);
+    await getUserProductFilterFromQuery(query);
 
   const pipeline: PipelineStage[] = [
     {
@@ -592,7 +592,7 @@ export const getAllProducts = asyncHandler(
     const query = req.query as GetAllProductsSchema['query'];
 
     const { queryObject, perPage, currentPage } =
-      getProductFilterFromQuery(query);
+      await getProductFilterFromQuery(query);
 
     const products = await Product.aggregate([
       {
@@ -668,6 +668,134 @@ export const getProductImageUploadUrl = asyncHandler(
 
     sendResponse(res, 200, 'Product image upload URL fetched successfully', {
       urls,
+    });
+  },
+);
+
+export const getProductByIdAdmin = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { productId } = req.params as GetProductByIdSchema['params'];
+
+    const pipeline: PipelineStage[] = [
+      {
+        $match: { _id: new Types.ObjectId(productId) },
+      },
+      {
+        $lookup: {
+          from: 'categories',
+          localField: 'categories',
+          foreignField: '_id',
+          as: 'categories',
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                name: 1,
+                slug: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $lookup: {
+          from: 'inventories',
+          localField: '_id',
+          foreignField: 'productId',
+          as: 'inventory',
+        },
+      },
+      {
+        $unwind: {
+          path: '$inventory',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $addFields: {
+          stock: { $ifNull: ['$inventory.quantity', 0] },
+          bestBeforeDate: { $min: '$inventory.expirationDate' },
+        },
+      },
+      {
+        $project: {
+          inventory: 0,
+        },
+      },
+    ];
+
+    const product = await Product.aggregate(pipeline);
+
+    if (!product) {
+      throw new ErrorHandler(404, 'Product not found', 'NOT_FOUND');
+    }
+
+    sendResponse(res, 200, 'Product fetched successfully', {
+      product: product[0],
+    });
+  },
+);
+
+export const getProductBySlugAdmin = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { slug } = req.params as GetProductBySlugSchema['params'];
+
+    const pipeline: PipelineStage[] = [
+      {
+        $match: { slug },
+      },
+      {
+        $lookup: {
+          from: 'categories',
+          localField: 'categories',
+          foreignField: '_id',
+          as: 'categories',
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                name: 1,
+                slug: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $lookup: {
+          from: 'inventories',
+          localField: '_id',
+          foreignField: 'productId',
+          as: 'inventory',
+        },
+      },
+      {
+        $unwind: {
+          path: '$inventory',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $addFields: {
+          stock: { $ifNull: ['$inventory.quantity', 0] },
+          bestBeforeDate: { $min: '$inventory.expirationDate' },
+        },
+      },
+      {
+        $project: {
+          inventory: 0,
+        },
+      },
+    ];
+
+    const product = await Product.aggregate(pipeline);
+
+    if (!product) {
+      throw new ErrorHandler(404, 'Product not found', 'NOT_FOUND');
+    }
+
+    sendResponse(res, 200, 'Product fetched successfully', {
+      product: product[0],
     });
   },
 );
