@@ -110,6 +110,8 @@ jobs:
           USER_URL=${{ vars.USER_URL }}
           CONTACT_EMAIL=${{ vars.CONTACT_EMAIL }}
           API_URL=${{ vars.API_URL }}
+          AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_ACCESS_SECRET=${{ secrets.AWS_SECRET_ACCESS_KEY }}
           EOT
 
             pnpm install
