@@ -24,6 +24,7 @@ import discountRoute from '@/routes/discount.route';
 import inventoryRoute from '@/routes/inventory.route';
 import marketingRoute from '@/routes/marketing.route';
 import exportRoute from '@/routes/export.route';
+import configRoute from '@/routes/config.route';
 
 const app = express();
 
@@ -61,6 +62,7 @@ app.use('/api/discount', discountRoute);
 app.use('/api/inventory', inventoryRoute);
 app.use('/api/marketing', marketingRoute);
 app.use('/api/export', exportRoute);
+app.use('/api/config', configRoute);
 
 app.use(errorMiddleware);
 

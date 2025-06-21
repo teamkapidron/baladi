@@ -85,6 +85,20 @@ export const topUsersSchema = z.object({
   }),
 });
 
+export const updateAdminPasswordSchema = z.object({
+  body: z.object({
+    currentPassword: z
+      .string()
+      .min(8, 'Password must be at least 8 characters long'),
+    newPassword: z
+      .string()
+      .min(8, 'Password must be at least 8 characters long'),
+    confirmNewPassword: z
+      .string()
+      .min(8, 'Password must be at least 8 characters long'),
+  }),
+});
+
 export type GetAllUsersSchema = z.infer<typeof getAllUsersSchema>;
 export type GetUserDetailsSchema = z.infer<typeof getUserDetailsSchema>;
 export type UpdateUserSchema = z.infer<typeof updateUserSchema>;
@@ -93,3 +107,6 @@ export type GetUserRegistrationGraphDataSchema = z.infer<
 >;
 export type GetUserStatsSchema = z.infer<typeof getUserStatsSchema>;
 export type TopUsersSchema = z.infer<typeof topUsersSchema>;
+export type UpdateAdminPasswordSchema = z.infer<
+  typeof updateAdminPasswordSchema
+>;

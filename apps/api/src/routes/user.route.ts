@@ -10,6 +10,8 @@ import {
   getUserRegistrationGraphData,
   getUserStats,
   getTopUsers,
+  getAllAdmins,
+  updateAdminPassword,
 } from '@/controllers/user.controller';
 
 import {
@@ -19,6 +21,7 @@ import {
   getUserRegistrationGraphDataSchema,
   getUserStatsSchema,
   topUsersSchema,
+  updateAdminPasswordSchema,
 } from '@/validators/user.validator';
 
 const router: Router = express.Router();
@@ -39,5 +42,13 @@ router.get(
 );
 router.get('/stats', isAdmin, validate(getUserStatsSchema), getUserStats);
 router.get('/top', isAdmin, validate(topUsersSchema), getTopUsers);
+
+router.get('/admin/all', isAdmin, getAllAdmins);
+router.put(
+  '/admin/password',
+  isAdmin,
+  validate(updateAdminPasswordSchema),
+  updateAdminPassword,
+);
 
 export default router;
