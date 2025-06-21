@@ -3,7 +3,6 @@
 // Node Modules
 import React, { memo, useState } from 'react';
 import { z, zodResolver, useForm } from '@repo/ui/lib/form';
-
 import { Eye, EyeOff, User, Mail, Lock, Shield, Key } from '@repo/ui/lib/icons';
 
 // Components
@@ -25,6 +24,9 @@ import {
   FormLabel,
   FormMessage,
 } from '@repo/ui/components/base/form';
+
+// Hooks
+import { useAuth } from '@/hooks/useAuth';
 import { useSettings } from '@/hooks/useSettings';
 
 const passwordChangeSchema = z
@@ -45,8 +47,8 @@ function ProfileTab() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const { adminProfileQuery, updatePasswordMutation } = useSettings();
-  const { data: adminProfile } = adminProfileQuery;
+  const { user } = useAuth();
+  const { updatePasswordMutation } = useSettings();
 
   const form = useForm<PasswordChangeFormData>({
     resolver: zodResolver(passwordChangeSchema),
@@ -69,9 +71,9 @@ function ProfileTab() {
 
   return (
     <div className="space-y-8">
-      <div className="to-[var(--baladi-light)]/20 relative overflow-hidden rounded-2xl border border-[var(--baladi-border)] bg-gradient-to-br from-white via-white shadow-sm">
+      <div className="relative overflow-hidden rounded-2xl border border-[var(--baladi-border)] bg-gradient-to-br from-white via-white to-[var(--baladi-light)]/20 shadow-sm">
         <div className="absolute inset-0 opacity-5">
-          <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-[var(--baladi-primary)]"></div>
+          <div className="absolute -top-8 -right-8 h-32 w-32 rounded-full bg-[var(--baladi-primary)]"></div>
           <div className="absolute -bottom-4 -left-4 h-24 w-24 rounded-full bg-[var(--baladi-accent)]"></div>
         </div>
 
@@ -84,15 +86,15 @@ function ProfileTab() {
             <div className="flex-1 space-y-4">
               <div>
                 <h2 className="font-[family-name:var(--font-sora)] text-2xl font-bold text-[var(--baladi-dark)]">
-                  {adminProfile?.admin.name}
+                  {user?.name}
                 </h2>
                 <p className="font-[family-name:var(--font-dm-sans)] text-[var(--baladi-gray)]">
-                  {adminProfile?.admin.email}
+                  {user?.email}
                 </p>
               </div>
 
               <div className="flex flex-wrap gap-4">
-                <div className="bg-[var(--baladi-primary)]/10 flex items-center gap-2 rounded-lg px-3 py-2">
+                <div className="flex items-center gap-2 rounded-lg bg-[var(--baladi-primary)]/10 px-3 py-2">
                   <Shield className="h-4 w-4 text-[var(--baladi-primary)]" />
                   <span className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-primary)]">
                     Admin
@@ -111,10 +113,10 @@ function ProfileTab() {
         </div>
       </div>
 
-      <Card className="border-[var(--baladi-border)] shadow-sm">
-        <CardHeader className="to-[var(--baladi-light)]/30 border-b border-[var(--baladi-border)] bg-gradient-to-r from-gray-50">
+      <Card className="overflow-hidden border-[var(--baladi-border)] py-0 shadow-sm">
+        <CardHeader className="border-b border-[var(--baladi-border)] bg-gradient-to-r from-gray-50 to-[var(--baladi-light)]/30 pt-4">
           <CardTitle className="flex items-center gap-3 font-[family-name:var(--font-sora)] text-xl text-[var(--baladi-dark)]">
-            <div className="bg-[var(--baladi-primary)]/10 flex h-10 w-10 items-center justify-center rounded-lg">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--baladi-primary)]/10">
               <User className="h-5 w-5 text-[var(--baladi-primary)]" />
             </div>
             Kontoinformasjon
@@ -123,7 +125,7 @@ function ProfileTab() {
             Grunnleggende kontoinformasjon som administreres av systemet
           </CardDescription>
         </CardHeader>
-        <CardContent className="p-8">
+        <CardContent className="pb-6">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
             <div className="space-y-3">
               <Label className="font-[family-name:var(--font-dm-sans)] text-sm font-semibold text-[var(--baladi-dark)]">
@@ -131,14 +133,14 @@ function ProfileTab() {
               </Label>
               <div className="relative">
                 <Input
-                  value={adminProfile?.admin.name}
+                  value={user?.name}
                   disabled
                   className="h-12 bg-gray-50/80 font-[family-name:var(--font-dm-sans)] text-[var(--baladi-dark)] backdrop-blur-sm"
                   iconLeft={
                     <User className="h-5 w-5 text-[var(--baladi-dark)]" />
                   }
                 />
-                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                <div className="absolute top-1/2 right-3 -translate-y-1/2">
                   <div className="rounded-md bg-gray-200 px-2 py-1">
                     <span className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-gray-600">
                       Låst
@@ -154,14 +156,14 @@ function ProfileTab() {
               </Label>
               <div className="relative">
                 <Input
-                  value={adminProfile?.admin.email}
+                  value={user?.email}
                   disabled
                   className="h-12 bg-gray-50/80 font-[family-name:var(--font-dm-sans)] text-[var(--baladi-dark)] backdrop-blur-sm"
                   iconLeft={
                     <Mail className="h-5 w-5 text-[var(--baladi-dark)]" />
                   }
                 />
-                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                <div className="absolute top-1/2 right-3 -translate-y-1/2">
                   <div className="rounded-md bg-gray-200 px-2 py-1">
                     <span className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-gray-600">
                       Låst
@@ -174,8 +176,8 @@ function ProfileTab() {
         </CardContent>
       </Card>
 
-      <Card className="border-[var(--baladi-border)] shadow-sm">
-        <CardHeader className="border-b border-[var(--baladi-border)] bg-gradient-to-r from-amber-50 to-orange-50">
+      <Card className="overflow-hidden border-[var(--baladi-border)] py-0 shadow-sm">
+        <CardHeader className="border-b border-[var(--baladi-border)] bg-gradient-to-r from-amber-50 to-orange-50 pt-4">
           <CardTitle className="flex items-center gap-3 font-[family-name:var(--font-sora)] text-xl text-[var(--baladi-dark)]">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100">
               <Key className="h-5 w-5 text-amber-600" />
@@ -186,24 +188,9 @@ function ProfileTab() {
             Oppdater passordet ditt for økt sikkerhet og beskyttelse
           </CardDescription>
         </CardHeader>
-        <CardContent className="p-8">
+        <CardContent className="px-8 pb-4">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
-                <div className="flex items-start gap-3">
-                  <Shield className="h-5 w-5 text-amber-600" />
-                  <div>
-                    <h4 className="font-[family-name:var(--font-dm-sans)] text-sm font-semibold text-amber-800">
-                      Sikkerhetsanbefalinger
-                    </h4>
-                    <p className="mt-1 font-[family-name:var(--font-dm-sans)] text-sm text-amber-700">
-                      Bruk minst 8 tegn med en kombinasjon av store og små
-                      bokstaver, tall og symboler.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
               <div className="space-y-6">
                 <FormField
                   control={form.control}

@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
+import { Suspense } from 'react';
 
 import SettingsHeader from '@/components/dashboard/settings/settings-header';
-
 import SettingsTabs from '@/components/dashboard/settings/settings-tabs';
 
 export const metadata: Metadata = {
@@ -10,10 +10,11 @@ export const metadata: Metadata = {
 
 export default function SettingsPage() {
   return (
-    <div className="space-y-6">
-      <SettingsHeader />
-
-      <SettingsTabs />
-    </div>
+    <Suspense>
+      <div className="space-y-6">
+        <SettingsHeader />
+        <SettingsTabs />
+      </div>
+    </Suspense>
   );
 }

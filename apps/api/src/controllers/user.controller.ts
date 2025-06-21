@@ -250,24 +250,22 @@ export const getTopUsers = asyncHandler(async (req: Request, res: Response) => {
   });
 });
 
-export const getAllAdmins = asyncHandler(
-  async (req: Request, res: Response) => {
-    const data = await Admin.find();
+export const getAllAdmins = asyncHandler(async (_: Request, res: Response) => {
+  const data = await Admin.find();
 
-    const admins = data.map((admin) => {
-      return {
-        _id: admin._id,
-        name: admin.name,
-        email: admin.email,
-        createdAt: admin.createdAt,
-      };
-    });
+  const admins = data.map((admin) => {
+    return {
+      _id: admin._id,
+      name: admin.name,
+      email: admin.email,
+      createdAt: admin.createdAt,
+    };
+  });
 
-    sendResponse(res, 200, 'Admins fetched successfully', {
-      admins,
-    });
-  },
-);
+  sendResponse(res, 200, 'Admins fetched successfully', {
+    admins,
+  });
+});
 
 export const updateAdminPassword = asyncHandler(
   async (req: Request, res: Response) => {
@@ -279,6 +277,7 @@ export const updateAdminPassword = asyncHandler(
     if (!admin) {
       throw new ErrorHandler(404, 'Admin not found', 'NOT_FOUND');
     }
+
     const verifyPassword = await comparePassword(
       currentPassword,
       admin.password,

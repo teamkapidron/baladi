@@ -1,11 +1,7 @@
 import express, { Router } from 'express';
 
 import validate from '@/middlewares/validate.middleware';
-import {
-  addUserToRequest,
-  isAdmin,
-  isSuperAdmin,
-} from '@/middlewares/auth.middleware';
+import { addUserToRequest, isAdmin } from '@/middlewares/auth.middleware';
 
 import {
   getProducts,
@@ -21,9 +17,6 @@ import {
   lowStockProducts,
   topProducts,
   productStats,
-  getConfig,
-  updateConfig,
-  createConfig,
 } from '@/controllers/product.controller';
 
 import {
@@ -40,8 +33,6 @@ import {
   lowStockProductsSchema,
   topProductsSchema,
   productStatsSchema,
-  updateConfigSchema,
-  createConfigSchema,
 } from '@/validators/product.validator';
 
 const router: Router = express.Router();
@@ -94,19 +85,5 @@ router.get(
 );
 router.get('/top', isAdmin, validate(topProductsSchema), topProducts);
 router.get('/stats', isAdmin, validate(productStatsSchema), productStats);
-
-router.get('/config', getConfig);
-router.put(
-  '/update/config',
-  isAdmin,
-  validate(updateConfigSchema),
-  updateConfig,
-);
-router.post(
-  '/config/create',
-  isSuperAdmin,
-  validate(createConfigSchema),
-  createConfig,
-);
 
 export default router;

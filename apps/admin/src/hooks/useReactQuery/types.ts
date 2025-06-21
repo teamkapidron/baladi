@@ -53,9 +53,8 @@ export enum ReactQueryKeys {
   EXPORT_ORDERS = 'GET::/export/orders',
   EXPORT_PRODUCTS = 'GET::/export/products',
   EXPORT_USERS = 'GET::/export/users',
-  
+
   // Settings
-  GET_ADMIN_PROFILE = 'GET::/auth/admin/me',
   GET_ALL_ADMINS = 'GET::/user/admin/all',
   GET_SITE_CONFIG = 'GET::/product/config',
 }

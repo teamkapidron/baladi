@@ -1,7 +1,8 @@
 'use client';
 
 // Node Modules
-import React, { memo } from 'react';
+import { memo } from 'react';
+import { User, Shield, Box } from '@repo/ui/lib/icons';
 
 // Components
 import {
@@ -10,19 +11,16 @@ import {
   TabsList,
   TabsTrigger,
 } from '@repo/ui/components/base/tabs';
-import ProfileTab from './profile-tab';
-import AdminTab from './admin-tab';
-import ConfigTab from './config-tab';
-
-// Icons
-import { User, Shield, Box } from '@repo/ui/lib/icons';
+import ProfileTab from './settings-tabs/profile-tab';
+import AdminTab from './settings-tabs/admin-tab';
+import ConfigTab from './settings-tabs/config-tab';
 
 function SettingsTabs() {
   return (
     <div className="space-y-8">
       <div className="overflow-hidden rounded-2xl border border-[var(--baladi-border)] bg-white shadow-lg">
         <Tabs defaultValue="profile" className="w-full">
-          <div className="bg-gray-50/50 px-8 pb-0 pt-8">
+          <div className="bg-gray-50/50 px-8 pt-8 pb-0">
             <TabsList className="min-h-16 w-full rounded-xl border border-[var(--baladi-border)] bg-white p-1 shadow-sm">
               <TabsTrigger
                 value="profile"

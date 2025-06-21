@@ -107,7 +107,6 @@ export type GetUserRegistrationGraphDataSchema = z.infer<
 >;
 export type GetUserStatsSchema = z.infer<typeof getUserStatsSchema>;
 export type TopUsersSchema = z.infer<typeof topUsersSchema>;
-
 export type UpdateAdminPasswordSchema = z.infer<
   typeof updateAdminPasswordSchema
 >;

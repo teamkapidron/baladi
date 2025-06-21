@@ -3,7 +3,6 @@ import { PipelineStage, Types } from 'mongoose';
 
 // Schemas
 import Order from '@/models/order.model';
-import Config from '@/models/config.model';
 import Product from '@/models/product.model';
 import Category from '@/models/category.model';
 
@@ -39,8 +38,6 @@ import type {
   UpdateProductSchema,
   LowStockProductsSchema,
   TopProductsSchema,
-  UpdateConfigSchema,
-  CreateConfigSchema,
 } from '@/validators/product.validator';
 import {
   QuickSearchProduct,
@@ -830,37 +827,3 @@ export const productStats = asyncHandler(async (_: Request, res: Response) => {
     activeCategories,
   });
 });
-
-export const getConfig = asyncHandler(async (_: Request, res: Response) => {
-  const config = await Config.find();
-
-  sendResponse(res, 200, 'Config fetched successfully', {
-    config,
-  });
-});
-
-export const updateConfig = asyncHandler(
-  async (req: Request, res: Response) => {
-    const { showPalette } = req.body as UpdateConfigSchema['body'];
-    const config = await Config.findOneAndUpdate(
-      {},
-      { showPalette },
-      { new: true },
-    );
-
-    if (!config) {
-      throw new ErrorHandler(404, 'Config not found', 'NOT_FOUND');
-    }
-
-    sendResponse(res, 200, 'Config updated successfully', { config });
-  },
-);
-
-export const createConfig = asyncHandler(
-  async (req: Request, res: Response) => {
-    const { showPalette } = req.body as CreateConfigSchema['body'];
-    const config = await Config.create({ showPalette });
-
-    sendResponse(res, 201, 'Config created successfully', { config });
-  },
-);

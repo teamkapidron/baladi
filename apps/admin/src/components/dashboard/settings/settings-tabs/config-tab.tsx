@@ -1,7 +1,7 @@
 'use client';
 
 // Node Modules
-import React, { memo, useState } from 'react';
+import React, { memo, useCallback } from 'react';
 import { Settings } from '@repo/ui/lib/icons';
 
 // Components
@@ -15,25 +15,27 @@ import {
 import { Switch } from '@repo/ui/components/base/switch';
 import { Label } from '@repo/ui/components/base/label';
 
-import { useSettings } from '@/hooks/useSettings';
+// Hooks
+import { useConfig } from '@/hooks/useSettings';
 
 function ConfigTab() {
-  const { siteConfigQuery, updateSiteConfigMutation } = useSettings();
-  const { data: config } = siteConfigQuery;
+  const { getSiteConfigQuery, updateSiteConfigMutation } = useConfig();
+  const { data: config } = getSiteConfigQuery;
 
-  const handlePaletteToggle = (checked: boolean) => {
-    if (config) {
+  const handlePaletteToggle = useCallback(
+    (checked: boolean) => {
       updateSiteConfigMutation.mutate({
         showPalette: checked,
       });
-    }
-  };
+    },
+    [updateSiteConfigMutation],
+  );
 
   return (
     <div className="space-y-8">
       <div className="relative overflow-hidden rounded-2xl border border-[var(--baladi-border)] bg-gradient-to-br from-white via-purple-50/30 to-violet-50/30 p-8 shadow-sm">
         <div className="absolute inset-0 opacity-5">
-          <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-purple-500"></div>
+          <div className="absolute -top-8 -right-8 h-32 w-32 rounded-full bg-purple-500"></div>
           <div className="absolute -bottom-4 -left-4 h-24 w-24 rounded-full bg-[var(--baladi-accent)]"></div>
         </div>
 
@@ -77,7 +79,7 @@ function ConfigTab() {
             </div>
             <Switch
               id="custom-palette"
-              checked={config?.config?.showPalette}
+              checked={config?.config.showPalette}
               onCheckedChange={handlePaletteToggle}
               disabled={updateSiteConfigMutation.isPending}
             />

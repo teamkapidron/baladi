@@ -7,34 +7,19 @@ import { useRequest } from '@/hooks/useRequest';
 
 // Types
 import type {
-  GetAdminProfileRequest,
-  GetAllAdminsRequest,
   UpdateAdminPasswordRequest,
-  UpdateAdminPasswordSchema,
-  CreateAdminSchema,
-  CreateAdminResponse,
-  SiteConfigRequest,
+  GetAllAdminsRequest,
+  CreateAdminRequest,
+  GetSiteConfigRequest,
   UpdateSiteConfigRequest,
-  SiteConfigBody,
 } from './types';
 import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
 
 export function useSettings() {
   const api = useRequest();
 
-  const getAdminProfile = useCallback(async () => {
-    const response =
-      await api.get<GetAdminProfileRequest['response']>('/auth/admin/me');
-    return response.data.data;
-  }, [api]);
-
-  const adminProfileQuery = useQuery({
-    queryKey: [ReactQueryKeys.GET_ADMIN_PROFILE],
-    queryFn: getAdminProfile,
-  });
-
   const updatePassword = useCallback(
-    async (request: UpdateAdminPasswordSchema['body']) => {
+    async (request: UpdateAdminPasswordRequest['payload']) => {
       const response = await api.put<UpdateAdminPasswordRequest['response']>(
         '/user/admin/password',
         request,
@@ -46,7 +31,7 @@ export function useSettings() {
 
   const updatePasswordMutation = useMutation({
     mutationFn: updatePassword,
-    onSuccess: () => {
+    onSuccess: function () {
       toast.success('Passord oppdatert');
     },
   });
@@ -63,8 +48,8 @@ export function useSettings() {
   });
 
   const createAdmin = useCallback(
-    async (request: CreateAdminSchema['body']) => {
-      const response = await api.post<CreateAdminResponse['response']>(
+    async (request: CreateAdminRequest['payload']) => {
+      const response = await api.post<CreateAdminRequest['response']>(
         '/auth/admin/create',
         request,
       );
@@ -75,27 +60,39 @@ export function useSettings() {
 
   const createAdminMutation = useMutation({
     mutationFn: createAdmin,
-    onSuccess: () => {
+    onSuccess: function () {
       toast.success('Admin opprettet');
     },
   });
 
-  const siteConfig = useCallback(async () => {
-    const response =
-      await api.get<SiteConfigRequest['response']>('/product/config');
+  return {
+    // Queries
+    getAllAdminsQuery,
+
+    // Mutations
+    updatePasswordMutation,
+    createAdminMutation,
+  };
+}
+
+export function useConfig() {
+  const api = useRequest();
+
+  const getSiteConfig = useCallback(async () => {
+    const response = await api.get<GetSiteConfigRequest['response']>('/config');
     return response.data.data;
   }, [api]);
 
-  const siteConfigQuery = useQuery({
+  const getSiteConfigQuery = useQuery({
     queryKey: [ReactQueryKeys.GET_SITE_CONFIG],
-    queryFn: siteConfig,
+    queryFn: getSiteConfig,
   });
 
   const updateSiteConfig = useCallback(
-    async (request: SiteConfigBody) => {
+    async (payload: UpdateSiteConfigRequest['payload']) => {
       const response = await api.put<UpdateSiteConfigRequest['response']>(
-        '/product/update/config',
-        request,
+        '/config',
+        payload,
       );
       return response.data.data;
     },
@@ -104,19 +101,16 @@ export function useSettings() {
 
   const updateSiteConfigMutation = useMutation({
     mutationFn: updateSiteConfig,
-    onSuccess: () => {
+    onSuccess: function () {
       toast.success('Palett oppdatert');
     },
   });
 
   return {
     // Queries
-    adminProfileQuery,
-    getAllAdminsQuery,
-    siteConfigQuery,
+    getSiteConfigQuery,
+
     // Mutations
-    updatePasswordMutation,
-    createAdminMutation,
     updateSiteConfigMutation,
   };
 }
