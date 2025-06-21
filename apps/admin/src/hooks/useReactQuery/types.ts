@@ -4,7 +4,7 @@ export enum ReactQueryKeys {
 
   // Products
   GET_ALL_PRODUCTS = 'GET::/product/all',
-  GET_PRODUCT_DETAILS = 'GET::/product/:productId',
+  GET_PRODUCT_DETAILS = 'GET::/product/details/:productId',
   GET_PRODUCT_BY_SLUG = 'GET::/product/slug/:slug',
   GET_LOW_STOCK_PRODUCTS = 'GET::/product/low-stock',
   GET_TOP_PRODUCTS = 'GET::/product/top',

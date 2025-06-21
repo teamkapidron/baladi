@@ -45,6 +45,7 @@ import type {
   GetRecentOrdersSchema,
   PreviewPickingListSchema,
   PreviewFreightLabelSchema,
+  UpdateOrderItemSchema,
 } from '@/validators/order.validator';
 import {
   OrderCancellationReason,
@@ -550,7 +551,7 @@ export const getOrderDetailsAdmin = asyncHandler(
       .populate('userId', 'name email userType')
       .populate({
         path: 'items.productId',
-        select: 'name categories images',
+        select: 'name categories images vat',
         populate: {
           path: 'categories',
           select: 'name',
@@ -951,4 +952,68 @@ export const previewFreightLabel = asyncHandler(
     });
   },
 );
+
+export const updateOrderItem = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { orderId, itemId } = req.params as UpdateOrderItemSchema['params'];
+    const { quantity, price, vatPercentage, bulkDiscount, discount } =
+      req.body as UpdateOrderItemSchema['body'];
+
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    const order = await Order.findById<OrderResponse>(orderId).populate([
+      { path: 'items', select: '_id quantity price vatAmount' },
+    ]);
+    if (!order) {
+      throw new ErrorHandler(404, 'Order not found', 'NOT_FOUND');
+    }
+
+    const item = order.items.find((i) => i._id.toString() === itemId);
+    if (!item) {
+      throw new ErrorHandler(404, 'Item not found', 'NOT_FOUND');
+    }
+
+    if (quantity) {
+      item.quantity = quantity;
+    }
+    if (price) {
+      item.price = price;
+    }
+    if (vatPercentage) {
+      item.vatAmount = (item.price * vatPercentage) / 100;
+    }
+    if (bulkDiscount) {
+      item.bulkDiscount = bulkDiscount;
+    }
+    if (discount) {
+      item.discount = discount;
+    }
+    item.priceWithVat = item.price + item.vatAmount;
+    item.totalPrice = item.priceWithVat - item.bulkDiscount - item.discount;
+    const totalAmountOfItem = item.totalPrice * item.quantity;
+    const differenceInTotalPrice = order.totalAmount - totalAmountOfItem;
+
+    await Order.findByIdAndUpdate(
+      orderId,
+      {
+        items: order.items,
+        totalAmount: order.totalAmount - differenceInTotalPrice,
+      },
+      { session },
+    );
+    await session.commitTransaction();
+    session.endSession();
+    const updatedOrder = await Order.findById<OrderResponse>(orderId).populate([
+      { path: 'items.productId', select: 'name images' },
+      { path: 'userId', select: 'name email' },
+      { path: 'shippingAddress' },
+    ]);
+
+    sendResponse(res, 200, 'Order item updated successfully', {
+      order: updatedOrder,
+    });
+  },
+);
+
 /****************** END: Admin Controllers ********************/

@@ -51,7 +51,7 @@ export function useProductDetails(productId: string) {
   const getProductDetails = useCallback(
     async (payload: GetProductByIdRequest['payload']) => {
       const response = await api.get<GetProductByIdRequest['response']>(
-        `/product/${payload.productId}`,
+        `/product/details/${payload.productId}`,
       );
       return response.data.data;
     },
