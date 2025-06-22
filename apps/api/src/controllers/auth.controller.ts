@@ -89,7 +89,7 @@ export const signup = asyncHandler(async (req: Request, res: Response) => {
 
   await sendMail({
     to: email,
-    subject: 'Verify Your Email',
+    subject: 'Bekreft din e-post',
     template: {
       type: 'verifyEmail',
       data: { name, otp },
@@ -133,7 +133,7 @@ export const verifyOTP = asyncHandler(async (req: Request, res: Response) => {
 
   await sendMail({
     to: process.env.SMTP_REPLY_TO!,
-    subject: 'New User Registration',
+    subject: 'Ny bruker registrert',
     template: {
       type: 'adminApproval',
       data: {
@@ -170,7 +170,7 @@ export const resendOTP = asyncHandler(async (req: Request, res: Response) => {
 
   await sendMail({
     to: email,
-    subject: 'Verify Your Email',
+    subject: 'Bekreft din e-post',
     template: {
       type: 'verifyEmail',
       data: { name: user.name, otp },
@@ -262,7 +262,7 @@ export const forgotPassword = asyncHandler(
 
     await sendMail({
       to: email,
-      subject: 'Password Reset Request',
+      subject: 'Tilbakestill passord',
       template: {
         type: 'passwordReset',
         data: { name: user.name, resetLink: resetUrl },
@@ -338,7 +338,7 @@ export const createAdmin = asyncHandler(async (req: Request, res: Response) => {
 
   await sendMail({
     to: email,
-    subject: 'Your Admin Account Credentials',
+    subject: 'Dine admin kredensialer',
     template: {
       type: 'adminCredentials',
       data: { name, password },
