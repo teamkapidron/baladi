@@ -4,7 +4,7 @@ const COMPANY_LOGO =
   'https://res.cloudinary.com/dv7ar9aca/image/upload/v1748515719/w700h700_1-removebg-preview_ykrmdu.png';
 
 export function otpVerificationTemplate(name: string, otp: string) {
-  return `Hei ${name}, din verifikasjonskode for Baladi Engros er ${otp}`;
+  return `Hello ${name}, your verification code for Baladi Engros is ${otp}`;
 }
 
 export function adminApprovalTemplate(
