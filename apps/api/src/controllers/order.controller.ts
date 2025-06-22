@@ -231,6 +231,8 @@ export const placeOrder = asyncHandler(async (req: Request, res: Response) => {
           order: populatedOrder,
         },
       },
+    }).catch((error) => {
+      console.log(error);
     });
 
     sendResponse(res, 201, 'Order placed successfully', {

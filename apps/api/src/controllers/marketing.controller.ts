@@ -247,6 +247,8 @@ export const sendContactForm = asyncHandler(
           submittedAt: formatDate(new Date(), 'dd/MM/yyyy HH:mm'),
         },
       },
+    }).catch((error) => {
+      console.log(error);
     });
 
     sendResponse(res, 200, 'Contact form sent successfully');
