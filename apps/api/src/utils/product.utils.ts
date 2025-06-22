@@ -80,6 +80,9 @@ export async function getProductFilterFromQuery(
     queryObject.$or = [
       { name: new RegExp(search, 'i') },
       { slug: new RegExp(search, 'i') },
+      { sku: new RegExp(search, 'i') },
+      { description: new RegExp(search, 'i') },
+      { shortDescription: new RegExp(search, 'i') },
     ];
   }
 
