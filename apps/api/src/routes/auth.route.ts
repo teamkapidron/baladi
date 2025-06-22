@@ -5,7 +5,6 @@ import {
   isAdmin,
   isVerified,
   isSuperAdmin,
-  isAuthenticated,
 } from '@/middlewares/auth.middleware';
 
 import {
@@ -54,11 +53,12 @@ router.post('/reset-password', validate(resetPasswordSchema), resetPassword);
 
 router.get('/admin/me', isAdmin, getAdminData);
 router.post(
-  '/admin/create',
+  '/super/create/admin',
   isSuperAdmin,
   validate(createAdminSchema),
   createAdmin,
 );
+router.post('/admin/create', isAdmin, validate(createAdminSchema), createAdmin);
 router.post('/admin/login', validate(adminLoginSchema), adminLogin);
 
 export default router;
