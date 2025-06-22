@@ -143,7 +143,7 @@ function Header() {
                           {totalWeight.toFixed(2)} kg
                         </span>
                         <span className="rounded bg-[var(--baladi-secondary)]/10 px-2 py-1 font-[family-name:var(--font-dm-sans)] font-medium text-[var(--baladi-secondary)]">
-                          {totalVolume.toFixed(2)} m³
+                          {(totalVolume / 1000000).toFixed(2)} m³
                         </span>
                       </div>
                     </div>
@@ -153,7 +153,7 @@ function Header() {
                         {totalWeight.toFixed(1)}kg
                       </span>
                       <span className="rounded bg-[var(--baladi-secondary)]/10 px-1.5 py-0.5 font-[family-name:var(--font-dm-sans)] font-medium text-[var(--baladi-secondary)]">
-                        {totalVolume.toFixed(2)}m³
+                        {(totalVolume / 1000000).toFixed(2)}m³
                       </span>
                     </div>
                   </>

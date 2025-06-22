@@ -365,7 +365,7 @@ function useProductInfo(slug: string) {
     return {
       product,
       isOutOfStock: product.stock <= 0,
-      volume,
+      volume: volume / 1000000,
       price: netPrice,
       pricePerUnit,
       bulkDiscounts: bulkDiscountQuery.data?.bulkDiscounts,

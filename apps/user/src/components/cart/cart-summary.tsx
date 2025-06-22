@@ -169,7 +169,7 @@ function CartSummary(props: CartSummaryProps) {
             <div className="flex items-center gap-2">
               <Volume size={16} className="text-[var(--baladi-gray)]" />
               <span className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-gray)]">
-                Totalvolum: {totalVolume} m³
+                Totalvolum: {(totalVolume / 1000000).toFixed(2)} m³
               </span>
             </div>
           </div>
