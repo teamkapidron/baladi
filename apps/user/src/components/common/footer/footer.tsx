@@ -91,8 +91,8 @@ function Footer(props: FooterProps) {
                     href={link.href}
                     className="group block transition-all duration-300 hover:translate-x-2"
                   >
-                    <div className="hover:border-[var(--baladi-accent)]/30 flex items-center space-x-4 rounded-xl border border-white/10 bg-white/5 p-3 backdrop-blur-sm transition-all duration-300 hover:bg-white/10">
-                      <div className="from-[var(--baladi-accent)]/20 to-[var(--baladi-secondary)]/20 group-hover:from-[var(--baladi-accent)]/30 group-hover:to-[var(--baladi-secondary)]/30 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br transition-all duration-300">
+                    <div className="flex items-center space-x-4 rounded-xl border border-white/10 bg-white/5 p-3 backdrop-blur-sm transition-all duration-300 hover:border-[var(--baladi-accent)]/30 hover:bg-white/10">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--baladi-accent)]/20 to-[var(--baladi-secondary)]/20 transition-all duration-300 group-hover:from-[var(--baladi-accent)]/30 group-hover:to-[var(--baladi-secondary)]/30">
                         <link.icon
                           size={20}
                           className="text-[var(--baladi-accent)] transition-transform duration-300 group-hover:scale-110"
@@ -121,35 +121,35 @@ function Footer(props: FooterProps) {
               </div>
 
               <div className="space-y-6">
-                <div className="hover:border-[var(--baladi-accent)]/30 group flex items-start space-x-4 rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm transition-all duration-300 hover:bg-white/10">
-                  <div className="from-[var(--baladi-accent)]/20 to-[var(--baladi-secondary)]/20 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br">
+                <div className="group flex items-start space-x-4 rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm transition-all duration-300 hover:border-[var(--baladi-accent)]/30 hover:bg-white/10">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--baladi-accent)]/20 to-[var(--baladi-secondary)]/20">
                     <Mail size={20} className="text-[var(--baladi-accent)]" />
                   </div>
                   <div className="flex-1">
-                    <p className="mb-1 font-[family-name:var(--font-dm-sans)] text-sm font-semibold uppercase tracking-wider text-white/70">
+                    <p className="mb-1 font-[family-name:var(--font-dm-sans)] text-sm font-semibold tracking-wider text-white/70 uppercase">
                       E-POST
                     </p>
                     <Link
-                      href="mailto:info@baladiengros.no"
+                      href="mailto:baladi.engros@gmail.com"
                       className="font-[family-name:var(--font-dm-sans)] text-base text-white transition-colors duration-300 hover:text-[var(--baladi-accent)]"
                     >
-                      info@baladiengros.no
+                      baladi.engros@gmail.com
                     </Link>
                   </div>
                 </div>
 
-                <div className="hover:border-[var(--baladi-accent)]/30 group flex items-start space-x-4 rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm transition-all duration-300 hover:bg-white/10">
-                  <div className="from-[var(--baladi-accent)]/20 to-[var(--baladi-secondary)]/20 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br">
+                <div className="group flex items-start space-x-4 rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm transition-all duration-300 hover:border-[var(--baladi-accent)]/30 hover:bg-white/10">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--baladi-accent)]/20 to-[var(--baladi-secondary)]/20">
                     <MapPin size={20} className="text-[var(--baladi-accent)]" />
                   </div>
                   <div className="flex-1">
-                    <p className="mb-1 font-[family-name:var(--font-dm-sans)] text-sm font-semibold uppercase tracking-wider text-white/70">
+                    <p className="mb-1 font-[family-name:var(--font-dm-sans)] text-sm font-semibold tracking-wider text-white/70 uppercase">
                       ADRESSE
                     </p>
                     <p className="font-[family-name:var(--font-dm-sans)] text-base leading-relaxed text-white">
-                      Høgskoleringen 1, 1337
+                      Andersrudveien 1, 1914
                       <br />
-                      Høgskoleringen, Norge
+                      Ytre Enebakk, Norge
                     </p>
                   </div>
                 </div>
@@ -157,7 +157,7 @@ function Footer(props: FooterProps) {
                 <div className="pt-4">
                   <Link
                     href="/contact"
-                    className="shadow-[var(--baladi-accent)]/2 hover:shadow-[var(--baladi-accent)]/40 group inline-flex cursor-pointer items-center space-x-3 rounded-xl bg-gradient-to-r from-[var(--baladi-secondary)] to-[var(--baladi-accent)] px-6 py-4 font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl"
+                    className="group inline-flex cursor-pointer items-center space-x-3 rounded-xl bg-gradient-to-r from-[var(--baladi-secondary)] to-[var(--baladi-accent)] px-6 py-4 font-semibold text-white shadow-[var(--baladi-accent)]/2 shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-[var(--baladi-accent)]/40 hover:shadow-xl"
                   >
                     <Mail
                       size={20}

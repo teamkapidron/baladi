@@ -234,7 +234,7 @@ export const sendContactForm = asyncHandler(
 
     sendMail({
       to: contactEmail,
-      subject: 'New Contact Form Submission',
+      subject: 'Ny henvendelse fra kontaktskjema',
       template: {
         type: 'contactUs',
         data: {

@@ -31,13 +31,7 @@ const contactFormSchema = z.object({
     .string()
     .email('Ugyldig e-postadresse')
     .min(1, 'E-postadresse er påkrevd'),
-  phone: z
-    .string()
-    .optional()
-    .refine(
-      (val) => !val || /^(\+47|0047)?[4-9]\d{7}$/.test(val.replace(/\s/g, '')),
-      'Ugyldig norsk telefonnummer',
-    ),
+  phone: z.string().optional(),
   company: z.string().optional(),
   subject: z
     .string()

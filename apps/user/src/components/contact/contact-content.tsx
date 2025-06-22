@@ -2,7 +2,7 @@
 
 // Node Modules
 import { memo } from 'react';
-import { Mail, MapPin, Phone } from '@repo/ui/lib/icons';
+import { Mail, MapPin } from '@repo/ui/lib/icons';
 
 // Components
 import {
@@ -20,23 +20,16 @@ function ContactContent() {
     {
       icon: Mail,
       title: 'E-post',
-      content: 'info@baladiengros.no',
+      content: 'baladi.engros@gmail.com',
       description: 'Send oss en e-post',
-      href: 'mailto:info@baladiengros.no',
-    },
-    {
-      icon: Phone,
-      title: 'Telefon',
-      content: '+47 123 45 678',
-      description: 'Ring oss i arbeidstiden',
-      href: 'tel:+4712345678',
+      href: 'mailto:baladi.engros@gmail.com',
     },
     {
       icon: MapPin,
       title: 'Adresse',
-      content: 'Høgskoleringen 1, 1337 Høgskoleringen',
+      content: 'Andersrudveien 1, 1914 Ytre Enebakk, Norge',
       description: 'Besøk vårt lager',
-      href: 'https://maps.google.com/?q=Høgskoleringen+1,+1337+Høgskoleringen',
+      href: 'https://maps.google.com/?q=Andersrudveien+1,+1914+Ytre+Enebakk,+Norge',
     },
   ];
 
@@ -52,7 +45,7 @@ function ContactContent() {
         </p>
       </div>
 
-      <div className="mb-16 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mb-16 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2">
         {contactInfo.map((info, index) => (
           <Card
             key={index}
@@ -91,61 +84,11 @@ function ContactContent() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
-        <div className="space-y-8">
-          <div>
-            <h2 className="mb-6 font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-dark)]">
-              Om Baladi Engros
-            </h2>
-            <div className="space-y-6">
-              <p className="font-[family-name:var(--font-dm-sans)] text-base leading-relaxed text-[var(--baladi-gray)]">
-                Baladi Engros AS er din pålitelige partner for høykvalitets
-                engrosprodukter. Vi spesialiserer oss på asiatiske og
-                orientalske ingredienser og leverer til bedrifter over hele
-                Norge.
-              </p>
-              <p className="font-[family-name:var(--font-dm-sans)] text-base leading-relaxed text-[var(--baladi-gray)]">
-                Med mange års erfaring i bransjen forstår vi viktigheten av
-                kvalitet, pålitelighet og konkurransedyktige priser. Vårt team
-                er dedikert til å gi deg den beste servicen og produktene som
-                passer dine behov.
-              </p>
-            </div>
-          </div>
-
-          <Card className="border-[var(--baladi-border)] bg-gradient-to-br from-[var(--baladi-muted)] to-white">
-            <CardHeader>
-              <CardTitle className="font-[family-name:var(--font-sora)] text-xl font-semibold text-[var(--baladi-dark)]">
-                Våre tjenester
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-3">
-                {[
-                  'Høykvalitets engrosprodukter',
-                  'Konkurransedyktige priser for bedrifter',
-                  'Rask og pålitelig levering',
-                  'Personlig kundeservice',
-                  'Tilpassede løsninger for dine behov',
-                  'Kvalitetskontroll på alle produkter',
-                ].map((service, index) => (
-                  <li key={index} className="flex items-center space-x-3">
-                    <div className="h-2 w-2 rounded-full bg-[var(--baladi-accent)]" />
-                    <span className="font-[family-name:var(--font-dm-sans)] text-[var(--baladi-gray)]">
-                      {service}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
-        </div>
-
+      <div className="grid grid-cols-1 gap-12 lg:grid-cols-1">
         <div>
           <h2 className="mb-6 font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-dark)]">
             Send oss en melding
           </h2>
-
           <ContactForm />
         </div>
       </div>

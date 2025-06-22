@@ -120,8 +120,8 @@ function OrderListContent() {
           ))}
         </div>
 
-        <div className="from-[var(--baladi-light)]/50 to-[var(--baladi-primary)]/5 mt-12 rounded-lg bg-gradient-to-r p-6 text-center">
-          <div className="bg-[var(--baladi-primary)]/10 mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full">
+        <div className="mt-12 rounded-lg bg-gradient-to-r from-[var(--baladi-light)]/50 to-[var(--baladi-primary)]/5 p-6 text-center">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--baladi-primary)]/10">
             <Plus size={24} className="text-[var(--baladi-primary)]" />
           </div>
           <h3 className="font-[family-name:var(--font-sora)] text-lg font-semibold text-[var(--baladi-dark)]">
