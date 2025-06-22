@@ -49,7 +49,7 @@ export function useAddress() {
       queryClient.invalidateQueries({
         queryKey: [ReactQueryKeys.GET_ADDRESSES],
       });
-      toast.success('Address added successfully');
+      toast.success('Adresse lagt til');
     },
   });
 
@@ -70,7 +70,7 @@ export function useAddress() {
       queryClient.invalidateQueries({
         queryKey: [ReactQueryKeys.GET_ADDRESSES],
       });
-      toast.success('Address updated successfully');
+      toast.success('Adresse oppdatert');
     },
   });
 
@@ -90,7 +90,7 @@ export function useAddress() {
       queryClient.invalidateQueries({
         queryKey: [ReactQueryKeys.GET_ADDRESSES],
       });
-      toast.success('Address deleted successfully');
+      toast.success('Adresse slettet');
     },
   });
 
@@ -110,7 +110,7 @@ export function useAddress() {
       queryClient.invalidateQueries({
         queryKey: [ReactQueryKeys.GET_ADDRESSES],
       });
-      toast.success('Default address updated successfully');
+      toast.success('Standard adresse oppdatert');
     },
   });
 

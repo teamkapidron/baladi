@@ -306,7 +306,7 @@ export function newArrivalTemplate(
                               <span style="color: #10b981; font-weight: 600;">${formatPrice(
                                 product.price * (1 + product.vat / 100),
                               )} inkl. mva</span><br />
-                              <span style="font-size: 12px; color: #64748b;">${product.noOfUnits} enhet per kartong</span>
+                              <span style="font-size: 12px; color: #64748b;">${formatPrice((product.price * (1 + product.vat / 100)) / product.noOfUnits)} kr per enhet</span>
                             </td>
                           </tr>
                         </table>
@@ -703,7 +703,7 @@ export function productPromotionTemplate(
                               <span style="color: #10b981; font-weight: 600;">${formatPrice(
                                 product.price * (1 + product.vat / 100),
                               )} inkl. mva</span><br />
-                              <span style="font-size: 12px; color: #64748b;">${product.noOfUnits} enhet per kartong</span>
+                              <span style="font-size: 12px; color: #64748b;">${formatPrice((product.price * (1 + product.vat / 100)) / product.noOfUnits)} kr per enhet</span>
                             </td>
                           </tr>
                         </table>

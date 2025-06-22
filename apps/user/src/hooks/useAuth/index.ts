@@ -77,7 +77,7 @@ export function useAuth() {
       refetchUser();
       router.push('/onboarding');
       window.location.reload();
-      toast.success('OTP verified successfully');
+      toast.success('OTP bekreftet');
     },
   });
 
@@ -95,7 +95,7 @@ export function useAuth() {
   const resendOTPMutation = useMutation({
     mutationFn: resendOTP,
     onSuccess: function () {
-      toast.success('OTP resent successfully');
+      toast.success('OTP sendt på nytt');
     },
   });
 
@@ -119,7 +119,7 @@ export function useAuth() {
       });
       router.push('/wait-for-approval');
       window.location.reload();
-      toast.success('Onboarding successful');
+      toast.success('Onboarding vellykket');
     },
   });
 
@@ -143,7 +143,7 @@ export function useAuth() {
       });
       router.push('/wait-for-approval');
       window.location.reload();
-      toast.success('Login successful');
+      toast.success('Innlogging vellykket');
     },
   });
 
@@ -161,7 +161,7 @@ export function useAuth() {
   const forgotPasswordMutation = useMutation({
     mutationFn: forgotPassword,
     onSuccess: function () {
-      toast.success('Password reset link sent to your email');
+      toast.success('Lenke til tilbakestilling av passord sendt til e-post');
     },
   });
 
@@ -181,7 +181,7 @@ export function useAuth() {
     onSuccess: function () {
       refetchUser();
       router.push('/login');
-      toast.success('Password reset successfully');
+      toast.success('Passord tilbakestilt');
     },
   });
 
@@ -198,7 +198,7 @@ export function useAuth() {
       });
       router.push('/login');
       window.location.reload();
-      toast.success('Logged out successfully');
+      toast.success('Utlogging vellykket');
     },
   });
 

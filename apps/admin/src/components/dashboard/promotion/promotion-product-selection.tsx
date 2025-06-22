@@ -43,7 +43,7 @@ function PromotionProductSelection(props: PromotionProductSelectionProps) {
   }, [quickSearchProductQuery.data]);
 
   const selectedCount = selectedProducts.length;
-  const maxSelection = 3;
+  const maxSelection = 4;
   const canSelectMore = selectedCount < maxSelection;
 
   const toggleProductSelection = useCallback(

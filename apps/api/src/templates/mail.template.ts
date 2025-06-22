@@ -5,288 +5,91 @@ const COMPANY_LOGO =
 
 export function otpVerificationTemplate(name: string, otp: string) {
   return `
-    <html>
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <style>
-          * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-          }
-
-          body {
-            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.6;
-            color: #0f172a;
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            padding: 20px;
-            margin: 0;
-          }
-
-          .email-wrapper {
-            max-width: 600px;
-            margin: 0 auto;
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
-            overflow: hidden;
-          }
-
-          .header {
-            background: linear-gradient(135deg, #183c6c 0%, #4b7bbe 100%);
-            padding: 40px 30px;
-            text-align: center;
-            color: #ffffff;
-          }
-
-          .logo img {
-            max-width: 120px;
-            height: auto;
-            margin-bottom: 20px;
-            filter: brightness(0) invert(1);
-          }
-
-          .header h1 {
-            font-family: 'Sora', sans-serif;
-            font-size: 28px;
-            font-weight: 600;
-            margin: 0;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-          }
-
-          .content {
-            padding: 40px 30px;
-          }
-
-          .greeting {
-            font-size: 18px;
-            font-weight: 600;
-            color: #183c6c;
-            margin-bottom: 20px;
-          }
-
-          .message {
-            font-size: 16px;
-            color: #475569;
-            margin-bottom: 30px;
-          }
-
-          .otp-section {
-            text-align: center;
-            margin: 40px 0;
-            padding: 30px;
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-          }
-
-          .otp-label {
-            font-size: 14px;
-            color: #64748b;
-            margin-bottom: 15px;
-            font-weight: 500;
-          }
-
-          .otp-container {
-            background: linear-gradient(135deg, #183c6c 0%, #4b7bbe 100%);
-            color: #ffffff;
-            border-radius: 8px;
-            padding: 20px;
-            font-size: 32px;
-            font-weight: 700;
-            letter-spacing: 8px;
-            margin: 15px 0;
-            font-family: 'Courier New', monospace;
-            box-shadow: 0 4px 12px rgba(24, 60, 108, 0.3);
-          }
-
-          .otp-info {
-            color: #64748b;
-            font-size: 14px;
-            margin-top: 15px;
-            line-height: 1.5;
-          }
-
-          .warning-section {
-            background: linear-gradient(135deg, #fef3cd 0%, #fde68a 100%);
-            border-left: 4px solid #f59e0b;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 30px 0;
-          }
-
-          .warning-section h3 {
-            color: #92400e;
-            font-family: 'Sora', sans-serif;
-            font-size: 16px;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-          }
-
-          .warning-section h3::before {
-            content: "⚠️";
-            margin-right: 8px;
-            font-size: 18px;
-          }
-
-          .warning-section p {
-            color: #92400e;
-            font-size: 14px;
-            margin: 0;
-          }
-
-          .footer {
-            background: #f1f5f9;
-            padding: 25px 30px;
-            text-align: center;
-            border-top: 1px solid #e2e8f0;
-          }
-
-          .footer p {
-            color: #64748b;
-            font-size: 13px;
-            margin: 5px 0;
-          }
-
-          .signature {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #e2e8f0;
-            color: #475569;
-          }
-
-          .signature strong {
-            color: #183c6c;
-            font-family: 'Sora', sans-serif;
-          }
-
-          @media (max-width: 600px) {
-            body {
-              padding: 10px;
-            }
-
-            .email-wrapper {
-              margin: 0;
-              border-radius: 8px;
-              max-width: 100%;
-            }
-
-            .header, .content {
-              padding: 20px 15px;
-            }
-
-            .header h1 {
-              font-size: 22px;
-              line-height: 1.3;
-            }
-
-            .greeting {
-              font-size: 16px;
-            }
-
-            .message {
-              font-size: 14px;
-              line-height: 1.5;
-            }
-
-            .otp-section {
-              padding: 15px;
-              margin: 25px 0;
-            }
-
-            .otp-container {
-              font-size: 24px;
-              letter-spacing: 4px;
-              padding: 15px 10px;
-              word-break: break-all;
-            }
-
-            .warning-section, .security-section {
-              padding: 15px;
-              margin: 20px 0;
-            }
-
-            .warning-section h3, .security-section h3 {
-              font-size: 14px;
-              flex-wrap: wrap;
-            }
-
-            .footer {
-              padding: 20px 15px;
-            }
-
-            .signature {
-              font-size: 14px;
-            }
-          }
-
-          @media (max-width: 480px) {
-            .header h1 {
-              font-size: 20px;
-            }
-
-            .otp-container {
-              font-size: 20px;
-              letter-spacing: 2px;
-              padding: 12px 8px;
-            }
-
-            .greeting {
-              font-size: 15px;
-            }
-
-            .message {
-              font-size: 13px;
-            }
-          }
-        </style>
-      </head>
-      <body>
-        <div class="email-wrapper">
-          <div class="header">
-            <div class="logo">
-              <img src="${COMPANY_LOGO}" alt="Baladi Logo">
-            </div>
-            <h1>E-postbekreftelse</h1>
-          </div>
-
-          <div class="content">
-            <div class="greeting">Hei ${name},</div>
-
-            <div class="message">
-              Takk for at du registrerte deg hos Baladi. For å fullføre registreringen din, vennligst bruk følgende engangskode for å bekrefte e-postadressen din:
-            </div>
-
-            <div class="otp-section">
-              <div class="otp-label">Din engangskode (OTP)</div>
-              <div class="otp-container">
-                ${otp}
-              </div>
-              <div class="otp-info">
-                Skriv inn denne koden i registreringsskjemaet for å bekrefte kontoen din.
-              </div>
-            </div>
-
-            <div class="warning-section">
-              <h3>Viktig informasjon</h3>
-              <p>Denne koden er gyldig i 10 minutter. Hvis du ikke ba om denne bekreftelsen, kan du trygt ignorere denne e-posten.</p>
-            </div>
-
-            <div class="signature">
-              <p>Med vennlig hilsen,<br><strong>Baladi Team</strong></p>
-            </div>
-          </div>
-
-          <div class="footer">
-            <p>Dette er en automatisk e-post. Vennligst ikke svar på denne e-posten.</p>
-            <p>© ${new Date().getFullYear()} Baladi. Alle rettigheter forbeholdt.</p>
-          </div>
-        </div>
-      </body>
-    </html>
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bekreft din e-postadresse - Baladi</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f5f5f5; color: #333333;">
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #f5f5f5;">
+        <tr>
+            <td style="padding: 20px 0;">
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" style="margin: 0 auto; background-color: #ffffff; border: 1px solid #e0e0e0;">
+                    
+                    <!-- Header -->
+                    <tr>
+                        <td style="background-color: #183c6c; padding: 30px; text-align: center;">
+                            <img src="${COMPANY_LOGO}" alt="Baladi" style="max-width: 120px; height: auto; margin-bottom: 15px;">
+                            <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: normal;">E-postbekreftelse</h1>
+                        </td>
+                    </tr>
+                    
+                    <!-- Content -->
+                    <tr>
+                        <td style="padding: 40px 30px;">
+                            <h2 style="margin: 0 0 20px 0; color: #183c6c; font-size: 18px; font-weight: normal;">Hei ${name},</h2>
+                            
+                            <p style="margin: 0 0 30px 0; line-height: 1.6; font-size: 16px; color: #333333;">
+                                Takk for at du registrerte deg hos Baladi. For å fullføre registreringen din, vennligst bruk følgende engangskode for å bekrefte e-postadressen din:
+                            </p>
+                            
+                            <!-- OTP Section -->
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: 30px 0;">
+                                <tr>
+                                    <td style="text-align: center; padding: 20px; background-color: #f8f9fa; border: 2px solid #e9ecef;">
+                                        <p style="margin: 0 0 10px 0; font-size: 14px; color: #666666;">Din engangskode:</p>
+                                        <div style="background-color: #183c6c; color: #ffffff; padding: 15px 20px; margin: 10px 0; font-size: 28px; font-weight: bold; letter-spacing: 4px; font-family: monospace; border-radius: 4px;">
+                                            ${otp}
+                                        </div>
+                                        <p style="margin: 10px 0 0 0; font-size: 14px; color: #666666;">
+                                            Skriv inn denne koden i registreringsskjemaet for å bekrefte kontoen din.
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <!-- Important Information -->
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: 30px 0;">
+                                <tr>
+                                    <td style="padding: 20px; background-color: #fff3cd; border-left: 4px solid #ffc107;">
+                                        <h3 style="margin: 0 0 10px 0; color: #856404; font-size: 16px; font-weight: bold;">Viktig informasjon</h3>
+                                        <p style="margin: 0; color: #856404; font-size: 14px; line-height: 1.5;">
+                                            Denne koden er gyldig i 10 minutter. Hvis du ikke ba om denne bekreftelsen, kan du trygt ignorere denne e-posten.
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <!-- Signature -->
+                            <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e0e0e0;">
+                                <p style="margin: 0; color: #333333; font-size: 16px;">
+                                    Med vennlig hilsen,<br>
+                                    <strong style="color: #183c6c;">Baladi Team</strong>
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background-color: #f8f9fa; padding: 20px 30px; text-align: center; border-top: 1px solid #e0e0e0;">
+                            <p style="margin: 0 0 5px 0; color: #666666; font-size: 12px;">
+                                Dette er en automatisk e-post. Vennligst ikke svar på denne e-posten.
+                            </p>
+                            <p style="margin: 0; color: #666666; font-size: 12px;">
+                                © ${new Date().getFullYear()} Baladi. Alle rettigheter forbeholdt.
+                            </p>
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
   `;
 }
 

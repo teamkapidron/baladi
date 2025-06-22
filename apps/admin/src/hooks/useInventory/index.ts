@@ -108,7 +108,7 @@ export function useInventory() {
       queryClient.invalidateQueries({
         queryKey: [ReactQueryKeys.GET_ALL_INVENTORY],
       });
-      toast.success('Inventory created successfully');
+      toast.success('Lageroppdatering opprettet');
     },
   });
 

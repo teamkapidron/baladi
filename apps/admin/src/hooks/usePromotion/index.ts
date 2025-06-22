@@ -8,7 +8,10 @@ import { useRequest } from '@/hooks/useRequest';
 // Types
 import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
 import type { PreviewPromotionPosterRequest } from './types';
-import { promotionPosterTemplate } from '@/templates/poster.template';
+import {
+  multiProductPosterTemplate,
+  promotionPosterTemplate,
+} from '@/templates/poster.template';
 
 export function usePromotion() {
   const api = useRequest();
@@ -21,11 +24,19 @@ export function usePromotion() {
         PreviewPromotionPosterRequest['response']
       >('/marketing/promotion/poster/preview', request);
 
-      return await promotionPosterTemplate({
-        ...response.data.data.productsData[0]!,
-        title: request.title,
-        posterType: request.posterType,
-      });
+      if (request.productsIds.length > 1) {
+        return await multiProductPosterTemplate({
+          ...response.data.data,
+          title: request.title,
+          posterType: request.posterType,
+        });
+      } else {
+        return await promotionPosterTemplate({
+          ...response.data.data.productsData[0]!,
+          title: request.title,
+          posterType: request.posterType,
+        });
+      }
     },
     [api],
   );

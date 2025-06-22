@@ -67,7 +67,7 @@ export function useCategory() {
       queryClient.invalidateQueries({
         queryKey: [ReactQueryKeys.GET_ALL_CATEGORIES_FLATTENED],
       });
-      toast.success('Category created successfully');
+      toast.success('Kategori opprettet');
     },
   });
 
@@ -91,7 +91,7 @@ export function useCategory() {
       queryClient.invalidateQueries({
         queryKey: [ReactQueryKeys.GET_ALL_CATEGORIES_FLATTENED],
       });
-      toast.success('Category updated successfully');
+      toast.success('Kategori oppdatert');
     },
   });
 
@@ -114,7 +114,7 @@ export function useCategory() {
       queryClient.invalidateQueries({
         queryKey: [ReactQueryKeys.GET_ALL_CATEGORIES_FLATTENED],
       });
-      toast.success('Category deleted successfully');
+      toast.success('Kategori slettet');
     },
   });
 

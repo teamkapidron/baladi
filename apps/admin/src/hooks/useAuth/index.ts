@@ -50,7 +50,7 @@ export function useAuth() {
       });
       router.push('/dashboard');
       window.location.reload();
-      toast.success('Login successful');
+      toast.success('Innlogging vellykket');
     },
   });
 
@@ -67,7 +67,7 @@ export function useAuth() {
       });
       router.push('/login');
       window.location.reload();
-      toast.success('Logged out successfully');
+      toast.success('Utlogging vellykket');
     },
   });
 

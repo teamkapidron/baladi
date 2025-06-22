@@ -49,7 +49,7 @@ export function useNewsletter() {
       queryClient.invalidateQueries({
         queryKey: [ReactQueryKeys.GET_NEWSLETTER_STATS],
       });
-      toast.success('Campaign created successfully');
+      toast.success('Kampanje opprettet');
     },
   });
 

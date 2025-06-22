@@ -49,31 +49,64 @@ function Header() {
       )}
     >
       <div className="bg-white">
-        <div className="border-b border-[var(--baladi-border)] bg-[var(--baladi-primary)]/80 text-white">
+        <div className="overflow-hidden border-b border-[var(--baladi-border)] bg-[var(--baladi-primary)]/80 text-white">
           <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
             <div className="flex items-center justify-center py-2.5 text-center">
-              <div className="flex w-full max-w-4xl items-start gap-2 sm:items-center">
-                <div className="flex w-full flex-col gap-2 text-xs sm:flex-row sm:items-center sm:gap-4 sm:text-sm">
-                  <div className="flex items-center justify-center gap-1 sm:justify-start">
-                    <Info className="mt-0.5 h-3 w-3 flex-shrink-0 sm:mt-0" />
+              <div className="w-full sm:hidden">
+                {/* @ts-expect-error - Marquee is not a valid HTML element */}
+                <marquee
+                  behavior="scroll"
+                  direction="left"
+                  scrollamount="2"
+                  className="flex items-center text-xs whitespace-nowrap"
+                >
+                  <span className="mx-4 inline-flex items-center gap-2">
+                    <Info className="h-3 w-3 flex-shrink-0" />
+                    <span className="font-[family-name:var(--font-dm-sans)] font-bold text-white/90">
+                      Alle priser inkluderer mva
+                    </span>
+                  </span>
+                  <span className="mx-2 text-white/60">•</span>
+                  <span className="mx-4 inline-flex items-center gap-2">
+                    <Package className="h-3.5 w-3.5 flex-shrink-0" />
+                    <span className="font-[family-name:var(--font-sora)] font-semibold">
+                      Palltyper og dimensjoner
+                    </span>
+                  </span>
+                  <span className="mx-2 text-white/60">•</span>
+                  <span className="mx-4 font-[family-name:var(--font-dm-sans)] text-xs">
+                    <strong>Europall:</strong> 220 cm = 1,92 m³
+                  </span>
+                  <span className="mx-2 text-white/60">•</span>
+                  <span className="mx-4 font-[family-name:var(--font-dm-sans)] text-xs">
+                    <strong>Stor pall:</strong> 220 cm = 2,4 m³
+                  </span>
+                  {/* @ts-expect-error - Marquee is not a valid HTML element */}
+                </marquee>
+              </div>
+
+              <div className="hidden w-full max-w-4xl items-center sm:flex">
+                <div className="flex w-full flex-row items-center gap-4 text-sm">
+                  <div className="flex items-center gap-1">
+                    <Info className="h-3 w-3 flex-shrink-0" />
                     <span className="font-[family-name:var(--font-dm-sans)] font-bold text-white/90">
                       Alle priser inkluderer mva
                     </span>
                   </div>
 
-                  <div className="hidden text-white/60 sm:block">•</div>
+                  <div className="text-white/60">•</div>
 
-                  <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:gap-4">
-                    <div className="flex items-center justify-center gap-1 sm:justify-start">
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-1">
                       <Package className="h-3.5 w-3.5 flex-shrink-0" />
                       <span className="font-[family-name:var(--font-sora)] font-semibold">
                         Palltyper og dimensjoner
                       </span>
                     </div>
 
-                    <div className="hidden text-white/60 sm:block">•</div>
+                    <div className="text-white/60">•</div>
 
-                    <div className="flex flex-col gap-1 font-[family-name:var(--font-dm-sans)] text-xs sm:flex-row sm:gap-3 sm:text-sm">
+                    <div className="flex gap-3 font-[family-name:var(--font-dm-sans)]">
                       <span className="text-white/90">
                         <strong>Europall:</strong> 220 cm = 1,92 m³
                       </span>

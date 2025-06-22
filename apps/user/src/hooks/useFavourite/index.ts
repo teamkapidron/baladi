@@ -45,7 +45,7 @@ export function useFavourite() {
       await queryClient.invalidateQueries({
         queryKey: [ReactQueryKeys.GET_FAVORITES],
       });
-      toast.success('Product added to favorites');
+      toast.success('Produkt lagt til favoritter');
     },
   });
 
@@ -65,7 +65,7 @@ export function useFavourite() {
       await queryClient.invalidateQueries({
         queryKey: [ReactQueryKeys.GET_FAVORITES],
       });
-      toast.success('Product removed from favorites');
+      toast.success('Produkt fjernet fra favoritter');
     },
   });
 

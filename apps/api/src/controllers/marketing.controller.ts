@@ -1,4 +1,5 @@
 // Node Modules
+import { Types } from 'mongoose';
 import { formatDate } from 'date-fns';
 
 // Schemas
@@ -147,7 +148,42 @@ export const previewPromotionPoster = asyncHandler(
     const { posterType, productsIds } =
       req.body as PreviewPromotionPosterSchema['body'];
 
-    const products = await Product.find({ _id: { $in: productsIds } }).lean();
+    const ids = productsIds.map((id) => new Types.ObjectId(id));
+
+    const products = await Product.aggregate([
+      {
+        $match: {
+          _id: { $in: ids },
+        },
+      },
+      {
+        $lookup: {
+          from: 'inventories',
+          localField: '_id',
+          foreignField: 'productId',
+          as: 'inventory',
+        },
+      },
+      {
+        $addFields: {
+          stock: {
+            $sum: {
+              $map: {
+                input: '$inventory',
+                as: 'inv',
+                in: { $ifNull: ['$$inv.quantity', 0] },
+              },
+            },
+          },
+          bestBeforeDate: { $min: '$inventory.expirationDate' },
+        },
+      },
+      {
+        $project: {
+          inventory: 0,
+        },
+      },
+    ]);
 
     if (products.length !== productsIds.length) {
       throw new ErrorHandler(400, 'Some products are not found', 'BAD_REQUEST');
@@ -170,6 +206,9 @@ export const previewPromotionPoster = asyncHandler(
             (price * (1 - bulkDiscount.discountPercentage / 100)) /
             product.noOfUnits,
         })),
+        expirationDate: product.bestBeforeDate
+          ? formatDate(product.bestBeforeDate, 'dd/MM/yyyy')
+          : null,
       };
     });
 

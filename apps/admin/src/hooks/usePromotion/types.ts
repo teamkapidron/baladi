@@ -18,6 +18,7 @@ export type PreviewPromotionPosterRequest = ApiData<
         price: number;
         pricePerUnit: number;
       }[];
+      expirationDate: string | null;
     }[];
   }
 >;

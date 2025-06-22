@@ -38,7 +38,7 @@ export function useOrder() {
       queryClient.invalidateQueries({
         queryKey: [ReactQueryKeys.GET_MY_ORDERS],
       });
-      toast.success('Order placed successfully');
+      toast.success('Ordre plassert vellykket');
     },
   });
 
@@ -75,7 +75,7 @@ export function useOrder() {
       queryClient.invalidateQueries({
         queryKey: [ReactQueryKeys.GET_MY_ORDERS],
       });
-      toast.success('Order Cancelled successfully');
+      toast.success('Ordre avbrutt');
     },
   });
 
