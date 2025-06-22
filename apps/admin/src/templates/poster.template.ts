@@ -472,9 +472,11 @@ export async function multiProductPosterTemplate(
     const rows = Math.ceil(maxProducts / cols);
 
     const productAreaTop = 140;
-    const productAreaHeight = height - productAreaTop - 80;
+    const productAreaHeight = height - productAreaTop - 40;
     const productHeight = productAreaHeight / rows;
     const productWidth = width / cols;
+
+    const rowSpacing = 20;
 
     for (let i = 0; i < products.length; i++) {
       const product = products[i];
@@ -483,13 +485,24 @@ export async function multiProductPosterTemplate(
       const row = Math.floor(i / cols);
       const col = i % cols;
 
-      const x = col * productWidth;
-      const y = productAreaTop + row * productHeight;
+      const isLastOddProduct =
+        i === products.length - 1 && products.length % 2 === 1 && cols === 2;
+
+      let x, currentProductWidth;
+      if (isLastOddProduct) {
+        x = 0;
+        currentProductWidth = width;
+      } else {
+        x = col * productWidth;
+        currentProductWidth = productWidth;
+      }
+
+      const y = productAreaTop + row * (productHeight + rowSpacing);
 
       const productBg = new fabric.Rect({
         left: x + 15,
         top: y + 10,
-        width: productWidth - 30,
+        width: currentProductWidth - 30,
         height: productHeight - 20,
         fill: 'rgba(255, 255, 255, 0.7)',
         stroke: '#e2e8f0',
@@ -507,7 +520,7 @@ export async function multiProductPosterTemplate(
       canvas.add(productBg);
 
       const productName = new fabric.Text(product.name, {
-        left: x + productWidth / 2,
+        left: x + currentProductWidth / 2,
         top: y + 20,
         fontSize: 14,
         fontFamily: 'Arial, sans-serif',
@@ -526,7 +539,7 @@ export async function multiProductPosterTemplate(
         })
           .then((img) => {
             if (img) {
-              const maxImgWidth = productWidth - 75;
+              const maxImgWidth = currentProductWidth - 75;
               const maxImgHeight = productHeight - 120;
               const imgWidth = img.width || 1;
               const imgHeight = img.height || 1;
@@ -537,7 +550,7 @@ export async function multiProductPosterTemplate(
               );
 
               img.set({
-                left: x + productWidth / 2,
+                left: x + currentProductWidth / 2,
                 top: y + productHeight / 2 - 15,
                 originX: 'center',
                 originY: 'center',
@@ -560,7 +573,7 @@ export async function multiProductPosterTemplate(
       });
 
       const priceText = new fabric.Text(`${formatPrice(product.price)} kr`, {
-        left: x + productWidth / 2,
+        left: x + currentProductWidth / 2,
         top: y + productHeight - 65,
         fontSize: 16,
         fontFamily: 'Georgia, serif',
@@ -576,7 +589,7 @@ export async function multiProductPosterTemplate(
       const perUnitText = new fabric.Text(
         `Per enhet: ${formatPrice(product.pricePerUnit)} kr`,
         {
-          left: x + productWidth / 2,
+          left: x + currentProductWidth / 2,
           top: y + productHeight - 45,
           fontSize: 11,
           fontFamily: 'Arial, sans-serif',
@@ -593,7 +606,7 @@ export async function multiProductPosterTemplate(
         const expirationDateText = new fabric.Text(
           `Utgår: ${product.expirationDate}`,
           {
-            left: x + productWidth / 2,
+            left: x + currentProductWidth / 2,
             top: y + productHeight - 25,
             fontSize: 11,
             fontFamily: 'Arial, sans-serif',
