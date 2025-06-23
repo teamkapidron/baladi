@@ -19,6 +19,7 @@ import type { CSVProductSchema } from '@/components/dashboard/products/bulk/sche
 import type { CSVInventorySchema } from '@/components/dashboard/inventory/bulk/schema';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
+import { API_URL } from '@/constants/url.constants';
 
 export function useBulk<T>(csvConfig: CsvConfigType, csvSchema: z.ZodType) {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -258,6 +259,11 @@ export function useBulk<T>(csvConfig: CsvConfigType, csvSchema: z.ZodType) {
   const downloadTemplate = useCallback(
     (templateFileName = 'template.csv') => {
       try {
+        if (csvConfig.allColumns.includes('expirationDate')) {
+          window.location.href = `${API_URL}/export/products-for-inventory`;
+          return;
+        }
+
         const headers =
           csvConfig.allColumns?.join(',') ||
           csvConfig.requiredColumns.join(',');
@@ -356,8 +362,7 @@ export function useBulkAdd() {
   const bulkAddInventory = useCallback(
     async (payload: CSVInventorySchema[]) => {
       const filteredPayload = payload.filter(
-        (item: CSVInventorySchema) =>
-          item.quantity !== '' && item.expirationDate !== '',
+        (item: CSVInventorySchema) => item.quantity !== '',
       );
 
       const response = await api.post<BulkAddInventoryRequest['response']>(

@@ -314,3 +314,37 @@ export const exportOrders = asyncHandler(
     res.end();
   },
 );
+
+export const productsForInventory = asyncHandler(
+  async (req: Request, res: Response) => {
+    const products = await Product.find({});
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Products');
+
+    worksheet.columns = [
+      { header: 'name', key: 'name', width: 40 },
+      { header: 'slug', key: 'slug', width: 40 },
+      { header: 'quantity', key: 'quantity', width: 40 },
+      { header: 'expirationDate', key: 'expirationDate', width: 40 },
+    ];
+
+    worksheet.addRows(
+      products.map((product) => ({
+        name: product.name,
+        slug: product.slug,
+        quantity: '',
+        expirationDate: '',
+      })),
+    );
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename=products-for-inventory.csv',
+    );
+
+    await workbook.csv.write(res);
+    res.end();
+  },
+);
