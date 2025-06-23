@@ -1,5 +1,5 @@
 // Node Modules
-import { PipelineStage, Types } from 'mongoose';
+import mongoose, { PipelineStage, Types } from 'mongoose';
 
 // Schemas
 import Order from '@/models/order.model';
@@ -16,6 +16,7 @@ import {
   buildStockCountPipeline,
   getProductFilterFromQuery,
   getUserProductFilterFromQuery,
+  normalizeProductFields,
 } from '@/utils/product.utils';
 
 // Handlers
@@ -38,7 +39,10 @@ import type {
   UpdateProductSchema,
   LowStockProductsSchema,
   TopProductsSchema,
+  BulkAddProductsSchema,
 } from '@/validators/product.validator';
+import { bulkAddProductsSchema } from '@/validators/product.validator';
+
 import {
   QuickSearchProduct,
   QuickSearchProductAggregateType,
@@ -827,3 +831,58 @@ export const productStats = asyncHandler(async (_: Request, res: Response) => {
     activeCategories,
   });
 });
+
+export const bulkAddProducts = asyncHandler(
+  async (req: Request, res: Response) => {
+    const body = req.body as BulkAddProductsSchema['body'];
+    const parsed = bulkAddProductsSchema.safeParse({ body });
+
+    if (!parsed.success) {
+      throw new ErrorHandler(400, 'Invalid product data', 'VALIDATION');
+    }
+    const { products } = parsed.data.body;
+    const normalizedProducts = products.map(normalizeProductFields);
+
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      const categories = await Category.find({
+        name: { $in: products.flatMap((p) => p.categories) },
+      }).session(session);
+      if (!categories) {
+        throw new ErrorHandler(400, 'Categories not found', 'VALIDATION');
+      }
+
+      const categoryMap = new Map(categories.map((c) => [c.name, c._id]));
+
+      const createdProducts = await Promise.all(
+        normalizedProducts.map((p) => {
+          const categoryIds = p.categories?.map((c) => categoryMap.get(c));
+
+          return Product.create([{ ...p, categories: categoryIds }], {
+            session,
+          }).then(([doc]) => doc);
+        }),
+      );
+      await session.commitTransaction();
+      session.endSession();
+
+      return sendResponse(res, 200, 'Products added successfully', {
+        products: createdProducts,
+      });
+    } catch (error) {
+      await session.abortTransaction();
+      session.endSession();
+
+      if (error instanceof ErrorHandler) {
+        throw error;
+      }
+      throw new ErrorHandler(
+        500,
+        'Failed to add products. Please try again later.',
+        'INTERNAL_SERVER',
+      );
+    }
+  },
+);

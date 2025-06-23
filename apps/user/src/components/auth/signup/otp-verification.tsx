@@ -96,8 +96,8 @@ function OtpVerification(props: OtpVerificationProps) {
                   index={index}
                   className={cn(
                     'h-12 w-12 border-2 text-lg font-medium transition-all',
-                    'focus:ring-[var(--baladi-primary)]/20 focus:border-[var(--baladi-primary)] focus:ring-2',
-                    'data-[active=true]:ring-[var(--baladi-primary)]/20 data-[active=true]:border-[var(--baladi-primary)] data-[active=true]:ring-2',
+                    'focus:border-[var(--baladi-primary)] focus:ring-2 focus:ring-[var(--baladi-primary)]/20',
+                    'data-[active=true]:border-[var(--baladi-primary)] data-[active=true]:ring-2 data-[active=true]:ring-[var(--baladi-primary)]/20',
                   )}
                 />
               ))}
@@ -109,7 +109,7 @@ function OtpVerification(props: OtpVerificationProps) {
           <Button
             onClick={handleVerify}
             disabled={otp.length !== 6}
-            className="hover:bg-[var(--baladi-primary)]/90 h-11 w-full bg-[var(--baladi-primary)] font-medium text-white"
+            className="h-11 w-full bg-[var(--baladi-primary)] font-medium text-white hover:bg-[var(--baladi-primary)]/90"
           >
             Bekreft kode
           </Button>
@@ -124,7 +124,7 @@ function OtpVerification(props: OtpVerificationProps) {
                 onClick={handleResend}
                 disabled={resendOTPMutation.isPending}
                 isLoading={resendOTPMutation.isPending}
-                className="hover:text-[var(--baladi-primary)]/80 h-auto p-0 font-medium text-[var(--baladi-primary)]"
+                className="h-auto p-0 font-medium text-[var(--baladi-primary)] hover:text-[var(--baladi-primary)]/80"
               >
                 {resendOTPMutation.isPending
                   ? 'Sender...'
@@ -149,16 +149,16 @@ function OtpVerification(props: OtpVerificationProps) {
         <DrawerContent className="max-h-[90vh]">
           <DrawerHeader className="pb-2 text-center">
             <DrawerTitle className="font-[family-name:var(--font-sora)] text-xl font-semibold text-[var(--baladi-dark)]">
-              Bekreft telefonnummeret ditt
+              Bekreft e-postadressen din
             </DrawerTitle>
             <DrawerDescription className="font-[family-name:var(--font-dm-sans)] leading-relaxed text-[var(--baladi-gray)]">
-              Vi har sendt en 6-sifret bekreftelseskode til telefonnummeret
-              ditt. Skriv inn koden nedenfor for å fortsette.
+              Vi har sendt en 6-sifret bekreftelseskode til e-postadressen din.
+              Skriv inn koden nedenfor for å fortsette.
             </DrawerDescription>
           </DrawerHeader>
           <div className="px-6 py-4">{ContentBody}</div>
           <DrawerFooter>
-            <div className="text-[var(--baladi-gray)]/70 text-center text-xs">
+            <div className="text-center text-xs text-[var(--baladi-gray)]/70">
               Skriv inn koden innen 5 minutter av sikkerhetsgrunner
             </div>
           </DrawerFooter>
@@ -172,10 +172,10 @@ function OtpVerification(props: OtpVerificationProps) {
       <DialogContent className="sm:max-w-md">
         <DialogHeader className="text-center">
           <DialogTitle className="font-[family-name:var(--font-sora)] text-xl font-semibold text-[var(--baladi-dark)]">
-            Bekreft telefonnummeret ditt
+            Bekreft e-postadressen din
           </DialogTitle>
           <DialogDescription className="font-[family-name:var(--font-dm-sans)] leading-relaxed text-[var(--baladi-gray)]">
-            Vi har sendt en 6-sifret bekreftelseskode til telefonnummeret ditt.
+            Vi har sendt en 6-sifret bekreftelseskode til e-postadressen din.
             Skriv inn koden nedenfor for å fortsette.
           </DialogDescription>
         </DialogHeader>

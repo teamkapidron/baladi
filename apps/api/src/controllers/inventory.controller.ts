@@ -1,5 +1,5 @@
 // Node Modules
-import { PipelineStage, Types } from 'mongoose';
+import mongoose, { PipelineStage, Types } from 'mongoose';
 
 // Schemas
 import Product from '@/models/product.model';
@@ -23,7 +23,9 @@ import type {
   GetProductInventorySchema,
   CreateInventorySchema,
   InventoryStatsSchema,
+  BulkAddInventorySchema,
 } from '@/validators/inventory.validator';
+import { bulkAddInventorySchema } from '@/validators/inventory.validator';
 import type { Request, Response } from 'express';
 
 export const getAllInventory = asyncHandler(
@@ -295,5 +297,68 @@ export const getInventoryStats = asyncHandler(
       lowStockCount: lowStockCount?.count ?? 0,
       totalInventoryValue: totalValue?.totalValue ?? 0,
     });
+  },
+);
+
+export const bulkAddInventory = asyncHandler(
+  async (req: Request, res: Response) => {
+    const body = req.body as BulkAddInventorySchema['body'];
+    const parsed = bulkAddInventorySchema.safeParse({ body });
+
+    if (!parsed.success) {
+      throw new ErrorHandler(400, 'Invalid product data', 'VALIDATION');
+    }
+    const { inventory } = parsed.data.body;
+
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      const products = await Product.find({
+        slug: { $in: inventory.map((i) => i.slug) },
+      });
+
+      if (products.length !== inventory.length) {
+        throw new ErrorHandler(404, 'Product not found', 'NOT_FOUND');
+      }
+
+      const productMap = new Map(products.map((p) => [p.slug, p._id]));
+
+      const createdInventory = await Promise.all(
+        inventory.map((i) => {
+          return Inventory.create(
+            [
+              {
+                ...i,
+                productId: productMap.get(i.slug),
+                inputQuantity: i.quantity,
+              },
+            ],
+            {
+              session,
+            },
+          ).then(([doc]) => doc);
+        }),
+      );
+      await session.commitTransaction();
+      session.endSession();
+
+      return sendResponse(res, 200, 'Inventory added successfully', {
+        inventory: createdInventory,
+      });
+    } catch (error) {
+      await session.abortTransaction();
+      session.endSession();
+
+      if (error instanceof ErrorHandler) {
+        throw error;
+      }
+      console.log(error);
+      throw new ErrorHandler(
+        500,
+        'Failed to add inventory. Please try again later.',
+        'INTERNAL_SERVER',
+      );
+    }
   },
 );

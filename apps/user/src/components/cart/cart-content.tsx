@@ -17,13 +17,8 @@ import { useCart } from '@/hooks/useCart';
 import { formatPrice } from '@/utils/price.util';
 
 function CartContent() {
-  const {
-    userCartItems,
-    removeFromCart,
-    updateQuantity,
-    clearCart,
-    getBulkDiscountAmountForProduct,
-  } = useCart();
+  const { userCartItems, removeFromCart, updateQuantity, clearCart } =
+    useCart();
 
   const handleQuantityChange = useCallback(
     (productId: string, newQuantity: number) => {
@@ -97,18 +92,6 @@ function CartContent() {
       <div className="space-y-4">
         {userCartItems.map((item) => {
           const product = item.product;
-          const bulkDiscountAmount = getBulkDiscountAmountForProduct(
-            product._id,
-          );
-          const originalItemTotal =
-            item.quantity * product.price * (1 + product.vat / 100);
-          const discountedItemTotal =
-            originalItemTotal - (bulkDiscountAmount || 0);
-          const hasDiscount = !!bulkDiscountAmount && bulkDiscountAmount > 0;
-
-          const pricePerQuantity = hasDiscount
-            ? discountedItemTotal / item.quantity
-            : originalItemTotal / item.quantity;
 
           return (
             <div
@@ -177,27 +160,26 @@ function CartContent() {
                     </div>
 
                     <div className="space-y-1 text-right">
-                      {hasDiscount && (
+                      {item.volumeDiscount > 0 && (
                         <div className="space-y-1">
                           <div className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)] line-through">
-                            Opprinnelig: {formatPrice(originalItemTotal)} kr
+                            Opprinnelig:{' '}
+                            {formatPrice(item.priceWithVat)} kr
                           </div>
                           <div className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-green-600">
-                            Bulkrabatt: -{formatPrice(bulkDiscountAmount)} kr
+                            Bulkrabatt: -
+                            {formatPrice(item.volumeDiscount)}{' '}
+                            kr
                           </div>
                         </div>
                       )}
                       <div className="font-[family-name:var(--font-sora)] text-lg font-semibold text-[var(--baladi-primary)]">
-                        {formatPrice(
-                          hasDiscount ? discountedItemTotal : originalItemTotal,
-                        )}{' '}
-                        kr
+                        {formatPrice(item.totalPaymentItemAmount)} kr
                       </div>
                       <div className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
-                        {formatPrice(pricePerQuantity / item.product.noOfUnits)}{' '}
-                        kr per enhet
+                        {formatPrice(item.pricePerUnit)} kr per enhet
                       </div>
-                      {hasDiscount && (
+                      {item.volumeDiscount > 0 && (
                         <div className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
                           Bulkrabatt anvendt
                         </div>

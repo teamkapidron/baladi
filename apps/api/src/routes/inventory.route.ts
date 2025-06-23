@@ -8,6 +8,7 @@ import {
   getProductInventory,
   createInventory,
   getInventoryStats,
+  bulkAddInventory,
 } from '@/controllers/inventory.controller';
 
 import {
@@ -15,6 +16,7 @@ import {
   getProductInventorySchema,
   createInventorySchema,
   inventoryStatsSchema,
+  bulkAddInventorySchema,
 } from '@/validators/inventory.validator';
 
 const router: Router = express.Router();
@@ -33,5 +35,10 @@ router.get(
   validate(inventoryStatsSchema),
   getInventoryStats,
 );
-
+router.post(
+  '/bulk',
+  isAdmin,
+  validate(bulkAddInventorySchema),
+  bulkAddInventory,
+);
 export default router;

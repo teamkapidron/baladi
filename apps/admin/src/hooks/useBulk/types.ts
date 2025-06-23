@@ -1,3 +1,7 @@
+import { ApiData } from '@/utils/types.util';
+import { csvProductSchema } from '@/components/dashboard/products/bulk/schema';
+import { csvInventorySchema } from '@/components/dashboard/inventory/bulk/schema';
+
 export interface CsvConfigType {
   requiredColumns: string[];
   allColumns: string[];
@@ -21,3 +25,12 @@ export interface CsvParseResult<T = unknown> {
   totalRows: number;
   validRows: number;
 }
+
+export type BulkAddProductsRequest = ApiData<
+  typeof csvProductSchema,
+  undefined
+>;
+export type BulkAddInventoryRequest = ApiData<
+  typeof csvInventorySchema,
+  undefined
+>;

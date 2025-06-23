@@ -22,7 +22,7 @@ const addressSchema = new Schema<IAddress>(
     },
     state: {
       type: String,
-      required: true,
+      required: false,
     },
     postalCode: {
       type: String,
@@ -30,7 +30,7 @@ const addressSchema = new Schema<IAddress>(
     },
     country: {
       type: String,
-      required: true,
+      required: false,
     },
     isDefault: {
       type: Boolean,

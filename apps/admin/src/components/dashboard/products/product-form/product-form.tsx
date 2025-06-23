@@ -1075,12 +1075,12 @@ function ProductForm(props: ProductFormProps) {
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  Oppretter Produkt...
+                  {defaultValues ? 'Oppdaterer Produkt...' : 'Oppretter Produkt...'}
                 </>
               ) : (
                 <>
                   <Save className="mr-2 h-5 w-5" />
-                  Opprett Produkt
+                  {defaultValues ? 'Oppdater Produkt' : 'Opprett Produkt'}
                 </>
               )}
             </Button>

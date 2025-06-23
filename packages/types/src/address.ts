@@ -6,9 +6,9 @@ export interface Address {
   addressLine1: string;
   addressLine2?: string;
   city: string;
-  state: string;
+  state?: string;
   postalCode: string;
-  country: string;
+  country?: string;
   phoneNumber?: string;
   createdAt: Date;
   updatedAt: Date;

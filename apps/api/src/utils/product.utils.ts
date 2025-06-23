@@ -1,11 +1,13 @@
 import { PipelineStage, Types } from 'mongoose';
-import { Visibility } from '@repo/types/product';
+import { Product, Visibility } from '@repo/types/product';
 
 import { ProductFilter, UserProductFilter } from '@/types/product.types';
 import type {
   GetAllProductsSchema,
   GetProductsSchema,
+  BulkAddProductsSchema,
 } from '@/validators/product.validator';
+import { generateSlug } from './common/string.util';
 
 export function getUserProductFilterFromQuery(
   query: GetProductsSchema['query'],
@@ -156,4 +158,50 @@ export function buildStockCountPipeline(stockThreshold: number) {
   ];
 
   return pipeline;
+}
+
+type FlatProduct = BulkAddProductsSchema['body']['products'][number];
+type NormalizedProduct = Omit<Product, 'createdAt' | 'updatedAt' | '_id'>;
+
+export function normalizeProductFields(flat: FlatProduct): NormalizedProduct {
+  const product: NormalizedProduct = {
+    name: flat.name,
+    description: flat.description,
+    shortDescription: flat.shortDescription,
+    sku: flat.sku,
+    barcode: flat.barcode,
+    vat: flat.vat,
+    costPrice: flat.costPrice,
+    salePrice: flat.salePrice,
+    noOfUnits: flat.noOfUnits,
+    categories: flat.categories,
+    images: flat.images,
+    isActive: flat.isActive,
+    visibility: flat.visibility,
+    hasVolumeDiscount: flat.hasVolumeDiscount,
+    slug: '',
+  };
+
+  product.slug = generateSlug(product.name);
+  product.dimensions = {
+    length: parseOptionalFloat(flat['dimensions.length']) ?? 0,
+    width: parseOptionalFloat(flat['dimensions.width']) ?? 0,
+    height: parseOptionalFloat(flat['dimensions.height']) ?? 0,
+  };
+
+  product.supplier = {
+    number: flat['supplier.number'] || '',
+    name: flat['supplier.name'] || '',
+    location: flat['supplier.location'] || '',
+    countryOfOrigin: flat['supplier.countryOfOrigin'] || '',
+    hsCode: flat['supplier.hsCode'] || '',
+  };
+
+  return product;
+}
+
+function parseOptionalFloat(value: string | number | undefined): number {
+  if (!value || value.toString().trim() === '') return 0;
+  const num = parseFloat(value.toString());
+  return isNaN(num) ? 0 : num;
 }

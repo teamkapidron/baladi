@@ -173,8 +173,6 @@ export const onboarding = asyncHandler(async (req: Request, res: Response) => {
     phoneNumber,
     address,
     city,
-    state,
-    country,
     postalCode,
   } = req.body as OnboardingSchema['body'];
 
@@ -190,8 +188,6 @@ export const onboarding = asyncHandler(async (req: Request, res: Response) => {
     userId,
     addressLine1: address,
     city,
-    state,
-    country,
     postalCode,
     phoneNumber,
     isDefault: true,

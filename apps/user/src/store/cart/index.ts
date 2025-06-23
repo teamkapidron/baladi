@@ -1,244 +1,203 @@
 import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
 import { toast } from '@repo/ui/lib/sonner';
+import { persist, createJSONStorage } from 'zustand/middleware';
 
-import { CartStore, CartItem, CART_STORAGE_KEY, TOAST_MESSAGES } from './types';
-import {
-  createCartItem,
-  updateCartItem,
-  calculateItemTotal,
-  calculateCartSummary,
-  getUserCartItems,
-} from './utils';
+import { getPricing } from '@/utils/price.util';
+import { calculateCartSummary, getUserCartItems } from './utils';
 
-import { ProductResponse } from '@/hooks/useProduct/types';
-import { BulkDiscount } from '@repo/types/bulkDiscount';
+import { CartState, CartStore, CartItem, CART_STORAGE_KEY } from './types';
+
+const initialCartState: CartState = {
+  cart: [],
+  cartSummary: {
+    isEmpty: true,
+    uniqueItems: 0,
+    totalItems: 0,
+    totalPriceWithoutVat: 0,
+    totalVatAmount: 0,
+    totalPriceWithVat: 0,
+    totalVolumeDiscountAmount: 0,
+    totalPaymentAmount: 0,
+  },
+  userCartItems: [],
+  bulkDiscounts: [],
+};
 
 export const useCartStore = create<CartStore>()(
   persist(
     (set, get) => ({
-      cart: [],
-      cartSummary: {
-        totalItems: 0,
-        totalPrice: 0,
-        totalPriceWithoutVat: 0,
-        totalVat: 0,
-        totalDiscount: 0,
-        netPrice: 0,
-        totalPriceWithDiscount: 0,
-        uniqueItems: 0,
-        isEmpty: true,
-      },
-      userCartItems: [],
+      ...initialCartState,
 
-      addToCart: (
-        userId: string,
-        product: ProductResponse,
-        quantity: number,
-        bulkDiscounts: BulkDiscount[],
-      ) => {
+      addToCart: (userId, product, quantity) => {
         if (quantity <= 0) {
-          toast.error(TOAST_MESSAGES.INVALID_QUANTITY);
+          toast.error('Ugyldig antall');
           return;
         }
 
         if (!userId) {
-          toast.error(TOAST_MESSAGES.LOGIN_REQUIRED);
+          toast.error(
+            'Du må være innlogget for å legge til varer i handlekurven',
+          );
           return;
         }
 
-        set((state) => {
-          const userCart = state.cart.filter((item) => item.userId === userId);
-          const otherUsersCart = state.cart.filter(
-            (item) => item.userId !== userId,
-          );
+        const userCart = get().cart.filter((item) => item.userId === userId);
+        const otherUsersCart = get().cart.filter(
+          (item) => item.userId !== userId,
+        );
 
-          const existingItemIndex = userCart.findIndex(
-            (item) => item.product._id === product._id,
-          );
+        const existingItemIndex = userCart.findIndex(
+          (item) => item.product._id === product._id,
+        );
 
-          let updatedUserCart: CartItem[];
-
-          if (existingItemIndex !== -1) {
-            updatedUserCart = userCart.map((item, index) =>
-              index === existingItemIndex
-                ? updateCartItem(item, quantity)
-                : item,
-            );
-            toast.success(TOAST_MESSAGES.ITEM_UPDATED);
-          } else {
-            const newItem = createCartItem(userId, product, quantity);
-            updatedUserCart = [...userCart, newItem];
-            toast.success(TOAST_MESSAGES.ITEM_ADDED);
-          }
-
-          const newCart = [...otherUsersCart, ...updatedUserCart];
-          const newCartSummary = calculateCartSummary(
-            newCart,
-            bulkDiscounts,
-            userId,
-          );
-          const newUserCartItems = getUserCartItems(newCart, userId);
-
-          return {
-            cart: newCart,
-            cartSummary: newCartSummary,
-            userCartItems: newUserCartItems,
-          };
+        const {
+          priceWithoutVat,
+          vatAmount,
+          priceWithVat,
+          volumeDiscount,
+          netPrice,
+          pricePerUnit,
+        } = getPricing({
+          product,
+          quantity,
+          bulkDiscounts: get().bulkDiscounts,
         });
-      },
 
-      removeFromCart: (
-        userId: string,
-        productId: string,
-        bulkDiscounts: BulkDiscount[],
-      ) => {
-        if (!userId) {
-          toast.error(TOAST_MESSAGES.LOGIN_REQUIRED);
-          return;
-        }
+        let updatedUserCart: CartItem[];
 
-        set((state) => {
-          const newCart = state.cart.filter(
-            (item) =>
-              !(item.product._id === productId && item.userId === userId),
-          );
-          const newCartSummary = calculateCartSummary(
-            newCart,
-            bulkDiscounts,
-            userId,
-          );
-          const newUserCartItems = getUserCartItems(newCart, userId);
-
-          toast.success(TOAST_MESSAGES.ITEM_REMOVED);
-
-          return {
-            cart: newCart,
-            cartSummary: newCartSummary,
-            userCartItems: newUserCartItems,
-          };
-        });
-      },
-
-      clearCart: (userId: string, bulkDiscounts: BulkDiscount[]) => {
-        if (!userId) {
-          toast.error(TOAST_MESSAGES.LOGIN_REQUIRED);
-          return;
-        }
-
-        set((state) => {
-          const newCart = state.cart.filter((item) => item.userId !== userId);
-          const newCartSummary = calculateCartSummary(
-            newCart,
-            bulkDiscounts,
-            userId,
-          );
-          const newUserCartItems = getUserCartItems(newCart, userId);
-
-          toast.success(TOAST_MESSAGES.CART_CLEARED);
-
-          return {
-            cart: newCart,
-            cartSummary: newCartSummary,
-            userCartItems: newUserCartItems,
-          };
-        });
-      },
-
-      updateQuantity: (
-        userId: string,
-        productId: string,
-        newQuantity: number,
-        bulkDiscounts: BulkDiscount[],
-      ) => {
-        if (!userId) {
-          toast.error(TOAST_MESSAGES.LOGIN_REQUIRED);
-          return;
-        }
-
-        if (newQuantity <= 0) {
-          get().removeFromCart(userId, productId, bulkDiscounts);
-          return;
-        }
-
-        set((state) => {
-          const newCart = state.cart.map((item) =>
-            item.product._id === productId && item.userId === userId
+        if (existingItemIndex !== -1) {
+          updatedUserCart = userCart.map((item, index) =>
+            index === existingItemIndex
               ? {
                   ...item,
-                  quantity: newQuantity,
-                  totalPrice: calculateItemTotal(
-                    newQuantity,
-                    item.product.price,
-                  ),
+                  quantity: item.quantity + quantity,
+                  priceWithoutVat: priceWithoutVat * quantity,
+                  vatAmount: vatAmount * quantity,
+                  priceWithVat: priceWithVat * quantity,
+                  volumeDiscount: volumeDiscount * quantity,
+                  pricePerUnit,
+                  totalPaymentItemAmount: netPrice * quantity,
                   updatedAt: new Date(),
                 }
               : item,
           );
-          const newCartSummary = calculateCartSummary(
-            newCart,
-            bulkDiscounts,
-            userId,
-          );
-          const newUserCartItems = getUserCartItems(newCart, userId);
+        } else {
+          updatedUserCart = [
+            ...userCart,
+            {
+              userId,
+              product,
+              quantity,
+              priceWithoutVat: priceWithoutVat * quantity,
+              vatAmount: vatAmount * quantity,
+              priceWithVat: priceWithVat * quantity,
+              volumeDiscount: volumeDiscount * quantity,
+              pricePerUnit,
+              totalPaymentItemAmount: netPrice * quantity,
+              addedAt: new Date(),
+              updatedAt: new Date(),
+            },
+          ];
+        }
 
-          toast.success(TOAST_MESSAGES.ITEM_UPDATED);
+        const newCart = [...otherUsersCart, ...updatedUserCart];
+        const newCartSummary = calculateCartSummary(newCart, userId);
+        const newUserCartItems = getUserCartItems(newCart, userId);
 
-          return {
-            cart: newCart,
-            cartSummary: newCartSummary,
-            userCartItems: newUserCartItems,
-          };
+        set({
+          cart: newCart,
+          cartSummary: newCartSummary,
+          userCartItems: newUserCartItems,
         });
       },
 
-      getItemQuantity: (userId: string, productId: string): number => {
-        if (!userId) return 0;
-
-        const item = get().cart.find(
-          (item) => item.product._id === productId && item.userId === userId,
+      removeFromCart: (userId, productId) => {
+        const newCart = get().cart.filter(
+          (item) => !(item.product._id === productId && item.userId === userId),
         );
+        const newCartSummary = calculateCartSummary(newCart, userId);
+        const newUserCartItems = getUserCartItems(newCart, userId);
+
+        set({
+          cart: newCart,
+          cartSummary: newCartSummary,
+          userCartItems: newUserCartItems,
+        });
+      },
+
+      clearCart: (userId) => {
+        const newCart = get().cart.filter((item) => item.userId !== userId);
+        const newCartSummary = calculateCartSummary(newCart, userId);
+        const newUserCartItems = getUserCartItems(newCart, userId);
+
+        set({
+          cart: newCart,
+          cartSummary: newCartSummary,
+          userCartItems: newUserCartItems,
+        });
+      },
+
+      updateQuantity: (userId, productId, newQuantity) => {
+        if (newQuantity <= 0) {
+          get().removeFromCart(userId, productId);
+          return;
+        }
+
+        const userCart = get().cart.filter((item) => item.userId === userId);
+        const item = userCart.find((item) => item.product._id === productId);
+        if (!item) {
+          return;
+        }
+
+        const {
+          priceWithoutVat,
+          vatAmount,
+          priceWithVat,
+          volumeDiscount,
+          pricePerUnit,
+          netPrice,
+        } = getPricing({
+          product: item.product,
+          quantity: newQuantity,
+          bulkDiscounts: get().bulkDiscounts,
+        });
+
+        const newCart = userCart.map((item) =>
+          item.product._id === productId
+            ? {
+                ...item,
+                quantity: newQuantity,
+                priceWithoutVat: priceWithoutVat * newQuantity,
+                vatAmount: vatAmount * newQuantity,
+                priceWithVat: priceWithVat * newQuantity,
+                volumeDiscount: volumeDiscount * newQuantity,
+                pricePerUnit,
+                totalPaymentItemAmount: netPrice * newQuantity,
+                updatedAt: new Date(),
+              }
+            : item,
+        );
+
+        const newCartSummary = calculateCartSummary(newCart, userId);
+        const newUserCartItems = getUserCartItems(newCart, userId);
+
+        set({
+          cart: newCart,
+          cartSummary: newCartSummary,
+          userCartItems: newUserCartItems,
+        });
+      },
+
+      getItemQuantity: (userId, productId) => {
+        const userCart = get().cart.filter((item) => item.userId === userId);
+        const item = userCart.find((item) => item.product._id === productId);
         return item?.quantity || 0;
       },
 
-      isInCart: (
-        userId: string,
-        productId: string,
-        bulkDiscounts: BulkDiscount[],
-      ): boolean => {
-        return get().getItemQuantity(userId, productId, bulkDiscounts) > 0;
-      },
-
-      getBulkDiscountAmountForProduct: (
-        userId: string,
-        productId: string,
-        bulkDiscounts: BulkDiscount[],
-      ): number => {
-        const userCart = get().cart.filter((item) => item.userId === userId);
-        const product = userCart.find((item) => item.product._id === productId);
-        if (!product || !product.product.hasVolumeDiscount) return 0;
-
-        const bulkDiscount = bulkDiscounts
-          .filter((d) => d.isActive && d.minQuantity <= product.quantity)
-          .sort((a, b) => b.discountPercentage - a.discountPercentage)[0];
-
-        if (!bulkDiscount) return 0;
-        return (
-          (product.product.price *
-            product.quantity *
-            bulkDiscount.discountPercentage) /
-          100
-        );
-      },
-
-      setUserId: (userId: string | null, bulkDiscounts: BulkDiscount[]) => {
+      setUserId: (userId) => {
         const state = get();
         if (userId) {
-          const newCartSummary = calculateCartSummary(
-            state.cart,
-            bulkDiscounts,
-            userId,
-          );
+          const newCartSummary = calculateCartSummary(state.cart, userId);
           const newUserCartItems = getUserCartItems(state.cart, userId);
 
           set({
@@ -247,20 +206,14 @@ export const useCartStore = create<CartStore>()(
           });
         } else {
           set({
-            cartSummary: {
-              totalItems: 0,
-              totalPrice: 0,
-              totalPriceWithoutVat: 0,
-              totalVat: 0,
-              totalDiscount: 0,
-              netPrice: 0,
-              totalPriceWithDiscount: 0,
-              uniqueItems: 0,
-              isEmpty: true,
-            },
             userCartItems: [],
+            cartSummary: initialCartState.cartSummary,
           });
         }
+      },
+
+      setBulkDiscounts: (bulkDiscounts) => {
+        set({ bulkDiscounts });
       },
 
       _hydrate: () => {},

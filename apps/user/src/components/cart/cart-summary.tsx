@@ -100,9 +100,13 @@ function CartSummary(props: CartSummaryProps) {
     return { totalWeight, totalVolume };
   }, [userCartItems]);
 
-  const { totalPriceWithoutVat, totalVat, totalDiscount, netPrice } =
-    cartSummary;
-  const hasDiscount = totalDiscount > 0;
+  const {
+    totalPriceWithoutVat,
+    totalVatAmount,
+    totalVolumeDiscountAmount,
+    totalPaymentAmount,
+  } = cartSummary;
+  const hasDiscount = totalVolumeDiscountAmount > 0;
 
   if (!isAuthenticated || !userCartItems || userCartItems.length === 0) {
     return null;
@@ -112,7 +116,7 @@ function CartSummary(props: CartSummaryProps) {
     <div className={cn('space-y-6', className)}>
       <div className="rounded-xl border border-[var(--baladi-border)] bg-white p-6 shadow-sm">
         <div className="mb-6 flex items-center gap-3">
-          <div className="bg-[var(--baladi-primary)]/10 flex h-10 w-10 items-center justify-center rounded-full">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--baladi-primary)]/10">
             <ShoppingCart size={18} className="text-[var(--baladi-primary)]" />
           </div>
           <div>
@@ -137,14 +141,14 @@ function CartSummary(props: CartSummaryProps) {
 
           <PriceRow
             label="MVA"
-            value={totalVat}
+            value={totalVatAmount}
             icon={<Percent size={16} className="text-[var(--baladi-gray)]" />}
           />
 
           {hasDiscount && (
             <PriceRow
               label="Totalrabatt"
-              value={-totalDiscount}
+              value={-totalVolumeDiscountAmount}
               icon={<Tag size={16} className="text-green-600" />}
               className="text-green-600"
             />
@@ -172,7 +176,7 @@ function CartSummary(props: CartSummaryProps) {
 
           <PriceRow
             label="Totalt å betale"
-            value={netPrice}
+            value={totalPaymentAmount}
             icon={
               <CreditCard size={18} className="text-[var(--baladi-primary)]" />
             }
@@ -186,7 +190,8 @@ function CartSummary(props: CartSummaryProps) {
               <div className="flex items-center gap-2">
                 <Tag size={16} className="text-blue-600" />
                 <span className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-blue-800">
-                  Volumerabatt anvendt på {formatPrice(totalDiscount)} kr
+                  Volumerabatt anvendt på{' '}
+                  {formatPrice(totalVolumeDiscountAmount)} kr
                 </span>
               </div>
             </div>

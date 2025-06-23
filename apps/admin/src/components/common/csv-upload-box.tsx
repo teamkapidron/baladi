@@ -30,6 +30,7 @@ interface CsvUploadBoxProps {
   templateFileName?: string;
   csvConfig: CsvConfigType;
   csvSchema: z.ZodType;
+  bulkAddMutation: (payload: any[]) => void;
 }
 
 function CsvUploadBox(props: CsvUploadBoxProps) {
@@ -39,6 +40,7 @@ function CsvUploadBox(props: CsvUploadBoxProps) {
     templateFileName = 'template.csv',
     csvConfig,
     csvSchema,
+    bulkAddMutation,
   } = props;
 
   const {
@@ -314,7 +316,9 @@ function CsvUploadBox(props: CsvUploadBoxProps) {
                   type="button"
                   className="bg-[var(--baladi-primary)] text-white hover:bg-[var(--baladi-primary-dark)]"
                   onClick={() => {
-                    console.log('Processing data:', parseResult.data);
+                    if (parseResult.data) {
+                      bulkAddMutation(parseResult.data);
+                    }
                   }}
                   disabled={isUploading}
                 >

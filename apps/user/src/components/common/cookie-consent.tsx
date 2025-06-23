@@ -14,8 +14,6 @@ const COOKIE_DATE_NAME = 'baladi-cookie-consent-date';
 function CookieConsent() {
   const [isVisible, setIsVisible] = useState(false);
 
-  console.log(isVisible);
-
   useEffect(() => {
     const consent = localStorage.getItem(COOKIE_NAME);
     if (!consent) {

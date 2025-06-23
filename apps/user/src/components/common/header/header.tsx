@@ -53,10 +53,16 @@ function Header() {
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-center py-2 text-center">
               <div className="flex items-center gap-2">
-                <Package className="h-4 w-4 flex-shrink-0" />
+                <Info className="h-3 w-3 flex-shrink-0" />
                 <div className="flex flex-col text-xs sm:flex-row sm:items-center sm:gap-4 sm:text-sm">
                   <div className="flex items-center gap-1">
-                    <Info className="h-3 w-3 flex-shrink-0" />
+                    <span className="font-[family-name:var(--font-dm-sans)] font-bold text-white/90">
+                      Alle priser inkluderer mva
+                    </span>
+                  </div>
+                  <div className="hidden text-white/60 sm:block">•</div>
+                  <div className="flex items-center gap-1">
+                    <Package className="h-4 w-4 flex-shrink-0" />
                     <span className="font-[family-name:var(--font-sora)] font-semibold">
                       Palltyper og dimensjoner
                     </span>

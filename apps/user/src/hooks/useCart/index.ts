@@ -2,10 +2,10 @@ import { useShallow } from 'zustand/shallow';
 import { useCallback, useEffect, useMemo } from 'react';
 
 import { useAuth } from '@/hooks/useAuth';
-import { useDiscount } from '@/hooks/useDiscount';
 import { useCartStore } from '@/store/cart';
+import { useDiscount } from '@/hooks/useDiscount';
 
-import { ProductResponse } from '../useProduct/types';
+import { ProductResponse } from '@/hooks/useProduct/types';
 
 export function useCart() {
   const { user, isAuthenticated } = useAuth();
@@ -17,10 +17,8 @@ export function useCart() {
     removeFromCart: removeFromCartStore,
     clearCart: clearCartStore,
     updateQuantity: updateQuantityStore,
-    getItemQuantity: getItemQuantityStore,
-    isInCart: isInCartStore,
-    getBulkDiscountAmountForProduct: getBulkDiscountAmountForProductStore,
     setUserId,
+    setBulkDiscounts,
   } = useCartStore(
     useShallow((state) => ({
       cart: state.cart,
@@ -30,10 +28,8 @@ export function useCart() {
       removeFromCart: state.removeFromCart,
       clearCart: state.clearCart,
       updateQuantity: state.updateQuantity,
-      getItemQuantity: state.getItemQuantity,
-      isInCart: state.isInCart,
       setUserId: state.setUserId,
-      getBulkDiscountAmountForProduct: state.getBulkDiscountAmountForProduct,
+      setBulkDiscounts: state.setBulkDiscounts,
     })),
   );
   const { bulkDiscountQuery } = useDiscount();
@@ -41,65 +37,68 @@ export function useCart() {
     return bulkDiscountQuery.data?.bulkDiscounts || [];
   }, [bulkDiscountQuery.data]);
 
+  const inCartMap = useMemo(() => {
+    if (!user) return new Map<string, boolean>();
+    const map = new Map<string, boolean>();
+    for (const item of userCartItems) {
+      map.set(item.product._id, true);
+    }
+    return map;
+  }, [user, userCartItems]);
+
+  const quantityMap = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const item of userCartItems) {
+      map.set(item.product._id, item.quantity);
+    }
+    return map;
+  }, [userCartItems]);
+
   useEffect(() => {
-    setUserId(user?._id || null, bulkDiscounts);
-  }, [user?._id, setUserId, bulkDiscounts, bulkDiscountQuery.data]);
+    setUserId(user?._id || null);
+    setBulkDiscounts(bulkDiscounts);
+  }, [user?._id, setUserId, setBulkDiscounts, bulkDiscounts]);
 
   const addToCart = useCallback(
     (product: ProductResponse, quantity: number) => {
       if (!isAuthenticated || !user) return;
-      addToCartStore(user._id, product, quantity, bulkDiscounts);
+      addToCartStore(user._id, product, quantity);
     },
-    [addToCartStore, user, isAuthenticated, bulkDiscounts],
+    [addToCartStore, user, isAuthenticated],
   );
 
   const removeFromCart = useCallback(
     (productId: string) => {
       if (!isAuthenticated || !user) return;
-      removeFromCartStore(user._id, productId, bulkDiscounts);
+      removeFromCartStore(user._id, productId);
     },
-    [removeFromCartStore, user, isAuthenticated, bulkDiscounts],
+    [removeFromCartStore, user, isAuthenticated],
   );
 
   const clearCart = useCallback(() => {
     if (!isAuthenticated || !user) return;
-    clearCartStore(user._id, bulkDiscounts);
-  }, [clearCartStore, user, isAuthenticated, bulkDiscounts]);
+    clearCartStore(user._id);
+  }, [clearCartStore, user, isAuthenticated]);
 
   const getItemQuantity = useCallback(
-    (productId: string): number => {
-      if (!user) return 0;
-      return getItemQuantityStore(user._id, productId, bulkDiscounts);
-    },
-    [getItemQuantityStore, user, bulkDiscounts],
+    (productId: string | undefined) =>
+      productId ? (quantityMap.get(productId) ?? 0) : 0,
+    [quantityMap],
   );
 
   const isInCart = useCallback(
-    (productId: string): boolean => {
-      if (!user) return false;
-      return isInCartStore(user._id, productId, bulkDiscounts);
+    (productId: string) => {
+      return inCartMap.get(productId) ?? false;
     },
-    [isInCartStore, user, bulkDiscounts],
+    [inCartMap],
   );
 
   const updateQuantity = useCallback(
     (productId: string, newQuantity: number) => {
       if (!isAuthenticated || !user) return;
-      updateQuantityStore(user._id, productId, newQuantity, bulkDiscounts);
+      updateQuantityStore(user._id, productId, newQuantity);
     },
-    [updateQuantityStore, user, isAuthenticated, bulkDiscounts],
-  );
-
-  const getBulkDiscountAmountForProduct = useCallback(
-    (productId: string): number => {
-      if (!user) return 0;
-      return getBulkDiscountAmountForProductStore(
-        user._id,
-        productId,
-        bulkDiscounts,
-      );
-    },
-    [getBulkDiscountAmountForProductStore, user, bulkDiscounts],
+    [updateQuantityStore, user, isAuthenticated],
   );
 
   return {
@@ -112,6 +111,5 @@ export function useCart() {
     userCartItems,
     isInCart,
     getItemQuantity,
-    getBulkDiscountAmountForProduct,
   };
 }

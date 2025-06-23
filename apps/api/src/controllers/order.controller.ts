@@ -149,7 +149,8 @@ export const placeOrder = asyncHandler(async (req: Request, res: Response) => {
           .sort((a, b) => b.discountPercentage - a.discountPercentage)[0];
 
         if (bulkDiscount && product.hasVolumeDiscount) {
-          volumeDiscount = price * (bulkDiscount.discountPercentage / 100);
+          volumeDiscount =
+            priceWithVat * (bulkDiscount.discountPercentage / 100);
         }
       }
 

@@ -17,6 +17,7 @@ import {
   lowStockProducts,
   topProducts,
   productStats,
+  bulkAddProducts,
 } from '@/controllers/product.controller';
 
 import {
@@ -33,6 +34,7 @@ import {
   lowStockProductsSchema,
   topProductsSchema,
   productStatsSchema,
+  bulkAddProductsSchema,
 } from '@/validators/product.validator';
 
 const router: Router = express.Router();
@@ -85,5 +87,7 @@ router.get(
 );
 router.get('/top', isAdmin, validate(topProductsSchema), topProducts);
 router.get('/stats', isAdmin, validate(productStatsSchema), productStats);
+
+router.post('/bulk', isAdmin, validate(bulkAddProductsSchema), bulkAddProducts);
 
 export default router;

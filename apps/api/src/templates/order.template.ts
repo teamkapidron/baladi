@@ -119,8 +119,7 @@ export function pickingListTemplate(order: OrderResponse) {
     </div>
 
     <div class="summary">
-      Du plukker for ${order.items.length} forsendelse:
-      &nbsp;&nbsp;&nbsp; Totalt antall varer: ${order.items.length} &nbsp;&nbsp;&nbsp; Total mengde: ${order.items.reduce((total, item) => total + item.quantity, 0)}
+      Totalt antall varer: ${order.items.length} &nbsp;&nbsp;&nbsp; Total antall kolli: ${order.items.reduce((total, item) => total + item.quantity, 0)}
     </div>
 
     <div class="details-box">

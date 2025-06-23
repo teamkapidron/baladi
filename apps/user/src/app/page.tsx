@@ -24,10 +24,6 @@ export default function Home() {
             <h1 className="mb-4 font-[family-name:var(--font-sora)] text-3xl font-bold text-[var(--baladi-dark)] md:text-4xl">
               Våre Produkter
             </h1>
-            <p className="mx-auto max-w-2xl font-[family-name:var(--font-dm-sans)] text-lg text-[var(--baladi-gray)]">
-              Opplev vårt omfattende sortiment av autentiske asiatiske og
-              orientalske ingredienser
-            </p>
           </div>
 
           <div className="flex gap-8">
