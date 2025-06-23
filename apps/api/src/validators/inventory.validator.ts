@@ -38,6 +38,36 @@ export const inventoryStatsSchema = z.object({
   }),
 });
 
+export const bulkAddInventorySchema = z.object({
+  body: z.object({
+    inventory: z.array(
+      z.object({
+        name: z.string().trim().min(1, 'Name is required'),
+        slug: z.string().trim().min(1, 'Slug is required'),
+        quantity: z
+          .string()
+          .trim()
+          .refine((val) => val !== '', 'Quantity is required')
+          .refine(
+            (val) => !isNaN(parseInt(val)),
+            'Quantity must be a valid number',
+          )
+          .transform((val) => parseInt(val)),
+        expirationDate: z
+          .string()
+          .trim()
+          .transform((val) => {
+            const timestamp = new Date(val).getTime();
+            return isNaN(timestamp) ? NaN : timestamp;
+          })
+          .refine((val) => !isNaN(val), 'Expiration date is required'),
+      }),
+    ),
+  }),
+});
+
+export type BulkAddInventorySchema = z.infer<typeof bulkAddInventorySchema>;
+
 export type GetAllInventorySchema = z.infer<typeof getAllInventorySchema>;
 export type GetProductInventorySchema = z.infer<
   typeof getProductInventorySchema

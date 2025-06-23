@@ -7,13 +7,14 @@ import { Package, FileText, ArrowLeft } from '@repo/ui/lib/icons';
 // Components
 import { Button } from '@repo/ui/components/base/button';
 import CsvUploadBox from '@/components/common/csv-upload-box';
+import { useBulkAdd } from '@/hooks/useBulk';
 
 // Constants
 import { csvConfig, csvProductSchema } from './schema';
 
 export default function BulkAddProducts() {
   const router = useRouter();
-
+  const { bulkAddProductsMutation } = useBulkAdd();
   return (
     <div className="space-y-6 p-6">
       <div className="relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-[var(--baladi-primary)] via-[var(--baladi-primary)] to-[var(--baladi-secondary)] p-6 shadow-lg">
@@ -115,6 +116,7 @@ export default function BulkAddProducts() {
         templateFileName="bulk_products_template.csv"
         csvConfig={csvConfig}
         csvSchema={csvProductSchema}
+        bulkAddMutation={bulkAddProductsMutation.mutate}
       />
     </div>
   );
