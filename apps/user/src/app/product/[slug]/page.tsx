@@ -12,8 +12,6 @@ import Footer from '@/components/common/footer/footer';
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: `Produktdetaljer | Baladi Engros`,
-    description:
-      'Se produktdetaljer og spesifikasjoner for våre autentiske asiatiske og orientalske ingredienser.',
   };
 }
 

@@ -7,7 +7,6 @@ import OrderListContent from '@/components/order/list/order-list-content';
 
 export const metadata: Metadata = {
   title: 'Mine bestillinger | Baladi Engros',
-  description: 'Se alle dine bestillinger hos Baladi Engros.',
 };
 
 export default function OrderListPage() {

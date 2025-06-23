@@ -9,8 +9,6 @@ import Footer from '@/components/common/footer/footer';
 
 export const metadata: Metadata = {
   title: 'Hjem | Baladi Engros',
-  description:
-    'Din pålitelige partner for asiatiske og orientalske ingredienser',
 };
 
 export default function Home() {

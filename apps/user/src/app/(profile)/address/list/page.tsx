@@ -8,7 +8,6 @@ import AddressListContent from '@/components/address/address-list-content';
 
 export const metadata: Metadata = {
   title: 'Mine adresser | Baladi Engros',
-  description: 'Se alle dine adresser hos Baladi Engros.',
 };
 
 export default function AddressListPage() {

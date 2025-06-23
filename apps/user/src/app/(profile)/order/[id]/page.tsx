@@ -16,7 +16,6 @@ export async function generateMetadata({
 
   return {
     title: `Bestilling #${id} | Baladi Engros`,
-    description: 'Se detaljer for din bestilling hos Baladi Engros.',
   };
 }
 
