@@ -180,3 +180,17 @@ export type PreviewFreightLabelRequest = ApiData<
     html: string;
   }
 >;
+
+export type CancelOrderAdminRequest = ApiData<
+  {
+    orderId: string;
+  },
+  undefined
+>;
+
+export type DeleteOrderAdminRequest = ApiData<
+  {
+    orderId: string;
+  },
+  undefined
+>;
