@@ -1,7 +1,8 @@
-import { PipelineStage } from 'mongoose';
+import { PipelineStage, Types } from 'mongoose';
 import { getPagination } from './common/pagination.utils';
 import { GetAllInventorySchema } from '@/validators/inventory.validator';
 
+import { IInventory } from '@/models/interfaces/inventory.model';
 import { InventoryFilterQuery, InventoryStatus } from '@/types/inventory.types';
 
 export function getInventoryFilterFromQuery(
@@ -60,4 +61,37 @@ export function buildStockCountPipeline(stockThreshold: number) {
   ];
 
   return pipeline;
+}
+
+export function calculateInventoryRestoration(
+  inventoryRecords: IInventory[],
+  quantityToRestore: number,
+): Array<{ _id: Types.ObjectId; newQuantity: number }> {
+  const inventoryOperations: Array<{
+    _id: Types.ObjectId;
+    newQuantity: number;
+  }> = [];
+  let remainingToRestore = quantityToRestore;
+
+  for (const record of inventoryRecords) {
+    if (remainingToRestore <= 0) break;
+
+    const maxCapacity = record.inputQuantity;
+    const currentQuantity = record.quantity;
+    const availableSpace = maxCapacity - currentQuantity;
+
+    if (availableSpace > 0) {
+      const restoreAmount = Math.min(availableSpace, remainingToRestore);
+      const newQuantity = currentQuantity + restoreAmount;
+
+      inventoryOperations.push({
+        _id: record._id as Types.ObjectId,
+        newQuantity,
+      });
+
+      remainingToRestore -= restoreAmount;
+    }
+  }
+
+  return inventoryOperations;
 }

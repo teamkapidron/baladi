@@ -19,6 +19,7 @@ import {
 } from '@/templates/order.template';
 import { getDateMatchStage, fillMissingDates } from '@/utils/common/date.util';
 import { sendMail } from '@/utils/common/mail.util';
+import { calculateInventoryRestoration } from '@/utils/inventory.utils';
 
 // Handlers
 import { asyncHandler } from '@/handlers/async.handler';
@@ -88,7 +89,7 @@ export const placeOrder = asyncHandler(async (req: Request, res: Response) => {
       productId: { $in: productIds },
       quantity: { $gt: 0 },
     })
-      .sort({ expirationDate: 1 }) // FIFO - use items expiring first
+      .sort({ expirationDate: 1 }) // use items expiring first
       .session(session);
     const bulkDiscounts = await BulkDiscount.find({
       isActive: true,
@@ -340,9 +341,11 @@ export const cancelOrder = asyncHandler(async (req: Request, res: Response) => {
     }
 
     if (
-      ![OrderStatus.SHIPPED, OrderStatus.DELIVERED].includes(
-        order.status as OrderStatus,
-      )
+      [
+        OrderStatus.SHIPPED,
+        OrderStatus.DELIVERED,
+        OrderStatus.CANCELLED,
+      ].includes(order.status as OrderStatus)
     ) {
       throw new ErrorHandler(
         400,
@@ -353,48 +356,46 @@ export const cancelOrder = asyncHandler(async (req: Request, res: Response) => {
 
     const productIds = order.items.map((i) => i.productId);
 
-    const [inventoryRecords] = await Promise.all([
-      Inventory.find({
-        productId: { $in: productIds },
-        quantity: { $gt: 0 },
-      })
-        .sort({ expirationDate: 1 }) // FIFO
-        .session(session),
-    ]);
+    const inventoryRecords = await Inventory.find({
+      productId: { $in: productIds },
+    })
+      .sort({ expirationDate: -1 }) // Last expiration date first
+      .session(session);
 
-    const inventoryMap = new Map<string, IInventory>();
+    const inventoryMap = new Map<string, IInventory[]>();
+
     for (const inventory of inventoryRecords) {
-      inventoryMap.set(inventory.productId.toString(), inventory);
+      const productId = inventory.productId.toString();
+      if (!inventoryMap.has(productId)) {
+        inventoryMap.set(productId, []);
+      }
+      inventoryMap.get(productId)!.push(inventory);
     }
 
-    const inventoryOperations: Array<{
+    const allInventoryOperations: Array<{
       _id: Types.ObjectId;
-      quantity: number;
+      newQuantity: number;
     }> = [];
 
     for (const item of order.items) {
-      let quantityToRestore = item.quantity;
       const productInventory =
         inventoryMap.get(item.productId.toString()) || [];
 
-      for (const record of productInventory as IInventory[]) {
-        if (quantityToRestore <= 0) break;
-
-        const restoreAmount = Math.min(quantityToRestore, record.quantity); // Prevent over-increment
-        inventoryOperations.push({
-          _id: record._id as Types.ObjectId,
-          quantity: restoreAmount,
-        });
-
-        quantityToRestore -= restoreAmount;
+      if (productInventory.length > 0) {
+        const restoreOperations = calculateInventoryRestoration(
+          productInventory,
+          item.quantity,
+        );
+        allInventoryOperations.push(...restoreOperations);
       }
     }
 
+    // Execute all inventory updates
     await Promise.all(
-      inventoryOperations.map((operation) =>
+      allInventoryOperations.map((operation) =>
         Inventory.findByIdAndUpdate(
           operation._id,
-          { quantity: operation.quantity },
+          { quantity: operation.newQuantity },
           { session },
         ),
       ),
@@ -530,6 +531,7 @@ export const getAllOrders = asyncHandler(
       { $match: queryObject },
       { $skip: skip },
       { $limit: perPage },
+      { $sort: { createdAt: -1 } },
     ]);
 
     const totalOrders = await Order.countDocuments(queryObject);
@@ -632,7 +634,10 @@ export const getOrderRevenueStats = asyncHandler(
 
     const [revenueStats] = await Order.aggregate<OrderRevenueStats>([
       {
-        $match: matchStage,
+        $match: {
+          ...matchStage,
+          status: { $ne: OrderStatus.CANCELLED },
+        },
       },
       {
         $unwind: '$items',
@@ -774,7 +779,10 @@ export const getOrderRevenueGraphData = asyncHandler(
 
     const revenueData = await Order.aggregate([
       {
-        $match: matchStage,
+        $match: {
+          ...matchStage,
+          status: { $ne: OrderStatus.CANCELLED },
+        },
       },
       {
         $unwind: '$items',
@@ -953,4 +961,167 @@ export const previewFreightLabel = asyncHandler(
     });
   },
 );
+
+export const cancelOrderAdmin = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { orderId } = req.params as CancelOrderSchema['params'];
+
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      const order = await Order.findById(orderId).session(session);
+      if (!order) {
+        throw new ErrorHandler(404, 'Order not found', 'NOT_FOUND');
+      }
+
+      if (order.status === OrderStatus.CANCELLED) {
+        throw new ErrorHandler(
+          400,
+          'Order is already cancelled',
+          'BAD_REQUEST',
+        );
+      }
+
+      const productIds = order.items.map((i) => i.productId);
+
+      const inventoryRecords = await Inventory.find({
+        productId: { $in: productIds },
+      })
+        .sort({ expirationDate: -1 }) // Last expiration date first
+        .session(session);
+
+      const inventoryMap = new Map<string, IInventory[]>();
+
+      for (const inventory of inventoryRecords) {
+        const productId = inventory.productId.toString();
+        if (!inventoryMap.has(productId)) {
+          inventoryMap.set(productId, []);
+        }
+        inventoryMap.get(productId)!.push(inventory);
+      }
+
+      const allInventoryOperations: Array<{
+        _id: Types.ObjectId;
+        newQuantity: number;
+      }> = [];
+
+      for (const item of order.items) {
+        const productInventory =
+          inventoryMap.get(item.productId.toString()) || [];
+
+        if (productInventory.length > 0) {
+          const restoreOperations = calculateInventoryRestoration(
+            productInventory,
+            item.quantity,
+          );
+          allInventoryOperations.push(...restoreOperations);
+        }
+      }
+
+      // Execute all inventory updates
+      await Promise.all(
+        allInventoryOperations.map((operation) =>
+          Inventory.findByIdAndUpdate(
+            operation._id,
+            { quantity: operation.newQuantity },
+            { session },
+          ),
+        ),
+      );
+
+      order.status = OrderStatus.CANCELLED;
+      order.cancellationReason = OrderCancellationReason.ADMIN_CANCELLED;
+      await order.save({ session });
+
+      await session.commitTransaction();
+      session.endSession();
+
+      sendResponse(res, 200, 'Order cancelled successfully');
+    } catch (error) {
+      await session.abortTransaction();
+      session.endSession();
+      if (error instanceof ErrorHandler) {
+        throw error;
+      }
+      throw new ErrorHandler(500, 'Failed to cancel order', 'INTERNAL_SERVER');
+    }
+  },
+);
+
+export const deleteOrderAdmin = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { orderId } = req.params as DeleteOrderSchema['params'];
+
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      const order = await Order.findById(orderId).session(session);
+      if (!order) {
+        throw new ErrorHandler(404, 'Order not found', 'NOT_FOUND');
+      }
+      if (order.status !== OrderStatus.CANCELLED) {
+        const productIds = order.items.map((i) => i.productId);
+
+        const inventoryRecords = await Inventory.find({
+          productId: { $in: productIds },
+        })
+          .sort({ expirationDate: -1 }) // Last expiration date first
+          .session(session);
+
+        const inventoryMap = new Map<string, IInventory[]>();
+
+        for (const inventory of inventoryRecords) {
+          const productId = inventory.productId.toString();
+          if (!inventoryMap.has(productId)) {
+            inventoryMap.set(productId, []);
+          }
+          inventoryMap.get(productId)!.push(inventory);
+        }
+
+        const allInventoryOperations: Array<{
+          _id: Types.ObjectId;
+          newQuantity: number;
+        }> = [];
+
+        for (const item of order.items) {
+          const productInventory =
+            inventoryMap.get(item.productId.toString()) || [];
+
+          if (productInventory.length > 0) {
+            const restoreOperations = calculateInventoryRestoration(
+              productInventory,
+              item.quantity,
+            );
+            allInventoryOperations.push(...restoreOperations);
+          }
+        }
+
+        // Execute all inventory updates
+        await Promise.all(
+          allInventoryOperations.map((operation) =>
+            Inventory.findByIdAndUpdate(
+              operation._id,
+              { quantity: operation.newQuantity },
+              { session },
+            ),
+          ),
+        );
+      }
+
+      await order.deleteOne({ session });
+
+      await session.commitTransaction();
+      session.endSession();
+
+      sendResponse(res, 200, 'Order deleted successfully');
+    } catch (error) {
+      await session.abortTransaction();
+      session.endSession();
+      throw new ErrorHandler(500, 'Failed to cancel order', 'INTERNAL_SERVER');
+    }
+  },
+);
+
 /****************** END: Admin Controllers ********************/

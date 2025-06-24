@@ -15,13 +15,20 @@ import {
   SelectValue,
 } from '@repo/ui/components/base/select';
 import { Badge } from '@repo/ui/components/base/badge';
+import { ConfirmationDialog } from '@/components/common/confirmation-dialog';
 
 // Hooks
-import { useOrderDetails, useUpdateOrderStatus } from '@/hooks/useOrder';
+import {
+  useCancelOrder,
+  useDeleteOrder,
+  useOrderDetails,
+  useUpdateOrderStatus,
+} from '@/hooks/useOrder';
 
 // Types/Utils
 import { OrderStatus } from '@repo/types/order';
 import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
+import { useRouter } from 'next/navigation';
 
 interface OrderActionsCardProps {
   orderId: string;
@@ -30,10 +37,12 @@ interface OrderActionsCardProps {
 function OrderActionsCard(props: OrderActionsCardProps) {
   const { orderId } = props;
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus | ''>('');
-
+  const router = useRouter();
   const queryClient = useQueryClient();
   const { data: orderData } = useOrderDetails(orderId);
   const updateOrderStatusMutation = useUpdateOrderStatus();
+  const cancelOrderMutation = useCancelOrder();
+  const deleteOrderMutation = useDeleteOrder();
   const order = orderData?.order;
 
   const handleApproveOrder = useCallback(() => {
@@ -83,7 +92,14 @@ function OrderActionsCard(props: OrderActionsCardProps) {
 
   const handleCancelOrder = useCallback(() => {
     if (!order?._id) return;
-  }, [order?._id]);
+    cancelOrderMutation.mutate({ orderId: order._id });
+  }, [cancelOrderMutation, order?._id]);
+
+  const handleDeleteOrder = useCallback(() => {
+    if (!order?._id) return;
+    deleteOrderMutation.mutate({ orderId: order._id });
+    router.push('/dashboard/orders');
+  }, [order?._id, deleteOrderMutation, router]);
 
   const availableStatuses = Object.values(OrderStatus).filter(
     (status) => status !== order?.status && status !== OrderStatus.CANCELLED,
@@ -177,15 +193,48 @@ function OrderActionsCard(props: OrderActionsCardProps) {
             <h3 className="font-[family-name:var(--font-sora)] text-sm font-semibold text-[var(--baladi-dark)]">
               Avbryt Ordre
             </h3>
-            <Button
-              variant="outline"
-              className="w-full justify-center border-red-200 text-red-600 hover:border-red-300 hover:bg-red-50"
-              onClick={handleCancelOrder}
-            >
-              Avbryt Ordre
-            </Button>
+            <ConfirmationDialog
+              trigger={
+                <Button
+                  variant="outline"
+                  className="w-full justify-center border-red-200 text-red-600 hover:border-red-300 hover:bg-red-50"
+                  disabled={cancelOrderMutation.isPending}
+                >
+                  {cancelOrderMutation.isPending
+                    ? 'Avbryter...'
+                    : 'Avbryt Ordre'}
+                </Button>
+              }
+              title="Avbryt Ordre"
+              description="Er du sikker på at du vil avbryte denne ordren? Denne handlingen kan ikke angres."
+              confirmText="Ja, avbryt ordre"
+              onConfirm={handleCancelOrder}
+              isPending={cancelOrderMutation.isPending}
+            />
           </div>
         )}
+
+        <div className="space-y-2">
+          <h3 className="font-[family-name:var(--font-sora)] text-sm font-semibold text-[var(--baladi-dark)]">
+            Slett Ordre
+          </h3>
+          <ConfirmationDialog
+            trigger={
+              <Button
+                variant="outline"
+                className="w-full justify-center border-red-200 text-red-600 hover:border-red-300 hover:bg-red-50"
+                disabled={deleteOrderMutation.isPending}
+              >
+                {deleteOrderMutation.isPending ? 'Sletter...' : 'Slett Ordre'}
+              </Button>
+            }
+            title="Slett Ordre"
+            description="Er du sikker på at du vil slette denne ordren permanent? Alle data knyttet til ordren vil bli fjernet og denne handlingen kan ikke angres."
+            confirmText="Ja, slett ordre"
+            onConfirm={handleDeleteOrder}
+            isPending={deleteOrderMutation.isPending}
+          />
+        </div>
 
         {order?.status === OrderStatus.CANCELLED && (
           <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-center">

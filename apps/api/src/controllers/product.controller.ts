@@ -95,15 +95,7 @@ export const getProducts = asyncHandler(async (req: Request, res: Response) => {
     },
     {
       $addFields: {
-        stock: {
-          $sum: {
-            $map: {
-              input: '$inventory',
-              as: 'inv',
-              in: { $ifNull: ['$$inv.quantity', 0] },
-            },
-          },
-        },
+        stock: { $sum: '$inventory.quantity' },
         bestBeforeDate: { $min: '$inventory.expirationDate' },
       },
     },
@@ -262,14 +254,8 @@ export const getProductById = asyncHandler(
         },
       },
       {
-        $unwind: {
-          path: '$inventory',
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      {
         $addFields: {
-          stock: { $ifNull: ['$inventory.quantity', 0] },
+          stock: { $sum: '$inventory.quantity' },
           bestBeforeDate: { $min: '$inventory.expirationDate' },
         },
       },
@@ -394,14 +380,8 @@ export const getProductBySlug = asyncHandler(
         },
       },
       {
-        $unwind: {
-          path: '$inventory',
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      {
         $addFields: {
-          stock: { $ifNull: ['$inventory.quantity', 0] },
+          stock: { $sum: '$inventory.quantity' },
           bestBeforeDate: { $min: '$inventory.expirationDate' },
         },
       },
@@ -706,14 +686,8 @@ export const getProductByIdAdmin = asyncHandler(
         },
       },
       {
-        $unwind: {
-          path: '$inventory',
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      {
         $addFields: {
-          stock: { $ifNull: ['$inventory.quantity', 0] },
+          stock: { $sum: '$inventory.quantity' },
           bestBeforeDate: { $min: '$inventory.expirationDate' },
         },
       },
@@ -770,14 +744,8 @@ export const getProductBySlugAdmin = asyncHandler(
         },
       },
       {
-        $unwind: {
-          path: '$inventory',
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      {
         $addFields: {
-          stock: { $ifNull: ['$inventory.quantity', 0] },
+          stock: { $sum: '$inventory.quantity' },
           bestBeforeDate: { $min: '$inventory.expirationDate' },
         },
       },

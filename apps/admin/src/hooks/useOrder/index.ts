@@ -1,7 +1,7 @@
 // Node Modules
 import { useCallback } from 'react';
 import { toast } from '@repo/ui/lib/sonner';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 // Hooks
 import { useRequest } from '@/hooks/useRequest';
@@ -21,6 +21,8 @@ import type {
   GetRecentOrdersRequest,
   PreviewPickingListRequest,
   PreviewFreightLabelRequest,
+  CancelOrderAdminRequest,
+  DeleteOrderAdminRequest,
 } from './types';
 import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
 
@@ -274,4 +276,60 @@ export function useOrderPreview() {
     pickingListMutation,
     freightLabelMutation,
   };
+}
+
+export function useCancelOrder() {
+  const api = useRequest();
+  const queryClient = useQueryClient();
+
+  const cancelOrder = useCallback(
+    async (payload: CancelOrderAdminRequest['payload']) => {
+      const response = await api.post<CancelOrderAdminRequest['response']>(
+        `/order/cancel/admin/${payload.orderId}`,
+      );
+      return response.data.data;
+    },
+    [api],
+  );
+
+  const cancelOrderMutation = useMutation({
+    mutationFn: cancelOrder,
+    onSuccess: function (_, { orderId }) {
+      queryClient.invalidateQueries({
+        queryKey: [ReactQueryKeys.GET_ORDER_DETAILS, orderId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [ReactQueryKeys.GET_ALL_ORDERS],
+      });
+      toast.success('Ordre avbrutt');
+    },
+  });
+
+  return cancelOrderMutation;
+}
+
+export function useDeleteOrder() {
+  const api = useRequest();
+  const queryClient = useQueryClient();
+  const deleteOrder = useCallback(
+    async (payload: DeleteOrderAdminRequest['payload']) => {
+      const response = await api.delete<DeleteOrderAdminRequest['response']>(
+        `/order/delete/admin/${payload.orderId}`,
+      );
+      return response.data.data;
+    },
+    [api],
+  );
+
+  const deleteOrderMutation = useMutation({
+    mutationFn: deleteOrder,
+    onSuccess: function () {
+      queryClient.invalidateQueries({
+        queryKey: [ReactQueryKeys.GET_ALL_ORDERS],
+      });
+      toast.success('Ordre slettet');
+    },
+  });
+
+  return deleteOrderMutation;
 }
