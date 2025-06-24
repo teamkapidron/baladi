@@ -15,6 +15,8 @@ import type {
   GetAllInventoryRequest,
   GetProductInventoryRequest,
   CreateInventoryRequest,
+  UpdateInventoryRequest,
+  DeleteInventoryRequest,
   InventoryStatsRequest,
 } from './types';
 
@@ -112,5 +114,52 @@ export function useInventory() {
     },
   });
 
-  return { inventoryQuery, createInventoryMutation };
+  const updateInventory = useCallback(
+    async (payload: UpdateInventoryRequest['payload']) => {
+      const { inventoryId, ...updateData } = payload;
+      const response = await api.put<UpdateInventoryRequest['response']>(
+        `/inventory/${inventoryId}`,
+        updateData,
+      );
+      return response.data.data;
+    },
+    [api],
+  );
+
+  const updateInventoryMutation = useMutation({
+    mutationFn: updateInventory,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [ReactQueryKeys.GET_ALL_INVENTORY],
+      });
+      toast.success('Lager oppdatert');
+    },
+  });
+
+  const deleteInventory = useCallback(
+    async (inventoryId: string) => {
+      const response = await api.delete<DeleteInventoryRequest['response']>(
+        `/inventory/${inventoryId}`,
+      );
+      return response.data.data;
+    },
+    [api],
+  );
+
+  const deleteInventoryMutation = useMutation({
+    mutationFn: deleteInventory,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [ReactQueryKeys.GET_ALL_INVENTORY],
+      });
+      toast.success('Lagerparti slettet');
+    },
+  });
+
+  return {
+    inventoryQuery,
+    createInventoryMutation,
+    updateInventoryMutation,
+    deleteInventoryMutation,
+  };
 }
