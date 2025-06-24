@@ -62,6 +62,26 @@ export type CreateInventoryRequest = ApiData<
   }
 >;
 
+export type UpdateInventoryRequest = ApiData<
+  {
+    inventoryId: string;
+    quantity: number;
+    expirationDate: string;
+  },
+  {
+    inventory: Inventory;
+  }
+>;
+
+export type DeleteInventoryRequest = ApiData<
+  {
+    inventoryId: string;
+  },
+  {
+    message: string;
+  }
+>;
+
 export type InventoryStatsRequest = ApiData<
   {
     from: string;

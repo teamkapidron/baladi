@@ -38,9 +38,27 @@ export const inventoryStatsSchema = z.object({
   }),
 });
 
+export const updateInventorySchema = z.object({
+  params: z.object({
+    inventoryId: z.string().min(1, 'Inventory ID is required'),
+  }),
+  body: z.object({
+    quantity: z.number().min(1, 'Quantity must be greater than 0'),
+    expirationDate: z.string().min(1, 'Expiration date is required'),
+  }),
+});
+
+export const deleteInventorySchema = z.object({
+  params: z.object({
+    inventoryId: z.string().min(1, 'Inventory ID is required'),
+  }),
+});
+
 export type GetAllInventorySchema = z.infer<typeof getAllInventorySchema>;
 export type GetProductInventorySchema = z.infer<
   typeof getProductInventorySchema
 >;
 export type CreateInventorySchema = z.infer<typeof createInventorySchema>;
 export type InventoryStatsSchema = z.infer<typeof inventoryStatsSchema>;
+export type UpdateInventorySchema = z.infer<typeof updateInventorySchema>;
+export type DeleteInventorySchema = z.infer<typeof deleteInventorySchema>;
