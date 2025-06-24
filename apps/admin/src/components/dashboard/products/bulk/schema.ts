@@ -3,7 +3,6 @@ import { Visibility } from '@repo/types/product';
 
 export const csvProductSchema = z.object({
   name: z.string().trim().min(1, 'Produktnavn er påkrevd'),
-  slug: z.string().trim().min(1, 'Slug er påkrevd'),
   description: z.string().optional().default(''),
   shortDescription: z.string().optional().default(''),
   sku: z.string().optional().default(''),
@@ -149,7 +148,6 @@ export type CSVProductSchema = z.infer<typeof csvProductSchema>;
 
 export const REQUIRED_COLUMNS = [
   'name',
-  'slug',
   'vat',
   'costPrice',
   'salePrice',
@@ -160,7 +158,6 @@ export const REQUIRED_COLUMNS = [
 
 export const ALL_COLUMNS = [
   'name',
-  'slug',
   'description',
   'shortDescription',
   'sku',
@@ -186,8 +183,7 @@ export const ALL_COLUMNS = [
 ];
 
 export const TEMPLATE_DATA: Record<string, string> = {
-  name: 'Eksempel Produkt',
-  slug: 'eksempel-produkt',
+  name: 'Abu allaban mix baklawa 1 kg  x 12',
   description: 'Detaljert beskrivelse av produktet',
   shortDescription: 'Kort beskrivelse',
   sku: 'EKS001',
@@ -196,8 +192,8 @@ export const TEMPLATE_DATA: Record<string, string> = {
   costPrice: '100',
   salePrice: '150',
   noOfUnits: '50',
-  categories: 'kategori1,kategori2',
-  images: 'bilde1.jpg,bilde2.jpg',
+  categories: 'kategori1',
+  images: 'bilde1.jpg',
   isActive: 'true',
   visibility: 'both',
   hasVolumeDiscount: 'false',

@@ -4,16 +4,26 @@ import { z } from '@repo/ui/lib/form';
 import { toast } from '@repo/ui/lib/sonner';
 import { useCallback, useState, useRef } from 'react';
 
+// Hooks
+import { useRequest } from '@/hooks/useRequest';
+
 // Types
 import type {
   CsvConfigType,
   CsvValidationError,
   CsvParseResult,
+  BulkAddProductsRequest,
+  BulkAddInventoryRequest,
 } from './types';
+import type { CSVProductSchema } from '@/components/dashboard/products/bulk/schema';
+import type { CSVInventorySchema } from '@/components/dashboard/inventory/bulk/schema';
+import { useMutation } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
+import { API_URL } from '@/constants/url.constants';
 
 export function useBulk<T>(csvConfig: CsvConfigType, csvSchema: z.ZodType) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-
+  const api = useRequest();
   const [parsedData, setParsedData] = useState<T[] | null>(null);
   const [isImporting, setIsImporting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -249,6 +259,11 @@ export function useBulk<T>(csvConfig: CsvConfigType, csvSchema: z.ZodType) {
   const downloadTemplate = useCallback(
     (templateFileName = 'template.csv') => {
       try {
+        if (csvConfig.allColumns.includes('expirationDate')) {
+          window.location.href = `${API_URL}/export/products-for-inventory`;
+          return;
+        }
+
         const headers =
           csvConfig.allColumns?.join(',') ||
           csvConfig.requiredColumns.join(',');
@@ -300,46 +315,6 @@ export function useBulk<T>(csvConfig: CsvConfigType, csvSchema: z.ZodType) {
     [handleFileUpload, isUploading],
   );
 
-  const handleUploadComplete = useCallback((result: CsvParseResult<T>) => {
-    if (result.success && result.data) {
-      setParsedData(result.data);
-      toast.success(
-        `CSV behandlet vellykket! ${result.validRows} produkter klare for import.`,
-      );
-    } else {
-      setParsedData(null);
-      if (result.errors.length > 0) {
-        toast.error(
-          `CSV behandling feilet. ${result.errors.length} feil funnet.`,
-        );
-      } else {
-        toast.error('CSV behandling feilet. Sjekk filen og prøv igjen.');
-      }
-    }
-  }, []);
-
-  const handleUploadStart = useCallback(() => {
-    setParsedData(null);
-    setIsImporting(false);
-  }, []);
-
-  const handleValidationComplete = useCallback(
-    (result: CsvParseResult<T>, operation: 'add' | 'update') => {
-      if (result.success && result.data) {
-        setParsedData(result.data);
-        toast.success(
-          `CSV validert! ${result.validRows} produkter klare for ${
-            operation === 'add' ? 'opprettelse' : 'oppdatering'
-          }.`,
-        );
-      } else {
-        setParsedData(null);
-        toast.error('CSV validering feilet. Sjekk feilene og prøv igjen.');
-      }
-    },
-    [],
-  );
-
   return {
     parsedData,
     isImporting,
@@ -355,9 +330,66 @@ export function useBulk<T>(csvConfig: CsvConfigType, csvSchema: z.ZodType) {
     downloadTemplate,
     resetUpload,
     handleFileInputChange,
+  };
+}
 
-    handleUploadComplete,
-    handleUploadStart,
-    handleValidationComplete,
+export function useBulkAdd() {
+  const api = useRequest();
+  const router = useRouter();
+  const bulkAddProducts = useCallback(
+    async (payload: CSVProductSchema[]) => {
+      const response = await api.post<BulkAddProductsRequest['response']>(
+        '/product/bulk',
+        {
+          products: payload,
+        },
+      );
+      return response.data.data;
+    },
+    [api],
+  );
+  const bulkAddProductsMutation = useMutation({
+    mutationFn: bulkAddProducts,
+    onSuccess: () => {
+      toast.success('Produkter ble lagt til');
+      router.push('/dashboard/products');
+    },
+    onError: () => {
+      toast.error('Feil ved lagring av produkter');
+    },
+  });
+
+  const bulkAddInventory = useCallback(
+    async (payload: CSVInventorySchema[]) => {
+      const filteredPayload = payload.filter(
+        (item: CSVInventorySchema) => item.quantity !== '',
+      );
+
+      const response = await api.post<BulkAddInventoryRequest['response']>(
+        '/inventory/bulk',
+        {
+          inventory: filteredPayload,
+        },
+      );
+      return response.data.data;
+    },
+    [api],
+  );
+  const bulkAddInventoryMutation = useMutation({
+    mutationFn: bulkAddInventory,
+    onSuccess: () => {
+      toast.success('Produkter ble lagt til');
+      router.push('/dashboard/inventory');
+    },
+    onError: () => {
+      toast.error('Feil ved lagring av produkter');
+    },
+  });
+
+  return {
+    bulkAddProducts,
+    bulkAddProductsMutation,
+    bulkAddInventory,
+    bulkAddInventoryMutation,
   };
 }
