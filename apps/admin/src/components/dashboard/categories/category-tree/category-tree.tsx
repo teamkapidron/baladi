@@ -17,7 +17,7 @@ import type { HierarchicalCategory } from '@repo/types/category';
 import CreateCategoryDialog from '../create-category/create-category-dialog';
 
 function CategoryTree() {
-  const { categories: data } = useCategory();
+  const { categories: data, toggleCategoryTreeMutation } = useCategory();
   const categories = useMemo(() => {
     return data?.categories || [];
   }, [data?.categories]);
@@ -36,6 +36,13 @@ function CategoryTree() {
       setExpandedNodes(newExpanded);
     },
     [expandedNodes],
+  );
+
+  const handleToggleCategoryActive = useCallback(
+    (categoryId: string, isActive: boolean) => {
+      toggleCategoryTreeMutation.mutate({ categoryId, isActive });
+    },
+    [toggleCategoryTreeMutation],
   );
 
   const handleSearchChange = useCallback(
@@ -106,6 +113,7 @@ function CategoryTree() {
               category={category}
               level={0}
               onToggle={handleToggleNode}
+              onToggleActive={handleToggleCategoryActive}
               expandedNodes={expandedNodes}
             />
           ))}

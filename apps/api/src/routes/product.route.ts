@@ -22,6 +22,7 @@ import {
   lowStockProducts,
   topProducts,
   productStats,
+  toggleProductActive,
 } from '@/controllers/product.controller';
 
 import {
@@ -38,6 +39,7 @@ import {
   lowStockProductsSchema,
   topProductsSchema,
   productStatsSchema,
+  toggleProductActiveSchema,
 } from '@/validators/product.validator';
 
 const router: Router = express.Router();
@@ -105,6 +107,13 @@ router.get(
 );
 router.get('/top', isAdmin, validate(topProductsSchema), topProducts);
 router.get('/stats', isAdmin, validate(productStatsSchema), productStats);
+router.put(
+  '/toggle-active/:productId',
+  isAdmin,
+  validate(toggleProductActiveSchema),
+  toggleProductActive,
+);
+
 /* --------------------------END: Admin Routes -------------------------- */
 
 export default router;

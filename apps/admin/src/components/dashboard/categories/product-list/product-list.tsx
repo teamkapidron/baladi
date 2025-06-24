@@ -36,7 +36,7 @@ function ProductList() {
   const { page, limit, handlePageSizeChange, handlePageChange } =
     usePagination();
 
-  const { products: data } = useProduct();
+  const { products: data, toggleProductActiveMutation } = useProduct();
   const products = useMemo(() => {
     return data?.products || [];
   }, [data?.products]);
@@ -45,9 +45,9 @@ function ProductList() {
 
   const handleToggleProductActive = useCallback(
     (productId: string, isActive: boolean) => {
-      console.log('Toggle product active:', productId, isActive);
+      toggleProductActiveMutation.mutate({ productId, isActive });
     },
-    [],
+    [toggleProductActiveMutation],
   );
 
   const handlePageInputChange = useCallback(
@@ -100,7 +100,7 @@ function ProductList() {
             <Link href="/dashboard/products/new">
               <Button
                 size="sm"
-                className="h-8 bg-[var(--baladi-primary)] hover:bg-[var(--baladi-primary)]/90"
+                className="hover:bg-[var(--baladi-primary)]/90 h-8 bg-[var(--baladi-primary)]"
               >
                 <Plus className="mr-1 h-3 w-3" />
                 Legg til Produkt
@@ -161,7 +161,7 @@ function ProductList() {
               </div>
 
               <div className="flex items-center gap-2">
-                <div className="flex h-6 w-6 items-center justify-center rounded bg-[var(--baladi-primary)]/10">
+                <div className="bg-[var(--baladi-primary)]/10 flex h-6 w-6 items-center justify-center rounded">
                   <ShoppingBag className="h-3.5 w-3.5 text-[var(--baladi-primary)]" />
                 </div>
                 <span className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--baladi-gray)]">
@@ -220,7 +220,7 @@ function ProductList() {
                       type="text"
                       value={pageInput}
                       onChange={handlePageInputChange}
-                      className="h-8 w-12 rounded-lg border border-[var(--baladi-border)] bg-white px-2 text-center font-[family-name:var(--font-dm-sans)] text-sm shadow-sm transition-all duration-300 hover:border-[var(--baladi-primary)]/50 focus:border-[var(--baladi-primary)] focus:ring-2 focus:ring-[var(--baladi-primary)]/20 focus:outline-none"
+                      className="hover:border-[var(--baladi-primary)]/50 focus:ring-[var(--baladi-primary)]/20 h-8 w-12 rounded-lg border border-[var(--baladi-border)] bg-white px-2 text-center font-[family-name:var(--font-dm-sans)] text-sm shadow-sm transition-all duration-300 focus:border-[var(--baladi-primary)] focus:outline-none focus:ring-2"
                       placeholder="Gå"
                     />
                     <button

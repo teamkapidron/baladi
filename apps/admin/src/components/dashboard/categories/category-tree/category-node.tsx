@@ -10,7 +10,7 @@ import {
 } from '@repo/ui/lib/icons';
 
 // Components
-// import { Switch } from '@repo/ui/components/base/switch';
+import { Switch } from '@repo/ui/components/base/switch';
 
 // Hooks
 import { usePagination } from '@repo/ui/hooks/usePagination';
@@ -23,11 +23,12 @@ interface CategoryNodeProps {
   category: HierarchicalCategory;
   level: number;
   onToggle: (categoryId: string) => void;
+  onToggleActive?: (categoryId: string, isActive: boolean) => void;
   expandedNodes: Set<string>;
 }
 
 function CategoryNode(props: CategoryNodeProps) {
-  const { category, level, onToggle, expandedNodes } = props;
+  const { category, level, onToggle, onToggleActive, expandedNodes } = props;
 
   const { handlePageChange } = usePagination();
   const { category: selectedCategory, changeCategory } = useProductFilters();
@@ -45,20 +46,27 @@ function CategoryNode(props: CategoryNodeProps) {
     handlePageChange(1);
   }, [category._id, changeCategory, handlePageChange]);
 
+  const handleToggleActive = useCallback(
+    (checked: boolean) => {
+      onToggleActive?.(category._id, checked);
+    },
+    [onToggleActive, category._id],
+  );
+
   return (
     <div className="space-y-1">
       <div
-        className={`group flex items-center gap-2 rounded-lg px-3 py-2 transition-all hover:bg-[var(--baladi-primary)]/5 ${
+        className={`hover:bg-[var(--baladi-primary)]/5 group flex items-center gap-2 rounded-lg px-3 py-2 transition-all ${
           isSelected
-            ? 'border-l-4 border-[var(--baladi-primary)] bg-[var(--baladi-primary)]/10'
+            ? 'bg-[var(--baladi-primary)]/10 border-l-4 border-[var(--baladi-primary)]'
             : ''
-        }`}
+        } ${category.isActive === false ? 'bg-gray-100/80 opacity-60' : ''}`}
         style={{ paddingLeft }}
       >
         {hasChildren ? (
           <button
             onClick={() => onToggle(category._id)}
-            className="flex h-4 w-4 items-center justify-center rounded hover:bg-[var(--baladi-primary)]/10"
+            className="hover:bg-[var(--baladi-primary)]/10 flex h-4 w-4 items-center justify-center rounded"
           >
             {isExpanded ? (
               <ChevronDown className="h-3 w-3 text-[var(--baladi-gray)]" />
@@ -70,7 +78,7 @@ function CategoryNode(props: CategoryNodeProps) {
           <div className="h-4 w-4" />
         )}
 
-        <div className="flex h-6 w-6 items-center justify-center rounded bg-[var(--baladi-primary)]/10">
+        <div className="bg-[var(--baladi-primary)]/10 flex h-6 w-6 items-center justify-center rounded">
           {isExpanded && hasChildren ? (
             <FolderOpenIcon className="h-4 w-4 text-[var(--baladi-primary)]" />
           ) : (
@@ -82,18 +90,33 @@ function CategoryNode(props: CategoryNodeProps) {
           onClick={handleChangeCategory}
           className="flex flex-1 cursor-pointer items-center justify-between"
         >
-          <span className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-dark)]">
+          <span
+            className={`font-[family-name:var(--font-dm-sans)] text-sm font-medium ${
+              category.isActive === false
+                ? 'text-[var(--baladi-gray)]'
+                : 'text-[var(--baladi-dark)]'
+            }`}
+          >
             {category.name}
           </span>
         </div>
 
-        {/* <div className="flex items-center gap-2">
-          <Switch
-            checked={category.isActive}
-            className="opacity-0 transition-opacity group-hover:opacity-100"
-            onClick={(e) => e.stopPropagation()}
-          />
-        </div> */}
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
+            <Switch
+              checked={category.isActive ?? true}
+              onCheckedChange={handleToggleActive}
+              className="scale-75 opacity-0 transition-opacity group-hover:opacity-100"
+              title={
+                category.isActive ? 'Deaktiver kategori' : 'Aktiver kategori'
+              }
+              onClick={(e) => e.stopPropagation()}
+            />
+            <span className="text-xs text-[var(--baladi-gray)] opacity-0 transition-opacity group-hover:opacity-100">
+              {category.isActive ? 'Aktiv' : 'Inaktiv'}
+            </span>
+          </div>
+        </div>
       </div>
 
       {isExpanded && hasChildren && (
@@ -104,6 +127,7 @@ function CategoryNode(props: CategoryNodeProps) {
               category={child}
               level={level + 1}
               onToggle={onToggle}
+              onToggleActive={onToggleActive}
               expandedNodes={expandedNodes}
             />
           ))}

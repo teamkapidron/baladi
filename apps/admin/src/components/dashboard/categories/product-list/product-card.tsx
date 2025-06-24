@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { Package, Edit } from '@repo/ui/lib/icons';
 
 // Components
-// import { Switch } from '@repo/ui/components/base/switch';
+import { Switch } from '@repo/ui/components/base/switch';
 import { Button } from '@repo/ui/components/base/button';
 
 // Types/Utils
@@ -23,7 +23,7 @@ interface ProductCardProps {
 }
 
 function ProductCard(props: ProductCardProps) {
-  const { product } = props;
+  const { product, onToggleActive } = props;
 
   const router = useRouter();
 
@@ -31,8 +31,19 @@ function ProductCard(props: ProductCardProps) {
     router.push(`/dashboard/products/edit/${product.slug}`);
   }, [product.slug, router]);
 
+  const handleToggleActive = useCallback(
+    (checked: boolean) => {
+      onToggleActive?.(product._id, checked);
+    },
+    [onToggleActive, product._id],
+  );
+
   return (
-    <div className="flex items-center gap-4 rounded-lg border border-[var(--baladi-border)] bg-gray-50/50 p-4 transition-all hover:shadow-md">
+    <div
+      className={`flex items-center gap-4 rounded-lg border border-[var(--baladi-border)] p-4 transition-all hover:shadow-md ${
+        product.isActive ? 'bg-gray-50/50' : 'bg-gray-100/80 opacity-60'
+      }`}
+    >
       <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg border border-[var(--baladi-border)] bg-white">
         {product.images && product.images.length > 0 ? (
           <Image
@@ -49,18 +60,39 @@ function ProductCard(props: ProductCardProps) {
 
       <div className="flex-1 space-y-2">
         <div className="flex items-start justify-between">
-          <h3 className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--baladi-dark)]">
+          <h3
+            className={`font-[family-name:var(--font-dm-sans)] text-sm font-medium ${
+              product.isActive
+                ? 'text-[var(--baladi-dark)]'
+                : 'text-[var(--baladi-gray)]'
+            }`}
+          >
             {product.name}
           </h3>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleEditProduct}
-            className="ml-2 h-8 w-8 p-0 text-[var(--baladi-gray)] hover:bg-[var(--baladi-primary)] hover:text-white"
-            title="Rediger produkt"
-          >
-            <Edit className="h-4 w-4" />
-          </Button>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
+              <Switch
+                checked={product.isActive}
+                onCheckedChange={handleToggleActive}
+                className="scale-75"
+                title={
+                  product.isActive ? 'Deaktiver produkt' : 'Aktiver produkt'
+                }
+              />
+              <span className="text-xs text-[var(--baladi-gray)]">
+                {product.isActive ? 'Aktiv' : 'Inaktiv'}
+              </span>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleEditProduct}
+              className="h-8 w-8 p-0 text-[var(--baladi-gray)] hover:bg-[var(--baladi-primary)] hover:text-white"
+              title="Rediger produkt"
+            >
+              <Edit className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
 
         <div className="flex items-center gap-4 text-xs text-[var(--baladi-gray)]">

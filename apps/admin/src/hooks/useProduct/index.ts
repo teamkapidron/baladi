@@ -25,6 +25,7 @@ import type {
   TopProductsRequest,
   ProductStatsRequest,
   QuickSearchProductsRequest,
+  ToggleProductActiveRequest,
 } from './types';
 import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
 
@@ -289,6 +290,33 @@ export function useProduct() {
     mutationFn: deleteProduct,
   });
 
+  const toggleProductActive = useCallback(
+    async (productId: string, isActive: boolean) => {
+      const response = await api.put<ToggleProductActiveRequest['response']>(
+        `/product/toggle-active/${productId}`,
+        { isActive },
+      );
+      return response.data.data;
+    },
+    [api],
+  );
+
+  const toggleProductActiveMutation = useMutation({
+    mutationFn: ({
+      productId,
+      isActive,
+    }: {
+      productId: string;
+      isActive: boolean;
+    }) => toggleProductActive(productId, isActive),
+    onSuccess: function () {
+      toast.success('Produktstatus oppdatert');
+      queryClient.invalidateQueries({
+        queryKey: [ReactQueryKeys.GET_ALL_PRODUCTS],
+      });
+    },
+  });
+
   return {
     // Queries
     products,
@@ -298,6 +326,7 @@ export function useProduct() {
     createProductMutation,
     updateProductMutation,
     deleteProductMutation,
+    toggleProductActiveMutation,
   };
 }
 
