@@ -89,7 +89,7 @@ export const placeOrder = asyncHandler(async (req: Request, res: Response) => {
       productId: { $in: productIds },
       quantity: { $gt: 0 },
     })
-      .sort({ expirationDate: 1 }) // FIFO - use items expiring first
+      .sort({ expirationDate: 1 }) // use items expiring first
       .session(session);
     const bulkDiscounts = await BulkDiscount.find({
       isActive: true,
@@ -359,7 +359,7 @@ export const cancelOrder = asyncHandler(async (req: Request, res: Response) => {
     const inventoryRecords = await Inventory.find({
       productId: { $in: productIds },
     })
-      .sort({ expirationDate: 1 }) // FIFO order
+      .sort({ expirationDate: -1 }) // Last expiration date first
       .session(session);
 
     const inventoryMap = new Map<string, IInventory[]>();
@@ -531,6 +531,7 @@ export const getAllOrders = asyncHandler(
       { $match: queryObject },
       { $skip: skip },
       { $limit: perPage },
+      { $sort: { createdAt: -1 } },
     ]);
 
     const totalOrders = await Order.countDocuments(queryObject);
@@ -633,7 +634,10 @@ export const getOrderRevenueStats = asyncHandler(
 
     const [revenueStats] = await Order.aggregate<OrderRevenueStats>([
       {
-        $match: matchStage,
+        $match: {
+          ...matchStage,
+          status: { $ne: OrderStatus.CANCELLED },
+        },
       },
       {
         $unwind: '$items',
@@ -775,7 +779,10 @@ export const getOrderRevenueGraphData = asyncHandler(
 
     const revenueData = await Order.aggregate([
       {
-        $match: matchStage,
+        $match: {
+          ...matchStage,
+          status: { $ne: OrderStatus.CANCELLED },
+        },
       },
       {
         $unwind: '$items',
@@ -981,7 +988,7 @@ export const cancelOrderAdmin = asyncHandler(
       const inventoryRecords = await Inventory.find({
         productId: { $in: productIds },
       })
-        .sort({ expirationDate: 1 }) // FIFO order
+        .sort({ expirationDate: -1 }) // Last expiration date first
         .session(session);
 
       const inventoryMap = new Map<string, IInventory[]>();
@@ -1030,15 +1037,7 @@ export const cancelOrderAdmin = asyncHandler(
       await session.commitTransaction();
       session.endSession();
 
-      const populatedOrder = await Order.findById(orderId).populate([
-        { path: 'items.productId', select: 'name' },
-        { path: 'userId', select: 'name email' },
-        { path: 'shippingAddress' },
-      ]);
-
-      sendResponse(res, 200, 'Order cancelled successfully', {
-        order: populatedOrder,
-      });
+      sendResponse(res, 200, 'Order cancelled successfully');
     } catch (error) {
       await session.abortTransaction();
       session.endSession();
@@ -1068,7 +1067,7 @@ export const deleteOrderAdmin = asyncHandler(
         const inventoryRecords = await Inventory.find({
           productId: { $in: productIds },
         })
-          .sort({ expirationDate: 1 }) // FIFO order
+          .sort({ expirationDate: -1 }) // Last expiration date first
           .session(session);
 
         const inventoryMap = new Map<string, IInventory[]>();
@@ -1110,12 +1109,13 @@ export const deleteOrderAdmin = asyncHandler(
           ),
         );
       }
+
       await order.deleteOne({ session });
 
       await session.commitTransaction();
       session.endSession();
 
-      sendResponse(res, 200, 'Order deleted successfully', {});
+      sendResponse(res, 200, 'Order deleted successfully');
     } catch (error) {
       await session.abortTransaction();
       session.endSession();

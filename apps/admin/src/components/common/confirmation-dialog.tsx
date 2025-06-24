@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { cn } from '@repo/ui/lib/utils';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,13 +23,6 @@ interface ConfirmationDialogProps {
   onConfirm: () => void;
   isPending?: boolean;
   confirmButtonClassName?: string;
-  confirmButtonVariant?:
-    | 'default'
-    | 'destructive'
-    | 'outline'
-    | 'secondary'
-    | 'ghost'
-    | 'link';
 }
 
 export function ConfirmationDialog({
@@ -40,7 +34,6 @@ export function ConfirmationDialog({
   onConfirm,
   isPending = false,
   confirmButtonClassName = 'bg-red-600 hover:bg-red-700',
-  confirmButtonVariant = 'default',
 }: ConfirmationDialogProps) {
   return (
     <AlertDialog>
@@ -51,9 +44,11 @@ export function ConfirmationDialog({
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>{cancelText}</AlertDialogCancel>
+          <AlertDialogCancel className="cursor-pointer">
+            {cancelText}
+          </AlertDialogCancel>
           <AlertDialogAction
-            className={confirmButtonClassName}
+            className={cn('cursor-pointer', confirmButtonClassName)}
             onClick={onConfirm}
             disabled={isPending}
           >

@@ -93,13 +93,13 @@ function OrderActionsCard(props: OrderActionsCardProps) {
   const handleCancelOrder = useCallback(() => {
     if (!order?._id) return;
     cancelOrderMutation.mutate({ orderId: order._id });
-  }, [order?._id, cancelOrderMutation, order]);
+  }, [cancelOrderMutation, order?._id]);
 
   const handleDeleteOrder = useCallback(() => {
     if (!order?._id) return;
     deleteOrderMutation.mutate({ orderId: order._id });
     router.push('/dashboard/orders');
-  }, [order?._id, deleteOrderMutation, order]);
+  }, [order?._id, deleteOrderMutation, router]);
 
   const availableStatuses = Object.values(OrderStatus).filter(
     (status) => status !== order?.status && status !== OrderStatus.CANCELLED,

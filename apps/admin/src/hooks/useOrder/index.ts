@@ -281,6 +281,7 @@ export function useOrderPreview() {
 export function useCancelOrder() {
   const api = useRequest();
   const queryClient = useQueryClient();
+
   const cancelOrder = useCallback(
     async (payload: CancelOrderAdminRequest['payload']) => {
       const response = await api.post<CancelOrderAdminRequest['response']>(

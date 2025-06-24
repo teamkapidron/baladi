@@ -1,10 +1,9 @@
-import { PipelineStage } from 'mongoose';
+import { PipelineStage, Types } from 'mongoose';
 import { getPagination } from './common/pagination.utils';
 import { GetAllInventorySchema } from '@/validators/inventory.validator';
 
-import { InventoryFilterQuery, InventoryStatus } from '@/types/inventory.types';
 import { IInventory } from '@/models/interfaces/inventory.model';
-import { Types } from 'mongoose';
+import { InventoryFilterQuery, InventoryStatus } from '@/types/inventory.types';
 
 export function getInventoryFilterFromQuery(
   query: GetAllInventorySchema['query'],

@@ -48,8 +48,7 @@ import {
 
 const router: Router = express.Router();
 
-// User Routes
-
+/* --------------------------START: User Routes -------------------------- */
 router.post('/place', isAuthenticated, validate(placeOrderSchema), placeOrder);
 router.get(
   '/my',
@@ -69,9 +68,9 @@ router.post(
   validate(cancelOrderSchema),
   cancelOrder,
 );
+/* --------------------------END: User Routes -------------------------- */
 
-// Admin Routes
-
+/* --------------------------START: Admin Routes -------------------------- */
 router.get('/all', isAdmin, validate(getAllOrdersSchema), getAllOrders);
 router.get(
   '/details/admin/:orderId',
@@ -134,5 +133,6 @@ router.delete(
   validate(deleteOrderSchema),
   deleteOrderAdmin,
 );
+/* --------------------------END: Admin Routes -------------------------- */
 
 export default router;
