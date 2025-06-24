@@ -8,6 +8,8 @@ import {
   getProductInventory,
   createInventory,
   getInventoryStats,
+  updateInventory,
+  deleteInventory,
 } from '@/controllers/inventory.controller';
 
 import {
@@ -15,6 +17,8 @@ import {
   getProductInventorySchema,
   createInventorySchema,
   inventoryStatsSchema,
+  updateInventorySchema,
+  deleteInventorySchema,
 } from '@/validators/inventory.validator';
 
 const router: Router = express.Router();
@@ -32,6 +36,18 @@ router.get(
   isAdmin,
   validate(inventoryStatsSchema),
   getInventoryStats,
+);
+router.put(
+  '/:inventoryId',
+  isAdmin,
+  validate(updateInventorySchema),
+  updateInventory,
+);
+router.delete(
+  '/:inventoryId',
+  isAdmin,
+  validate(deleteInventorySchema),
+  deleteInventory,
 );
 
 export default router;

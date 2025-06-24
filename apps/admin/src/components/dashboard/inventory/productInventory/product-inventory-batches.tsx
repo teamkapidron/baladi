@@ -1,7 +1,7 @@
 'use client';
 
 // Node Modules
-import { memo, useMemo } from 'react';
+import { memo, useMemo, useState } from 'react';
 import {
   Package,
   Calendar,
@@ -10,10 +10,16 @@ import {
   XCircle,
   Hash,
   Info,
+  Edit2,
+  Trash2,
 } from '@repo/ui/lib/icons';
 
+// Components
+import { Button } from '@repo/ui/components/base/button';
+import EditInventoryDialog from '@/components/dashboard/inventory/edit-inventory-dialog/edit-inventory-dialog';
+
 // Hooks
-import { useProductInventory } from '@/hooks/useInventory';
+import { useProductInventory, useInventory } from '@/hooks/useInventory';
 
 // Types
 import { formatDate } from '@repo/ui/lib/date';
@@ -105,6 +111,9 @@ interface InventoryBatchCardProps {
 }
 
 function InventoryBatchCard({ item }: InventoryBatchCardProps) {
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const { deleteInventoryMutation } = useInventory();
+
   const expirationDate = new Date(item.expirationDate);
   const today = new Date();
   const daysUntilExpiry = Math.ceil(
@@ -114,6 +123,14 @@ function InventoryBatchCard({ item }: InventoryBatchCardProps) {
   const isExpired = expirationDate < today;
   const isExpiringSoon = daysUntilExpiry <= 7 && daysUntilExpiry > 0;
   const isOutOfStock = item.quantity === 0;
+
+  function handleDelete() {
+    if (
+      window.confirm('Er du sikker på at du vil slette dette lagerpartiet?')
+    ) {
+      deleteInventoryMutation.mutate(item._id);
+    }
+  }
 
   function getStatusInfo() {
     if (isOutOfStock) {
@@ -273,8 +290,38 @@ function InventoryBatchCard({ item }: InventoryBatchCardProps) {
               />
             </div>
           </div>
+
+          {/* Action Buttons */}
+          <div className="flex gap-2 pt-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsEditDialogOpen(true)}
+              className="h-8 flex-1 border-gray-300 bg-white/80 px-3 text-xs font-medium text-gray-700 transition-all duration-200 hover:border-[var(--baladi-primary)] hover:bg-white hover:text-[var(--baladi-primary)]"
+            >
+              <Edit2 className="mr-1.5 h-3 w-3" />
+              Rediger
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDelete}
+              disabled={deleteInventoryMutation.isPending}
+              className="h-8 flex-1 border-gray-300 bg-white/80 px-3 text-xs font-medium text-gray-700 transition-all duration-200 hover:border-red-300 hover:bg-red-50 hover:text-red-700 disabled:opacity-50"
+            >
+              <Trash2 className="mr-1.5 h-3 w-3" />
+              {deleteInventoryMutation.isPending ? 'Sletter...' : 'Slett'}
+            </Button>
+          </div>
         </div>
       </div>
+
+      {/* Edit Dialog */}
+      <EditInventoryDialog
+        open={isEditDialogOpen}
+        setOpen={setIsEditDialogOpen}
+        inventoryItem={item}
+      />
     </div>
   );
 }
