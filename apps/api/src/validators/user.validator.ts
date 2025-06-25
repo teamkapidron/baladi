@@ -99,6 +99,17 @@ export const updateAdminPasswordSchema = z.object({
   }),
 });
 
+export const deleteUserSchema = z.object({
+  params: z.object({
+    userId: z
+      .string()
+      .min(1, 'User ID is required')
+      .refine((val) => isValidObjectId(val), {
+        message: 'Invalid user ID format',
+      }),
+  }),
+});
+
 export type GetAllUsersSchema = z.infer<typeof getAllUsersSchema>;
 export type GetUserDetailsSchema = z.infer<typeof getUserDetailsSchema>;
 export type UpdateUserSchema = z.infer<typeof updateUserSchema>;
@@ -110,3 +121,4 @@ export type TopUsersSchema = z.infer<typeof topUsersSchema>;
 export type UpdateAdminPasswordSchema = z.infer<
   typeof updateAdminPasswordSchema
 >;
+export type DeleteUserSchema = z.infer<typeof deleteUserSchema>;

@@ -92,3 +92,10 @@ export type TopUsersRequest = ApiData<
     }[];
   }
 >;
+
+export type DeleteUserRequest = ApiData<
+  {
+    userId: string;
+  },
+  undefined
+>;

@@ -9,13 +9,15 @@ import {
   User,
   Shield,
   CheckCircle,
+  Trash2,
 } from '@repo/ui/lib/icons';
 
 // Components
 import { Button } from '@repo/ui/components/base/button';
+import { ConfirmationDialog } from '@/components/common/confirmation-dialog';
 
 // Hooks
-import { useUserDetails } from '@/hooks/useUsers';
+import { useUserDetails, useUsers } from '@/hooks/useUsers';
 
 // Types/Utils
 import { formatDate } from '@repo/ui/lib/date';
@@ -29,7 +31,19 @@ function CustomerDetailHeader(props: CustomerDetailHeaderProps) {
   const router = useRouter();
 
   const { userDetailsQuery } = useUserDetails(customerId);
+  const { deleteUserMutation } = useUsers();
   const user = userDetailsQuery.data?.user;
+
+  const handleDeleteUser = () => {
+    deleteUserMutation.mutate(
+      { userId: customerId },
+      {
+        onSuccess: () => {
+          router.push('/dashboard/customers');
+        },
+      },
+    );
+  };
 
   return (
     <div className="relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-[var(--baladi-primary)] via-[var(--baladi-primary)] to-[var(--baladi-secondary)] shadow-lg">
@@ -95,6 +109,28 @@ function CustomerDetailHeader(props: CustomerDetailHeaderProps) {
               <span>E-post: {user?.email || 'Ikke oppgitt'}</span>
             </div>
           </div>
+        </div>
+
+        <div className="flex gap-3">
+          <ConfirmationDialog
+            trigger={
+              <Button
+                variant="destructive"
+                className="flex items-center gap-2 bg-red-600/90 text-white transition-all hover:scale-105 hover:bg-red-700/90"
+                disabled={deleteUserMutation.isPending}
+              >
+                <Trash2 className="h-4 w-4" />
+                <span className="hidden sm:inline">Slett kunde</span>
+              </Button>
+            }
+            title="Slett kunde"
+            description={`Er du sikker på at du vil slette kunden "${user?.name || 'denne kunden'}"? Denne handlingen kan ikke angres og vil fjerne all data knyttet til kunden.`}
+            confirmText={
+              deleteUserMutation.isPending ? 'Sletter...' : 'Slett permanent'
+            }
+            onConfirm={handleDeleteUser}
+            isPending={deleteUserMutation.isPending}
+          />
         </div>
       </div>
 
