@@ -14,12 +14,26 @@ import type {
   UpdateAddressRequest,
   DeleteAddressRequest,
   SetDefaultAddressRequest,
+  GetDefaultAddressRequest,
 } from './types';
 import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
 
 export function useAddress() {
   const api = useRequest();
   const queryClient = useQueryClient();
+
+  const getDefaultAddress = useCallback(async () => {
+    const response =
+      await api.get<GetDefaultAddressRequest['response']>('/address/default');
+    return response.data.data;
+  }, [api]);
+
+  const { data: defaultAddress, isLoading: isDefaultAddressLoading } = useQuery(
+    {
+      queryKey: [ReactQueryKeys.GET_DEFAULT_ADDRESS],
+      queryFn: getDefaultAddress,
+    },
+  );
 
   const getAddresses = useCallback(async () => {
     const response =
@@ -118,6 +132,8 @@ export function useAddress() {
     // Queries
     address,
     isAddressLoading,
+    defaultAddress,
+    isDefaultAddressLoading,
 
     // Mutations
     addAddressMutation,

@@ -99,6 +99,19 @@ export const updateAdminPasswordSchema = z.object({
   }),
 });
 
+export const updateUserProfileSchema = z.object({
+  body: z.object({
+    name: z.string().optional(),
+    companyName: z.string().optional(),
+    organizationNumber: z.string().optional(),
+    phoneNumber: z.string().optional(),
+    addressLine1: z.string().optional(),
+    addressLine2: z.string().optional(),
+    city: z.string().optional(),
+    postalCode: z.string().optional(),
+  }),
+});
+
 export type GetAllUsersSchema = z.infer<typeof getAllUsersSchema>;
 export type GetUserDetailsSchema = z.infer<typeof getUserDetailsSchema>;
 export type UpdateUserSchema = z.infer<typeof updateUserSchema>;
@@ -110,3 +123,4 @@ export type TopUsersSchema = z.infer<typeof topUsersSchema>;
 export type UpdateAdminPasswordSchema = z.infer<
   typeof updateAdminPasswordSchema
 >;
+export type UpdateUserProfileSchema = z.infer<typeof updateUserProfileSchema>;

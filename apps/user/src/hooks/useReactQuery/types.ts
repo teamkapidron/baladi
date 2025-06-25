@@ -5,7 +5,7 @@ export enum ReactQueryKeys {
   // Address
   GET_ADDRESSES = 'GET::/address',
   GET_ADDRESS_DETAILS = 'GET::/address/:addressId',
-
+  GET_DEFAULT_ADDRESS = 'GET::/address/default',
   // Favorite
   GET_FAVORITES = 'GET::/favorite/my',
 

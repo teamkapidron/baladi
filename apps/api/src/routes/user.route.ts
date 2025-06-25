@@ -1,12 +1,13 @@
 import express, { Router } from 'express';
 
-import { isAdmin } from '@/middlewares/auth.middleware';
+import { isAdmin, isAuthenticated } from '@/middlewares/auth.middleware';
 import validate from '@/middlewares/validate.middleware';
 
 import {
   getAllUsers,
   getUserDetails,
   updateUser,
+  updateUserProfile,
   getUserRegistrationGraphData,
   getUserStats,
   getTopUsers,
@@ -22,9 +23,17 @@ import {
   getUserStatsSchema,
   topUsersSchema,
   updateAdminPasswordSchema,
+  updateUserProfileSchema,
 } from '@/validators/user.validator';
 
 const router: Router = express.Router();
+
+router.post(
+  '/update/profile',
+  isAuthenticated,
+  validate(updateUserProfileSchema),
+  updateUserProfile,
+);
 
 router.get('/all', isAdmin, validate(getAllUsersSchema), getAllUsers);
 router.get(
