@@ -10,6 +10,7 @@ import {
   Package,
   Heart,
   MapPin,
+  User,
 } from '@repo/ui/lib/icons';
 
 // Components
@@ -101,6 +102,16 @@ function ProfileSection() {
           </div>
 
           <DropdownMenuSeparator className="bg-[var(--baladi-border)]" />
+
+          <DropdownMenuItem asChild>
+            <Link
+              href="/profile"
+              className="flex cursor-pointer items-center gap-3 px-3 py-2 font-[family-name:var(--font-dm-sans)] text-sm transition-colors hover:bg-[var(--baladi-light)] focus:bg-[var(--baladi-light)]"
+            >
+              <User size={16} className="text-[var(--baladi-primary)]" />
+              <span>Min profil</span>
+            </Link>
+          </DropdownMenuItem>
 
           <DropdownMenuItem asChild>
             <Link
