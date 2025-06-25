@@ -22,12 +22,14 @@ import {
   lowStockProducts,
   topProducts,
   productStats,
+  getProductByBarcode,
 } from '@/controllers/product.controller';
 
 import {
   getProductsSchema,
   getProductByIdSchema,
   getProductBySlugSchema,
+  getProductByBarcodeSchema,
   quickSearchProductsSchema,
   fullSearchProductsSchema,
   getAllProductsSchema,
@@ -66,6 +68,12 @@ router.get('/search', validate(fullSearchProductsSchema), fullSearchProducts);
 
 /* --------------------------START: Admin Routes -------------------------- */
 router.get('/all', isAdmin, validate(getAllProductsSchema), getAllProducts);
+router.get(
+  '/barcode/:barcode',
+  isAdmin,
+  validate(getProductByBarcodeSchema),
+  getProductByBarcode,
+);
 router.post(
   '/image-upload-url',
   isAdmin,

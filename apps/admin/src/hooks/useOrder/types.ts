@@ -1,5 +1,6 @@
 import { ApiData } from '@/utils/types.util';
 import { Order, OrderStatus } from '@repo/types/order';
+import { Address } from '@repo/types/address';
 
 export enum OrderStatusFilter {
   ALL = 'all',
@@ -193,4 +194,59 @@ export type DeleteOrderAdminRequest = ApiData<
     orderId: string;
   },
   undefined
+>;
+
+export type CreateOrderRequest = ApiData<
+  {
+    userId: string;
+    items: {
+      productId: string;
+      quantity: number;
+    }[];
+    shippingAddressId: string;
+    notes?: string;
+    desiredDeliveryDate: string;
+    palletType?: string;
+    userType: string;
+  },
+  {
+    order: OrderResponse;
+  }
+>;
+
+export interface AddressRequestBody {
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+  isDefault: boolean;
+  label?: string;
+  phoneNumber?: string;
+}
+
+export type GetAddressesRequestAdmin = ApiData<
+  {
+    page?: string;
+    limit?: string;
+    userId: string;
+  },
+  {
+    addresses: Address[];
+    totalAddresses: number;
+    page: number;
+    perPage: number;
+    totalPages: number;
+  }
+>;
+
+export type AddAddressRequestAdmin = ApiData<
+  {
+    userId: string;
+    address: AddressRequestBody;
+  },
+  {
+    address: Address;
+  }
 >;

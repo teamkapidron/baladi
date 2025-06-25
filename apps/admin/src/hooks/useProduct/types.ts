@@ -15,7 +15,9 @@ export interface QuickSearchProduct {
   slug: string;
   noOfUnits: number;
   salePrice: number;
+  costPrice: number;
   shortDescription: string;
+  barcode: string;
   categories: {
     name: string;
     slug: string;
@@ -175,5 +177,14 @@ export type QuickSearchProductsRequest = ApiData<
   },
   {
     products: QuickSearchProduct[];
+  }
+>;
+
+export type GetProductByBarcodeRequest = ApiData<
+  {
+    barcode: string;
+  },
+  {
+    product: QuickSearchProduct;
   }
 >;

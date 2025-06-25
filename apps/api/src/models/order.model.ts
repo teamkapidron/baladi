@@ -77,6 +77,10 @@ const orderSchema = new Schema<IOrder>(
     palletType: {
       type: String,
     },
+    isCreatedByAdmin: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true },
 );

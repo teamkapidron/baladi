@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { isValidObjectId } from 'mongoose';
 import { OrderStatus } from '@repo/types/order';
 import { dateRangeSchema, dateSchema } from './schemas/date.schema';
+import { UserType } from '@repo/types/user';
 
 /****************** START: User Validators ********************/
 export const placeOrderSchema = z.object({
@@ -189,6 +190,43 @@ export const previewFreightLabelSchema = z.object({
   }),
 });
 
+export const createOrderSchema = z.object({
+  body: z.object({
+    userId: z
+      .string()
+      .min(1, 'User ID is required')
+      .refine((val) => isValidObjectId(val), {
+        message: 'Invalid user ID format',
+      }),
+    items: z
+      .array(
+        z.object({
+          productId: z
+            .string()
+            .refine((val) => val.length > 0, {
+              message: 'Product ID is required',
+            })
+            .refine((val) => isValidObjectId(val), {
+              message: 'Invalid product ID format',
+            }),
+          quantity: z
+            .number()
+            .int()
+            .positive('Quantity must be a positive number')
+            .refine((val) => val > 0, { message: 'Quantity is required' }),
+        }),
+      )
+      .min(1, 'At least one item is required'),
+    shippingAddressId: z.string().refine((val) => isValidObjectId(val), {
+      message: 'Invalid address ID format',
+    }),
+    notes: z.string().optional(),
+    desiredDeliveryDate: z.string().min(1, 'Delivery date is required'),
+    palletType: z.string().optional(),
+    userType: z.enum(['external', 'internal']),
+  }),
+});
+
 export type GetAllOrdersSchema = z.infer<typeof getAllOrdersSchema>;
 export type GetOrderDetailsAdminSchema = z.infer<
   typeof getOrderDetailsAdminSchema
@@ -211,4 +249,5 @@ export type PreviewPickingListSchema = z.infer<typeof previewPickingListSchema>;
 export type PreviewFreightLabelSchema = z.infer<
   typeof previewFreightLabelSchema
 >;
+export type CreateOrderSchema = z.infer<typeof createOrderSchema>;
 /****************** END: Admin Validators ********************/
