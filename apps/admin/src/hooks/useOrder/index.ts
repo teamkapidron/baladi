@@ -295,11 +295,17 @@ export function useCancelOrder() {
   const cancelOrderMutation = useMutation({
     mutationFn: cancelOrder,
     onSuccess: function (_, { orderId }) {
-      queryClient.invalidateQueries({
-        queryKey: [ReactQueryKeys.GET_ORDER_DETAILS, orderId],
-      });
-      queryClient.invalidateQueries({
-        queryKey: [ReactQueryKeys.GET_ALL_ORDERS],
+      const keysToInvalidate = [
+        ReactQueryKeys.GET_ORDER_DETAILS,
+        ReactQueryKeys.GET_ALL_ORDERS,
+        ReactQueryKeys.GET_ORDER_STATS,
+        ReactQueryKeys.GET_ORDER_REVENUE_STATS,
+        ReactQueryKeys.GET_ORDER_STATUS_GRAPH_DATA,
+        ReactQueryKeys.GET_ORDER_REVENUE_GRAPH_DATA,
+      ];
+
+      keysToInvalidate.forEach((key) => {
+        queryClient.invalidateQueries({ queryKey: [key] });
       });
       toast.success('Ordre avbrutt');
     },
@@ -324,9 +330,19 @@ export function useDeleteOrder() {
   const deleteOrderMutation = useMutation({
     mutationFn: deleteOrder,
     onSuccess: function () {
-      queryClient.invalidateQueries({
-        queryKey: [ReactQueryKeys.GET_ALL_ORDERS],
+      const keysToInvalidate = [
+        ReactQueryKeys.GET_ALL_ORDERS,
+        ReactQueryKeys.GET_ORDER_DETAILS,
+        ReactQueryKeys.GET_ORDER_STATS,
+        ReactQueryKeys.GET_ORDER_REVENUE_STATS,
+        ReactQueryKeys.GET_ORDER_STATUS_GRAPH_DATA,
+        ReactQueryKeys.GET_ORDER_REVENUE_GRAPH_DATA,
+      ];
+
+      keysToInvalidate.forEach((key) => {
+        queryClient.invalidateQueries({ queryKey: [key] });
       });
+
       toast.success('Ordre slettet');
     },
   });

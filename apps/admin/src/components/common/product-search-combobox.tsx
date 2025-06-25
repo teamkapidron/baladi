@@ -27,12 +27,13 @@ import { QuickSearchProduct } from '@/hooks/useProduct/types';
 
 interface ProductSearchComboboxProps {
   onSelect?: (productId: string) => void;
+  onSelectProduct?: (product: QuickSearchProduct) => void;
   placeholder?: string;
   className?: string;
 }
 
 function ProductSearchCombobox(props: ProductSearchComboboxProps) {
-  const { onSelect, placeholder, className } = props;
+  const { onSelect, onSelectProduct, placeholder, className } = props;
 
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -47,6 +48,7 @@ function ProductSearchCombobox(props: ProductSearchComboboxProps) {
     const product = products.find((p) => p._id === productId);
     if (product) {
       setSelectedProduct(product);
+      onSelectProduct?.(product);
     }
     onSelect?.(productId);
     setOpen(false);
@@ -91,7 +93,7 @@ function ProductSearchCombobox(props: ProductSearchComboboxProps) {
           </div>
           <CommandList>
             <CommandEmpty className="flex flex-col items-center justify-center py-8">
-              <Package className="mb-3 h-12 w-12 text-[var(--baladi-gray)]/50" />
+              <Package className="text-[var(--baladi-gray)]/50 mb-3 h-12 w-12" />
               <p className="font-[family-name:var(--font-inter)] text-sm font-medium text-[var(--baladi-text)]">
                 Ingen produkter funnet
               </p>
@@ -107,8 +109,8 @@ function ProductSearchCombobox(props: ProductSearchComboboxProps) {
                   onSelect={() => handleSelect(product._id)}
                   className="cursor-pointer p-0 font-[family-name:var(--font-inter)] text-[var(--baladi-text)]"
                 >
-                  <div className="flex w-full items-center gap-3 rounded-lg p-3 transition-all duration-200 hover:bg-gradient-to-r hover:from-[var(--baladi-primary)]/5 hover:to-[var(--baladi-secondary)]/5">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-[var(--baladi-primary)]/10 to-[var(--baladi-secondary)]/10">
+                  <div className="hover:from-[var(--baladi-primary)]/5 hover:to-[var(--baladi-secondary)]/5 flex w-full items-center gap-3 rounded-lg p-3 transition-all duration-200 hover:bg-gradient-to-r">
+                    <div className="from-[var(--baladi-primary)]/10 to-[var(--baladi-secondary)]/10 flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br">
                       <Package className="h-5 w-5 text-[var(--baladi-primary)]" />
                     </div>
 
@@ -117,7 +119,7 @@ function ProductSearchCombobox(props: ProductSearchComboboxProps) {
                         {product.name}
                       </p>
                       <div className="flex items-center gap-2">
-                        <span className="rounded-full bg-[var(--baladi-primary)]/10 px-2 py-0.5 text-xs font-medium text-[var(--baladi-primary)]">
+                        <span className="bg-[var(--baladi-primary)]/10 rounded-full px-2 py-0.5 text-xs font-medium text-[var(--baladi-primary)]">
                           {product.categories.name}
                         </span>
                       </div>

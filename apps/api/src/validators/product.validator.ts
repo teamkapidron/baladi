@@ -41,6 +41,12 @@ export const getProductBySlugSchema = z.object({
   }),
 });
 
+export const getProductByBarcodeSchema = z.object({
+  params: z.object({
+    barcode: z.string().min(1, 'Product barcode is required'),
+  }),
+});
+
 export const quickSearchProductsSchema = z.object({
   query: z.object({
     query: z.string().optional(),
@@ -62,6 +68,9 @@ export const fullSearchProductsSchema = z.object({
 export type GetProductsSchema = z.infer<typeof getProductsSchema>;
 export type GetProductByIdSchema = z.infer<typeof getProductByIdSchema>;
 export type GetProductBySlugSchema = z.infer<typeof getProductBySlugSchema>;
+export type GetProductByBarcodeSchema = z.infer<
+  typeof getProductByBarcodeSchema
+>;
 export type QuickSearchProductsSchema = z.infer<
   typeof quickSearchProductsSchema
 >;

@@ -21,6 +21,15 @@ export interface ProductFilter {
   categories?: { $in?: Types.ObjectId[] };
 }
 
+export interface GetProductByBarcodeRequest {
+  payload: {
+    barcode: string;
+  };
+  response: {
+    data: QuickSearchProduct;
+  };
+}
+
 export interface QuickSearchProductAggregateType {
   _id: string;
   name: string;
@@ -29,21 +38,25 @@ export interface QuickSearchProductAggregateType {
   noOfUnits: number;
   salePrice: number;
   shortDescription: string;
-  categories: {
+  barcode: string;
+  costPrice: number;
+  categories?: {
     name: string;
     slug: string;
   }[];
 }
 
 export interface QuickSearchProduct {
-  _id: string;  
+  _id: string;
   name: string;
   image: string | undefined;
   slug: string;
   noOfUnits: number;
   salePrice: number;
   shortDescription: string;
-  categories: {
+  barcode: string;
+  costPrice: number;
+  categories?: {
     name: string;
     slug: string;
   };

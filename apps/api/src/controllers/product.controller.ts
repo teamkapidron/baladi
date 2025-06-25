@@ -38,6 +38,7 @@ import type {
   UpdateProductSchema,
   LowStockProductsSchema,
   TopProductsSchema,
+  GetProductByBarcodeSchema,
 } from '@/validators/product.validator';
 import {
   QuickSearchProduct,
@@ -481,6 +482,7 @@ export const quickSearchProducts = asyncHandler(
         { slug: { $regex: query, $options: 'i' } },
         { shortDescription: { $regex: query, $options: 'i' } },
         { sku: { $regex: query, $options: 'i' } },
+        { barcode: { $regex: query, $options: 'i' } },
       ],
     };
 
@@ -503,6 +505,8 @@ export const quickSearchProducts = asyncHandler(
           images: 1,
           slug: 1,
           shortDescription: 1,
+          costPrice: 1,
+          barcode: 1,
           noOfUnits: 1,
           salePrice: 1,
           categories: {
@@ -523,8 +527,10 @@ export const quickSearchProducts = asyncHandler(
       slug: product.slug,
       noOfUnits: product.noOfUnits,
       salePrice: product.salePrice,
+      costPrice: product.costPrice,
       shortDescription: product.shortDescription,
-      categories: product.categories[0] ?? { name: '', slug: '' },
+      barcode: product.barcode,
+      categories: product.categories?.[0] ?? { name: '', slug: '' },
     }));
 
     sendResponse(res, 200, 'Quick search completed successfully', {
@@ -923,3 +929,36 @@ export const productStats = asyncHandler(async (_: Request, res: Response) => {
     activeCategories,
   });
 });
+
+export const getProductByBarcode = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { barcode } = req.params as GetProductByBarcodeSchema['params'];
+
+    if (!barcode) {
+      throw new ErrorHandler(400, 'Barcode is required', 'BAD_REQUEST');
+    }
+
+    const product = await Product.findOne({ barcode }).lean();
+
+    if (!product) {
+      throw new ErrorHandler(404, 'Product not found', 'NOT_FOUND');
+    }
+
+    // Transform the product to match QuickSearchProduct format
+    const transformedProduct: QuickSearchProduct = {
+      _id: product._id.toString(),
+      name: product.name,
+      image: product.images?.[0],
+      slug: product.slug,
+      noOfUnits: product.noOfUnits,
+      salePrice: product.salePrice,
+      shortDescription: product.shortDescription ?? '',
+      barcode: product.barcode ?? '',
+      costPrice: product.costPrice,
+    };
+
+    sendResponse(res, 200, 'Product found', {
+      product: transformedProduct,
+    });
+  },
+);
