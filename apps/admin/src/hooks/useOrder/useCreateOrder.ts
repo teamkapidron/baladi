@@ -1,8 +1,8 @@
 // Node Modules
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from '@repo/ui/lib/sonner';
-
+import debounce from 'lodash.debounce';
 // Hooks
 import { useRequest } from '@/hooks/useRequest';
 
@@ -91,6 +91,20 @@ export function useCreateOrder(userId?: string) {
 }
 export function useSearchUsers(query: string) {
   const api = useRequest();
+  const [searchQuery, setSearchQuery] = useState(query);
+  const debouncedSearchQuery = useRef(debounce(setSearchQuery, 500));
+
+  useEffect(() => {
+    debouncedSearchQuery.current(searchQuery);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const searchQueryRef = debouncedSearchQuery.current;
+
+    return () => {
+      searchQueryRef.cancel();
+    };
+  }, []);
   const searchUsers = useCallback(
     async (payload: GetAllCustomersRequest['payload']) => {
       const response = await api.get<GetAllCustomersRequest['response']>(
@@ -103,9 +117,13 @@ export function useSearchUsers(query: string) {
   );
 
   const searchUsersQuery = useQuery({
-    queryKey: [ReactQueryKeys.GET_ALL_USERS, query],
-    queryFn: () => searchUsers({ search: query, page: '1', limit: '5' }),
+    queryKey: [ReactQueryKeys.GET_ALL_USERS, searchQuery],
+    queryFn: () => searchUsers({ search: searchQuery, page: '1', limit: '5' }),
   });
 
-  return { searchUsersQuery };
+  const handleSearch = useCallback((query: string) => {
+    debouncedSearchQuery.current(query);
+  }, []);
+
+  return { searchUsersQuery, handleSearch };
 }

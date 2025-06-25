@@ -120,7 +120,7 @@ export function ProductSection({ control, watchedItems }: ProductSectionProps) {
     [form, updateQuantity],
   );
 
-  const { isScanning } = useScanner({
+  const { isScanning, isInputFocused } = useScanner({
     onProductScanned: addProduct,
     isEnabled: true,
   });
@@ -150,7 +150,7 @@ export function ProductSection({ control, watchedItems }: ProductSectionProps) {
       </div>
 
       <div className="mb-6">
-        <ScannerInfo />
+        <ScannerInfo isInputFocused={isInputFocused} />
       </div>
 
       <div className="space-y-4">

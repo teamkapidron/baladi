@@ -42,12 +42,7 @@ function CustomerSearchCombobox(props: CustomerSearchComboboxProps) {
     null,
   );
 
-  const debouncedSearch = useRef(
-    debounce((search: string) => {
-      setSearch(search);
-    }, 300),
-  );
-  const { searchUsersQuery } = useSearchUsers(search);
+  const { searchUsersQuery, handleSearch } = useSearchUsers(search);
   const users = searchUsersQuery.data?.users;
 
   function handleSelect(userId: string) {
@@ -61,17 +56,13 @@ function CustomerSearchCombobox(props: CustomerSearchComboboxProps) {
     setOpen(false);
   }
 
-  const handleSearch = useCallback((value: string) => {
-    debouncedSearch.current(value);
-  }, []);
-
-  useEffect(() => {
-    const debouncedSearchRef = debouncedSearch.current;
-
-    return () => {
-      debouncedSearchRef.cancel();
-    };
-  }, []);
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      setSearch(value);
+      handleSearch(value);
+    },
+    [handleSearch],
+  );
 
   return (
     <Popover open={open} onOpenChange={setOpen} modal>
@@ -99,7 +90,7 @@ function CustomerSearchCombobox(props: CustomerSearchComboboxProps) {
             <CommandInput
               placeholder={placeholder ?? 'Søk etter kunde...'}
               className="border-0 bg-transparent font-[family-name:var(--font-inter)] text-[var(--baladi-text)] placeholder:text-[var(--baladi-gray)] focus:outline-none"
-              onValueChange={handleSearch}
+              onValueChange={handleSearchChange}
             />
           </div>
           <CommandList>
