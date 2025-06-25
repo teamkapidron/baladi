@@ -13,6 +13,7 @@ import {
   updateCategory,
   deleteCategory,
   getCategoryStats,
+  categoryTreeToggle,
 } from '@/controllers/category.controller';
 import {
   getCategoriesSchema,
@@ -24,6 +25,7 @@ import {
   updateCategorySchema,
   deleteCategorySchema,
   getCategoryStatsSchema,
+  categoryTreeToggleSchema,
 } from '@/validators/category.validator';
 
 const router: Router = express.Router();
@@ -65,6 +67,13 @@ router.get(
   isAdmin,
   validate(getCategoryStatsSchema),
   getCategoryStats,
+);
+
+router.post(
+  '/category-tree-toggle/:categoryId',
+  isAdmin,
+  validate(categoryTreeToggleSchema),
+  categoryTreeToggle,
 );
 
 export default router;

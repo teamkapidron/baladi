@@ -79,6 +79,17 @@ export const getCategoryStatsSchema = z.object({
   }),
 });
 
+export const categoryTreeToggleSchema = z.object({
+  params: z.object({
+    categoryId: z
+      .string()
+      .min(1, 'Category ID is required')
+      .refine((val) => isValidObjectId(val), {
+        message: 'Invalid category ID format',
+      }),
+  }),
+});
+
 export type GetAllCategoriesSchema = z.infer<typeof getAllCategoriesSchema>;
 export type GetAllCategoriesFlattenedSchema = z.infer<
   typeof getAllCategoriesFlattenedSchema
@@ -87,4 +98,5 @@ export type CreateCategorySchema = z.infer<typeof createCategorySchema>;
 export type UpdateCategorySchema = z.infer<typeof updateCategorySchema>;
 export type DeleteCategorySchema = z.infer<typeof deleteCategorySchema>;
 export type GetCategoryStatsSchema = z.infer<typeof getCategoryStatsSchema>;
+export type CategoryTreeToggleSchema = z.infer<typeof categoryTreeToggleSchema>;
 /******************* END: Admin Validators *******************/

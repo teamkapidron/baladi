@@ -69,3 +69,13 @@ export type GetCategoryStatsRequest = ApiData<
     };
   }
 >;
+
+export type CategoryTreeToggleRequest = ApiData<
+  {
+    categoryId: string;
+    isActive: boolean;
+  },
+  {
+    message: string;
+  }
+>;

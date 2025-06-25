@@ -923,3 +923,19 @@ export const productStats = asyncHandler(async (_: Request, res: Response) => {
     activeCategories,
   });
 });
+
+export const toggleProductActive = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { productId } = req.params as UpdateProductSchema['params'];
+    const { isActive } = req.body as UpdateProductSchema['body'];
+
+    const product = await Product.findById(productId);
+    if (!product) {
+      throw new ErrorHandler(404, 'Product not found', 'NOT_FOUND');
+    }
+
+    await Product.findByIdAndUpdate(productId, { isActive });
+
+    sendResponse(res, 200, 'Product active status updated successfully');
+  },
+);

@@ -1,12 +1,14 @@
 // Node Modules
-
+import mongoose, { Types } from 'mongoose';
 // Schemas
 import Category from '@/models/category.model';
+import Product from '@/models/product.model';
 
 // Utils
 import { generateSlug } from '@/utils/common/string.util';
 import { sendResponse } from '@/utils/common/response.util';
 import { getDateMatchStage } from '@/utils/common/date.util';
+import { getAllSubCategoryIds } from '@/utils/product.utils';
 
 // Handlers
 import { asyncHandler } from '@/handlers/async.handler';
@@ -28,6 +30,7 @@ import type {
   CreateCategorySchema,
   UpdateCategorySchema,
   DeleteCategorySchema,
+  CategoryTreeToggleSchema,
 } from '@/validators/category.validator';
 
 export const getCategories = asyncHandler(
@@ -308,5 +311,60 @@ export const getCategoryStats = asyncHandler(
     }
 
     sendResponse(res, 200, 'Category stats fetched successfully', { stats });
+  },
+);
+
+export const categoryTreeToggle = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { categoryId } = req.params as CategoryTreeToggleSchema['params'];
+
+    const category = await Category.findById(categoryId);
+    if (!category) {
+      throw new ErrorHandler(404, 'Category not found', 'NOT_FOUND');
+    }
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      const subCategories = await getAllSubCategoryIds(
+        new Types.ObjectId(categoryId),
+      );
+      subCategories.push(new Types.ObjectId(categoryId));
+
+      await Category.updateMany(
+        { _id: { $in: subCategories } },
+        {
+          $set: {
+            visibleToStore: !category.visibleToStore,
+            isActive: !category.isActive,
+          },
+        },
+      );
+
+      await Product.updateMany(
+        { categories: { $in: subCategories.map((id) => id.toString()) } },
+        {
+          $set: {
+            isActive: !category.isActive,
+          },
+        },
+      );
+
+      await session.commitTransaction();
+      session.endSession();
+
+      sendResponse(res, 200, 'Category tree toggled successfully');
+    } catch (error) {
+      await session.abortTransaction();
+      session.endSession();
+      if (error instanceof ErrorHandler) {
+        throw error;
+      }
+      throw new ErrorHandler(
+        500,
+        'Failed to toggle category tree',
+        'INTERNAL_SERVER',
+      );
+    }
   },
 );

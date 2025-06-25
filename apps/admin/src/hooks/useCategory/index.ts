@@ -16,6 +16,7 @@ import type {
   UpdateCategoryRequest,
   DeleteCategoryRequest,
   GetCategoryStatsRequest,
+  CategoryTreeToggleRequest,
 } from './types';
 
 export function useCategory() {
@@ -142,6 +143,39 @@ export function useCategory() {
       }),
   });
 
+  const toggleCategoryTree = useCallback(
+    async (categoryId: string, isActive: boolean) => {
+      const response = await api.post<CategoryTreeToggleRequest['response']>(
+        `/category/category-tree-toggle/${categoryId}`,
+        { isActive },
+      );
+      return response.data.data;
+    },
+    [api],
+  );
+
+  const toggleCategoryTreeMutation = useMutation({
+    mutationFn: ({
+      categoryId,
+      isActive,
+    }: {
+      categoryId: string;
+      isActive: boolean;
+    }) => toggleCategoryTree(categoryId, isActive),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [ReactQueryKeys.GET_ALL_CATEGORIES],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [ReactQueryKeys.GET_ALL_CATEGORIES_FLATTENED],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [ReactQueryKeys.GET_ALL_PRODUCTS],
+      });
+      toast.success('Kategoritreet oppdatert');
+    },
+  });
+
   return {
     // Queries
     categories,
@@ -154,5 +188,6 @@ export function useCategory() {
     createCategoryMutation,
     updateCategoryMutation,
     deleteCategoryMutation,
+    toggleCategoryTreeMutation,
   };
 }

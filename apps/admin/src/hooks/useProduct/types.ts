@@ -177,3 +177,11 @@ export type QuickSearchProductsRequest = ApiData<
     products: QuickSearchProduct[];
   }
 >;
+
+export type ToggleProductActiveRequest = ApiData<
+  {
+    productId: string;
+    isActive: boolean;
+  },
+  undefined
+>;
