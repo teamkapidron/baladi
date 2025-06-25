@@ -87,7 +87,7 @@ function CreateDiscountDialog({ children }: { children: React.ReactNode }) {
                     <ProductSearchCombobox
                       onSelect={(productId) => field.onChange(productId)}
                       placeholder="Søk og velg et produkt..."
-                      className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
+                      className="h-12 rounded-lg border-[var(--baladi-border)] focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
                     />
                   </FormControl>
                   <FormMessage />
@@ -129,12 +129,14 @@ function CreateDiscountDialog({ children }: { children: React.ReactNode }) {
                     Gyldig Fra
                   </FormLabel>
                   <FormControl>
-                    <CalendarIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
-                    <Input
-                      type="date"
-                      className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
-                      {...field}
-                    />
+                    <div>
+                      <CalendarIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                      <Input
+                        type="date"
+                        className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
+                        {...field}
+                      />
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -150,12 +152,14 @@ function CreateDiscountDialog({ children }: { children: React.ReactNode }) {
                     Gyldig Til
                   </FormLabel>
                   <FormControl>
-                    <CalendarIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
-                    <Input
-                      type="date"
-                      className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
-                      {...field}
-                    />
+                    <div>
+                      <CalendarIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                      <Input
+                        type="date"
+                        className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
+                        {...field}
+                      />
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

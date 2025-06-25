@@ -146,6 +146,7 @@ export function ProductSection({ control, watchedItems }: ProductSectionProps) {
           onSelectProduct={addProduct}
           placeholder="Søk etter produkt for å legge til"
           className="w-full"
+          resetSearchQuery={true}
         />
       </div>
 
