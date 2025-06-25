@@ -1,7 +1,7 @@
 // Node Modules
 import { useCallback } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
-
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { toast } from '@repo/ui/lib/sonner';
 // Hooks
 import { useRequest } from '@/hooks/useRequest';
 import { useUserFilter } from './useUserFilter';
@@ -16,6 +16,7 @@ import {
   GetUserRegistrationGraphDataRequest,
   GetUserStatsRequest,
   TopUsersRequest,
+  DeleteUserRequest,
 } from './types';
 import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
 
@@ -48,6 +49,7 @@ export function useUserStats() {
 }
 
 export function useUsers() {
+  const queryClient = useQueryClient();
   const api = useRequest();
   const { page, limit } = usePagination();
   const { dateRangeInString } = useDateRangeInParams();
@@ -136,6 +138,38 @@ export function useUsers() {
     queryFn: () => getTopUsers(dateRangeInString),
   });
 
+  const deleteUser = useCallback(
+    async (payload: DeleteUserRequest['payload']) => {
+      const response = await api.delete<DeleteUserRequest['response']>(
+        `/user/delete/${payload.userId}`,
+      );
+      return response.data.data;
+    },
+    [api],
+  );
+
+  const deleteUserMutation = useMutation({
+    mutationFn: deleteUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [ReactQueryKeys.GET_ALL_USERS],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [ReactQueryKeys.GET_USER_STATS],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [ReactQueryKeys.GET_USER_REGISTRATION_GRAPH_DATA],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [ReactQueryKeys.GET_TOP_USERS],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [ReactQueryKeys.GET_USER_DETAILS],
+      });
+      toast.success('Bruker slettet');
+    },
+  });
+
   return {
     // Queries
     users,
@@ -145,6 +179,7 @@ export function useUsers() {
 
     // Mutations
     updateUserMutation,
+    deleteUserMutation,
   };
 }
 

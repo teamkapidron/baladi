@@ -14,6 +14,7 @@ import {
   Clock,
   XCircle,
   AlertTriangle,
+  Trash2,
 } from '@repo/ui/lib/icons';
 
 // Components
@@ -26,6 +27,7 @@ import {
   TableRow,
 } from '@repo/ui/components/base/table';
 import { Button } from '@repo/ui/components/base/button';
+import { ConfirmationDialog } from '@/components/common/confirmation-dialog';
 
 // Hooks
 import { useUsers } from '@/hooks/useUsers';
@@ -38,13 +40,17 @@ import { formatDate } from '@repo/ui/lib/date';
 function CustomerTableContent() {
   const router = useRouter();
 
-  const { users: usersData } = useUsers();
+  const { users: usersData, deleteUserMutation } = useUsers();
   const { users } = useMemo(
     () => ({
       users: usersData?.users ?? [],
     }),
     [usersData],
   );
+
+  const handleDeleteUser = (userId: string) => {
+    deleteUserMutation.mutate({ userId });
+  };
 
   return (
     <div className="overflow-hidden rounded-xl bg-white shadow-lg ring-1 ring-[var(--baladi-border)]">
@@ -89,14 +95,16 @@ function CustomerTableContent() {
             {users.map((customer) => (
               <TableRow
                 key={customer._id}
-                onClick={() =>
-                  router.push(`/dashboard/customers/${customer._id}`, {
-                    scroll: true,
-                  })
-                }
-                className="border-[var(--baladi-border)]/30 hover:bg-[var(--baladi-light)]/30 group cursor-pointer border-b transition-all duration-200"
+                className="border-[var(--baladi-border)]/30 hover:bg-[var(--baladi-light)]/30 group border-b transition-all duration-200"
               >
-                <TableCell className="px-8 py-6">
+                <TableCell
+                  onClick={() =>
+                    router.push(`/dashboard/customers/${customer._id}`, {
+                      scroll: true,
+                    })
+                  }
+                  className="cursor-pointer px-8 py-6"
+                >
                   <div className="flex items-center space-x-4">
                     <div className="relative">
                       <div className="ring-[var(--baladi-primary)]/20 group-hover:ring-[var(--baladi-primary)]/40 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--baladi-primary)] to-[var(--baladi-secondary)] ring-2 transition-all">
@@ -219,15 +227,36 @@ function CustomerTableContent() {
                 </TableCell>
 
                 <TableCell className="px-4">
-                  <Button
-                    variant="outline"
-                    className="group/btn hover:bg-[var(--baladi-primary)]/10 flex h-full w-full items-center justify-center rounded-lg p-2 text-[var(--baladi-gray)] transition-all hover:text-[var(--baladi-primary)]"
-                    title="Se kundedetaljer"
-                  >
-                    <Link href={`/dashboard/customers/${customer._id}`}>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      className="group/btn hover:bg-[var(--baladi-primary)]/10 flex items-center justify-center rounded-lg p-2 text-[var(--baladi-gray)] transition-all hover:text-[var(--baladi-primary)]"
+                      title="Se kundedetaljer"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(`/dashboard/customers/${customer._id}`);
+                      }}
+                    >
                       <Eye className="h-4 w-4" />
-                    </Link>
-                  </Button>
+                    </Button>
+                    <ConfirmationDialog
+                      trigger={
+                        <Button
+                          variant="outline"
+                          className="group/btn flex items-center justify-center rounded-lg p-2 text-[var(--baladi-gray)] transition-all hover:bg-red-50 hover:text-red-600"
+                          title="Slett kunde"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      }
+                      title="Slett kunde"
+                      description={`Er du sikker på at du vil slette kunden "${customer.name}"? Denne handlingen kan ikke angres.`}
+                      confirmText="Slett"
+                      onConfirm={() => handleDeleteUser(customer._id)}
+                      isPending={deleteUserMutation.isPending}
+                    />
+                  </div>
                 </TableCell>
               </TableRow>
             ))}

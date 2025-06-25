@@ -31,9 +31,12 @@ import type {
   GetUserStatsSchema,
   TopUsersSchema,
   UpdateAdminPasswordSchema,
+  DeleteUserSchema,
 } from '@/validators/user.validator';
 import Admin from '@/models/admin.model';
 import { comparePassword, encryptPassword } from '@/utils/common/password.util';
+import Address from '@/models/address.model';
+import Subscriber from '@/models/subscriber.model';
 
 export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
   const query = req.query as GetAllUsersSchema['query'];
@@ -311,3 +314,19 @@ export const updateAdminPassword = asyncHandler(
     sendResponse(res, 200, 'Admin password updated successfully');
   },
 );
+
+export const deleteUser = asyncHandler(async (req: Request, res: Response) => {
+  const { userId } = req.params as DeleteUserSchema['params'];
+
+  const user = await User.findById(userId);
+
+  if (!user) {
+    throw new ErrorHandler(404, 'User not found', 'NOT_FOUND');
+  }
+  await Promise.all([
+    Address.deleteMany({ userId }),
+    Subscriber.deleteMany({ userId }),
+    user.deleteOne(),
+  ]);
+  sendResponse(res, 200, 'User deleted successfully');
+});

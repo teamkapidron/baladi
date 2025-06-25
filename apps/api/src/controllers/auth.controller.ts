@@ -195,7 +195,7 @@ export const onboarding = asyncHandler(async (req: Request, res: Response) => {
     companyName,
     organizationNumber,
     phoneNumber,
-    address,
+    address: `${address}, ${city} ${postalCode}`,
   });
 
   await Address.create({
