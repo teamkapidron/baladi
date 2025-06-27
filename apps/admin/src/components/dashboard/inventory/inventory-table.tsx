@@ -105,20 +105,20 @@ function InventoryTable() {
 
           <div className="flex flex-col gap-3 sm:flex-row">
             <div className="relative">
-              <Search className="absolute top-1/2 left-4 z-10 h-5 w-5 -translate-y-1/2 text-gray-400" />
+              <Search className="absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-400" />
               <Input
                 type="text"
                 placeholder="Søk etter produktnavn, SKU eller strekkode..."
-                className="w-96 rounded-xl border-gray-200 bg-white pr-4 pl-12 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="w-96 rounded-xl border-gray-200 bg-white pl-12 pr-4 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 value={searchQuery}
                 onChange={handleSearch}
               />
             </div>
 
             <div className="relative">
-              <Filter className="absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              <Filter className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
               <Select value={status} onValueChange={handleStatusFilterChange}>
-                <SelectTrigger className="w-full rounded-xl border-gray-200 bg-white py-2.5 pr-10 pl-11 text-sm font-medium shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                <SelectTrigger className="w-full rounded-xl border-gray-200 bg-white py-2.5 pl-11 pr-10 text-sm font-medium shadow-sm focus:border-blue-500 focus:ring-blue-500">
                   <SelectValue placeholder="Alle" />
                 </SelectTrigger>
                 <SelectContent>
@@ -168,7 +168,7 @@ function InventoryTable() {
                       <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-gray-100 to-gray-200 ring-8 ring-gray-50">
                         <Filter className="h-10 w-10 text-gray-400" />
                       </div>
-                      <div className="absolute -top-2 -right-2 flex h-8 w-8 items-center justify-center rounded-full bg-orange-100 ring-2 ring-white">
+                      <div className="absolute -right-2 -top-2 flex h-8 w-8 items-center justify-center rounded-full bg-orange-100 ring-2 ring-white">
                         <AlertTriangle className="h-4 w-4 text-orange-600" />
                       </div>
                     </div>
@@ -208,12 +208,14 @@ function InventoryTable() {
                 <TableRow
                   key={item._id}
                   className="group border-b border-gray-50 transition-all duration-200 hover:bg-gray-50/50"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    router.push(`/dashboard/inventory/${item._id}`);
-                  }}
                 >
-                  <TableCell className="px-8 py-6">
+                  <TableCell
+                    className="cursor-pointer px-8 py-6"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      router.push(`/dashboard/inventory/${item._id}`);
+                    }}
+                  >
                     <div className="flex items-center space-x-4">
                       <div className="relative">
                         <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-100 to-indigo-100 ring-2 ring-blue-100 transition-all group-hover:ring-blue-200">
@@ -389,7 +391,7 @@ function InventoryTable() {
                     type="text"
                     value={pageInput}
                     onChange={handlePageInputChange}
-                    className="h-8 w-12 rounded-lg border border-gray-200 bg-white px-2 text-center text-sm shadow-sm transition-all duration-300 hover:border-blue-500/50 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
+                    className="h-8 w-12 rounded-lg border border-gray-200 bg-white px-2 text-center text-sm shadow-sm transition-all duration-300 hover:border-blue-500/50 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                     placeholder="Gå"
                   />
                   <button

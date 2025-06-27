@@ -55,6 +55,7 @@ import {
 import { UserType } from '@repo/types/user';
 import { OrderRevenueStats, OrderResponse } from '@/types/order.types';
 import { IInventory } from '@/models/interfaces/inventory.model';
+import InventoryWastage from '@/models/inventory-wastage.model';
 
 /*********************** START: User Controllers ***********************/
 export const placeOrder = asyncHandler(async (req: Request, res: Response) => {
@@ -614,7 +615,47 @@ export const getOrderStats = asyncHandler(
       ...matchStage,
       status: OrderStatus.CANCELLED,
     });
+    const [result] = await InventoryWastage.aggregate([
+      {
+        $match: matchStage,
+      },
+      {
+        $lookup: {
+          from: 'inventories',
+          localField: 'inventoryId',
+          foreignField: '_id',
+          as: 'inventory',
+        },
+      },
+      {
+        $unwind: '$inventory',
+      },
+      {
+        $lookup: {
+          from: 'products',
+          localField: 'inventory.productId',
+          foreignField: '_id',
+          as: 'product',
+        },
+      },
+      {
+        $unwind: '$product',
+      },
+      {
+        $group: {
+          _id: null,
+          totalWastageAmount: {
+            $sum: {
+              $multiply: ['$quantity', '$product.costPrice'],
+            },
+          },
+          totalWastageQuantity: { $sum: '$quantity' },
+          totalProducts: { $sum: '$inventory.inputQuantity' },
+        },
+      },
+    ]);
 
+    console.log(result);
     sendResponse(res, 200, 'Order stats fetched successfully', {
       totalOrders,
       pendingOrders,
@@ -622,6 +663,9 @@ export const getOrderStats = asyncHandler(
       shippedOrders,
       deliveredOrders,
       cancelledOrders,
+      totalWastageAmount: result?.totalWastageAmount ?? 0,
+      totalWastageQuantity: result?.totalWastageQuantity ?? 0,
+      totalProducts: result?.totalProducts ?? 0,
     });
   },
 );

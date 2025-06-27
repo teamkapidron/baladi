@@ -12,10 +12,11 @@ import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
 import type {
   GetAllCategoriesRequest,
   GetAllCategoriesFlattenedRequest,
+  GetCategoryStatsRequest,
   CreateCategoryRequest,
   UpdateCategoryRequest,
   DeleteCategoryRequest,
-  GetCategoryStatsRequest,
+  GetCategoryGraphDataRequest,
 } from './types';
 
 export function useCategory() {
@@ -142,6 +143,42 @@ export function useCategory() {
       }),
   });
 
+  const getCategoryGraphData = useCallback(
+    async (payload: GetCategoryGraphDataRequest['payload']) => {
+      const response = await api.get<GetCategoryGraphDataRequest['response']>(
+        '/category/graph',
+        { params: payload },
+      );
+
+      return response.data.data;
+    },
+    [api],
+  );
+
+  const categoryGraphDataQuery = useQuery({
+    queryKey: [
+      ReactQueryKeys.GET_CATEGORY_GRAPH_DATA,
+      dateRangeInString.from,
+      dateRangeInString.to,
+    ],
+    queryFn: () =>
+      getCategoryGraphData({
+        ...dateRangeInString,
+      }),
+  });
+
+  const getCategoryDataAll = useCallback(async () => {
+    const response = await api.get<GetCategoryGraphDataRequest['response']>(
+      '/category/graph?all=true',
+    );
+    return response.data.data;
+  }, [api]);
+
+  const categoryDataAllQuery = useQuery({
+    queryKey: [ReactQueryKeys.GET_CATEGORY_GRAPH_DATA, 'all'],
+    queryFn: getCategoryDataAll,
+  });
+
   return {
     // Queries
     categories,
@@ -149,7 +186,8 @@ export function useCategory() {
     categoriesFlattened,
     isLoadingCategoriesFlattened,
     categoryStatsQuery,
-
+    categoryGraphDataQuery,
+    categoryDataAllQuery,
     // Mutations
     createCategoryMutation,
     updateCategoryMutation,

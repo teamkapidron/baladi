@@ -97,6 +97,9 @@ export type GetOrderStatsRequest = ApiData<
     shippedOrders: number;
     deliveredOrders: number;
     cancelledOrders: number;
+    totalWastageAmount: number;
+    totalWastageQuantity: number;
+    totalProducts: number;
   }
 >;
 

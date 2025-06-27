@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { isValidObjectId } from 'mongoose';
 import { categorySchema } from './schemas/category.schema';
+import { dateSchema } from './schemas/date.schema';
 
 /******************* START: User Validators *******************/
 export const getCategoriesSchema = z.object({
@@ -79,6 +80,17 @@ export const getCategoryStatsSchema = z.object({
   }),
 });
 
+export const getCategoryGraphDataSchema = z.object({
+  query: z.object({
+    from: dateSchema,
+    to: dateSchema,
+    all: z.string().optional(),
+  }),
+});
+
+export type GetCategoryGraphDataSchema = z.infer<
+  typeof getCategoryGraphDataSchema
+>;
 export type GetAllCategoriesSchema = z.infer<typeof getAllCategoriesSchema>;
 export type GetAllCategoriesFlattenedSchema = z.infer<
   typeof getAllCategoriesFlattenedSchema

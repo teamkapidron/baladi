@@ -10,6 +10,8 @@ import {
   getInventoryStats,
   updateInventory,
   deleteInventory,
+  createInventoryWastage,
+  updateInventoryWastage,
 } from '@/controllers/inventory.controller';
 
 import {
@@ -19,6 +21,8 @@ import {
   inventoryStatsSchema,
   updateInventorySchema,
   deleteInventorySchema,
+  createInventoryWastageSchema,
+  updateInventoryWastageSchema,
 } from '@/validators/inventory.validator';
 
 const router: Router = express.Router();
@@ -48,6 +52,19 @@ router.delete(
   isAdmin,
   validate(deleteInventorySchema),
   deleteInventory,
+);
+
+router.post(
+  '/wastage/:inventoryId',
+  isAdmin,
+  validate(createInventoryWastageSchema),
+  createInventoryWastage,
+);
+router.put(
+  '/wastage/:inventoryWastageId',
+  isAdmin,
+  validate(updateInventoryWastageSchema),
+  updateInventoryWastage,
 );
 
 export default router;

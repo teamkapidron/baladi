@@ -18,6 +18,8 @@ import type {
   UpdateInventoryRequest,
   DeleteInventoryRequest,
   InventoryStatsRequest,
+  CreateInventoryWastageRequest,
+  UpdateInventoryWastageRequest,
 } from './types';
 
 export function useInventoryStats() {
@@ -152,6 +154,9 @@ export function useInventory() {
       queryClient.invalidateQueries({
         queryKey: [ReactQueryKeys.GET_ALL_INVENTORY],
       });
+      queryClient.invalidateQueries({
+        queryKey: [ReactQueryKeys.GET_PRODUCT_INVENTORY],
+      });
       toast.success('Lagerparti slettet');
     },
   });
@@ -161,5 +166,64 @@ export function useInventory() {
     createInventoryMutation,
     updateInventoryMutation,
     deleteInventoryMutation,
+  };
+}
+
+export function useInventoryWastage() {
+  const api = useRequest();
+  const queryClient = useQueryClient();
+
+  const createInventoryWastage = useCallback(
+    async (payload: CreateInventoryWastageRequest['payload']) => {
+      const { inventoryId, ...wastageData } = payload;
+      const response = await api.post<
+        CreateInventoryWastageRequest['response']
+      >(`/inventory/wastage/${inventoryId}`, wastageData);
+      return response.data.data;
+    },
+    [api],
+  );
+
+  const createInventoryWastageMutation = useMutation({
+    mutationFn: createInventoryWastage,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [ReactQueryKeys.GET_PRODUCT_INVENTORY],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [ReactQueryKeys.GET_ALL_INVENTORY],
+      });
+      toast.success('Svinn registrert');
+    },
+  });
+
+  const updateInventoryWastage = useCallback(
+    async (payload: UpdateInventoryWastageRequest['payload']) => {
+      const { inventoryWastageId, ...updateData } = payload;
+      const response = await api.put<UpdateInventoryWastageRequest['response']>(
+        `/inventory/wastage/${inventoryWastageId}`,
+        updateData,
+      );
+      return response.data.data;
+    },
+    [api],
+  );
+
+  const updateInventoryWastageMutation = useMutation({
+    mutationFn: updateInventoryWastage,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [ReactQueryKeys.GET_PRODUCT_INVENTORY],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [ReactQueryKeys.GET_ALL_INVENTORY],
+      });
+      toast.success('Svinn oppdatert');
+    },
+  });
+
+  return {
+    createInventoryWastageMutation,
+    updateInventoryWastageMutation,
   };
 }

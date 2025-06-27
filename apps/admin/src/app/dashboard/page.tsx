@@ -10,6 +10,7 @@ import StockAlertsList from '@/components/dashboard/home/stock-alert-list';
 import CustomerRegistrationChart from '@/components/dashboard/home/customer-registration-chart';
 import TopCustomers from '@/components/dashboard/home/top-customers';
 import TopProducts from '@/components/dashboard/home/top-products';
+import CategoryRevenueWastageChart from '@/components/dashboard/home/category-revenue-wastage-chart';
 
 export const metadata: Metadata = {
   title: 'Dashboard',
@@ -28,6 +29,7 @@ export default function DashboardPage() {
 
         <div className="space-y-6">
           <RevenueOrderChart />
+          <CategoryRevenueWastageChart />
         </div>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
