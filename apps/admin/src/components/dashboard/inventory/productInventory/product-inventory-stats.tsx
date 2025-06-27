@@ -2,7 +2,7 @@
 
 // Node Modules
 import { memo, useMemo } from 'react';
-import { Package, Calendar, Hash } from '@repo/ui/lib/icons';
+import { Package, Calendar, Hash, Trash2 } from '@repo/ui/lib/icons';
 
 // Components
 import AnimatedCounter from '@repo/ui/components/base/animate-counter';
@@ -25,18 +25,20 @@ function ProductInventoryStats({ productId }: ProductInventoryStatsProps) {
       totalQuantity: productInventoryQuery.data?.totalQuantity ?? 0,
       totalBatches: productInventoryQuery.data?.activeLots ?? 0,
       totalValue: productInventoryQuery.data?.totalValue ?? 0,
+      totalWastage: productInventoryQuery.data?.totalWastage ?? 0,
     };
   }, [
     productInventoryQuery.data?.totalQuantity,
     productInventoryQuery.data?.activeLots,
     productInventoryQuery.data?.totalValue,
+    productInventoryQuery.data?.totalWastage,
   ]);
 
   return (
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-4 gap-6">
       {/* Total Quantity */}
       <div className="group relative overflow-hidden rounded-xl border border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100 shadow-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
-        <div className="absolute top-0 right-0 h-24 w-24 translate-x-8 -translate-y-8 rounded-full bg-blue-500/10" />
+        <div className="absolute right-0 top-0 h-24 w-24 -translate-y-8 translate-x-8 rounded-full bg-blue-500/10" />
         <div className="relative p-6">
           <div className="mb-4 flex items-center justify-between">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-500 shadow-lg">
@@ -62,7 +64,7 @@ function ProductInventoryStats({ productId }: ProductInventoryStatsProps) {
 
       {/* Total Batches */}
       <div className="group relative overflow-hidden rounded-xl border border-purple-200 bg-gradient-to-br from-purple-50 to-purple-100 shadow-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
-        <div className="absolute top-0 right-0 h-24 w-24 translate-x-8 -translate-y-8 rounded-full bg-purple-500/10" />
+        <div className="absolute right-0 top-0 h-24 w-24 -translate-y-8 translate-x-8 rounded-full bg-purple-500/10" />
         <div className="relative p-6">
           <div className="mb-4 flex items-center justify-between">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-purple-500 shadow-lg">
@@ -90,7 +92,7 @@ function ProductInventoryStats({ productId }: ProductInventoryStatsProps) {
 
       {/* Total Value */}
       <div className="group relative overflow-hidden rounded-xl border border-green-200 bg-gradient-to-br from-green-50 to-green-100 shadow-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
-        <div className="absolute top-0 right-0 h-24 w-24 translate-x-8 -translate-y-8 rounded-full bg-green-500/10" />
+        <div className="absolute right-0 top-0 h-24 w-24 -translate-y-8 translate-x-8 rounded-full bg-green-500/10" />
         <div className="relative p-6">
           <div className="mb-4 flex items-center justify-between">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-green-500 shadow-lg">
@@ -109,6 +111,32 @@ function ProductInventoryStats({ productId }: ProductInventoryStatsProps) {
               <span className="text-sm text-green-700">Kartongpris</span>
               <span className="text-sm font-semibold text-green-900">
                 {formatPrice(stats.totalValue / stats.totalQuantity)} kr
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Total Wastage */}
+      <div className="group relative overflow-hidden rounded-xl border border-red-200 bg-gradient-to-br from-red-50 to-red-100 shadow-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
+        <div className="absolute right-0 top-0 h-24 w-24 -translate-y-8 translate-x-8 rounded-full bg-red-500/10" />
+        <div className="relative p-6">
+          <div className="mb-4 flex items-center justify-between">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-red-500 shadow-lg">
+              <Trash2 className="h-6 w-6 text-white" />
+            </div>
+            <div className="text-right">
+              <p className="text-2xl font-bold text-red-900">
+                <AnimatedCounter value={stats.totalWastage} />
+              </p>
+              <p className="text-sm font-medium text-red-600">Svinn</p>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-red-700">Svinn</span>
+              <span className="text-sm font-semibold text-red-900">
+                {stats.totalWastage} enheter
               </span>
             </div>
           </div>

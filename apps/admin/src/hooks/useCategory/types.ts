@@ -69,3 +69,26 @@ export type GetCategoryStatsRequest = ApiData<
     };
   }
 >;
+
+export type GetCategoryGraphDataRequest = ApiData<
+  {
+    from?: string;
+    to?: string;
+    categoryId?: string;
+  },
+  {
+    categories: {
+      _id: string;
+      categoryName: string;
+      totalRevenue: number;
+      grossProfit: number;
+      totalWastageQuantity: number;
+      totalWastageAmount: number;
+      totalValue: number;
+    }[];
+    combinedRevenue: number;
+    combinedProfit: number;
+    combinedWastageAmount: number;
+    combinedWastageQuantity: number;
+  }
+>;

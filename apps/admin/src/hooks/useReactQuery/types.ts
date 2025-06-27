@@ -37,6 +37,7 @@ export enum ReactQueryKeys {
   GET_ALL_CATEGORIES_FLATTENED = 'GET::/category/all/flattened',
   GET_CATEGORY_DETAILS = 'GET::/category/:categoryId',
   GET_CATEGORY_STATS = 'GET::/category/stats',
+  GET_CATEGORY_GRAPH_DATA = 'GET::/category/graph',
 
   // Newsletter
   GET_NEWSLETTER_STATS = 'GET::/newsletter/stats',

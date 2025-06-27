@@ -1,5 +1,6 @@
 import { ApiData } from '@/utils/types.util';
 import { Inventory } from '@repo/types/inventory';
+import { InventoryWastage } from '@repo/types/inventory-wastage';
 
 export enum InventoryStatus {
   ALL = 'all',
@@ -18,6 +19,12 @@ export type InventoryResponse = Omit<Inventory, 'productId'> & {
       name: string;
     }[];
     salePrice: number;
+  };
+  wastage?: {
+    _id: string;
+    quantity: number;
+    reason?: string;
+    note?: string;
   };
 };
 
@@ -48,6 +55,7 @@ export type GetProductInventoryRequest = ApiData<
     totalQuantity: number;
     activeLots: number;
     totalValue: number;
+    totalWastage: number;
   }
 >;
 
@@ -62,6 +70,26 @@ export type CreateInventoryRequest = ApiData<
   }
 >;
 
+export type UpdateInventoryRequest = ApiData<
+  {
+    inventoryId: string;
+    quantity: number;
+    expirationDate: string;
+  },
+  {
+    inventory: Inventory;
+  }
+>;
+
+export type DeleteInventoryRequest = ApiData<
+  {
+    inventoryId: string;
+  },
+  {
+    message: string;
+  }
+>;
+
 export type InventoryStatsRequest = ApiData<
   {
     from: string;
@@ -71,5 +99,29 @@ export type InventoryStatsRequest = ApiData<
     outOfStockCount: number;
     lowStockCount: number;
     totalInventoryValue: number;
+  }
+>;
+
+export type CreateInventoryWastageRequest = ApiData<
+  {
+    inventoryId: string;
+    quantity: number;
+    reason?: string;
+    note?: string;
+  },
+  {
+    inventoryWastage: InventoryWastage;
+  }
+>;
+
+export type UpdateInventoryWastageRequest = ApiData<
+  {
+    inventoryWastageId: string;
+    quantity?: number;
+    reason?: string;
+    note?: string;
+  },
+  {
+    inventoryWastage: InventoryWastage;
   }
 >;

@@ -13,6 +13,7 @@ import {
   updateCategory,
   deleteCategory,
   getCategoryStats,
+  getCategoryGraphData,
 } from '@/controllers/category.controller';
 import {
   getCategoriesSchema,
@@ -24,6 +25,7 @@ import {
   updateCategorySchema,
   deleteCategorySchema,
   getCategoryStatsSchema,
+  getCategoryGraphDataSchema,
 } from '@/validators/category.validator';
 
 const router: Router = express.Router();
@@ -67,4 +69,10 @@ router.get(
   getCategoryStats,
 );
 
+router.get(
+  '/graph',
+  validate(getCategoryGraphDataSchema),
+  isAdmin,
+  getCategoryGraphData,
+);
 export default router;

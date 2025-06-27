@@ -1,7 +1,7 @@
 'use client';
 
 // Node Modules
-import { memo, useMemo } from 'react';
+import { memo, useMemo, useState } from 'react';
 import {
   Package,
   Calendar,
@@ -10,14 +10,23 @@ import {
   XCircle,
   Hash,
   Info,
+  Edit2,
+  Trash2,
+  Plus,
 } from '@repo/ui/lib/icons';
 
+// Components
+import { Button } from '@repo/ui/components/base/button';
+import EditInventoryDialog from '@/components/dashboard/inventory/edit-inventory-dialog/edit-inventory-dialog';
+import WastageDialog from '@/components/dashboard/inventory/wastage-dialog/wastage-dialog';
+
 // Hooks
-import { useProductInventory } from '@/hooks/useInventory';
+import { useProductInventory, useInventory } from '@/hooks/useInventory';
 
 // Types
 import { formatDate } from '@repo/ui/lib/date';
 import { InventoryResponse } from '@/hooks/useInventory/types';
+import { ConfirmationDialog } from '@/components/common/confirmation-dialog';
 
 interface ProductInventoryBatchesProps {
   productId: string;
@@ -25,7 +34,6 @@ interface ProductInventoryBatchesProps {
 
 function ProductInventoryBatches({ productId }: ProductInventoryBatchesProps) {
   const productInventoryQuery = useProductInventory(productId);
-
   const inventory = useMemo(() => {
     return productInventoryQuery.data?.inventory ?? [];
   }, [productInventoryQuery.data]);
@@ -105,6 +113,11 @@ interface InventoryBatchCardProps {
 }
 
 function InventoryBatchCard({ item }: InventoryBatchCardProps) {
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isWastageDialogOpen, setIsWastageDialogOpen] = useState(false);
+  const [isEditWastageMode, setIsEditWastageMode] = useState(false);
+  const { deleteInventoryMutation } = useInventory();
+
   const expirationDate = new Date(item.expirationDate);
   const today = new Date();
   const daysUntilExpiry = Math.ceil(
@@ -114,6 +127,20 @@ function InventoryBatchCard({ item }: InventoryBatchCardProps) {
   const isExpired = expirationDate < today;
   const isExpiringSoon = daysUntilExpiry <= 7 && daysUntilExpiry > 0;
   const isOutOfStock = item.quantity === 0;
+  const hasWastage = item.wastage && item.wastage._id;
+  function handleDelete() {
+    deleteInventoryMutation.mutate(item._id);
+  }
+
+  function handleAddWastage() {
+    setIsEditWastageMode(false);
+    setIsWastageDialogOpen(true);
+  }
+
+  function handleEditWastage() {
+    setIsEditWastageMode(true);
+    setIsWastageDialogOpen(true);
+  }
 
   function getStatusInfo() {
     if (isOutOfStock) {
@@ -175,15 +202,16 @@ function InventoryBatchCard({ item }: InventoryBatchCardProps) {
 
   return (
     <div
-      className={`group relative overflow-hidden rounded-xl border ${statusInfo.cardBorder} ${statusInfo.cardBg} shadow-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-lg`}
+      className={`group relative overflow-hidden rounded-xl border ${statusInfo.cardBorder} ${statusInfo.cardBg} flex h-[400px] flex-col shadow-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-lg`}
     >
       <div className="absolute right-0 top-0 h-24 w-24 -translate-y-8 translate-x-8 rounded-full bg-white/20" />
 
-      <div className="relative p-6">
-        <div className="mb-4 flex items-start justify-between">
+      <div className="relative flex flex-1 flex-col p-4">
+        {/* Header with status and wastage button */}
+        <div className="mb-3 flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/80 shadow-lg backdrop-blur-sm">
-              <Package className="h-6 w-6 text-gray-700" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/80 shadow-lg backdrop-blur-sm">
+              <Package className="h-5 w-5 text-gray-700" />
             </div>
             <div>
               <div className="mb-1 flex items-center gap-2">
@@ -192,89 +220,218 @@ function InventoryBatchCard({ item }: InventoryBatchCardProps) {
               </div>
             </div>
           </div>
+
+          <div className="flex items-center gap-1">
+            {hasWastage ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleEditWastage}
+                className="h-7 border-red-300 bg-white/80 px-2 text-xs font-medium text-red-700 transition-all duration-200 hover:border-red-400 hover:bg-red-50"
+              >
+                <Edit2 className="h-3 w-3" />
+                Rediger svinn
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleAddWastage}
+                className="h-7 border-red-300 bg-white/80 px-2 text-xs font-medium text-red-700 transition-all duration-200 hover:border-red-400 hover:bg-red-50"
+              >
+                <Plus className="h-3 w-3" />
+                Legg til svinn
+              </Button>
+            )}
+          </div>
         </div>
 
-        <div className="space-y-4">
-          {/* Stock Information */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Hash className="h-4 w-4 text-gray-600" />
-              <span className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-gray-700">
-                Lagerbeholdning
-              </span>
-            </div>
-            <div className="text-right">
-              <div className="space-y-1">
-                <div>
-                  <span className="font-[family-name:var(--font-sora)] text-lg font-bold text-gray-900">
-                    {item.quantity}
-                  </span>
-                  <span className="ml-1 font-[family-name:var(--font-dm-sans)] text-sm text-gray-600">
-                    gjenværende
-                  </span>
-                </div>
-                <div>
-                  <span className="font-[family-name:var(--font-dm-sans)] text-sm text-gray-600">
-                    av {item.inputQuantity} lagt til
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Expiration Date */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-gray-600" />
-              <span className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-gray-700">
-                Utløpsdato
-              </span>
-            </div>
-            <div className="text-right">
-              <div className="font-[family-name:var(--font-dm-sans)] text-sm font-semibold text-gray-900">
-                {formatDate(expirationDate, 'MMM d, yyyy')}
-              </div>
-              <div className="font-[family-name:var(--font-dm-sans)] text-xs text-gray-600">
-                {isExpired
-                  ? `Utgått for ${Math.abs(daysUntilExpiry)} dager siden`
-                  : daysUntilExpiry === 0
-                    ? 'Utløper i dag'
-                    : `${daysUntilExpiry} dager igjen`}
-              </div>
-            </div>
-          </div>
-
-          {/* Progress bar for days until expiry */}
-          <div className="space-y-2">
+        <div className="flex flex-1 flex-col justify-between">
+          <div
+            className={`space-y-4 ${hasWastage ? '' : 'flex flex-1 flex-col justify-evenly'}`}
+          >
             <div className="flex items-center justify-between">
-              <span className="font-[family-name:var(--font-dm-sans)] text-xs text-gray-600">
-                Lagerstatus
-              </span>
-              <span className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-gray-700">
-                {Math.max(
-                  0,
-                  Math.min(100, (item.quantity / item.inputQuantity) * 100),
-                ).toFixed(0)}
-                %
-              </span>
+              <div className="flex items-center gap-2">
+                <Hash className="h-4 w-4 text-gray-600" />
+                <span className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-gray-700">
+                  Lagerbeholdning
+                </span>
+              </div>
+              <div className="text-right">
+                <div className="space-y-1">
+                  <div>
+                    <span className="font-[family-name:var(--font-sora)] text-lg font-bold text-gray-900">
+                      {item.quantity}
+                    </span>
+                    <span className="ml-1 font-[family-name:var(--font-dm-sans)] text-sm text-gray-600">
+                      gjenværende
+                    </span>
+                  </div>
+                  <div>
+                    <span className="font-[family-name:var(--font-dm-sans)] text-sm text-gray-600">
+                      av {item.inputQuantity} lagt til
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="h-2 w-full rounded-full bg-white/60">
-              <div
-                className={`h-2 rounded-full transition-all duration-500 ${
-                  isOutOfStock
-                    ? 'bg-red-500'
-                    : item.quantity < item.inputQuantity * 0.3
-                      ? 'bg-amber-500'
-                      : 'bg-emerald-500'
-                }`}
-                style={{
-                  width: `${Math.max(5, Math.min(100, (item.quantity / item.inputQuantity) * 100))}%`,
-                }}
-              />
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-gray-600" />
+                <span className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-gray-700">
+                  Utløpsdato
+                </span>
+              </div>
+              <div className="text-right">
+                <div className="font-[family-name:var(--font-dm-sans)] text-sm font-semibold text-gray-900">
+                  {formatDate(expirationDate, 'MMM d, yyyy')}
+                </div>
+                <div className="font-[family-name:var(--font-dm-sans)] text-xs text-gray-600">
+                  {isExpired
+                    ? `Utgått for ${Math.abs(daysUntilExpiry)} dager siden`
+                    : daysUntilExpiry === 0
+                      ? 'Utløper i dag'
+                      : `${daysUntilExpiry} dager igjen`}
+                </div>
+              </div>
             </div>
+
+            {hasWastage && (
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Trash2 className="h-4 w-4 text-red-600" />
+                  <span className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-gray-700">
+                    Svinn
+                  </span>
+                </div>
+                <div className="text-right">
+                  <div className="space-y-1">
+                    <div>
+                      <span className="font-[family-name:var(--font-sora)] text-lg font-bold text-red-500">
+                        {item.wastage?.quantity}
+                      </span>
+                      <span className="ml-1 font-[family-name:var(--font-dm-sans)] text-sm text-gray-600">
+                        enheter
+                      </span>
+                    </div>
+                    {item.wastage?.reason && (
+                      <div>
+                        <span className="font-[family-name:var(--font-dm-sans)] text-xs text-gray-600">
+                          {item.wastage?.reason}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="space-y-3">
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="font-[family-name:var(--font-dm-sans)] text-xs text-gray-600">
+                    Lagerstatus
+                  </span>
+                  <span className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-gray-700">
+                    {Math.max(
+                      0,
+                      Math.min(100, (item.quantity / item.inputQuantity) * 100),
+                    ).toFixed(0)}
+                    %
+                  </span>
+                </div>
+                <div className="h-2 w-full rounded-full bg-white/60">
+                  <div
+                    className={`h-2 rounded-full transition-all duration-500 ${
+                      isOutOfStock
+                        ? 'bg-red-500'
+                        : item.quantity < item.inputQuantity * 0.3
+                          ? 'bg-amber-500'
+                          : 'bg-emerald-500'
+                    }`}
+                    style={{
+                      width: `${Math.max(5, Math.min(100, (item.quantity / item.inputQuantity) * 100))}%`,
+                    }}
+                  />
+                </div>
+              </div>
+
+              {hasWastage && (
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="font-[family-name:var(--font-dm-sans)] text-xs text-gray-600">
+                      Svinnprosent
+                    </span>
+                    <span className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-red-500">
+                      {Math.min(
+                        100,
+                        ((item.wastage?.quantity || 0) / item.inputQuantity) *
+                          100,
+                      ).toFixed(0)}
+                      %
+                    </span>
+                  </div>
+                  <div className="h-2 w-full rounded-full bg-white/60">
+                    <div
+                      className="h-2 rounded-full bg-red-500 transition-all duration-500"
+                      style={{
+                        width: `${Math.max(5, Math.min(100, ((item.wastage?.quantity || 0) / item.inputQuantity) * 100))}%`,
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="flex gap-2 pt-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsEditDialogOpen(true)}
+              className="h-8 flex-1 border-gray-300 bg-white/80 px-3 text-xs font-medium text-gray-700 transition-all duration-200 hover:border-[var(--baladi-primary)] hover:bg-white hover:text-[var(--baladi-primary)]"
+            >
+              <Edit2 className="mr-1.5 h-3 w-3" />
+              Rediger
+            </Button>
+
+            <ConfirmationDialog
+              trigger={
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={deleteInventoryMutation.isPending}
+                  className="h-8 flex-1 border-gray-300 bg-white/80 px-3 text-xs font-medium text-gray-700 transition-all duration-200 hover:border-red-300 hover:bg-red-50 hover:text-red-700 disabled:opacity-50"
+                >
+                  <Trash2 className="mr-1.5 h-3 w-3" />
+                  {deleteInventoryMutation.isPending ? 'Sletter...' : 'Slett'}
+                </Button>
+              }
+              title="Slett lagerparti"
+              description="Er du sikker på at du vil slette dette lagerpartiet? Denne handlingen kan ikke angres."
+              confirmText="Ja, slett"
+              onConfirm={handleDelete}
+              isPending={deleteInventoryMutation.isPending}
+            />
           </div>
         </div>
       </div>
+
+      {/* Edit Dialog */}
+      <EditInventoryDialog
+        open={isEditDialogOpen}
+        setOpen={setIsEditDialogOpen}
+        inventoryItem={item}
+      />
+
+      {/* Wastage Dialog */}
+      <WastageDialog
+        open={isWastageDialogOpen}
+        setOpen={setIsWastageDialogOpen}
+        inventoryItem={item}
+        isEdit={isEditWastageMode}
+      />
     </div>
   );
 }

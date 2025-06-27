@@ -2,6 +2,7 @@
 
 // Schemas
 import Category from '@/models/category.model';
+import InventoryWastage from '@/models/inventory-wastage.model';
 
 // Utils
 import { generateSlug } from '@/utils/common/string.util';
@@ -14,7 +15,7 @@ import { ErrorHandler } from '@/handlers/error.handler';
 
 // Types
 import type { Request, Response } from 'express';
-import type { CategoryStats } from '@/types/category.types';
+import type { CategoryGraphData, CategoryStats } from '@/types/category.types';
 import type { HierarchicalCategory } from '@repo/types/category';
 import type {
   // User
@@ -28,7 +29,10 @@ import type {
   CreateCategorySchema,
   UpdateCategorySchema,
   DeleteCategorySchema,
+  GetCategoryGraphDataSchema,
 } from '@/validators/category.validator';
+import { OrderStatus } from '@repo/types/order';
+import Order from '@/models/order.model';
 
 export const getCategories = asyncHandler(
   async (req: Request, res: Response) => {
@@ -308,5 +312,175 @@ export const getCategoryStats = asyncHandler(
     }
 
     sendResponse(res, 200, 'Category stats fetched successfully', { stats });
+  },
+);
+
+export const getCategoryGraphData = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { from, to, all } = req.query as GetCategoryGraphDataSchema['query'];
+    const isAll = all === 'true';
+
+    const matchStage = getDateMatchStage('createdAt', from, to);
+
+    const orderPipeline = [
+      {
+        $match: {
+          ...matchStage,
+          status: { $ne: OrderStatus.CANCELLED },
+        },
+      },
+      { $unwind: '$items' },
+      {
+        $lookup: {
+          from: 'products',
+          localField: 'items.productId',
+          foreignField: '_id',
+          as: 'productInfo',
+        },
+      },
+      { $unwind: '$productInfo' },
+      { $unwind: '$productInfo.categories' },
+      {
+        $lookup: {
+          from: 'categories',
+          localField: 'productInfo.categories',
+          foreignField: '_id',
+          as: 'categoryInfo',
+        },
+      },
+      { $unwind: '$categoryInfo' },
+      {
+        $addFields: {
+          revenue: {
+            $multiply: ['$items.priceWithVat', '$items.quantity'],
+          },
+          cost: {
+            $multiply: ['$productInfo.costPrice', '$items.quantity'],
+          },
+          profit: {
+            $multiply: [
+              {
+                $subtract: [
+                  { $subtract: ['$items.price', '$productInfo.costPrice'] },
+                  { $ifNull: ['$items.bulkDiscount', 0] },
+                ],
+              },
+              '$items.quantity',
+            ],
+          },
+        },
+      },
+      {
+        $group: {
+          _id: '$categoryInfo._id',
+          categoryName: { $first: '$categoryInfo.name' },
+          totalRevenue: { $sum: '$revenue' },
+          totalCost: { $sum: '$cost' },
+          grossProfit: { $sum: '$profit' },
+        },
+      },
+    ];
+
+    const wastagePipeline = [
+      {
+        $match: matchStage,
+      },
+      { $unwind: '$categories' },
+      {
+        $lookup: {
+          from: 'products',
+          localField: 'productId',
+          foreignField: '_id',
+          as: 'productInfo',
+        },
+      },
+      { $unwind: '$productInfo' },
+      {
+        $lookup: {
+          from: 'categories',
+          localField: 'categories',
+          foreignField: '_id',
+          as: 'categoryInfo',
+        },
+      },
+      { $unwind: '$categoryInfo' },
+      {
+        $group: {
+          _id: '$categoryInfo._id',
+          categoryName: { $first: '$categoryInfo.name' },
+          totalWastageQuantity: { $sum: '$quantity' },
+          totalWastageAmount: {
+            $sum: {
+              $multiply: ['$quantity', '$productInfo.costPrice'],
+            },
+          },
+        },
+      },
+    ];
+
+    let combinedRevenue = 0;
+    let combinedProfit = 0;
+    let combinedWastageAmount = 0;
+    let combinedWastageQuantity = 0;
+
+    const [orderStats, wastageStats, allCategories] = await Promise.all([
+      Order.aggregate(orderPipeline),
+      InventoryWastage.aggregate(wastagePipeline),
+      Category.find({}, { _id: 1, name: 1 }).lean(),
+    ]);
+
+    const orderStatsMap = new Map(
+      orderStats.map((item) => [item._id.toString(), item]),
+    );
+    const wastageStatsMap = new Map(
+      wastageStats.map((item) => [item._id.toString(), item]),
+    );
+
+    const combinedData = allCategories.map((category) => {
+      const categoryId = category._id.toString();
+      const orderData = orderStatsMap.get(categoryId);
+      const wastageData = wastageStatsMap.get(categoryId);
+
+      const totalRevenue = orderData?.totalRevenue || 0;
+      const grossProfit = orderData?.grossProfit || 0;
+      const totalWastageAmount = wastageData?.totalWastageAmount || 0;
+      const totalWastageQuantity = wastageData?.totalWastageQuantity || 0;
+
+      combinedRevenue += totalRevenue;
+      combinedProfit += grossProfit;
+      combinedWastageAmount += totalWastageAmount;
+      combinedWastageQuantity += totalWastageQuantity;
+
+      return {
+        _id: categoryId,
+        categoryName: category.name,
+        totalRevenue,
+        grossProfit,
+        totalWastageQuantity,
+        totalWastageAmount,
+        totalValue: totalRevenue + grossProfit + totalWastageAmount,
+      };
+    });
+    combinedData.sort((a, b) => b.totalValue - a.totalValue);
+
+    if (isAll) {
+      sendResponse(res, 200, 'Category graph data fetched successfully', {
+        categories: combinedData,
+        combinedRevenue,
+        combinedProfit,
+        combinedWastageAmount,
+        combinedWastageQuantity,
+      });
+      return;
+    }
+    const top25Categories = combinedData.slice(0, 25);
+
+    sendResponse(res, 200, 'Category graph data fetched successfully', {
+      categories: top25Categories,
+      combinedRevenue,
+      combinedProfit,
+      combinedWastageAmount,
+      combinedWastageQuantity,
+    });
   },
 );
