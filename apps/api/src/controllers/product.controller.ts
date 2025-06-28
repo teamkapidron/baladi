@@ -472,17 +472,28 @@ export const getProductBySlug = asyncHandler(
 
 export const quickSearchProducts = asyncHandler(
   async (req: Request, res: Response) => {
-    const { query, limit } = req.query as QuickSearchProductsSchema['query'];
+    const { query, limit, categoryId } =
+      req.query as QuickSearchProductsSchema['query'];
 
     const maxLimit = parseInt(limit ?? '10', 10);
-    const searchFilter = {
-      $or: [
-        { name: { $regex: query, $options: 'i' } },
-        { slug: { $regex: query, $options: 'i' } },
-        { shortDescription: { $regex: query, $options: 'i' } },
-        { sku: { $regex: query, $options: 'i' } },
+    const searchFilter: any = {
+      $and: [
+        {
+          $or: [
+            { name: { $regex: query, $options: 'i' } },
+            { slug: { $regex: query, $options: 'i' } },
+            { shortDescription: { $regex: query, $options: 'i' } },
+            { sku: { $regex: query, $options: 'i' } },
+          ],
+        },
       ],
     };
+
+    if (categoryId) {
+      searchFilter.$and.push({
+        categories: { $in: [new Types.ObjectId(categoryId)] },
+      });
+    }
 
     const products = await Product.aggregate<QuickSearchProductAggregateType>([
       {
@@ -509,6 +520,10 @@ export const quickSearchProducts = asyncHandler(
             name: 1,
             slug: 1,
           },
+          supplier: {
+            name: 1,
+            countryOfOrigin: 1,
+          },
         },
       },
       {
@@ -525,6 +540,7 @@ export const quickSearchProducts = asyncHandler(
       salePrice: product.salePrice,
       shortDescription: product.shortDescription,
       categories: product.categories[0] ?? { name: '', slug: '' },
+      supplier: product.supplier,
     }));
 
     sendResponse(res, 200, 'Quick search completed successfully', {

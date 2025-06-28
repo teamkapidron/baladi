@@ -45,6 +45,7 @@ export const quickSearchProductsSchema = z.object({
   query: z.object({
     query: z.string().optional(),
     limit: z.string().optional(),
+    categoryId: z.string().optional(),
   }),
 });
 

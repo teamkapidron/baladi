@@ -20,6 +20,10 @@ export interface QuickSearchProduct {
     name: string;
     slug: string;
   };
+  supplier: {
+    name: string;
+    countryOfOrigin: string;
+  };
 }
 
 export type ProductResponse = Omit<Product, 'categories'> & {
@@ -172,6 +176,7 @@ export type ProductStatsRequest = ApiData<
 export type QuickSearchProductsRequest = ApiData<
   {
     query: string;
+    categoryId?: string;
   },
   {
     products: QuickSearchProduct[];

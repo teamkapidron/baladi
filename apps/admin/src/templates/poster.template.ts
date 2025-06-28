@@ -9,6 +9,12 @@ type PromotionPosterTemplateProps =
     title: string;
   };
 
+type FlagPosterTemplateProps =
+  PreviewPromotionPosterRequest['response']['data']['productsData'][0] & {
+    title: string;
+    countryCode: string;
+  };
+
 export async function promotionPosterTemplate(
   props: PromotionPosterTemplateProps,
 ) {
@@ -631,6 +637,410 @@ export async function multiProductPosterTemplate(
     link.click();
   } catch (error) {
     console.error('Error creating multi-product poster:', error);
+    throw error;
+  }
+}
+
+export async function flagPosterTemplate(props: FlagPosterTemplateProps) {
+  const {
+    name,
+    image,
+    price,
+    pricePerUnit,
+    bulkDiscount,
+    expirationDate,
+    title,
+    countryCode,
+  } = props;
+
+  const width = 768;
+  const height = 768;
+
+  const canvas = new fabric.Canvas(undefined, {
+    width,
+    height,
+    backgroundColor: '#ffffff',
+  });
+
+  try {
+    // Background gradient
+    const backgroundGradient = new fabric.Gradient({
+      type: 'radial',
+      coords: {
+        x1: width / 2,
+        y1: height / 2,
+        x2: width / 2,
+        y2: height / 2,
+        r1: 0,
+        r2: width * 0.8,
+      },
+      colorStops: [
+        { offset: 0, color: '#f0f9ff' },
+        { offset: 0.3, color: '#e0f2fe' },
+        { offset: 0.7, color: '#f8fafc' },
+        { offset: 1, color: '#f1f5f9' },
+      ],
+    });
+
+    const background = new fabric.Rect({
+      left: 0,
+      top: 0,
+      width: width,
+      height: height,
+      fill: backgroundGradient,
+      selectable: false,
+    });
+    canvas.add(background);
+
+    // Header section
+    const headerGradient = new fabric.Gradient({
+      type: 'linear',
+      coords: { x1: 0, y1: 0, x2: width, y2: 140 },
+      colorStops: [
+        { offset: 0, color: '#1e293b' },
+        { offset: 0.3, color: '#334155' },
+        { offset: 0.7, color: '#475569' },
+        { offset: 1, color: '#1e293b' },
+      ],
+    });
+
+    const headerRect = new fabric.Rect({
+      left: 0,
+      top: 0,
+      width: width,
+      height: 140,
+      fill: headerGradient,
+      selectable: false,
+      shadow: new fabric.Shadow({
+        color: 'rgba(30, 41, 59, 0.4)',
+        blur: 20,
+        offsetX: 0,
+        offsetY: 8,
+      }),
+    });
+    canvas.add(headerRect);
+
+    // Logo
+    await new Promise<void>((resolve) => {
+      fabric.FabricImage.fromURL(
+        'https://baladi-prod-baladibucket-fedmxzsx.s3.eu-central-1.amazonaws.com/products/baladi.png',
+        {
+          crossOrigin: 'anonymous',
+        },
+      ).then((logo) => {
+        if (logo) {
+          const logoMaxWidth = 100;
+          const logoMaxHeight = 100;
+          const logoWidth = logo.width || 1;
+          const logoHeight = logo.height || 1;
+          const logoScale = Math.min(
+            logoMaxWidth / logoWidth,
+            logoMaxHeight / logoHeight,
+          );
+
+          logo.set({
+            left: width / 2,
+            top: 15,
+            originX: 'center',
+            originY: 'top',
+            scaleX: logoScale,
+            scaleY: logoScale,
+            selectable: false,
+            shadow: new fabric.Shadow({
+              color: 'rgba(255, 255, 255, 0.3)',
+              blur: 8,
+              offsetX: 0,
+              offsetY: 2,
+            }),
+          });
+
+          canvas.add(logo);
+        }
+        resolve();
+      });
+    });
+
+    // Title
+    // const posterTitle = new fabric.Text(title.toUpperCase(), {
+    //   left: width / 2,
+    //   top: 85,
+    //   fontSize: 18,
+    //   fontFamily: 'Arial, sans-serif',
+    //   fill: '#ffffff',
+    //   fontWeight: 'bold',
+    //   textAlign: 'center',
+    //   originX: 'center',
+    //   originY: 'top',
+    //   letterSpacing: 1.5,
+    //   selectable: false,
+    //   shadow: new fabric.Shadow({
+    //     color: 'rgba(0, 0, 0, 0.3)',
+    //     blur: 4,
+    //     offsetX: 0,
+    //     offsetY: 2,
+    //   }),
+    // });
+    // canvas.add(posterTitle);
+
+    // Country Flag - Large and prominent
+    await new Promise<void>((resolve) => {
+      const flagUrl = `https://res.cloudinary.com/dv7ar9aca/image/upload/v1751111756/no_gng2gz.png`;
+      fabric.FabricImage.fromURL(flagUrl, {
+        crossOrigin: 'anonymous',
+      })
+        .then((flag) => {
+          if (flag) {
+            const flagMaxWidth = 150;
+            const flagMaxHeight = 150;
+            const flagWidth = flag.width || 1;
+            const flagHeight = flag.height || 1;
+            const flagScale = Math.min(
+              flagMaxWidth / flagWidth,
+              flagMaxHeight / flagHeight,
+            );
+
+            // Create a circular background for the flag
+            const flagBg = new fabric.Circle({
+              left: width - 100,
+              top: 100,
+              radius: 100,
+              fill: 'rgba(255, 255, 255, 0.9)',
+              stroke: '#e2e8f0',
+              strokeWidth: 3,
+              originX: 'center',
+              originY: 'center',
+              selectable: false,
+              shadow: new fabric.Shadow({
+                color: 'rgba(30, 41, 59, 0.15)',
+                blur: 10,
+                offsetX: 0,
+                offsetY: 4,
+              }),
+            });
+            canvas.add(flagBg);
+
+            flag.set({
+              left: width - 100,
+              top: 100,
+              originX: 'center',
+              originY: 'center',
+              scaleX: flagScale,
+              scaleY: flagScale,
+              selectable: false,
+              clipPath: new fabric.Circle({
+                radius: 100,
+                originX: 'center',
+                originY: 'center',
+              }),
+              shadow: new fabric.Shadow({
+                color: 'rgba(30, 41, 59, 0.2)',
+                blur: 8,
+                offsetX: 0,
+                offsetY: 3,
+              }),
+            });
+
+            canvas.add(flag);
+          }
+          resolve();
+        })
+        .catch(() => resolve());
+    });
+
+    // Product name
+    const productTitle = new fabric.Text(name.toUpperCase(), {
+      left: width / 2,
+      top: 160,
+      fontSize: 26,
+      fontFamily: 'Arial, sans-serif',
+      fill: '#1e293b',
+      fontWeight: 'bold',
+      textAlign: 'center',
+      originX: 'center',
+      originY: 'top',
+      letterSpacing: 1,
+      selectable: false,
+      shadow: new fabric.Shadow({
+        color: 'rgba(30, 41, 59, 0.1)',
+        blur: 4,
+        offsetX: 0,
+        offsetY: 2,
+      }),
+    });
+    canvas.add(productTitle);
+
+    // Product image
+    await new Promise<void>((resolve, reject) => {
+      fabric.FabricImage.fromURL(image, {
+        crossOrigin: 'anonymous',
+      })
+        .then((img) => {
+          if (img) {
+            const maxWidth = 280;
+            const maxHeight = 280;
+            const imgWidth = img.width || 1;
+            const imgHeight = img.height || 1;
+
+            const scale = Math.min(maxWidth / imgWidth, maxHeight / imgHeight);
+
+            img.set({
+              left: width / 2,
+              top: 350,
+              originX: 'center',
+              originY: 'center',
+              scaleX: scale,
+              scaleY: scale,
+              selectable: false,
+              shadow: new fabric.Shadow({
+                color: 'rgba(30, 41, 59, 0.2)',
+                blur: 15,
+                offsetX: 0,
+                offsetY: 5,
+              }),
+            });
+
+            canvas.add(img);
+          }
+          resolve();
+        })
+        .catch(reject);
+    });
+
+    // Price section with flag-themed styling
+    const priceSectionGradient = new fabric.Gradient({
+      type: 'linear',
+      coords: { x1: 0, y1: 0, x2: 0, y2: 180 },
+      colorStops: [
+        { offset: 0, color: '#ffffff' },
+        { offset: 1, color: '#f8fafc' },
+      ],
+    });
+
+    const priceSection = new fabric.Rect({
+      left: 50,
+      top: 520,
+      width: width - 100,
+      height: 180,
+      fill: priceSectionGradient,
+      stroke: '#e2e8f0',
+      strokeWidth: 2,
+      rx: 20,
+      ry: 20,
+      shadow: new fabric.Shadow({
+        color: 'rgba(30, 41, 59, 0.12)',
+        blur: 20,
+        offsetX: 0,
+        offsetY: 8,
+      }),
+      selectable: false,
+    });
+    canvas.add(priceSection);
+
+    // Price
+    const regularPrice = new fabric.Text(`${formatPrice(price)} kr`, {
+      left: width / 2,
+      top: 550,
+      fontSize: 32,
+      fontFamily: 'Georgia, serif',
+      fill: '#1e293b',
+      fontWeight: 'bold',
+      textAlign: 'center',
+      originX: 'center',
+      originY: 'top',
+      selectable: false,
+      shadow: new fabric.Shadow({
+        color: 'rgba(30, 41, 59, 0.2)',
+        blur: 4,
+        offsetX: 0,
+        offsetY: 2,
+      }),
+    });
+    canvas.add(regularPrice);
+
+    // Per unit price
+    const perUnitText = new fabric.Text(
+      `Per enhet: ${formatPrice(pricePerUnit)} kr`,
+      {
+        left: width / 2,
+        top: 590,
+        fontSize: 16,
+        fontFamily: 'Arial, sans-serif',
+        fill: '#64748b',
+        textAlign: 'center',
+        originX: 'center',
+        originY: 'top',
+        selectable: false,
+      },
+    );
+    canvas.add(perUnitText);
+
+    // Bulk discount section
+    if (bulkDiscount && bulkDiscount.length > 0) {
+      const bulkTitle = new fabric.Text('BULKRABATT', {
+        left: width / 2,
+        top: 620,
+        fontSize: 16,
+        fontFamily: 'Arial, sans-serif',
+        fill: '#059669',
+        fontWeight: 'bold',
+        textAlign: 'center',
+        originX: 'center',
+        originY: 'top',
+        letterSpacing: 1,
+        selectable: false,
+      });
+      canvas.add(bulkTitle);
+
+      bulkDiscount.slice(0, 2).forEach((discount, index) => {
+        const yPosition = 645 + index * 25;
+
+        const discountText = new fabric.Text(
+          `${formatPrice(discount.price)} kr (${discount.minQuantity}+ antall)`,
+          {
+            left: width / 2,
+            top: yPosition,
+            fontSize: 13,
+            fontFamily: 'Arial, sans-serif',
+            fill: '#059669',
+            fontWeight: '600',
+            textAlign: 'center',
+            originX: 'center',
+            originY: 'top',
+            selectable: false,
+          },
+        );
+        canvas.add(discountText);
+      });
+    }
+
+    // Expiration date
+    if (expirationDate) {
+      const expirationDateText = new fabric.Text(`Utgår: ${expirationDate}`, {
+        left: width / 2,
+        top: 720,
+        fontSize: 14,
+        fontFamily: 'Arial, sans-serif',
+        fill: '#64748b',
+        textAlign: 'center',
+        originX: 'center',
+        originY: 'top',
+        selectable: false,
+      });
+      canvas.add(expirationDateText);
+    }
+
+    canvas.renderAll();
+
+    const link = document.createElement('a');
+    link.href = canvas.toDataURL({
+      format: 'png',
+      quality: 1,
+      multiplier: 2,
+    });
+    link.download = `${title}-${countryCode}.png`;
+    link.click();
+  } catch (error) {
+    console.error('Error creating flag poster:', error);
     throw error;
   }
 }
