@@ -44,6 +44,7 @@ export enum ReactQueryKeys {
 
   // Promotion
   PREVIEW_PROMOTION_POSTER = 'POST::/promotion/preview-poster',
+  PREVIEW_FLAG_POSTER = 'POST::/promotion/preview-flag-poster',
 
   // Discounts
   GET_DISCOUNTS = 'GET::/discount/all',

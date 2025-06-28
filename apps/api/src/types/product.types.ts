@@ -33,10 +33,14 @@ export interface QuickSearchProductAggregateType {
     name: string;
     slug: string;
   }[];
+  supplier: {
+    name: string;
+    countryOfOrigin: string;
+  };
 }
 
 export interface QuickSearchProduct {
-  _id: string;  
+  _id: string;
   name: string;
   image: string | undefined;
   slug: string;
@@ -46,5 +50,9 @@ export interface QuickSearchProduct {
   categories: {
     name: string;
     slug: string;
+  };
+  supplier: {
+    name: string;
+    countryOfOrigin: string;
   };
 }

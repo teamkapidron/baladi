@@ -59,6 +59,11 @@ export default function AdminDashboardLayout(props: AdminDashboardLayoutProps) {
         icon: 'badge-percent',
       },
       {
+        title: 'Poster',
+        href: '/dashboard/posters',
+        icon: 'badge-percent',
+      },
+      {
         title: 'Innstillinger',
         href: '/dashboard/settings',
         icon: 'settings',

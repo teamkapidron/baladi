@@ -176,6 +176,7 @@ export const previewPromotionPoster = asyncHandler(
             },
           },
           bestBeforeDate: { $min: '$inventory.expirationDate' },
+          countryCode: '$supplier.countryOfOrigin',
         },
       },
       {
@@ -209,6 +210,7 @@ export const previewPromotionPoster = asyncHandler(
         expirationDate: product.bestBeforeDate
           ? formatDate(product.bestBeforeDate, 'dd/MM/yyyy')
           : null,
+        countryCode: product.countryCode,
       };
     });
 

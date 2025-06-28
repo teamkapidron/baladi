@@ -2,8 +2,9 @@
 
 // Node Modules
 import Image from 'next/image';
-import { memo, useMemo, useRef, useCallback, useEffect } from 'react';
+import { memo, useMemo, useRef, useCallback, useEffect, useState } from 'react';
 import { useForm, zodResolver } from '@repo/ui/lib/form';
+import { cn } from '@repo/ui/lib/utils';
 import {
   Loader2,
   Save,
@@ -26,6 +27,8 @@ import {
   X,
   Plus,
   Landmark,
+  ChevronDown,
+  Check,
 } from '@repo/ui/lib/icons';
 
 // Components
@@ -49,6 +52,19 @@ import {
 } from '@repo/ui/components/base/select';
 import { MultiSelect } from '@repo/ui/components/base/multi-select';
 import { Button } from '@repo/ui/components/base/button';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@repo/ui/components/base/popover';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@repo/ui/components/base/command';
 
 // Schemas
 import {
@@ -57,6 +73,9 @@ import {
   productFormSchema,
   ProductFormValues,
 } from './product-schema';
+
+// Constants
+import { COUNTRIES } from '@/utils/constants';
 
 // Hooks
 import { useCategory } from '@/hooks/useCategory';
@@ -120,6 +139,16 @@ function ProductForm(props: ProductFormProps) {
       },
     },
   });
+
+  const countryOptions = useMemo(() => {
+    return Object.entries(COUNTRIES).map(([code, name]) => ({
+      code,
+      name,
+      flagUrl: `https://flagsapi.com/${code}/flat/64.png`,
+    }));
+  }, []);
+
+  const [countrySearchOpen, setCountrySearchOpen] = useState(false);
 
   useEffect(() => {
     if (defaultValues) {
@@ -195,7 +224,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Package className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                            <Package className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
                               placeholder="Skriv inn produktnavn"
                               className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
@@ -226,7 +255,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Hash className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                            <Hash className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
                               placeholder="produkt-slug"
                               className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
@@ -273,7 +302,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <FileText className="absolute top-3 left-3 h-4 w-4 text-[var(--baladi-gray)]" />
+                            <FileText className="absolute left-3 top-3 h-4 w-4 text-[var(--baladi-gray)]" />
                             <Textarea
                               placeholder="Detaljert produktbeskrivelse"
                               className="min-h-[120px] rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
@@ -351,7 +380,7 @@ function ProductForm(props: ProductFormProps) {
                         <div className="space-y-4">
                           <div
                             onClick={triggerFileInput}
-                            className="flex h-32 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-[var(--baladi-border)] bg-gray-50 transition-colors hover:border-[var(--baladi-primary)] hover:bg-[var(--baladi-primary)]/5"
+                            className="hover:bg-[var(--baladi-primary)]/5 flex h-32 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-[var(--baladi-border)] bg-gray-50 transition-colors hover:border-[var(--baladi-primary)]"
                           >
                             <div className="text-center">
                               <Upload className="mx-auto h-8 w-8 text-[var(--baladi-gray)]" />
@@ -371,6 +400,7 @@ function ProductForm(props: ProductFormProps) {
                             accept="image/*"
                             onChange={handleImageUpload}
                             className="hidden"
+                            title="Last opp bilder"
                           />
 
                           {(form.getValues('images')?.length ?? 0) > 0 && (
@@ -408,16 +438,17 @@ function ProductForm(props: ProductFormProps) {
                                       />
                                       <div className="absolute inset-0 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
                                         <button
+                                          title="Fjern bilde"
                                           type="button"
                                           onClick={() =>
                                             handleRemoveImage(index)
                                           }
-                                          className="absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white transition-colors hover:bg-red-600"
+                                          className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white transition-colors hover:bg-red-600"
                                         >
                                           <X className="h-3 w-3" />
                                         </button>
                                       </div>
-                                      <div className="absolute right-0 bottom-0 left-0 bg-gradient-to-t from-black/60 to-transparent p-2">
+                                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2">
                                         <p className="text-xs font-medium text-white">
                                           Bilde {index + 1}
                                         </p>
@@ -461,7 +492,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Landmark className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                            <Landmark className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
                               type="number"
                               step="0.01"
@@ -496,7 +527,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Landmark className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-success)]" />
+                            <Landmark className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-success)]" />
                             <Input
                               type="number"
                               step="0.01"
@@ -531,7 +562,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Landmark className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                            <Landmark className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
                               type="number"
                               disabled
@@ -558,7 +589,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Landmark className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-success)]" />
+                            <Landmark className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-success)]" />
                             <Input
                               type="number"
                               disabled
@@ -585,7 +616,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Percent className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                            <Percent className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Select
                               onValueChange={field.onChange}
                               defaultValue={field.value.toString()}
@@ -623,7 +654,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <BoxesIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                            <BoxesIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
                               type="number"
                               min={0}
@@ -665,7 +696,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Tag className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                            <Tag className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
                               placeholder="Skriv inn SKU"
                               className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
@@ -691,7 +722,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Barcode className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                            <Barcode className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
                               placeholder="Skriv inn strekkode"
                               className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
@@ -715,7 +746,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Weight className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                            <Weight className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
                               type="number"
                               step="0.01"
@@ -758,7 +789,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Ruler className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                            <Ruler className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
                               type="number"
                               step="0.1"
@@ -788,7 +819,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Ruler className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                            <Ruler className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
                               type="number"
                               step="0.1"
@@ -818,7 +849,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Ruler className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                            <Ruler className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
                               type="number"
                               step="0.1"
@@ -867,7 +898,7 @@ function ProductForm(props: ProductFormProps) {
                         >
                           <FormControl className="relative">
                             <SelectTrigger className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]">
-                              <Eye className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                              <Eye className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                               <SelectValue placeholder="Velg synlighet" />
                             </SelectTrigger>
                           </FormControl>
@@ -890,7 +921,7 @@ function ProductForm(props: ProductFormProps) {
                     control={form.control}
                     name="isActive"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-center space-y-0 space-x-3 rounded-lg border border-[var(--baladi-border)] p-4">
+                      <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-lg border border-[var(--baladi-border)] p-4">
                         <FormControl>
                           <Checkbox
                             checked={field.value}
@@ -914,7 +945,7 @@ function ProductForm(props: ProductFormProps) {
                     control={form.control}
                     name="hasVolumeDiscount"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-center space-y-0 space-x-3 rounded-lg border border-[var(--baladi-border)] p-4">
+                      <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-lg border border-[var(--baladi-border)] p-4">
                         <FormControl>
                           <Checkbox
                             checked={field.value}
@@ -958,7 +989,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <User className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                            <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
                               placeholder="Leverandørnavn"
                               className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
@@ -982,7 +1013,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Hash className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                            <Hash className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
                               placeholder="Leverandørnummer"
                               className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
@@ -1006,7 +1037,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <MapPin className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                            <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
                               placeholder="Leverandørens lokasjon"
                               className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
@@ -1029,15 +1060,92 @@ function ProductForm(props: ProductFormProps) {
                           Opprinnelsesland
                         </FormLabel>
                         <FormControl>
-                          <div className="relative">
-                            <Globe className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
-                            <Input
-                              placeholder="Opprinnelsesland"
-                              className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
-                              {...field}
-                              value={field.value || ''}
-                            />
-                          </div>
+                          <Popover
+                            open={countrySearchOpen}
+                            onOpenChange={setCountrySearchOpen}
+                          >
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                role="combobox"
+                                aria-expanded={countrySearchOpen}
+                                className="h-12 w-full justify-between rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
+                              >
+                                <Globe className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                                <div className="flex items-center gap-2">
+                                  {field.value ? (
+                                    <>
+                                      <Image
+                                        src={`https://flagsapi.com/${field.value}/flat/64.png`}
+                                        alt={`${field.value} flag`}
+                                        width={20}
+                                        height={15}
+                                        className="rounded-sm"
+                                      />
+                                      <span>
+                                        {
+                                          COUNTRIES[
+                                            field.value as keyof typeof COUNTRIES
+                                          ]
+                                        }
+                                      </span>
+                                    </>
+                                  ) : (
+                                    <span className="text-[var(--baladi-gray)]">
+                                      Velg opprinnelsesland...
+                                    </span>
+                                  )}
+                                </div>
+                                <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent
+                              className="w-[var(--radix-popover-trigger-width)] p-0"
+                              align="start"
+                            >
+                              <Command>
+                                <CommandInput
+                                  placeholder="Søk etter land..."
+                                  className="h-12"
+                                />
+                                <CommandList>
+                                  <CommandEmpty>
+                                    Ingen land funnet.
+                                  </CommandEmpty>
+                                  <CommandGroup>
+                                    {countryOptions.map((country) => (
+                                      <CommandItem
+                                        key={country.code}
+                                        value={`${country.code} ${country.name}`}
+                                        onSelect={() => {
+                                          field.onChange(country.code);
+                                          setCountrySearchOpen(false);
+                                        }}
+                                        className="flex items-center gap-2"
+                                      >
+                                        <Image
+                                          src={country.flagUrl}
+                                          alt={`${country.code} flag`}
+                                          width={20}
+                                          height={15}
+                                          className="rounded-sm"
+                                        />
+                                        <span>{country.name}</span>
+                                        <Check
+                                          className={cn(
+                                            'ml-auto h-4 w-4',
+                                            field.value === country.code
+                                              ? 'opacity-100'
+                                              : 'opacity-0',
+                                          )}
+                                        />
+                                      </CommandItem>
+                                    ))}
+                                  </CommandGroup>
+                                </CommandList>
+                              </Command>
+                            </PopoverContent>
+                          </Popover>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -1054,7 +1162,7 @@ function ProductForm(props: ProductFormProps) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Barcode className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
+                            <Barcode className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--baladi-gray)]" />
                             <Input
                               placeholder="HS kode"
                               className="h-12 rounded-lg border-[var(--baladi-border)] pl-10 focus:border-[var(--baladi-primary)] focus:ring-1 focus:ring-[var(--baladi-primary)]"
@@ -1076,7 +1184,7 @@ function ProductForm(props: ProductFormProps) {
             <Button
               type="submit"
               size="lg"
-              className="h-12 rounded-lg bg-[var(--baladi-primary)] px-8 font-[family-name:var(--font-sora)] font-semibold text-white shadow-lg transition-all hover:bg-[var(--baladi-primary)]/90 hover:shadow-xl focus:ring-2 focus:ring-[var(--baladi-primary)]/20"
+              className="hover:bg-[var(--baladi-primary)]/90 focus:ring-[var(--baladi-primary)]/20 h-12 rounded-lg bg-[var(--baladi-primary)] px-8 font-[family-name:var(--font-sora)] font-semibold text-white shadow-lg transition-all hover:shadow-xl focus:ring-2"
               disabled={isPending}
             >
               {isPending ? (
