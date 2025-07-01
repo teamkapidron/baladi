@@ -16,7 +16,6 @@ export function useUser() {
 
   const updateProfile = useCallback(
     async (payload: UpdateUserProfileRequest['payload']) => {
-      console.log(payload);
       const response = await api.post<UpdateUserProfileRequest['response']>(
         '/user/update/profile',
         payload,
