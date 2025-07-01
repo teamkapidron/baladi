@@ -1,4 +1,5 @@
 // Node Modules
+import { Types } from 'mongoose';
 
 // Schemas
 import Address from '@/models/address.model';
@@ -168,5 +169,22 @@ export const setDefaultAddress = asyncHandler(
     sendResponse(res, 200, 'Default address updated successfully', {
       address: updatedAddress,
     });
+  },
+);
+
+export const getDefaultAddress = asyncHandler(
+  async (req: Request, res: Response) => {
+    const userId = req.user!._id;
+
+    const address = await Address.findOne({
+      userId: new Types.ObjectId(userId),
+      isDefault: true,
+    });
+
+    if (!address) {
+      throw new ErrorHandler(404, 'Default address not found', 'NOT_FOUND');
+    }
+
+    sendResponse(res, 200, 'Default address fetched successfully', { address });
   },
 );

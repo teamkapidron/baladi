@@ -10,6 +10,7 @@ import {
   updateAddress,
   deleteAddress,
   setDefaultAddress,
+  getDefaultAddress,
 } from '@/controllers/address.controller';
 import {
   getAddressesSchema,
@@ -28,6 +29,7 @@ router.get(
   validate(getAddressesSchema),
   getAddresses,
 );
+router.get('/default', isAuthenticated, getDefaultAddress);
 router.get(
   '/:addressId',
   isAuthenticated,

@@ -3,6 +3,8 @@
 // Schemas
 import User from '@/models/user.model';
 import Order from '@/models/order.model';
+import Admin from '@/models/admin.model';
+import Address from '@/models/address.model';
 
 // Utils
 import {
@@ -16,6 +18,7 @@ import {
 } from '@/utils/common/date.util';
 import { sendMail } from '@/utils/common/mail.util';
 import { sendResponse } from '@/utils/common/response.util';
+import { comparePassword, encryptPassword } from '@/utils/common/password.util';
 
 // Handlers
 import { asyncHandler } from '@/handlers/async.handler';
@@ -31,9 +34,8 @@ import type {
   GetUserStatsSchema,
   TopUsersSchema,
   UpdateAdminPasswordSchema,
+  UpdateUserProfileSchema,
 } from '@/validators/user.validator';
-import Admin from '@/models/admin.model';
-import { comparePassword, encryptPassword } from '@/utils/common/password.util';
 
 export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
   const query = req.query as GetAllUsersSchema['query'];
@@ -309,5 +311,56 @@ export const updateAdminPassword = asyncHandler(
     admin.password = hashedPassword;
     await admin.save();
     sendResponse(res, 200, 'Admin password updated successfully');
+  },
+);
+
+export const updateUserProfile = asyncHandler(
+  async (req: Request, res: Response) => {
+    const {
+      name,
+      companyName,
+      organizationNumber,
+      phoneNumber,
+      addressLine1,
+      addressLine2,
+      city,
+      postalCode,
+    } = req.body as UpdateUserProfileSchema['body'];
+
+    const user = await User.findById(req.user?._id);
+    if (!user) {
+      throw new ErrorHandler(404, 'User not found', 'NOT_FOUND');
+    }
+
+    if (name) {
+      user.name = name;
+    }
+    if (companyName) {
+      user.companyName = companyName;
+    }
+    if (organizationNumber) {
+      user.organizationNumber = organizationNumber;
+    }
+    if (phoneNumber) {
+      user.phoneNumber = phoneNumber;
+    }
+
+    user.address = `${addressLine1}, ${addressLine2}, ${city}, ${postalCode}`;
+
+    await Address.updateOne(
+      { userId: user._id, isDefault: true },
+      {
+        $set: {
+          addressLine1: addressLine1,
+          addressLine2: addressLine2,
+          city: city,
+          postalCode: postalCode,
+        },
+      },
+    );
+
+    await user.save();
+
+    sendResponse(res, 200, 'User profile updated successfully');
   },
 );

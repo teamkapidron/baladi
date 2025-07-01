@@ -68,3 +68,10 @@ export type SetDefaultAddressRequest = ApiData<
     address: Address;
   }
 >;
+
+export type GetDefaultAddressRequest = ApiData<
+  undefined,
+  {
+    address: Address;
+  }
+>;
