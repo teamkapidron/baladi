@@ -5,7 +5,6 @@ import { toast } from '@repo/ui/lib/sonner';
 
 // Hooks
 import { useRequest } from '@/hooks/useRequest';
-import { useAuth } from '@/hooks/useAuth';
 
 // Types
 import type { UpdateUserProfileRequest } from './types';
@@ -14,7 +13,6 @@ import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
 export function useUser() {
   const api = useRequest();
   const queryClient = useQueryClient();
-  const { refetchUser } = useAuth();
 
   const updateProfile = useCallback(
     async (payload: UpdateUserProfileRequest['payload']) => {
@@ -31,14 +29,10 @@ export function useUser() {
   const updateProfileMutation = useMutation({
     mutationFn: updateProfile,
     onSuccess: async function () {
-      await refetchUser();
       await queryClient.invalidateQueries({
         queryKey: [ReactQueryKeys.GET_USER_DATA],
       });
       toast.success('Profil oppdatert');
-    },
-    onError: function () {
-      toast.error('Kunne ikke oppdatere profilen');
     },
   });
 

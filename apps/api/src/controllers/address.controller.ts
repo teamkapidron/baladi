@@ -1,5 +1,5 @@
 // Node Modules
-import mongoose, { Types } from 'mongoose';
+import { Types } from 'mongoose';
 
 // Schemas
 import Address from '@/models/address.model';
@@ -171,6 +171,7 @@ export const setDefaultAddress = asyncHandler(
     });
   },
 );
+
 export const getDefaultAddress = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user!._id;

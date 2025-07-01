@@ -2,8 +2,8 @@ import { Suspense } from 'react';
 import { Metadata } from 'next';
 
 import Header from '@/components/common/header/header';
-import Footer from '@/components/common/footer/footer';
 import ProfileContent from '@/components/profile/profile-content';
+import Footer from '@/components/common/footer/footer';
 
 export const metadata: Metadata = {
   title: 'Min profil | Baladi Engros',
