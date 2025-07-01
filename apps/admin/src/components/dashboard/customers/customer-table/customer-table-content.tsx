@@ -1,9 +1,8 @@
 'use client';
 
 // Node Modules
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React, { memo, useMemo } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import {
   Eye,
   MapPin,
@@ -48,9 +47,12 @@ function CustomerTableContent() {
     [usersData],
   );
 
-  const handleDeleteUser = (userId: string) => {
-    deleteUserMutation.mutate({ userId });
-  };
+  const handleDeleteUser = useCallback(
+    (userId: string) => {
+      deleteUserMutation.mutate({ userId });
+    },
+    [deleteUserMutation],
+  );
 
   return (
     <div className="overflow-hidden rounded-xl bg-white shadow-lg ring-1 ring-[var(--baladi-border)]">
@@ -70,7 +72,7 @@ function CustomerTableContent() {
       <div className="overflow-x-auto">
         <Table className="w-full">
           <TableHeader>
-            <TableRow className="border-[var(--baladi-border)]/30 bg-[var(--baladi-light)]/50 border-b">
+            <TableRow className="border-b border-[var(--baladi-border)]/30 bg-[var(--baladi-light)]/50">
               <TableHead className="px-8 py-4 text-left font-[family-name:var(--font-sora)] text-sm font-semibold text-[var(--baladi-dark)]">
                 Kundedetaljer
               </TableHead>
@@ -95,7 +97,7 @@ function CustomerTableContent() {
             {users.map((customer) => (
               <TableRow
                 key={customer._id}
-                className="border-[var(--baladi-border)]/30 hover:bg-[var(--baladi-light)]/30 group border-b transition-all duration-200"
+                className="group border-b border-[var(--baladi-border)]/30 transition-all duration-200 hover:bg-[var(--baladi-light)]/30"
               >
                 <TableCell
                   onClick={() =>
@@ -107,11 +109,11 @@ function CustomerTableContent() {
                 >
                   <div className="flex items-center space-x-4">
                     <div className="relative">
-                      <div className="ring-[var(--baladi-primary)]/20 group-hover:ring-[var(--baladi-primary)]/40 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--baladi-primary)] to-[var(--baladi-secondary)] ring-2 transition-all">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--baladi-primary)] to-[var(--baladi-secondary)] ring-2 ring-[var(--baladi-primary)]/20 transition-all group-hover:ring-[var(--baladi-primary)]/40">
                         <User className="h-6 w-6 text-white" />
                       </div>
                       <div
-                        className={`absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-white ${
+                        className={`absolute -right-1 -bottom-1 h-4 w-4 rounded-full border-2 border-white ${
                           customer.isApprovedByAdmin
                             ? 'bg-[var(--baladi-success)]'
                             : 'bg-[var(--baladi-warning)]'
@@ -152,7 +154,7 @@ function CustomerTableContent() {
                   <div className="space-y-2">
                     <div className="font-[family-name:var(--font-sora)] font-semibold text-[var(--baladi-dark)]">
                       {customer.companyName || (
-                        <span className="italic text-[var(--baladi-gray)]">
+                        <span className="text-[var(--baladi-gray)] italic">
                           Ikke oppgitt
                         </span>
                       )}
@@ -230,7 +232,7 @@ function CustomerTableContent() {
                   <div className="flex items-center gap-2">
                     <Button
                       variant="outline"
-                      className="group/btn hover:bg-[var(--baladi-primary)]/10 flex items-center justify-center rounded-lg p-2 text-[var(--baladi-gray)] transition-all hover:text-[var(--baladi-primary)]"
+                      className="group/btn flex items-center justify-center rounded-lg p-2 text-[var(--baladi-gray)] transition-all hover:bg-[var(--baladi-primary)]/10 hover:text-[var(--baladi-primary)]"
                       title="Se kundedetaljer"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -302,7 +304,7 @@ function getStatusIcon(isApproved: boolean, isEmailVerified: boolean) {
 function getStatusBadge(isApproved: boolean, isEmailVerified: boolean) {
   if (isApproved && isEmailVerified) {
     return (
-      <div className="bg-[var(--baladi-success)]/10 ring-[var(--baladi-success)]/20 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-[var(--baladi-success)] ring-1">
+      <div className="inline-flex items-center gap-1.5 rounded-full bg-[var(--baladi-success)]/10 px-3 py-1.5 text-xs font-semibold text-[var(--baladi-success)] ring-1 ring-[var(--baladi-success)]/20">
         <div className="h-1.5 w-1.5 rounded-full bg-[var(--baladi-success)]"></div>
         Fullstendig Verifisert
       </div>
@@ -310,14 +312,14 @@ function getStatusBadge(isApproved: boolean, isEmailVerified: boolean) {
   }
   if (!isEmailVerified) {
     return (
-      <div className="bg-[var(--baladi-error)]/10 ring-[var(--baladi-error)]/20 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-[var(--baladi-error)] ring-1">
+      <div className="inline-flex items-center gap-1.5 rounded-full bg-[var(--baladi-error)]/10 px-3 py-1.5 text-xs font-semibold text-[var(--baladi-error)] ring-1 ring-[var(--baladi-error)]/20">
         <div className="h-1.5 w-1.5 rounded-full bg-[var(--baladi-error)]"></div>
         E-post Ikke Verifisert
       </div>
     );
   }
   return (
-    <div className="bg-[var(--baladi-warning)]/10 ring-[var(--baladi-warning)]/20 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-[var(--baladi-warning)] ring-1">
+    <div className="inline-flex items-center gap-1.5 rounded-full bg-[var(--baladi-warning)]/10 px-3 py-1.5 text-xs font-semibold text-[var(--baladi-warning)] ring-1 ring-[var(--baladi-warning)]/20">
       <div className="h-1.5 w-1.5 rounded-full bg-[var(--baladi-warning)]"></div>
       Venter på Godkjenning
     </div>
@@ -327,14 +329,14 @@ function getStatusBadge(isApproved: boolean, isEmailVerified: boolean) {
 function getEmailVerificationBadge(isVerified: boolean) {
   if (isVerified) {
     return (
-      <span className="bg-[var(--baladi-success)]/10 inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium text-[var(--baladi-success)]">
+      <span className="inline-flex items-center gap-1 rounded-full bg-[var(--baladi-success)]/10 px-2 py-1 text-xs font-medium text-[var(--baladi-success)]">
         <CheckCircle className="h-3 w-3" />
         Verifisert
       </span>
     );
   }
   return (
-    <span className="bg-[var(--baladi-warning)]/10 inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium text-[var(--baladi-warning)]">
+    <span className="inline-flex items-center gap-1 rounded-full bg-[var(--baladi-warning)]/10 px-2 py-1 text-xs font-medium text-[var(--baladi-warning)]">
       <Clock className="h-3 w-3" />
       Uverifisert
     </span>

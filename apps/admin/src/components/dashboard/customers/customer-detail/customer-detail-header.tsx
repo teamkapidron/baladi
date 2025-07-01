@@ -1,7 +1,7 @@
 'use client';
 
 // Node Modules
-import React, { memo } from 'react';
+import React, { memo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   ArrowLeft,
@@ -34,7 +34,7 @@ function CustomerDetailHeader(props: CustomerDetailHeaderProps) {
   const { deleteUserMutation } = useUsers();
   const user = userDetailsQuery.data?.user;
 
-  const handleDeleteUser = () => {
+  const handleDeleteUser = useCallback(() => {
     deleteUserMutation.mutate(
       { userId: customerId },
       {
@@ -43,14 +43,14 @@ function CustomerDetailHeader(props: CustomerDetailHeaderProps) {
         },
       },
     );
-  };
+  }, [customerId, deleteUserMutation, router]);
 
   return (
     <div className="relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-[var(--baladi-primary)] via-[var(--baladi-primary)] to-[var(--baladi-secondary)] shadow-lg">
       <div className="absolute inset-0 opacity-10">
-        <div className="absolute -right-4 -top-4 h-32 w-32 rounded-full bg-white/20"></div>
+        <div className="absolute -top-4 -right-4 h-32 w-32 rounded-full bg-white/20"></div>
         <div className="absolute -bottom-8 -left-8 h-40 w-40 rounded-full bg-white/10"></div>
-        <div className="absolute right-1/4 top-1/2 h-24 w-24 rounded-full bg-white/5"></div>
+        <div className="absolute top-1/2 right-1/4 h-24 w-24 rounded-full bg-white/5"></div>
       </div>
 
       <div className="relative border-b border-white/20 px-6 py-4">

@@ -52,11 +52,11 @@ router.put(
   validate(updateAdminPasswordSchema),
   updateAdminPassword,
 );
-
 router.delete(
   '/delete/:userId',
   isAdmin,
   validate(deleteUserSchema),
   deleteUser,
 );
+
 export default router;

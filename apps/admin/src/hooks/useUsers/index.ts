@@ -49,8 +49,8 @@ export function useUserStats() {
 }
 
 export function useUsers() {
-  const queryClient = useQueryClient();
   const api = useRequest();
+  const queryClient = useQueryClient();
   const { page, limit } = usePagination();
   const { dateRangeInString } = useDateRangeInParams();
   const { search, userType, status } = useUserFilter();
