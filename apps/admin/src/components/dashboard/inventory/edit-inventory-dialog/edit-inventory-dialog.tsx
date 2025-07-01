@@ -1,7 +1,7 @@
 'use client';
 
 // Node Modules
-import React, { memo } from 'react';
+import React, { memo, useCallback } from 'react';
 
 // Components
 import {
@@ -24,9 +24,7 @@ interface EditInventoryDialogProps {
 function EditInventoryDialog(props: EditInventoryDialogProps) {
   const { open, setOpen, inventoryItem } = props;
 
-  function handleSuccess() {
-    setOpen(false);
-  }
+  const handleSuccess = useCallback(() => setOpen(false), [setOpen]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

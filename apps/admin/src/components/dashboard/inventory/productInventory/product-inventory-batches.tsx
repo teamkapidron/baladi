@@ -21,7 +21,7 @@ import EditInventoryDialog from '@/components/dashboard/inventory/edit-inventory
 // Hooks
 import { useProductInventory, useInventory } from '@/hooks/useInventory';
 
-// Types
+// Types/Utils
 import { formatDate } from '@repo/ui/lib/date';
 import { InventoryResponse } from '@/hooks/useInventory/types';
 

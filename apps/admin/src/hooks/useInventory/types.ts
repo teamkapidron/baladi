@@ -77,9 +77,7 @@ export type DeleteInventoryRequest = ApiData<
   {
     inventoryId: string;
   },
-  {
-    message: string;
-  }
+  undefined
 >;
 
 export type InventoryStatsRequest = ApiData<
