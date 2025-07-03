@@ -1,7 +1,7 @@
 'use client';
 
 // Node Modules
-import React, { memo } from 'react';
+import React, { memo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   ArrowLeft,
@@ -9,13 +9,15 @@ import {
   User,
   Shield,
   CheckCircle,
+  Trash2,
 } from '@repo/ui/lib/icons';
 
 // Components
 import { Button } from '@repo/ui/components/base/button';
+import { ConfirmationDialog } from '@/components/common/confirmation-dialog';
 
 // Hooks
-import { useUserDetails } from '@/hooks/useUsers';
+import { useUserDetails, useUsers } from '@/hooks/useUsers';
 
 // Types/Utils
 import { formatDate } from '@repo/ui/lib/date';
@@ -29,14 +31,26 @@ function CustomerDetailHeader(props: CustomerDetailHeaderProps) {
   const router = useRouter();
 
   const { userDetailsQuery } = useUserDetails(customerId);
+  const { deleteUserMutation } = useUsers();
   const user = userDetailsQuery.data?.user;
+
+  const handleDeleteUser = useCallback(() => {
+    deleteUserMutation.mutate(
+      { userId: customerId },
+      {
+        onSuccess: () => {
+          router.push('/dashboard/customers');
+        },
+      },
+    );
+  }, [customerId, deleteUserMutation, router]);
 
   return (
     <div className="relative overflow-hidden rounded-xl border border-[var(--baladi-border)] bg-gradient-to-br from-[var(--baladi-primary)] via-[var(--baladi-primary)] to-[var(--baladi-secondary)] shadow-lg">
       <div className="absolute inset-0 opacity-10">
-        <div className="absolute -right-4 -top-4 h-32 w-32 rounded-full bg-white/20"></div>
+        <div className="absolute -top-4 -right-4 h-32 w-32 rounded-full bg-white/20"></div>
         <div className="absolute -bottom-8 -left-8 h-40 w-40 rounded-full bg-white/10"></div>
-        <div className="absolute right-1/4 top-1/2 h-24 w-24 rounded-full bg-white/5"></div>
+        <div className="absolute top-1/2 right-1/4 h-24 w-24 rounded-full bg-white/5"></div>
       </div>
 
       <div className="relative border-b border-white/20 px-6 py-4">
@@ -95,6 +109,28 @@ function CustomerDetailHeader(props: CustomerDetailHeaderProps) {
               <span>E-post: {user?.email || 'Ikke oppgitt'}</span>
             </div>
           </div>
+        </div>
+
+        <div className="flex gap-3">
+          <ConfirmationDialog
+            trigger={
+              <Button
+                variant="destructive"
+                className="flex items-center gap-2 bg-red-600/90 text-white transition-all hover:scale-105 hover:bg-red-700/90"
+                disabled={deleteUserMutation.isPending}
+              >
+                <Trash2 className="h-4 w-4" />
+                <span className="hidden sm:inline">Slett kunde</span>
+              </Button>
+            }
+            title="Slett kunde"
+            description={`Er du sikker på at du vil slette kunden "${user?.name || 'denne kunden'}"? Denne handlingen kan ikke angres og vil fjerne all data knyttet til kunden.`}
+            confirmText={
+              deleteUserMutation.isPending ? 'Sletter...' : 'Slett permanent'
+            }
+            onConfirm={handleDeleteUser}
+            isPending={deleteUserMutation.isPending}
+          />
         </div>
       </div>
 

@@ -12,6 +12,7 @@ import {
   getTopUsers,
   getAllAdmins,
   updateAdminPassword,
+  deleteUser,
 } from '@/controllers/user.controller';
 
 import {
@@ -22,6 +23,7 @@ import {
   getUserStatsSchema,
   topUsersSchema,
   updateAdminPasswordSchema,
+  deleteUserSchema,
 } from '@/validators/user.validator';
 
 const router: Router = express.Router();
@@ -49,6 +51,12 @@ router.put(
   isAdmin,
   validate(updateAdminPasswordSchema),
   updateAdminPassword,
+);
+router.delete(
+  '/delete/:userId',
+  isAdmin,
+  validate(deleteUserSchema),
+  deleteUser,
 );
 
 export default router;
