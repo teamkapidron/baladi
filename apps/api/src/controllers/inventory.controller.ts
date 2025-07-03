@@ -20,6 +20,8 @@ import { ErrorHandler } from '@/handlers/error.handler';
 // Types
 import type {
   GetAllInventorySchema,
+  UpdateInventorySchema,
+  DeleteInventorySchema,
   GetProductInventorySchema,
   CreateInventorySchema,
   InventoryStatsSchema,
@@ -117,6 +119,54 @@ export const getAllInventory = asyncHandler(
       currentPage: page,
       perPage: limit,
       totalPages: Math.ceil((totalInventory?.total ?? 0) / limit),
+    });
+  },
+);
+
+export const updateInventory = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { inventoryId } = req.params as UpdateInventorySchema['params'];
+    const { quantity, expirationDate } =
+      req.body as UpdateInventorySchema['body'];
+
+    const existingInventory = await Inventory.findById(inventoryId);
+    if (!existingInventory) {
+      throw new ErrorHandler(404, 'Inventory not found', 'NOT_FOUND');
+    }
+
+    if (quantity) {
+      const diff = quantity - existingInventory.inputQuantity;
+      if (existingInventory.quantity + diff < 0) {
+        throw new ErrorHandler(
+          400,
+          'Quantity cannot be less than quantity in stock',
+          'BAD_REQUEST',
+        );
+      }
+      existingInventory.quantity += diff;
+      existingInventory.inputQuantity += diff;
+    }
+    
+    if (expirationDate) {
+      existingInventory.expirationDate = new Date(expirationDate);
+    }
+
+    await existingInventory.save();
+
+    sendResponse(res, 200, 'Inventory updated successfully', {
+      inventory: existingInventory,
+    });
+  },
+);
+
+export const deleteInventory = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { inventoryId } = req.params as DeleteInventorySchema['params'];
+
+    await Inventory.findByIdAndDelete(inventoryId);
+
+    sendResponse(res, 200, 'Inventory deleted successfully', {
+      message: 'Inventory deleted successfully',
     });
   },
 );

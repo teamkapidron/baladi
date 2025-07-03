@@ -5,6 +5,8 @@ import { isAdmin } from '@/middlewares/auth.middleware';
 
 import {
   getAllInventory,
+  updateInventory,
+  deleteInventory,
   getProductInventory,
   createInventory,
   getInventoryStats,
@@ -12,6 +14,8 @@ import {
 
 import {
   getAllInventorySchema,
+  updateInventorySchema,
+  deleteInventorySchema,
   getProductInventorySchema,
   createInventorySchema,
   inventoryStatsSchema,
@@ -20,6 +24,18 @@ import {
 const router: Router = express.Router();
 
 router.get('/', isAdmin, validate(getAllInventorySchema), getAllInventory);
+router.put(
+  '/:inventoryId',
+  isAdmin,
+  validate(updateInventorySchema),
+  updateInventory,
+);
+router.delete(
+  '/:inventoryId',
+  isAdmin,
+  validate(deleteInventorySchema),
+  deleteInventory,
+);
 router.get(
   '/product/:productId',
   isAdmin,

@@ -1,7 +1,8 @@
 'use client';
 
 // Node Modules
-import { memo, useMemo } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   Package,
   Calendar,
@@ -10,13 +11,21 @@ import {
   XCircle,
   Hash,
   Info,
+  Edit2,
+  Trash2,
 } from '@repo/ui/lib/icons';
 
-// Hooks
-import { useProductInventory } from '@/hooks/useInventory';
+// Components
+import { Button } from '@repo/ui/components/base/button';
+import { ConfirmationDialog } from '@/components/common/confirmation-dialog';
+import EditInventoryDialog from '@/components/dashboard/inventory/edit-inventory-dialog/edit-inventory-dialog';
 
-// Types
+// Hooks
+import { useProductInventory, useInventory } from '@/hooks/useInventory';
+
+// Types/Utils
 import { formatDate } from '@repo/ui/lib/date';
+import { ReactQueryKeys } from '@/hooks/useReactQuery/types';
 import { InventoryResponse } from '@/hooks/useInventory/types';
 
 interface ProductInventoryBatchesProps {
@@ -92,7 +101,12 @@ function ProductInventoryBatches({ productId }: ProductInventoryBatchesProps) {
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {inventory.map((item, index) => (
-          <InventoryBatchCard key={item._id} item={item} index={index} />
+          <InventoryBatchCard
+            key={item._id}
+            item={item}
+            index={index}
+            productId={productId}
+          />
         ))}
       </div>
     </div>
@@ -102,9 +116,14 @@ function ProductInventoryBatches({ productId }: ProductInventoryBatchesProps) {
 interface InventoryBatchCardProps {
   item: InventoryResponse;
   index: number;
+  productId: string;
 }
 
-function InventoryBatchCard({ item }: InventoryBatchCardProps) {
+function InventoryBatchCard({ item, productId }: InventoryBatchCardProps) {
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const queryClient = useQueryClient();
+  const { deleteInventoryMutation } = useInventory();
+
   const expirationDate = new Date(item.expirationDate);
   const today = new Date();
   const daysUntilExpiry = Math.ceil(
@@ -115,7 +134,17 @@ function InventoryBatchCard({ item }: InventoryBatchCardProps) {
   const isExpiringSoon = daysUntilExpiry <= 7 && daysUntilExpiry > 0;
   const isOutOfStock = item.quantity === 0;
 
-  function getStatusInfo() {
+  const handleDelete = useCallback(() => {
+    deleteInventoryMutation.mutate(item._id, {
+      onSuccess: function () {
+        queryClient.invalidateQueries({
+          queryKey: [ReactQueryKeys.GET_PRODUCT_INVENTORY, productId],
+        });
+      },
+    });
+  }, [deleteInventoryMutation, item._id, productId, queryClient]);
+
+  const statusInfo = useMemo(() => {
     if (isOutOfStock) {
       return {
         icon: <XCircle className="h-5 w-5 text-red-500" />,
@@ -169,15 +198,13 @@ function InventoryBatchCard({ item }: InventoryBatchCardProps) {
       cardBorder: 'border-emerald-200',
       cardBg: 'bg-gradient-to-br from-emerald-50 to-emerald-100',
     };
-  }
-
-  const statusInfo = getStatusInfo();
+  }, [isExpired, isExpiringSoon, isOutOfStock]);
 
   return (
     <div
       className={`group relative overflow-hidden rounded-xl border ${statusInfo.cardBorder} ${statusInfo.cardBg} shadow-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-lg`}
     >
-      <div className="absolute right-0 top-0 h-24 w-24 -translate-y-8 translate-x-8 rounded-full bg-white/20" />
+      <div className="absolute top-0 right-0 h-24 w-24 translate-x-8 -translate-y-8 rounded-full bg-white/20" />
 
       <div className="relative p-6">
         <div className="mb-4 flex items-start justify-between">
@@ -273,8 +300,47 @@ function InventoryBatchCard({ item }: InventoryBatchCardProps) {
               />
             </div>
           </div>
+
+          {/* Action Buttons */}
+          <div className="flex gap-2 pt-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsEditDialogOpen(true)}
+              className="h-8 flex-1 border-gray-300 bg-white/80 px-3 text-xs font-medium text-gray-700 transition-all duration-200 hover:border-[var(--baladi-primary)] hover:bg-white hover:text-[var(--baladi-primary)]"
+            >
+              <Edit2 className="mr-1.5 h-3 w-3" />
+              Rediger
+            </Button>
+            <ConfirmationDialog
+              trigger={
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={deleteInventoryMutation.isPending}
+                  className="h-8 flex-1 border-gray-300 bg-white/80 px-3 text-xs font-medium text-gray-700 transition-all duration-200 hover:border-red-300 hover:bg-red-50 hover:text-red-700 disabled:opacity-50"
+                >
+                  <Trash2 className="mr-1.5 h-3 w-3" />
+                  Slett
+                </Button>
+              }
+              title="Slett lagerparti"
+              description="Er du sikker på at du vil slette dette lagerpartiet? Denne handlingen kan ikke angres."
+              confirmText="Ja, slett lagerparti"
+              onConfirm={handleDelete}
+              isPending={deleteInventoryMutation.isPending}
+            />
+          </div>
         </div>
       </div>
+
+      {/* Edit Dialog */}
+      <EditInventoryDialog
+        open={isEditDialogOpen}
+        setOpen={setIsEditDialogOpen}
+        inventoryItem={item}
+        productId={productId}
+      />
     </div>
   );
 }
