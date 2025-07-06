@@ -16,6 +16,10 @@ const nextConfig: NextConfig = {
         hostname:
           'baladi-prod-baladibucket-fedmxzsx.s3.eu-central-1.amazonaws.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'flagsapi.com',
+      },
     ],
   },
 };

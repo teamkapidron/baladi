@@ -301,7 +301,7 @@ export function useProduct() {
   };
 }
 
-export function useQuickSearchProduct(query: string) {
+export function useQuickSearchProduct(query: string, categoryId?: string) {
   const api = useRequest();
   const [searchQuery, setSearchQuery] = useState(query);
   const debouncedSearchQuery = useRef(debounce(setSearchQuery, 500));
@@ -330,8 +330,12 @@ export function useQuickSearchProduct(query: string) {
   );
 
   const quickSearchProductQuery = useQuery({
-    queryKey: [ReactQueryKeys.GET_QUICK_SEARCH_PRODUCTS, searchQuery],
-    queryFn: () => quickSearchProduct({ query: searchQuery }),
+    queryKey: [
+      ReactQueryKeys.GET_QUICK_SEARCH_PRODUCTS,
+      searchQuery,
+      categoryId,
+    ],
+    queryFn: () => quickSearchProduct({ query: searchQuery, categoryId }),
   });
 
   const handleSearch = useCallback((query: string) => {

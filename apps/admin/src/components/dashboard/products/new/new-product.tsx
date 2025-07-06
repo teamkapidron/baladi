@@ -14,8 +14,6 @@ function NewProduct() {
   const { createProductMutation } = useProduct();
 
   function onSubmit(data: ProductFormValues) {
-    console.log(data);
-
     createProductMutation.mutate(data);
   }
 
