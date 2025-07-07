@@ -86,7 +86,8 @@ function OnboardingForm() {
                 <FormControl>
                   <Input
                     {...field}
-                    placeholder="f.eks. 123 456 789"
+                    type="number"
+                    placeholder="123456789"
                     className="w-full rounded-lg border border-[var(--baladi-border)] bg-[var(--baladi-muted)] px-4 py-3 font-[family-name:var(--font-dm-sans)] transition-all duration-200 focus:border-[var(--baladi-primary)] focus:bg-white focus:ring-2 focus:ring-[var(--baladi-primary)]/20"
                   />
                 </FormControl>

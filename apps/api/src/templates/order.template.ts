@@ -87,13 +87,18 @@ export function pickingListTemplate(order: OrderResponse) {
       padding: 10px;
       border: 1px solid #ddd;
       margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      min-height: 24px;
     }
 
     .order-header span {
       font-weight: normal;
-      float: right;
       font-size: 14px;
       color: #555;
+      text-align: right;
+      line-height: 1.3;
     }
 
     .checkbox {
@@ -130,7 +135,7 @@ export function pickingListTemplate(order: OrderResponse) {
     </div>
 
     <div class="order-header">
-      Ordre #${order._id.toString()} <span>Navn: ${order.userId.name}</span>
+      Ordre #${order._id.toString()} <span>Navn: ${order.userId.name}${order.userId.organizationNumber ? `<br/>Organisasjonsnummer: ${order.userId.organizationNumber}` : ''}</span>
     </div>
 
     <table>
