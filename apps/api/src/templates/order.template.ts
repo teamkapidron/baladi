@@ -135,7 +135,7 @@ export function pickingListTemplate(order: OrderResponse) {
     </div>
 
     <div class="order-header">
-      Ordre #${order._id.toString()} <span>Navn: ${order.userId.name}${order.userId.organizationNumber ? `<br/>Organisasjonsnummer: ${order.userId.organizationNumber}` : ''}</span>
+      Ordre #${order._id.toString()} <span>Navn: ${order.userId.companyName}</span>
     </div>
 
     <table>

@@ -31,6 +31,7 @@ export type OrderResponse = Omit<
     _id: string;
     name: string;
     email: string;
+    companyName?: string;
     organizationNumber?: string;
   };
   shippingAddress: {

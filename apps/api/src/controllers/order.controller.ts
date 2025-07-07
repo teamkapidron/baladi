@@ -916,7 +916,7 @@ export const previewPickingList = asyncHandler(
           path: 'items.productId',
           select: 'name sku barcode weight dimensions',
         },
-        { path: 'userId', select: 'name email organizationNumber' },
+        { path: 'userId', select: 'name email organizationNumber companyName' },
         {
           path: 'shippingAddress',
           select: 'addressLine1 addressLine2 city state postalCode country',
