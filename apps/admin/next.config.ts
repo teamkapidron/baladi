@@ -17,6 +17,7 @@ const nextConfig: NextConfig = {
           'baladi-prod-baladibucket-fedmxzsx.s3.eu-central-1.amazonaws.com',
       },
     ],
+    unoptimized: true,
   },
 };
 
